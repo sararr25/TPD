@@ -127,3 +127,20 @@ Tutta la tabella dipende da due cose che non conosco ancora: **quanti dati ha Ql
 - **Doc 01 e 02:** `urn:heatmap` **non è nell'elenco dei tipi supportati**; i riferimenti agli heatmap diventano "forse".
 - **Doc 02, tensione 2 e 4:** sostituite dalla scala di verifica e dalla matrice di questo documento.
 - **Nuovo vincolo:** le risposte Qloo non si salvano nel repository pubblico (cache e fixture in un database privato).
+
+---
+
+## 5. Decisioni prese (19 ottobre 2026)
+
+| Tema | Decisione |
+|---|---|
+| Eventi in Giappone e Vietnam | "Spettacoli" = **esperienze culturali dal vivo prenotabili via Viator** (L3). I concerti restano **link di uscita** (Peatix, e+, Ticketbox), dichiarati non verificati |
+| Monetizzazione | **Link affiliati dichiarati** (Viator Basic, eventualmente Klook) con nota visibile. Primo ricavo B2C da citare nel pitch. Consiglio: aggiungere in README che il ranking non dipende dalla commissione, e rendere vera l'affermazione nel codice |
+| Fallback Asia | Se Qloo ha pochi dati: **2 città** (Tokyo + Hanoi o Ho Chi Minh), dichiarate; il grosso della demo su New York ed Europa |
+
+### Prossimi passi
+1. Inviare il messaggio su `#api-help` (bozza nella sezione 1).
+2. Registrarsi a Viator Affiliate Basic e verificare che l'endpoint di ricerca e disponibilità funzioni per Tokyo, Hanoi, Parigi, Lisbona, Barcellona, New York.
+3. All'arrivo della chiave Qloo: le 8 query del documento 01 (sezione 2.5), adesso su `hackathon.api.qloo.com`.
+4. Verificare la copertura Ticketmaster per Portogallo, Francia e Spagna.
+5. Decidere città definitive per ogni paese in base ai risultati.

@@ -1,0 +1,199 @@
+<title>TPD Collage Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;700&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Layout: one desktop spread, read left to right: what you wanted (pasted photo) → mixer of paper faders → swaps pinned on a hand-drawn map. Yarn threads tie kept tags to swaps. Light paper only, by design. */
+:root{
+  --paper:#EFEDE4; --sheet:#FBFAF5; --ink:#24211C; --body:#4A463E; --pencil:#8C877A;
+  --red:#E4472F; --blue:#2E55D4; --mustard:#EFB321; --sage:#86AE7A; --pink:#F2A7B5;
+  --serif:"Young Serif", Georgia, serif; --sans:"Karla", system-ui, sans-serif; --hand:"Caveat", "Comic Sans MS", cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;
+  background-image:radial-gradient(#0000000a 1px,transparent 1px);background-size:6px 6px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{font-family:var(--serif);font-size:28px;line-height:1;display:flex;align-items:center;gap:8px}
+.logo i{width:22px;height:22px;border-radius:50%;background:var(--red);display:block;box-shadow:8px 0 0 var(--mustard)}
+nav{display:flex;gap:24px;font-weight:500;color:var(--body)}
+nav span[aria-current]{color:var(--ink);text-decoration:underline wavy var(--red);text-underline-offset:6px}
+
+.title{display:flex;flex-direction:column;gap:8px;max-width:760px}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(34px,4.2vw,54px);line-height:1.12;margin:0;text-wrap:balance}
+h1 .strike{position:relative;white-space:nowrap}
+h1 .strike::after{content:"";position:absolute;left:-4px;right:-4px;top:55%;height:6px;background:var(--red);border-radius:3px;transform:rotate(-2deg)}
+.note{font-family:var(--hand);font-size:24px;color:var(--pencil);line-height:1.2}
+
+.spread{position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.15fr) minmax(0,1.5fr);gap:56px;align-items:start}
+svg.yarn{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:2}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0;position:relative;z-index:1}
+.step{font-family:var(--hand);font-size:26px;line-height:1;color:var(--ink)}
+
+/* pasted photo */
+.polaroid{background:var(--sheet);padding:14px 14px 20px;box-shadow:0 12px 32px #4A3A1A1f;transform:rotate(-2.5deg);position:relative;display:flex;flex-direction:column;gap:12px}
+.polaroid::before,.polaroid::after{content:"";position:absolute;width:76px;height:24px;background:#F6E7A8cc;top:-10px}
+.polaroid::before{left:18px;transform:rotate(-8deg)}.polaroid::after{right:18px;transform:rotate(7deg)}
+.photo{aspect-ratio:4/3;position:relative;overflow:hidden;background:var(--blue)}
+.photo .sun{position:absolute;width:56%;aspect-ratio:1;border-radius:50%;background:var(--mustard);right:-8%;top:-12%}
+.photo .arch{position:absolute;left:12%;bottom:0;width:42%;height:70%;background:var(--pink);border-radius:999px 999px 0 0}
+.photo .stripes{position:absolute;inset:auto 0 0 0;height:22%;background:repeating-linear-gradient(90deg,var(--sheet) 0 10px,var(--red) 10px 20px)}
+.stamp{position:absolute;right:10px;bottom:30%;transform:rotate(-12deg);border:3px solid var(--red);color:var(--red);font-weight:700;letter-spacing:.12em;padding:4px 10px;background:#FBFAF5e6;font-size:14px}
+.polaroid h2{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.2;margin:0}
+.polaroid p{margin:0;color:var(--body);font-size:15px}
+
+/* paper mixer */
+.mixer{background:var(--sheet);padding:20px 16px 16px;box-shadow:0 8px 24px #4A3A1A14;border-radius:4px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;position:relative}
+.mixer .scale{grid-column:1/-1;display:flex;justify-content:space-between;font-family:var(--hand);font-size:20px;color:var(--pencil);line-height:1}
+.fader{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.track{position:relative;height:180px;width:100%;display:flex;justify-content:center}
+.track::before{content:"";position:absolute;top:8px;bottom:8px;width:4px;border-radius:2px;background:#D9D4C4}
+.track .mid{position:absolute;top:50%;width:26px;height:2px;background:#C6C0AE}
+.fader input{writing-mode:vertical-lr;direction:rtl;-webkit-appearance:none;appearance:none;background:transparent;width:44px;height:180px;margin:0;position:relative;z-index:1}
+.fader input::-webkit-slider-runnable-track{background:transparent;width:44px}
+.fader input::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:40px;border-radius:50%;background:var(--c);border:3px solid var(--sheet);box-shadow:0 3px 8px #4A3A1A40}
+.fader input::-moz-range-thumb{width:34px;height:34px;border-radius:50%;background:var(--c);border:3px solid var(--sheet);box-shadow:0 3px 8px #4A3A1A40}
+.fader input::-moz-range-track{background:transparent}
+.fader .lab{font-weight:700;font-size:14px;line-height:1.25;min-height:36px}
+.fader .st{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:2px}
+.st.keep{background:var(--ink);color:var(--sheet)}
+.st.change{background:var(--sheet);color:var(--ink);border:1.5px solid var(--ink)}
+.st.ignore{color:var(--pencil);text-decoration:line-through}
+.fader .knot{width:12px;height:12px;border-radius:50%;background:var(--c);opacity:0}
+.fader.is-keep .knot{opacity:1}
+
+/* map + swaps */
+.mapwrap{position:relative;padding:12px 0}
+.map{position:absolute;inset:-12px -12px auto -12px;height:100%;z-index:0;opacity:.9}
+.swaps{display:flex;flex-direction:column;gap:20px;position:relative;z-index:1}
+.swap{background:var(--sheet);display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;padding:12px;box-shadow:0 8px 24px #4A3A1A14;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.swap:nth-child(odd){transform:rotate(.8deg)}.swap:nth-child(even){transform:rotate(-.8deg)}
+.cut{aspect-ratio:1;position:relative;overflow:hidden}
+.cut.a{background:var(--sage);border-radius:50%}
+.cut.b{background:var(--mustard);border-radius:999px 999px 0 0}
+.cut.c{background:var(--pink);clip-path:polygon(0 8%,100% 0,94% 100%,4% 92%)}
+.cut.d{background:var(--blue);border-radius:12px}
+.cut::after{content:"";position:absolute;inset:30% 20% auto auto;width:40%;aspect-ratio:1;border-radius:50%;background:#FBFAF5aa}
+.swap .info{display:flex;flex-direction:column;gap:4px;min-width:0}
+.swap .rank{font-family:var(--hand);font-size:22px;line-height:1;color:var(--red)}
+.swap h3{margin:0;font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.2}
+.swap p{margin:0;color:var(--body);font-size:15px}
+.swap .why{font-family:var(--hand);font-size:20px;line-height:1.15;color:var(--ink)}
+.verify{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#2B3138;background:#E7E9EC;padding:3px 8px;width:fit-content;display:inline-flex;gap:6px}
+.verify b{font-weight:600}
+.moved{font-size:13px;font-weight:700;color:var(--blue)}
+
+.actions{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.btn{border:0;background:var(--red);color:#fff;font-weight:700;padding:14px 28px;border-radius:2px;box-shadow:0 6px 16px #E4472F40;clip-path:polygon(0 4%,100% 0,98% 100%,2% 96%)}
+.btn:hover{background:#CC3720}
+.link{border:0;background:none;font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;padding:0}
+.legend{font-family:var(--hand);font-size:22px;color:var(--pencil)}
+
+@media (max-width:980px){
+  .spread{grid-template-columns:1fr;gap:40px} svg.yarn{display:none}
+  .mixer{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){.swap{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="logo"><i></i><span style="margin-left:12px">tpd</span></span>
+    <nav><span aria-current="page">Swap</span><span>Passport</span><span>Saved</span></nav>
+    <span class="note">Night Owl · Paris</span>
+  </header>
+
+  <div class="title">
+    <h1><span class="strike">Le Chateaubriand</span> is full. Keep what you loved, swap the rest.</h1>
+    <span class="note">Slide a tag up to keep it, down to change it. The yarn shows what each place keeps.</span>
+  </div>
+
+  <div class="spread" id="spread">
+    <svg class="yarn" id="yarn" aria-hidden="true"></svg>
+
+    <div class="col">
+      <span class="step">1 · you wanted</span>
+      <figure class="polaroid" style="margin:0">
+        <div class="photo"><span class="sun"></span><span class="arch"></span><span class="stripes"></span><span class="stamp">COMPLET</span></div>
+        <h2>Le Chateaubriand</h2>
+        <p>Neo-bistro · 129 av. Parmentier, 11e · €€€</p>
+      </figure>
+    </div>
+
+    <div class="col">
+      <span class="step">2 · keep or change</span>
+      <div class="mixer" id="mixer"><div class="scale"><span>keep ↑</span><span>↓ change</span></div></div>
+    </div>
+
+    <div class="col">
+      <span class="step">3 · your swaps</span>
+      <div class="mapwrap">
+        <svg class="map" viewBox="0 0 400 420" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M-10 300 C 60 260, 120 330, 190 290 S 320 250, 410 300" fill="none" stroke="#B9CBE0" stroke-width="22" stroke-linecap="round"/>
+          <g fill="none" stroke="#D3CDBC" stroke-width="2.5" stroke-linecap="round">
+            <path d="M20 40 C 120 60, 200 30, 390 70"/><path d="M60 0 C 70 120, 40 220, 80 420"/><path d="M250 0 C 230 140, 280 260, 240 420"/><path d="M0 170 C 150 150, 260 200, 400 160"/>
+          </g>
+          <text x="300" y="330" font-family="Caveat" font-size="22" fill="#8C877A">la Seine</text>
+          <text x="140" y="120" font-family="Caveat" font-size="20" fill="#8C877A">11e</text>
+        </svg>
+        <div class="swaps" id="swaps"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="save">Save Le Servan</button>
+    <button class="link">See the same taste in a museum</button>
+    <button class="link">Compare without Qloo</button>
+    <span class="legend">sample data, not from Qloo</span>
+  </div>
+</div>
+
+<script>
+const TAGS=[{l:'Natural wine',c:'#E4472F',v:88},{l:'Neo-bistro',c:'#2E55D4',v:78},{l:'Lively room',c:'#EFB321',v:66},{l:'Price €€€',c:'#86AE7A',v:14},{l:'Hard to book',c:'#F2A7B5',v:8}];
+const PLACES=[
+ {n:'Le Servan',p:'Neo-bistro · 11e · €€',w:[1,1,.6,.2,.2],cut:'a',why:'same wine list spirit, close to Clown Bar',v:['L1','hours · Google']},
+ {n:'Le Baratin',p:'Bistro · 20e · €€ · open tonight',w:[1,.3,1,.2,.1],cut:'b',why:'lively, natural wine, easy to walk in',v:['L2','booking page']},
+ {n:'Mokonuts',p:'Café-bistro · 11e · €€',w:[.4,.6,.8,.3,.3],cut:'c',why:'chef-driven, a slow-cinema kind of place',v:['L1','hours · Google']},
+ {n:'Septime La Cave',p:'Wine bar · 11e · €€',w:[1,.5,.7,.4,.1],cut:'d',why:'tiny, all about the bottles',v:['L0','Qloo only']}];
+const state=v=>v>60?'keep':v<40?'change':'ignore';
+let prev=null;
+const $=id=>document.getElementById(id);
+
+$('mixer').insertAdjacentHTML('beforeend',TAGS.map((t,i)=>`<label class="fader" style="--c:${t.c}" id="fd${i}">
+  <span class="lab">${t.l}</span><span class="track"><span class="mid"></span><input type="range" min="0" max="100" value="${t.v}" data-i="${i}" aria-label="${t.l}"></span>
+  <span class="st" id="st${i}"></span><span class="knot" id="kn${i}"></span></label>`).join(''));
+
+function render(){
+  TAGS.forEach((t,i)=>{const s=state(t.v);const el=$('st'+i);el.className='st '+s;el.textContent=s;$('fd'+i).classList.toggle('is-keep',s==='keep')});
+  const order=PLACES.map((p,i)=>({i,s:p.w.reduce((a,w,j)=>a+w*(TAGS[j].v-50),0)})).sort((a,b)=>b.s-a.s).map(x=>x.i).slice(0,3);
+  $('swaps').innerHTML=order.map((pi,r)=>{const p=PLACES[pi];const was=prev?prev.indexOf(pi):r;
+    const mv=prev&&was===-1?'new':was>r?'moved up':was<r?'moved down':'';
+    return `<article class="swap" data-p="${pi}"><div class="cut ${p.cut}"></div><div class="info">
+      <span class="rank">${['closest match','most practical','unexpected'][r]}${mv?` <span class="moved">· ${mv}</span>`:''}</span>
+      <h3>${p.n}</h3><p>${p.p}</p><span class="why">${p.why}</span><span class="verify"><b>${p.v[0]}</b>${p.v[1]}</span></div></article>`}).join('');
+  $('save').textContent='Save '+PLACES[order[0]].n;
+  prev=order;
+  requestAnimationFrame(yarn);
+}
+function yarn(){
+  const sp=$('spread'),svg=$('yarn');if(getComputedStyle(svg).display==='none')return;
+  const b=sp.getBoundingClientRect();let out='';
+  document.querySelectorAll('.swap').forEach(card=>{const p=PLACES[+card.dataset.p];const cr=card.getBoundingClientRect();
+    TAGS.forEach((t,i)=>{if(state(t.v)!=='keep'||p.w[i]<.6)return;
+      const k=$('kn'+i).getBoundingClientRect();
+      const x1=k.left+k.width/2-b.left,y1=k.top+k.height/2-b.top,x2=cr.left-b.left+8,y2=cr.top+cr.height/2-b.top+(i-2)*7;
+      const mx=(x1+x2)/2,sag=40+i*14;
+      out+=`<path d="M${x1},${y1} Q${mx-30},${Math.max(y1,y2)+sag} ${mx+10},${(y1+y2)/2+sag/2} T${x2},${y2}" fill="none" stroke="${t.c}" stroke-width="3" stroke-linecap="round" opacity=".9"/><circle cx="${x2}" cy="${y2}" r="4" fill="${t.c}"/>`;});});
+  svg.innerHTML=out;
+}
+document.addEventListener('input',e=>{const i=e.target.dataset.i;if(i!==undefined){TAGS[+i].v=+e.target.value;render()}});
+addEventListener('resize',()=>requestAnimationFrame(yarn));
+document.fonts&&document.fonts.ready.then(()=>requestAnimationFrame(yarn));
+render();
+</script>

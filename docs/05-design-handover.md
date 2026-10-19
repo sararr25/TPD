@@ -47,7 +47,7 @@ Font: Bricolage Grotesque (titoli e testo), DM Mono (etichette e dati), Instrume
 
 ## Prossimi passi
 
-1. Scegliere tra Oltremare e Prugna, oppure mischiarle (es. il passaporto di una e i timbri dell'altra).
+1. ~~Scegliere tra Oltremare e Prugna~~ Fatto: scelto Carbone e fucsia + Familjen Grotesk/Martian Mono, timbri ad anello, bottoni timbro e un solo bottone biglietto (decisione 3.21).
 2. Rifinire la versione scelta: densità dei timbri, quanto bianco, colore del passaporto.
 3. Disegnare le schermate che mancano: costruzione del Passport (3–5 scelte), dettaglio risultato, collezioni, login/ospite, stati vuoti ed errori.
 4. Fissare i token (colori, font, raggi, ombre) in un piccolo design system prima dello scaffold Next.js.

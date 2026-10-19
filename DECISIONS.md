@@ -70,6 +70,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 | 3.18 | Identità: **giocosa e social**, con la scheda Passport come "carta d'identità del gusto". Le etichette di verifica restano sobrie e precise. |
 | 3.19 | **Piattaforma: web app desktop, non mobile.** Le schermate si disegnano a 1440 px; il layout deve solo non rompersi su schermi stretti. |
 | 3.20 | **Direzione visiva:** base A (Passport e timbri), più calma; timbri a inchiostro su carta, pochi tocchi della C. **Mai azzurro chiaro né verde scuro** nella palette. Prototipi in `design-mockups/A2-*.html`. |
+| 3.21 | **Design system scelto** (dallo style explorer `design-mockups/A3-style-explorer.html`): palette **Carbone e fucsia** (`--bg #F4F4F3`, `--paper #FFFFFF`, `--ink #1E1D22`, `--ink-2 #55535C`, `--line #E0DFE2`, `--pass #26242C`, `--on-pass #FFFFFF`, `--stamp #D61F69`, `--third #D9860B`); font **Familjen Grotesk** (titoli e testo, enfasi in corsivo dello stesso font) + **Martian Mono** (etichette e dati); simboli **ad anello-timbro**; bottoni **timbro di gomma**, tranne **un solo bottone principale per schermata in stile biglietto** (es. "Swap it"). Sostituisce Oltremare/Prugna e Instrument Serif. |
 
 ## 4. Qloo e architettura
 

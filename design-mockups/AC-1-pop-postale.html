@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPD · Pop postale</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Layout: A's passport + boarding-pass flow, with postage stamps, rubber stamps and a few C stickers */
+:root{
+  --bg:#EFEBFF; --paper:#FFFFFF; --ink:#1D1446; --ink-2:#4A4370; --line:#D6D0F0;
+  --p:#3B2BFF; --on-p:#FFFFFF; --a1:#FF5A3C; --on-a1:#1D1446; --a2:#FFC93C; --a3:#22B98F; --on-a3:#1D1446;
+  --display:'Bricolage Grotesque',system-ui,sans-serif; --mono:'DM Mono',ui-monospace,monospace; --serif:'Instrument Serif',Georgia,serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--display)}
+a{color:var(--ink)}a:hover{color:var(--p)}
+:focus-visible{outline:3px solid var(--p);outline-offset:3px}
+.wrap{max-width:1344px;margin:0 auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+@media (min-width:900px){.wrap{padding-left:max(48px,env(safe-area-inset-left,0px));padding-right:max(48px,env(safe-area-inset-right,0px))}}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.1em}
+.serif{font-family:var(--serif);font-style:italic;font-weight:400}
+h1,h2,h3{text-wrap:balance}
+.h2{margin:0;font-size:clamp(38px,4vw,60px);font-weight:800;letter-spacing:-.04em;line-height:1}
+.btn{height:52px;padding:0 24px;border-radius:999px;border:0;font:800 16px var(--display);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+.btn-p{background:var(--p);color:var(--on-p)}
+.btn-ink{background:var(--ink);color:var(--paper)}
+.btn-line{background:transparent;border:2px solid var(--ink);color:var(--ink)}
+
+/* postage stamp: white perforated border around a colored face */
+.postage{display:inline-block;padding:9px;background:radial-gradient(circle,transparent 4.6px,var(--paper) 5px) -9px -9px/18px 18px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.18))}
+.postage .face{border:1.5px solid rgba(0,0,0,.12);padding:14px 16px;display:flex;flex-direction:column;gap:6px;height:100%}
+.postage .val{font:800 34px/1 var(--display);letter-spacing:-.03em}
+/* rubber stamp */
+.rubber{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:3px solid currentColor;font-family:var(--mono);font-size:11px;letter-spacing:.1em;gap:3px;outline:1.5px solid currentColor;outline-offset:3px;opacity:.92}
+.rubber b{font:800 20px var(--display);letter-spacing:-.01em}
+/* sticker (from C) */
+.sticker{border-radius:18px;padding:12px 16px;box-shadow:0 12px 20px -12px rgba(0,0,0,.45),inset 0 0 0 4px rgba(255,255,255,.85);display:inline-flex;flex-direction:column;gap:2px}
+.sticker .k{font:500 10px var(--mono);letter-spacing:.1em;opacity:.85}
+.sticker .v{font:800 17px var(--display)}
+
+.ticket{display:flex;flex-wrap:wrap;background:var(--paper);border-radius:22px;box-shadow:0 24px 40px -30px rgba(0,0,0,.55);overflow:hidden;position:relative}
+.ticket .main{flex:999 1 420px;min-width:0;padding:26px 30px;display:flex;flex-direction:column;gap:14px}
+.ticket .stub{flex:1 1 230px;padding:24px;border-left:3px dashed var(--line);display:flex;flex-direction:column;gap:8px;font-family:var(--mono);font-size:13px}
+.row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:16px;background:var(--bg)}
+.seg{display:flex;gap:4px}
+.seg button{height:40px;min-width:70px;padding:0 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink-2);font:600 13px var(--display);cursor:pointer}
+.seg button[data-on="keep"]{background:var(--p);border-color:var(--p);color:var(--on-p)}
+.seg button[data-on="change"]{background:var(--a1);border-color:var(--a1);color:var(--on-a1)}
+.seg button[data-on="skip"]{background:var(--line);border-color:var(--line);color:var(--ink)}
+.ticker{overflow:hidden;white-space:nowrap}
+.ticker span{display:inline-block;animation:tick 40s linear infinite}
+@keyframes tick{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ticker span{animation:none}}
+</style>
+
+</head>
+<body>
+<!-- NAV -->
+<header class="wrap" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-block:20px">
+  <span style="display:flex;align-items:center;gap:12px">
+    <span class="postage" style="padding:6px;background-size:12px 12px;background-position:-6px -6px;background-image:radial-gradient(circle,transparent 3px,var(--paper) 3.4px)"><span class="face" style="background:var(--p);color:var(--on-p);padding:6px 8px;font:800 14px var(--display)">TPD</span></span>
+    <span style="font-weight:800;font-size:24px;letter-spacing:-.03em">TPD</span>
+  </span>
+  <nav style="display:flex;gap:4px;background:var(--paper);border-radius:999px;padding:5px;flex-wrap:wrap" aria-label="Main">
+    <a href="#swap" style="text-decoration:none;padding:10px 18px;border-radius:999px;background:var(--ink);color:var(--paper);font-weight:600">Swap</a>
+    <a href="#passport" style="text-decoration:none;padding:10px 18px;border-radius:999px;font-weight:600">Passport</a>
+    <a href="#album" style="text-decoration:none;padding:10px 18px;border-radius:999px;font-weight:600">Album</a>
+    <a href="#compare" style="text-decoration:none;padding:10px 18px;border-radius:999px;font-weight:600">Qloo vs LLM</a>
+  </nav>
+  <div style="display:flex;align-items:center;gap:10px"><a href="#" style="font-weight:600;padding:0 10px;text-decoration:none">Log in</a><a href="#swap" class="btn btn-p" style="height:46px">Try the demo</a></div>
+</header>
+
+<!-- HERO -->
+<section class="wrap" style="padding-block:36px 84px;display:flex;flex-wrap:wrap;gap:56px;align-items:center">
+  <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:24px">
+    <span class="mono" style="color:var(--p)">TASTE-POWERED SWAPS · PARIS · TOKYO · NEW YORK</span>
+    <h1 style="margin:0;font-size:clamp(50px,5.6vw,84px);font-weight:800;line-height:.95;letter-spacing:-.045em">The place you wanted is full. Keep what you <span style="display:inline-block;background:var(--a2);color:var(--ink);padding:0 14px 4px;border-radius:16px;transform:rotate(-2.5deg)"><span class="serif" style="letter-spacing:-.01em">loved</span></span> about it.</h1>
+    <p style="margin:0;font-size:20px;line-height:1.5;color:var(--ink-2);max-width:560px">Name the restaurant, museum or neighbourhood that didn't work out. Your Taste Passport finds three places that feel the same, and tells you honestly what's different.</p>
+    <form onsubmit="event.preventDefault()" style="background:var(--paper);border:2px solid var(--ink);border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:8px 8px 0 var(--ink);max-width:620px">
+      <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <label style="flex:2 1 240px;display:flex;flex-direction:column;gap:6px"><span class="mono" style="color:var(--ink-2)">THE PLACE YOU WANTED</span>
+          <input id="place" type="text" value="Bistrot Nº 7" style="height:54px;border-radius:14px;border:1.5px solid var(--line);padding:0 16px;font:600 18px var(--display);color:var(--ink);background:var(--paper)"></label>
+        <label style="flex:1 1 140px;display:flex;flex-direction:column;gap:6px"><span class="mono" style="color:var(--ink-2)">CITY</span>
+          <input id="city" type="text" value="Paris" style="height:54px;border-radius:14px;border:1.5px solid var(--line);padding:0 16px;font:600 18px var(--display);color:var(--ink);background:var(--paper)"></label>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+        <span class="mono" style="color:var(--ink-2);margin-right:4px">WHAT WENT WRONG?</span>
+        <button type="button" style="height:38px;padding:0 14px;border-radius:999px;border:0;background:var(--a1);color:var(--on-a1);font:700 14px var(--display);cursor:pointer;transform:rotate(-2deg)">Fully booked</button>
+        <button type="button" style="height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:600 14px var(--display);cursor:pointer">Too touristy</button>
+        <button type="button" style="height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:600 14px var(--display);cursor:pointer">Too pricey</button>
+        <button type="button" style="height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:600 14px var(--display);cursor:pointer">Closed today</button>
+      </div>
+      <a href="#swap" class="btn btn-p" style="height:60px;font-size:19px">Find my swap <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg></a>
+    </form>
+    <span class="mono" style="color:var(--ink-2)">No account needed · a demo Passport is ready for you</span>
+  </div>
+
+  <!-- passport + stamps -->
+  <div id="passport" style="flex:1 1 480px;min-width:0;position:relative;height:620px">
+    <div style="position:absolute;left:6%;top:40px;width:340px;height:480px;background:var(--p);border-radius:24px;transform:rotate(-8deg);box-shadow:0 40px 60px -30px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;color:var(--on-p)">
+      <span class="mono" style="font-size:15px;letter-spacing:.3em">TASTE PASSPORT</span>
+      <svg width="110" height="110" viewBox="0 0 110 110" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="55" cy="55" r="50"/><circle cx="55" cy="55" r="34"/><path d="M5 55h100M55 5c-18 16-18 84 0 100M55 5c18 16 18 84 0 100"/></svg>
+      <span style="font-weight:800;font-size:26px;letter-spacing:.04em">TPD</span>
+    </div>
+    <div style="position:absolute;right:4%;top:10px;width:410px;max-width:92%;background:var(--paper);border-radius:22px;transform:rotate(3deg);box-shadow:0 40px 60px -30px rgba(0,0,0,.5);padding:28px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="mono" style="color:var(--p)">HOLDER</span><span class="mono" style="color:var(--ink-2)">Nº 0427 · DEMO</span></div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <div style="width:76px;height:92px;border-radius:10px;background:repeating-linear-gradient(135deg,var(--bg) 0 8px,var(--paper) 8px 16px);border:1px solid var(--line);display:flex;align-items:center;justify-content:center" class="mono">PHOTO</div>
+        <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:40px;font-weight:800;letter-spacing:-.04em;line-height:1">Mara L.</span><span class="serif" style="font-size:20px;color:var(--ink-2)">low-lit rooms, loud records</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px">
+        <div><span class="mono" style="color:var(--ink-2);font-size:10px">MUSIC</span><div style="font-size:16px;font-weight:600">Khruangbin, Rosalía</div></div>
+        <div><span class="mono" style="color:var(--ink-2);font-size:10px">FILM</span><div style="font-size:16px;font-weight:600">In the Mood for Love</div></div>
+        <div><span class="mono" style="color:var(--ink-2);font-size:10px">BOOKS</span><div style="font-size:16px;font-weight:600">Sally Rooney</div></div>
+        <div><span class="mono" style="color:var(--ink-2);font-size:10px">PLACES LOVED</span><div style="font-size:16px;font-weight:600">Sant Antoni, BCN</div></div>
+      </div>
+      <div style="position:relative;height:150px;border-top:1.5px dashed var(--line)">
+        <span class="rubber" style="position:absolute;left:0;top:18px;width:116px;height:116px;border-radius:50%;color:var(--a1);transform:rotate(-14deg)"><span>PARIS 11e</span><b>BISTRO</b><span>26·10·26</span></span>
+        <span class="rubber" style="position:absolute;left:136px;top:32px;width:128px;height:80px;border-radius:6px;color:var(--p);transform:rotate(8deg)"><span>TOKYO</span><b>GALLERY</b><span>02·11·26</span></span>
+        <span class="rubber" style="position:absolute;right:0;top:24px;width:96px;height:96px;border-radius:50%;color:var(--ink-2);border-style:dashed;outline-style:dashed;transform:rotate(-4deg)"><span>NEXT<br>STAMP</span></span>
+      </div>
+      <div class="mono" style="color:var(--ink-2);font-size:11px;letter-spacing:.06em">P&lt;TPD&lt;&lt;LOWLIT&lt;NATURALWINE&lt;VINYL&lt;&lt;&lt;&lt;</div>
+    </div>
+    <span class="postage" style="position:absolute;left:0;bottom:30px;width:140px;transform:rotate(-10deg)"><span class="face" style="background:var(--a2);color:var(--ink)"><span class="mono" style="font-size:10px">MUSIC</span><span style="font-weight:800;font-size:17px;line-height:1.05">Khruangbin</span><span class="val" style="margin-top:6px">♪</span></span></span>
+    <span class="postage" style="position:absolute;left:34%;bottom:0;width:150px;transform:rotate(5deg)"><span class="face" style="background:var(--a3);color:var(--on-a3)"><span class="mono" style="font-size:10px">FILM</span><span style="font-weight:800;font-size:17px;line-height:1.05">In the Mood for Love</span></span></span>
+    <span class="sticker" style="position:absolute;right:2%;bottom:40px;background:var(--a1);color:var(--on-a1);transform:rotate(-6deg)"><span class="k">PLACE</span><span class="v">Sant Antoni</span></span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker mono" aria-hidden="true" style="background:var(--ink);color:var(--paper);padding-block:16px;font-size:15px">
+  <span>LOW-LIT <b style="color:var(--a2)">✦</b> NATURAL WINE <b style="color:var(--a1)">✦</b> VINYL BARS <b style="color:var(--a3)">✦</b> SMALL GALLERIES <b style="color:var(--a2)">✦</b> NEIGHBOURHOOD SPOTS <b style="color:var(--a1)">✦</b> SLOW CINEMA <b style="color:var(--a3)">✦</b> LATE KITCHENS <b style="color:var(--a2)">✦</b> LOW-LIT <b style="color:var(--a2)">✦</b> NATURAL WINE <b style="color:var(--a1)">✦</b> VINYL BARS <b style="color:var(--a3)">✦</b> SMALL GALLERIES <b style="color:var(--a2)">✦</b> NEIGHBOURHOOD SPOTS <b style="color:var(--a1)">✦</b> SLOW CINEMA <b style="color:var(--a3)">✦</b> LATE KITCHENS <b style="color:var(--a2)">✦</b>&nbsp;</span>
+</div>
+
+<!-- HOW: postage stamps -->
+<section class="wrap" style="padding-block:96px;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px">
+    <h2 class="h2" style="max-width:760px">Three stamps from <span class="serif">"it's full"</span> to "we're going here".</h2>
+    <span class="mono" style="color:var(--ink-2);max-width:340px;line-height:1.6">No itineraries. No booking promises. One good alternative, explained.</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px">
+    <span class="postage" style="transform:rotate(-1.5deg)"><span class="face" style="background:var(--a2);color:var(--ink);padding:26px;gap:12px;min-height:250px">
+      <span style="display:flex;justify-content:space-between;align-items:flex-start"><span class="val" style="font-size:56px">1</span><span class="mono">STEP</span></span>
+      <span style="font-size:28px;font-weight:800;letter-spacing:-.02em">Name the place</span>
+      <span style="font-size:17px;line-height:1.5">The restaurant, museum or area you actually wanted. Not a keyword: that exact place.</span></span></span>
+    <span class="postage" style="transform:rotate(1deg)"><span class="face" style="background:var(--p);color:var(--on-p);padding:26px;gap:12px;min-height:250px">
+      <span style="display:flex;justify-content:space-between;align-items:flex-start"><span class="val" style="font-size:56px">2</span><span class="mono">STEP</span></span>
+      <span style="font-size:28px;font-weight:800;letter-spacing:-.02em">Keep or change</span>
+      <span style="font-size:17px;line-height:1.5">We show what that place is known for. Keep what you loved, change what didn't work.</span></span></span>
+    <span class="postage" style="transform:rotate(-.5deg)"><span class="face" style="background:var(--a3);color:var(--on-a3);padding:26px;gap:12px;min-height:250px">
+      <span style="display:flex;justify-content:space-between;align-items:flex-start"><span class="val" style="font-size:56px">3</span><span class="mono">STEP</span></span>
+      <span style="font-size:28px;font-weight:800;letter-spacing:-.02em">Get three swaps</span>
+      <span style="font-size:17px;line-height:1.5">The closest match, the practical one and a surprise. Each says what we checked.</span></span></span>
+  </div>
+</section>
+
+<!-- SWAP WORKSPACE -->
+<section id="swap" style="background:var(--paper);border-block:2px solid var(--ink)">
+  <div class="wrap" style="padding-block:84px;display:flex;flex-direction:column;gap:32px">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span class="mono" style="color:var(--p)">YOUR SWAP · PARIS 11e · TONIGHT</span>
+        <h2 class="h2" style="font-size:clamp(36px,3.6vw,54px)">Instead of <span style="text-decoration:line-through;text-decoration-color:var(--a1);text-decoration-thickness:5px">Bistrot Nº 7</span></h2>
+      </div>
+      <span class="rubber" style="width:150px;height:84px;border-radius:8px;color:var(--a1);transform:rotate(-6deg)"><span>FULLY</span><b>BOOKED</b><span>TONIGHT</span></span>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+      <aside style="flex:1 1 320px;max-width:380px;background:var(--bg);border-radius:26px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <h3 style="margin:0;font-size:20px;font-weight:800">What Bistrot Nº 7 is known for</h3>
+        <p style="margin:0;font-size:14px;color:var(--ink-2)">Tap to keep or change. Swaps update on every tap.</p>
+        <div id="chips" style="display:flex;flex-direction:column;gap:8px"></div>
+        <p id="summary" style="margin:4px 0 0;font-weight:600;font-size:14px;color:var(--ink-2)"></p>
+        <div style="border-top:1.5px dashed var(--line);padding-top:12px;display:flex;flex-direction:column;gap:6px"><span class="mono" style="color:var(--ink-2)">HARD LIMITS</span><span style="font-size:15px;font-weight:600">Paris 11e · max €€ · tonight</span></div>
+      </aside>
+
+      <div style="flex:999 1 620px;min-width:0;display:flex;flex-direction:column;gap:20px">
+        <article class="ticket">
+          <div class="main">
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span class="sticker" style="background:var(--p);color:var(--on-p);padding:6px 12px;transform:rotate(-2deg)"><span class="k">CLOSEST CULTURAL MATCH</span></span><span class="mono" style="color:var(--ink-2)">Bistro · €€ · 6 min walk</span></div>
+            <h3 style="margin:0;font-size:44px;font-weight:800;letter-spacing:-.04em;line-height:1">Maison Ardoise</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
+              <div><span class="mono" style="color:var(--p)">WHY IT MATCHES YOU</span><p style="margin:4px 0 0;font-size:16px;line-height:1.45">Same small candle-lit room and natural-wine list. Fans of Khruangbin and Wong Kar-wai over-index here.</p></div>
+              <div><span class="mono" style="color:var(--p)">WHAT'S DIFFERENT</span><p style="margin:4px 0 0;font-size:16px;line-height:1.45">Cheaper and louder. No tasting menu.</p></div>
+            </div>
+          </div>
+          <div class="stub" style="background:var(--bg)">
+            <span class="mono" style="color:var(--p)">WHAT WE VERIFIED</span>
+            <span>✓ L0 taste match</span><span>✓ L1 open tonight 19–23</span><span style="color:var(--ink-2)">○ L2 booking page: check it</span>
+            <div style="display:flex;gap:8px;margin-top:auto;padding-top:8px"><button class="btn btn-p" style="flex:1;height:44px;font-size:14px">Save</button><button class="btn btn-line" style="flex:1;height:44px;font-size:14px">Map</button></div>
+          </div>
+          <span class="rubber" aria-hidden="true" style="position:absolute;right:18px;top:16px;width:78px;height:78px;border-radius:50%;color:var(--a1);transform:rotate(14deg);opacity:.8"><span>MATCH</span><b>Nº1</b></span>
+        </article>
+        <article class="ticket">
+          <div class="main" style="padding-block:22px">
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span class="sticker" style="background:var(--a2);color:var(--ink);padding:6px 12px;transform:rotate(1.5deg)"><span class="k">BEST PRACTICAL MATCH</span></span><span class="mono" style="color:var(--ink-2)">Wine bar · €€ · 3 min walk</span></div>
+            <h3 style="margin:0;font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1">Le Verre Bleu</h3>
+            <span style="font-size:16px;line-height:1.45;color:var(--ink-2)"><strong style="color:var(--ink)">Why you:</strong> natural wine, dim light, walk-ins. <strong style="color:var(--ink)">Different:</strong> small plates, no full dinner.</span>
+          </div>
+          <div class="stub" style="background:var(--bg)"><span class="mono" style="color:var(--p)">WHAT WE VERIFIED</span><span>✓ L0 taste match</span><span>✓ L1 open now</span></div>
+        </article>
+        <article class="ticket">
+          <div class="main" style="padding-block:22px">
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span class="sticker" style="background:var(--a3);color:var(--on-a3);padding:6px 12px;transform:rotate(-1deg)"><span class="k">UNEXPECTED BUT RELEVANT</span></span><span class="mono" style="color:var(--ink-2)">Record shop + bar · € · 9 min walk</span></div>
+            <h3 style="margin:0;font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1">Disquaire Soir</h3>
+            <span style="font-size:16px;line-height:1.45;color:var(--ink-2)"><strong style="color:var(--ink)">Why you:</strong> your Khruangbin side, with a glass of wine. <strong style="color:var(--ink)">Different:</strong> it's not a restaurant.</span>
+          </div>
+          <div class="stub" style="background:var(--bg)"><span class="mono" style="color:var(--p)">WHAT WE VERIFIED</span><span>✓ L0 taste match</span><span>✓ L1 hours</span></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRANSFER: one passport page, three postage stamps -->
+<section style="background:var(--p);color:var(--on-p)">
+  <div class="wrap" style="padding-block:96px;display:flex;flex-wrap:wrap;gap:56px;align-items:center">
+    <div style="flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:20px">
+      <span class="mono">ONE PASSPORT, ANY KIND OF PLACE</span>
+      <h2 class="h2">Your taste travels <span class="serif">across</span> restaurants, museums and neighbourhoods.</h2>
+      <p style="margin:0;font-size:18px;line-height:1.55;opacity:.9;max-width:520px">The same things you love drive every swap. A wine bar, a gallery and a whole area can all come from one Passport.</p>
+    </div>
+    <div style="flex:1 1 560px;min-width:0;background:var(--paper);color:var(--ink);border-radius:24px;padding:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:26px;box-shadow:0 40px 60px -30px rgba(0,0,0,.5)">
+      <span class="postage" style="transform:rotate(-3deg)"><span class="face" style="background:var(--a1);color:var(--on-a1);min-height:200px"><span class="mono">EAT · 11e</span><span style="font-weight:800;font-size:22px;line-height:1.05">Maison Ardoise</span><span style="font-size:13px;margin-top:auto">from: low-lit · natural wine</span></span></span>
+      <span class="postage" style="transform:rotate(2deg) translateY(14px)"><span class="face" style="background:var(--a2);color:var(--ink);min-height:200px"><span class="mono">SEE · 18e</span><span style="font-weight:800;font-size:22px;line-height:1.05">Galerie Ordener</span><span style="font-size:13px;margin-top:auto">from: Wong Kar-wai · slow cinema</span></span></span>
+      <span class="postage" style="transform:rotate(-1deg)"><span class="face" style="background:var(--a3);color:var(--on-a3);min-height:200px"><span class="mono">WANDER · 20e</span><span style="font-weight:800;font-size:22px;line-height:1.05">Belleville</span><span style="font-size:13px;margin-top:auto">from: Sant Antoni · vinyl bars</span></span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ALBUM (C touch) -->
+<section id="album" class="wrap" style="padding-block:96px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+  <div style="flex:999 1 620px;min-width:0;display:flex;flex-direction:column;gap:24px">
+    <span class="mono" style="color:var(--p)">YOUR STAMP ALBUM</span>
+    <h2 class="h2">Every swap you save gets stamped in.</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px">
+      <div style="background:var(--paper);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:14px;border:1.5px solid var(--line)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:24px;font-weight:800">Paris</span><span class="mono" style="color:var(--ink-2)">3 SAVED</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+          <span class="postage" style="transform:rotate(-5deg)"><span class="face" style="background:var(--p);aspect-ratio:3/4"></span></span>
+          <span class="postage" style="transform:rotate(4deg)"><span class="face" style="background:var(--a2);aspect-ratio:3/4"></span></span>
+          <span class="postage" style="transform:rotate(-2deg)"><span class="face" style="background:var(--a3);aspect-ratio:3/4"></span></span>
+        </div>
+        <span style="font-size:14px;color:var(--ink-2)">Maison Ardoise · Le Verre Bleu · Disquaire Soir</span>
+      </div>
+      <div style="background:var(--paper);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:14px;border:1.5px solid var(--line)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:24px;font-weight:800">Tokyo</span><span class="mono" style="color:var(--ink-2)">1 SAVED</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+          <span class="postage" style="transform:rotate(3deg)"><span class="face" style="background:var(--a1);aspect-ratio:3/4"></span></span>
+          <span style="border:2px dashed var(--line);border-radius:6px;aspect-ratio:3/4"></span>
+          <span style="border:2px dashed var(--line);border-radius:6px;aspect-ratio:3/4"></span>
+        </div>
+        <span style="font-size:14px;color:var(--ink-2)">A small gallery in Kiyosumi</span>
+      </div>
+    </div>
+  </div>
+  <aside style="flex:1 1 340px;min-width:0;background:var(--ink);color:var(--paper);border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:16px">
+    <span class="mono" style="color:var(--a2)">SHARE YOUR PASSPORT CARD</span>
+    <div style="background:var(--p);color:var(--on-p);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:10px;transform:rotate(-2deg)">
+      <span class="mono">TASTE PASSPORT · Nº 0427</span>
+      <span style="font-size:30px;font-weight:800;letter-spacing:-.03em">Mara L.</span>
+      <span class="serif" style="font-size:20px">low-lit rooms, loud records, natural wine</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="sticker" style="background:var(--a2);color:var(--ink);padding:6px 10px"><span class="k">3 SWAPS</span></span><span class="sticker" style="background:var(--a3);color:var(--on-a3);padding:6px 10px"><span class="k">2 CITIES</span></span></div>
+    </div>
+    <p style="margin:0;opacity:.85;line-height:1.5">Send it to a friend to see which tastes you share before you pick a place together.</p>
+    <a href="#" class="btn btn-p">Share my card</a>
+  </aside>
+</section>
+
+<!-- QLOO VS LLM -->
+<section id="compare" style="background:var(--paper);border-top:2px solid var(--ink)">
+  <div class="wrap" style="padding-block:88px;display:flex;flex-direction:column;gap:32px">
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:760px"><span class="mono" style="color:var(--p)">SAME REQUEST, TWO ENGINES</span><h2 class="h2" style="font-size:clamp(34px,3.4vw,50px)">What changes when taste is real data, not a guess.</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px">
+      <div style="background:var(--bg);border:2px solid var(--ink);border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;box-shadow:8px 8px 0 var(--p)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:24px;font-weight:800">TPD with Qloo</span><span class="rubber" style="padding:6px 10px;color:var(--p);transform:rotate(-4deg)"><span>TASTE GRAPH</span></span></div>
+        <span class="mono" style="border-bottom:1.5px dashed var(--line);padding-bottom:10px">Maison Ardoise · Le Verre Bleu · Disquaire Soir</span>
+        <div style="display:flex;justify-content:space-between"><span>Respect your hard limits</span><strong class="mono" style="font-size:15px">[N] / 3</strong></div>
+        <div style="display:flex;justify-content:space-between"><span>Verifiable (L1 or more)</span><strong class="mono" style="font-size:15px">[N] / 3</strong></div>
+      </div>
+      <div style="border:2px dashed var(--line);border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;color:var(--ink-2)">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:24px;font-weight:800">LLM alone</span><span class="mono">NO TASTE DATA</span></div>
+        <span class="mono" style="border-bottom:1.5px dashed var(--line);padding-bottom:10px">[LLM RESULT 1] · [LLM RESULT 2] · [LLM RESULT 3]</span>
+        <div style="display:flex;justify-content:space-between"><span>Respect your hard limits</span><strong class="mono" style="font-size:15px">[N] / 3</strong></div>
+        <div style="display:flex;justify-content:space-between"><span>Verifiable (L1 or more)</span><strong class="mono" style="font-size:15px">[N] / 3</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:var(--ink);color:var(--paper)">
+  <div class="wrap mono" style="padding-block:28px 36px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px">
+    <span>TPD · QLOO AGENTIC HACKATHON 2026 · Pop postale</span><span>TASTE BY QLOO · PLACES BY GOOGLE · NO "AVAILABLE" UNLESS CHECKED</span>
+  </div>
+</footer>
+
+<script>
+const tags=[['Low-lit room','keep'],['Natural wine','keep'],['Price €€€','change'],['Tasting menu','change'],['Same street','skip']];
+const chips=document.getElementById('chips'),summary=document.getElementById('summary');
+function render(){
+  chips.innerHTML='';
+  tags.forEach((t,i)=>{
+    const row=document.createElement('div');row.className='row';
+    const label=document.createElement('span');label.style.cssText='font-weight:600;font-size:16px';label.textContent=t[0];row.appendChild(label);
+    const seg=document.createElement('div');seg.className='seg';
+    ['keep','change','skip'].forEach(m=>{
+      const b=document.createElement('button');b.type='button';b.textContent=m[0].toUpperCase()+m.slice(1);
+      b.setAttribute('aria-pressed',t[1]===m?'true':'false');if(t[1]===m)b.dataset.on=m;
+      b.onclick=()=>{tags[i][1]=m;render()};seg.appendChild(b);
+    });
+    row.appendChild(seg);chips.appendChild(row);
+  });
+  const k=tags.filter(t=>t[1]==='keep').length,c=tags.filter(t=>t[1]==='change').length;
+  summary.textContent='Keeping '+k+' · changing '+c+'.';
+}
+render();
+</script>
+
+</body>
+</html>

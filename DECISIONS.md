@@ -136,3 +136,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 ## Aggiornamento tecnico — 20 ottobre 2026
 
 La guida hackathon richiede GET per Insights: risolvere il riferimento con `/search` e usare ID, senza affidarsi alla risoluzione via body POST descritta nelle API generali. Parametro Resy corretto: `filter.external.exists=resy`. Prime prove Qloo e limiti in `docs/08-qloo-verification.md`; nessuna città ancora dichiarata supportata.
+
+## Pilot locale — 20 ottobre 2026
+
+Parigi è il primo pilot dopo audit categoria/città (docs/09); nessuna copertura generale promessa. Passport e Restaurant Swap sono ora collegati a Qloo. In GET i Keep usano un peso comune del gruppo di tag, non pesi per-tag in un body. Cache privata in memoria per processo; persistenza e limiti distribuiti restano aperti prima del deploy. I tre ruoli usano ordine Qloo, distanza dal riferimento e popolarità tra candidati distinti, dichiarando le rispettive limitazioni.

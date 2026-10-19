@@ -51,3 +51,7 @@ Nessuna prova di disponibilità, prezzi live, prenotabilità o provider operativ
 `npm run verify:qloo`, poi `npm run verify:qloo-features`. Ogni riesecuzione consuma quota. Per una correzione mirata: `node scripts/check-qloo-features.mjs --only=external-resy,tripadvisor`.
 
 Risposte grezze e riepiloghi: `.private/qloo/`, esclusa da Git. Gli script non leggono il worktree; usano la root `.env.local` o le variabili di ambiente.
+
+## Continuazione: audit categorie e primo flusso
+
+Vedi `docs/09-restaurant-swap-implementation.md`: otto query aggiuntive hanno verificato ristoranti/musei e Keep/Change. Scelto il pilot Parigi; Tokyo/New York non esposti nel flusso finché il confine geografico non è chiarito. Adapter e Restaurant Swap implementati e provati nel browser. I primi 13 tentativi HTTP erano il totale del precedente incremento, non il totale corrente; i test live successivi hanno consumato ulteriore quota.

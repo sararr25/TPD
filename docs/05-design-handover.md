@@ -72,3 +72,7 @@ E01 attende la risposta alla domanda sullo stack; I03 attende lo stato della chi
 ## Scaffold e Qloo — 20 ottobre
 
 Utente conferma Next.js/TypeScript su Vercel e indica il file .env del worktree. E01 completato localmente: landing, Passport con 3–5 scelte locali, tre ospiti, cancellazione e Swap non integrato. Build, TypeScript, test e sei controlli HTTP passano. Nessun deploy o nuova prova browser. I03 parziale: accesso API e prime query reali in docs/08. Guida hackathon riletta integralmente; GET Insights, risoluzione entità separata, parametro Resy corretto. Prossimo passo: audit copertura/categorie e poi adapter/cache privata.
+
+## Restaurant Swap live — 20 ottobre
+
+Primo flusso locale reale: Passport con entità Qloo e due ospiti, ricerca reference con indirizzo, Keep/Change con ricalcolo, vincolo Parigi/FR e fascia prezzo, tre ruoli distinti, provenienza L0, dettaglio verifica e indicazioni. Adapter unico e cache privata in memoria per processo; nessun deploy o servizio esterno attivato. Prova browser del percorso principale, Change e budget completata; layout verificato a 1440 e 390 px. Documentazione e limiti in docs/09. Nuova chiave locale Passport: tpd-passport-v2, nessuna trasformazione automatica dei dati campione.

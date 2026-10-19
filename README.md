@@ -15,7 +15,7 @@ npm run dev
 
 Open http://localhost:3000. Current routes: `/`, `/passport`, `/passport?guest=1`, `/swap`, `/api/health`.
 
-Landing and a browser-local Passport with 3–5 sample choices, three guest profiles and explicit deletion are implemented. Passport choices are not resolved Qloo entities yet. Swap currently shows the pending-integration state, without invented recommendations. Authentication, real search, ranking, private hosted cache and collections are not connected.
+Live Qloo entity search powers a browser-local Passport with 3–5 choices and two guest profiles. The Paris Restaurant Swap resolves a reference, exposes Keep/Change tags and returns up to three distinct alternatives with L0 provenance. Budget tiers, city/country/category and excluded tags are checked locally. Operational verification, authentication, shared hosted cache and collections are not connected.
 
 The HTML design walkthrough remains in `design-mockups/A4-product-prototype.html`; it is separate from the Next.js app and uses its own local storage key.
 
@@ -27,18 +27,19 @@ npm run build
 npm run typecheck
 ```
 
-Tests cover local-data parsing and the earlier HTML prototype logic. They do not prove browser rendering or provider quality.
+Tests cover local-data parsing, filtering, signed selections, distinct roles, adapter cache and the earlier HTML prototype. The main live flow has also been checked manually in the browser; see docs/09 for the precise acceptance boundary.
 
 ## Qloo checks
 
 ```sh
 npm run verify:qloo
 npm run verify:qloo-features
+npm run verify:qloo-coverage
 ```
 
 These scripts make limited, sequential live API requests and consume quota. The feature probe requires the access probe first. No automatic retries. Raw responses and diagnostic summaries are saved only in ignored `.private/qloo/` with restricted file permissions. Never commit or upload these responses. Do not use that directory as a durable cache on Vercel; hosted private storage remains to be chosen.
 
-Credentials stay in `.env.local` or server environment variables. Never use `NEXT_PUBLIC_` for secrets. The scripts reject hosts other than `https://hackathon.api.qloo.com`, send `X-Api-Key`, reject redirects and use GET query parameters. No app route currently calls Qloo, so no public quota-consuming API has been exposed.
+Credentials stay in `.env.local` or server environment variables. Never use `NEXT_PUBLIC_` for secrets. The scripts reject hosts other than `https://hackathon.api.qloo.com`, send `X-Api-Key`, reject redirects and use GET query parameters. The app calls Qloo through the same-origin `/api/discovery` route; it projects the needed fields and marks responses `private, no-store`. Cache and pacing are private and per-process. Shared storage and distributed quota protection are required before public deployment.
 
 ## Vercel
 
@@ -50,6 +51,7 @@ Import the repository using the Next.js preset and npm lockfile. Configure Qloo 
 - `docs/05-design-handover.md`: handover.
 - `docs/07-ticket-board.md`: implementation board.
 - `docs/08-qloo-verification.md`: access checks and remaining evidence.
+- `docs/09-restaurant-swap-implementation.md`: live pilot, cache and validation limits.
 
 Implementation follows the [Next.js installation guide](https://nextjs.org/docs/app/getting-started/installation). Qloo usage follows the [hackathon developer guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide) and [parameter reference](https://github.com/qloo/docs-public/blob/main/reference/insights-api-deep-dive.md).
 

@@ -8,12 +8,25 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types scripts/check-passport.mjs && node scripts/check-prototype.cjs",
+    "test": "node --experimental-strip-types scripts/check-passport.mjs && node scripts/check-prototype.cjs && node --experimental-strip-types --conditions=react-server scripts/check-discovery.mjs",
     "verify:qloo": "node scripts/verify-qloo.mjs",
     "verify:qloo-features": "node scripts/check-qloo-features.mjs",
-    "check:prototype": "node scripts/check-prototype.cjs"
+    "check:prototype": "node scripts/check-prototype.cjs",
+    "verify:qloo-coverage": "node scripts/audit-qloo-coverage.mjs"
   },
-  "engines": {"node": ">=22.19.0"},
-  "dependencies": {"next": "16.4.2", "react": "^19.2.0", "react-dom": "^19.2.0", "server-only": "^0.0.1"},
-  "devDependencies": {"typescript": "^5.9.0", "@types/node": "^22.0.0", "@types/react": "^19.2.0", "@types/react-dom": "^19.2.0"}
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "dependencies": {
+    "next": "16.4.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0"
+  }
 }

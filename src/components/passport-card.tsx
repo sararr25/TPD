@@ -1,3 +1,47 @@
-export function PassportCard({ signals = [] }: { signals?: readonly string[] }) {
- return <div className="passport" aria-label="Taste Passport preview"><div className="cover"><span className="meta">Personal edition / 001</span><div><span className="ring">↗</span><h2>Taste<br/>Passport.</h2></div><span className="meta">Same you.<br/>Somewhere different.</span></div><div className="passport-page"><span className="meta">Cultural identity</span><h3>Your kind<br/>of elsewhere.</h3><div className="seal">TASTE<br/>HAS NO<br/>BORDERS</div><p className="muted">{signals.length ? signals.join(' · ') : 'A few things you love. A world of possibilities.'}</p><span className="meta">{signals.length} / 5 signals</span></div></div>;
+export function PassportCard({
+  signals = [],
+}: {
+  signals?: readonly string[];
+}) {
+  return (
+    <div className="passport" aria-label="Taste Passport preview">
+      <div className="cover">
+        <span className="meta">Personal edition / 001</span>
+        <div>
+          <span className="ring">↗</span>
+          <h2>
+            Taste
+            <br />
+            Passport.
+          </h2>
+        </div>
+        <span className="meta">
+          Same you.
+          <br />
+          Somewhere different.
+        </span>
+      </div>
+      <div className="passport-page">
+        <span className="meta">Cultural identity</span>
+        <h3>
+          Your kind
+          <br />
+          of elsewhere.
+        </h3>
+        <div className="seal">
+          TASTE
+          <br />
+          HAS NO
+          <br />
+          BORDERS
+        </div>
+        <p className="muted">
+          {signals.length
+            ? signals.join(" · ")
+            : "A few things you love. A world of possibilities."}
+        </p>
+        <span className="meta">{signals.length} / 5 signals</span>
+      </div>
+    </div>
+  );
 }

@@ -1,4 +1,5 @@
 <title>TPD Ticket Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
@@ -189,6 +190,8 @@ const NOTES = {
   passport:['Scheda Passport','La "carta d\'identità del gusto", condivisibile come immagine. I timbri raccontano gli Swap fatti.']
 };
 
+const PROFILES=[{short:'Night Owl',tags:['In the Mood for Love','Radiohead','Clown Bar','Natural wine']},{short:'Slow Looker',tags:['Agnès Varda','Sally Rooney','Fondation Cartier']},{short:'Block Hopper',tags:['Kendrick Lamar','Atlanta','Frenchie']}];
+const P=()=>PROFILES[S.profile||0];
 const $ = s => document.querySelector(s);
 const esc = s => s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function verify(v){return `<span class="verify"><i>${v[0]}</i>${esc(v[1])}</span>`}
@@ -205,9 +208,9 @@ landing:()=>`<div class="screen">
   <p class="lede">Keep what you love about it. Change what doesn't work. Get three alternatives picked for your taste.</p>
   <button class="btn" data-go="build">Build my Passport</button>
   <div class="stack"><span class="eyebrow">Or try a ready-made Passport</span>
-   <button class="profile" data-go="home"><strong>The Night Owl</strong><span>Wong Kar-wai · Radiohead · Clown Bar → Paris</span></button>
-   <button class="profile" data-go="home"><strong>The Slow Looker</strong><span>Agnès Varda · Sally Rooney · Fondation Cartier → Paris</span></button>
-   <button class="profile" data-go="home"><strong>The Block Hopper</strong><span>Kendrick Lamar · Atlanta · Katz's → New York</span></button></div></div>`,
+   <button class="profile" data-go="home" data-profile="0"><strong>The Night Owl</strong><span>Wong Kar-wai · Radiohead · Clown Bar → Paris</span></button>
+   <button class="profile" data-go="home" data-profile="1"><strong>The Slow Looker</strong><span>Agnès Varda · Sally Rooney · Fondation Cartier → Paris</span></button>
+   <button class="profile" data-go="home" data-profile="2"><strong>The Block Hopper</strong><span>Kendrick Lamar · Atlanta · Frenchie → Paris</span></button></div></div>`,
 build:()=>`<div class="screen">
   <span class="eyebrow">Step 1 of 1 · pick 3 to 5</span><h2>What do you love?</h2>
   <div class="field"><label for="q">Artists, films, books, places</label><input id="q" value="Wong Kar" autocomplete="off"></div>
@@ -216,7 +219,7 @@ build:()=>`<div class="screen">
    <div class="tags"><span>In the Mood for Love</span><span>Chungking Express</span><span>Radiohead</span><span>Clown Bar</span></div></div>
   <button class="btn" data-go="home">Done, 4 picked</button></div>`,
 home:()=>`<div class="screen">
-  <span class="eyebrow">Hi, Night Owl</span><h2>What did you want?</h2>
+  <span class="eyebrow">Hi, ${P().short}</span><h2>What did you want?</h2>
   <div class="field"><label for="ref">Place name and city</label><input id="ref" value="Le Chateaubriand, Paris" autocomplete="off"></div>
   <button class="btn" data-go="keep">Find my swap</button>
   <div class="stack"><span class="eyebrow">Or explore where you are</span>
@@ -243,8 +246,8 @@ detail:()=>{const r=RESULTS[S.pick][S.open??0];return `<div class="screen">
   <div class="row"><button class="btn">Save</button><button class="btn ghost">Directions</button><button class="btn ghost">Not for me</button></div>
   <div class="transfer"><span class="eyebrow" style="color:inherit">Transfer</span><strong style="font-family:var(--display);font-size:22px;line-height:1">Same taste, but a museum?</strong><button class="btn" data-go="passport">Try it in Paris</button></div></div>`},
 passport:()=>`<div class="screen">
-  <div class="passport"><span class="eyebrow" style="color:#fff">Taste Passport · №0042</span><span class="who">The Night Owl</span>
-   <div class="tags"><span>In the Mood for Love</span><span>Radiohead</span><span>Clown Bar</span><span>Natural wine</span></div>
+  <div class="passport"><span class="eyebrow" style="color:#fff">Taste Passport · №0042</span><span class="who">The ${P().short}</span>
+   <div class="tags">${P().tags.map(t=>`<span>${t}</span>`).join('')}</div>
    <div class="stamps"><span class="stamp">Paris<br>Swap 1</span><span class="stamp">Paris<br>Swap 2</span><span class="stamp empty">Next<br>stamp</span></div></div>
   <button class="btn">Share my Passport</button><button class="btn ghost">Edit signals</button></div>`,
 saved:()=>`<div class="screen"><h2>Saved</h2><p class="lede">Sign in to keep collections across devices. Guests can do everything else.</p>
@@ -270,6 +273,7 @@ function go(s){if(s!==S.screen){hist.push(S.screen);S.screen=s;render();}}
 document.addEventListener('click',e=>{
   const t=e.target.closest('button'); if(!t) return;
   if(t.id==='back'){S.screen=hist.pop()||'landing';render();return}
+  if(t.dataset.profile) S.profile=+t.dataset.profile;
   if(t.dataset.go) go(t.dataset.go);
   if(t.dataset.tab) go(t.dataset.tab);
   if(t.dataset.open && t.dataset.open!=='-1'){S.open=+t.dataset.open;go('detail')}

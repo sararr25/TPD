@@ -1,0 +1,239 @@
+<title>TPD Thread and Collage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Mulish:wght@400;600;700&family=Special+Elite&family=Karla:wght@400;500;700&family=Red+Hat+Display:wght@500;700;900&family=Red+Hat+Mono:wght@500&family=Young+Serif&family=Caveat:wght@600&family=Archivo+Black&family=Archivo:wght@400;600&family=Bodoni+Moda:ital,wght@0,500;1,500&family=Outfit:wght@400;600&display=swap">
+<style>
+/* Layout: two rows of tabs (Thread a/b/c, Collage a/b/c). Each variant is one fixed-ratio desktop stage (1000x580 coordinate space) so threads and shapes line up exactly; it scrolls sideways on phones. Light only, by design. */
+:root{color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:#E8E7E2;color:#1F1E1B;font-family:Karla,system-ui,sans-serif;font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #2E55D4;outline-offset:3px}
+.top{max-width:1240px;margin:0 auto 16px;display:flex;flex-direction:column;gap:12px}
+.top h1{margin:0;font-size:24px;line-height:1.2}.top p{margin:0;color:#55534D;max-width:70ch}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tabs span{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.08em;width:80px}
+.tabs button{border:1px solid #C9C7BF;background:#fff;border-radius:8px;padding:7px 14px;font-weight:700;font-size:14px}
+.tabs button[aria-pressed="true"]{background:#1F1E1B;color:#fff;border-color:#1F1E1B}
+.scroll{max-width:1240px;margin:0 auto;overflow-x:auto;border-radius:16px;box-shadow:0 16px 48px #2A251818}
+.stage{position:relative;width:100%;min-width:900px;aspect-ratio:1000/580;overflow:hidden}
+.stage>svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.abs{position:absolute}
+.about{max-width:1240px;margin:16px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.about div{background:#fff;border-radius:12px;padding:16px;font-size:15px;color:#4A4842;display:flex;flex-direction:column;gap:4px}
+.about b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#1F1E1B}
+@media (max-width:900px){.about{grid-template-columns:1fr}}
+.vf{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#2B3138;background:#ECEEF0;padding:2px 7px;display:inline-block;border-radius:3px}
+
+/* ---------- T1 Embroidery ---------- */
+.t1{background:#F3EFE6;font-family:Mulish,sans-serif;
+  background-image:linear-gradient(#00000006 1px,transparent 1px),linear-gradient(90deg,#00000006 1px,transparent 1px);background-size:5px 5px}
+.t1 .hoop{left:35%;top:14%;width:30%;aspect-ratio:1;border-radius:50%;background:#FBF8F1;box-shadow:0 0 0 14px #C9A27A,0 0 0 17px #A9845F,0 18px 40px #5A40201f;display:grid;place-items:center;text-align:center}
+.t1 .hoop h2{font-family:"Gilda Display",serif;font-weight:400;font-size:clamp(18px,2.2vw,28px);line-height:1.15;margin:0}
+.t1 .hoop small{display:block;color:#A33A2A;font-weight:700;letter-spacing:.14em;font-size:11px;margin-top:6px}
+.t1 h1x{}
+.t1 .head{left:4%;top:5%;width:30%;font-family:"Gilda Display",serif;font-size:clamp(20px,2.6vw,34px);line-height:1.15}
+.t1 .patch{width:24%;background:#FBF8F1;border:2px dashed var(--c);border-radius:14px;padding:14px 16px;outline:6px solid #FBF8F1;box-shadow:0 10px 26px #5A40201a}
+.t1 .patch .r{font-size:12px;font-weight:700;color:var(--c);letter-spacing:.06em;text-transform:uppercase}
+.t1 .patch h3{margin:2px 0;font-family:"Gilda Display",serif;font-weight:400;font-size:22px}
+.t1 .patch p{margin:0 0 6px;font-size:14px;color:#4E4A42}
+.t1 .skein{display:flex;gap:10px;left:4%;bottom:6%;align-items:center;flex-wrap:wrap;width:60%}
+.t1 .skein button{border:0;background:none;display:flex;gap:6px;align-items:center;font-weight:700;font-size:14px;padding:4px}
+.t1 .skein i{width:34px;height:14px;border-radius:7px;background:repeating-linear-gradient(100deg,var(--c) 0 3px,color-mix(in srgb,var(--c) 70%,#fff) 3px 5px);display:block}
+.t1 .skein button.off{opacity:.4;text-decoration:line-through}
+.t1 .cta{right:4%;bottom:5%;border:0;background:#A33A2A;color:#fff;font-weight:700;padding:12px 24px;border-radius:999px}
+
+/* ---------- T2 Corkboard ---------- */
+.t2{background:#D9B98C;background-image:radial-gradient(#0000001a 1px,transparent 1.5px),radial-gradient(#ffffff26 1px,transparent 1.5px);background-size:7px 7px,11px 11px;background-position:0 0,3px 5px;font-family:Karla,sans-serif}
+.t2 .note{background:#FFFDF5;padding:14px 16px;box-shadow:0 8px 18px #3A2A1040;width:22%}
+.t2 .note h3{margin:0;font-family:"Special Elite",monospace;font-size:20px;font-weight:400}
+.t2 .note p{margin:4px 0 6px;font-size:14px;color:#4A4438}
+.t2 .note .r{font-family:"Special Elite",monospace;font-size:12px;color:#B23A2A}
+.t2 .pin{position:absolute;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#C62D1F 60%);box-shadow:0 3px 4px #0005;left:50%;top:-6px;transform:translateX(-50%)}
+.t2 .photo{width:26%;left:37%;top:22%;background:#FFFDF5;padding:12px 12px 16px;box-shadow:0 10px 22px #3A2A1050;transform:rotate(-2deg)}
+.t2 .photo .img{aspect-ratio:4/3;background:linear-gradient(160deg,#3B5BA9,#2A3F78);position:relative;overflow:hidden}
+.t2 .photo .img::after{content:"FULL";position:absolute;inset:auto 10px 10px auto;border:3px solid #fff;color:#fff;font-family:"Special Elite";padding:2px 8px;transform:rotate(-8deg)}
+.t2 .photo h2{margin:10px 0 0;font-family:"Special Elite",monospace;font-weight:400;font-size:22px}
+.t2 .title{left:4%;top:5%;background:#FFFDF5;padding:10px 16px;font-family:"Special Elite",monospace;font-size:clamp(18px,2.2vw,28px);box-shadow:0 6px 14px #3A2A1040;transform:rotate(-1deg)}
+.t2 .cards{left:4%;bottom:5%;display:flex;gap:10px;flex-wrap:wrap;width:62%}
+.t2 .cards button{border:0;background:#FFF6A8;font-family:"Special Elite",monospace;padding:8px 12px;box-shadow:0 4px 8px #3A2A1040;font-size:14px}
+.t2 .cards button.off{background:#E9E4D4;text-decoration:line-through;color:#8A8270}
+.t2 .cta{right:4%;bottom:5%;border:0;background:#1F1E1B;color:#FFFDF5;font-weight:700;padding:12px 24px}
+
+/* ---------- T3 Metro lines ---------- */
+.t3{background:#FAFAF7;font-family:"Red Hat Display",sans-serif}
+.t3 .head{left:4%;top:5%;width:46%}
+.t3 .head h2{margin:0;font-weight:900;font-size:clamp(24px,3vw,40px);line-height:1.1;letter-spacing:-.02em}
+.t3 .head p{margin:6px 0 0;color:#5A5A55}
+.t3 .st{display:flex;flex-direction:column;gap:2px;width:22%}
+.t3 .st .r{font-family:"Red Hat Mono",monospace;font-size:11px;color:#6A6A64;text-transform:uppercase}
+.t3 .st h3{margin:0;font-weight:900;font-size:22px;line-height:1.1}
+.t3 .st p{margin:0 0 4px;font-size:14px;color:#55554F}
+.t3 .legend{left:4%;bottom:5%;display:flex;gap:16px;flex-wrap:wrap;width:62%}
+.t3 .legend button{border:0;background:none;display:flex;gap:8px;align-items:center;font-weight:700;padding:4px 0}
+.t3 .legend i{width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;font-style:normal;display:grid;place-items:center;font-size:13px}
+.t3 .legend button.off{opacity:.35;text-decoration:line-through}
+.t3 .cta{right:4%;bottom:5%;border:0;background:#1F1E1B;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px}
+
+/* ---------- C1 Scrapbook ---------- */
+.c1{background:#F2EFE7;background-image:radial-gradient(#0000000b 1px,transparent 1px);background-size:6px 6px;font-family:Karla,sans-serif}
+.c1 .head{left:4%;top:6%;width:44%}
+.c1 .head h2{font-family:"Young Serif",serif;font-weight:400;font-size:clamp(26px,3.4vw,44px);line-height:1.12;margin:0}
+.c1 .head h2 span{background:#EFB321;padding:0 .2em;display:inline-block;transform:rotate(-1.5deg)}
+.c1 .hand{font-family:Caveat,cursive;font-size:22px;color:#7E786C}
+.c1 .pol{background:#FCFBF7;padding:12px 12px 16px;box-shadow:0 12px 28px #4A3A1A22}
+.c1 .pol .ph{aspect-ratio:16/10;position:relative;overflow:hidden}
+.c1 .pol h3{margin:8px 0 0;font-family:"Young Serif",serif;font-weight:400;font-size:20px}
+.c1 .pol p{margin:0;font-size:13px;color:#4A463E}
+.c1 .tape{position:absolute;width:70px;height:20px;background:#F6E7A8cc;top:-9px;left:35%;transform:rotate(-5deg)}
+.c1 .ticket{background:#F2A7B5;padding:8px 14px;font-weight:700;font-size:13px;border-left:2px dashed #FCFBF7;letter-spacing:.06em}
+.c1 .stk{border:0;background:#FCFBF7;padding:6px 12px;font-weight:700;font-size:14px;box-shadow:0 3px 8px #4A3A1A22}
+.c1 .stk.off{text-decoration:line-through;color:#9A9488}
+.c1 .cta{right:4%;bottom:5%;border:0;background:#E4472F;color:#fff;font-weight:700;padding:12px 26px}
+
+/* ---------- C2 Risograph zine ---------- */
+.c2{background:#F7F4EC;font-family:Archivo,sans-serif;color:#1C3FAA}
+.c2::before{content:"";position:absolute;inset:0;background-image:radial-gradient(#1C3FAA14 1px,transparent 1.3px);background-size:4px 4px;pointer-events:none}
+.c2 .head{left:4%;top:5%;width:58%}
+.c2 .head h2{margin:0;font-family:"Archivo Black",sans-serif;font-weight:400;font-size:clamp(34px,5vw,68px);line-height:.95;letter-spacing:-.02em;color:#1C3FAA;text-shadow:3px 2px 0 #FF6FA0aa;text-transform:uppercase}
+.c2 .head p{margin:10px 0 0;color:#1C3FAA;font-weight:600;max-width:46ch}
+.c2 .blk{mix-blend-mode:multiply}
+.c2 .it{width:26%;display:flex;flex-direction:column;gap:4px}
+.c2 .it .shape{aspect-ratio:4/3;position:relative}
+.c2 .it .r{font-family:"Archivo Black";font-size:12px;letter-spacing:.06em;color:#FF4F8B;text-transform:uppercase}
+.c2 .it h3{margin:0;font-family:"Archivo Black";font-weight:400;font-size:22px;line-height:1.1}
+.c2 .it p{margin:0;font-size:14px;font-weight:600}
+.c2 .tg{left:62%;top:6%;width:34%;display:flex;flex-wrap:wrap;gap:8px}
+.c2 .tg button{border:2px solid #1C3FAA;background:#F7F4EC;color:#1C3FAA;font-weight:600;padding:6px 12px;border-radius:999px}
+.c2 .tg button.on{background:#FF6FA0;border-color:#FF6FA0;color:#1C3FAA}
+.c2 .tg button.off{text-decoration:line-through;opacity:.6}
+.c2 .cta{right:4%;top:22%;border:0;background:#1C3FAA;color:#F7F4EC;font-family:"Archivo Black";padding:12px 24px;text-transform:uppercase;letter-spacing:.04em}
+.c2 .vf{background:#fff}
+
+/* ---------- C3 Cut-outs (Matisse) ---------- */
+.c3{background:#FBFAF6;font-family:Outfit,sans-serif;color:#1E1D1A}
+.c3 .head{left:4%;top:6%;width:40%}
+.c3 .head h2{margin:0;font-family:"Bodoni Moda",serif;font-weight:500;font-size:clamp(28px,3.8vw,50px);line-height:1.08}
+.c3 .head h2 em{color:#E0532F}
+.c3 .head p{margin:10px 0 0;color:#55524B}
+.c3 .it{width:17%;display:flex;flex-direction:column;gap:4px}
+.c3 .it .r{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#7A766C}
+.c3 .it h3{margin:0;font-family:"Bodoni Moda",serif;font-style:italic;font-weight:500;font-size:24px}
+.c3 .it p{margin:0;font-size:14px;color:#55524B}
+.c3 .tg{left:4%;bottom:6%;display:flex;gap:10px;flex-wrap:wrap;width:62%}
+.c3 .tg button{border:0;border-radius:999px;padding:8px 16px;font-weight:600;background:#EDEBE4}
+.c3 .tg button.on{background:var(--c);color:#fff}
+.c3 .tg button.off{text-decoration:line-through;color:#9A968C}
+.c3 .cta{right:4%;bottom:5%;border:0;background:#1E1D1A;color:#FBFAF6;font-weight:600;padding:12px 26px;border-radius:999px}
+</style>
+
+<div class="top">
+  <h1>Thread e Collage, tre varianti ciascuna</h1>
+  <p>Stessa scena (Le Chateaubriand è pieno → tre alternative) in sei trattamenti diversi. I tag in basso sono cliccabili: togli un tag e il filo o il ritaglio corrispondente sparisce. Dati di esempio.</p>
+  <div class="tabs" role="group" aria-label="Thread"><span>Thread</span><button data-v="t1" aria-pressed="true">a · Ricamo</button><button data-v="t2" aria-pressed="false">b · Bacheca</button><button data-v="t3" aria-pressed="false">c · Linee metro</button></div>
+  <div class="tabs" role="group" aria-label="Collage"><span>Collage</span><button data-v="c1" aria-pressed="false">a · Diario</button><button data-v="c2" aria-pressed="false">b · Risograph</button><button data-v="c3" aria-pressed="false">c · Ritagli</button></div>
+</div>
+<div class="scroll"><div class="stage" id="stage"></div></div>
+<div class="about" id="about"></div>
+
+<script>
+const TAGS=[{l:'Natural wine',c:'#C8402C'},{l:'Neo-bistro',c:'#2F5BD1'},{l:'Lively room',c:'#D99A12'}];
+let on=[true,true,true];
+const P=[{n:'Le Servan',p:'Neo-bistro · 11e · €€',t:[0,1,2],v:'L1 hours · Google',r:'Closest match'},
+         {n:'Le Baratin',p:'Bistro · 20e · open tonight',t:[0,2],v:'L2 booking page',r:'Most practical'},
+         {n:'Mokonuts',p:'Café-bistro · 11e · €€',t:[1,2],v:'L1 hours · Google',r:'Unexpected'}];
+const W=1000,H=580;
+const pct=(x,y)=>`left:${x/W*100}%;top:${y/H*100}%`;
+const svg=inner=>`<svg class="lines" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${inner}</svg>`;
+const stroke=(d,c,extra='')=>`<path d="${d}" fill="none" stroke="${c}" vector-effect="non-scaling-stroke" stroke-linecap="round" ${extra}/>`;
+const tagBtns=cls=>TAGS.map((t,i)=>`<button data-t="${i}" class="${on[i]?'on':'off'}" style="--c:${t.c}">${cls?cls(t,i):''}${t.l}</button>`).join('');
+
+const V={
+/* a · embroidery: running-stitch threads from the hoop to stitched patches */
+t1:()=>{const hub=[500,250],pos=[[60,170],[740,120],[740,330]];
+ let lines='';P.forEach((p,k)=>p.t.forEach((ti,j)=>{if(!on[ti])return;const o=(j-1)*8,[x,y]=pos[k],tx=k?x:x+240,ty=y+70+o;
+   lines+=stroke(`M${hub[0]+o},${hub[1]} C${(hub[0]+tx)/2},${hub[1]+(k?-60:80)} ${(hub[0]+tx)/2},${ty} ${tx},${ty}`,TAGS[ti].c,'stroke-width="3" stroke-dasharray="9 7"');}));
+ return `<div class="t1 abs" style="inset:0">
+  <div class="abs head">Le Chateaubriand is full. We stitched you three others.</div>
+  <div class="abs hoop"><div><h2>Le Chateaubriand</h2><small>FULLY BOOKED</small></div></div>${svg(lines)}
+  ${P.map((p,k)=>{const [x,y]=pos[k];const col=TAGS[p.t.find(i=>on[i])??0].c;return `<div class="abs patch" style="${pct(x,y)};--c:${col}"><div class="r">${p.r}</div><h3>${p.n}</h3><p>${p.p}</p><span class="vf">${p.v}</span></div>`}).join('')}
+  <div class="abs skein">${tagBtns(t=>`<i></i>`)}</div><button class="abs cta">Save Le Servan</button></div>`},
+
+/* b · corkboard: red-string detective board */
+t2:()=>{const hub=[500,200],pos=[[50,150],[760,90],[730,330]];
+ let lines='';P.forEach((p,k)=>p.t.forEach((ti,j)=>{if(!on[ti])return;const [x,y]=pos[k],tx=x+110,ty=y+4,o=(j-1)*6;
+   lines+=stroke(`M${hub[0]+o},${hub[1]} Q${(hub[0]+tx)/2},${Math.max(hub[1],ty)+50} ${tx+o},${ty}`,TAGS[ti].c,'stroke-width="2.5"');}));
+ return `<div class="t2 abs" style="inset:0">${svg(lines)}
+  <div class="abs title">Case file: where to eat instead of Le Chateaubriand</div>
+  <div class="abs photo"><span class="pin"></span><div class="img"></div><h2>Le Chateaubriand</h2></div>
+  ${P.map((p,k)=>{const [x,y]=pos[k];return `<div class="abs note" style="${pct(x,y)};transform:rotate(${[-2,2,-1][k]}deg)"><span class="pin"></span><div class="r">${p.r}</div><h3>${p.n}</h3><p>${p.p}</p><span class="vf">${p.v}</span></div>`}).join('')}
+  <div class="abs cards">${tagBtns()}</div><button class="abs cta">Save Le Servan</button></div>`},
+
+/* c · metro: each kept tag is a colored line, swaps are stations */
+t3:()=>{const start=[480,330],pos=[[200,480],[780,230],[780,470]];
+ let lines='';const off={0:-8,1:0,2:8};
+ P.forEach((p,k)=>p.t.forEach(ti=>{if(!on[ti])return;const o=off[ti],[x,y]=pos[k];const sx=start[0],sy=start[1]+o,ex=x,ey=y+o;
+   const mx=k?sx+(ex-sx)*0.45:sx-(sx-ex)*0.45;
+   lines+=stroke(`M${sx},${sy} L${mx},${sy} L${mx+(ey-sy)*(k?1:-1)*0.0},${ey} L${ex},${ey}`,TAGS[ti].c,'stroke-width="7" stroke-linejoin="round"');}));
+ const dot=(x,y,big)=>`<circle cx="${x}" cy="${y}" r="${big?16:11}" fill="#fff" stroke="#1F1E1B" stroke-width="5" vector-effect="non-scaling-stroke"/>`;
+ lines+=dot(start[0],start[1],1)+pos.map(([x,y])=>dot(x,y)).join('');
+ return `<div class="t3 abs" style="inset:0">${svg(lines)}
+  <div class="abs head"><h2>Le Chateaubriand is full. Change here for three other tables.</h2><p>Each colored line is something you kept. Follow it.</p></div>
+  <div class="abs st" style="${pct(510,350)};width:20%"><span class="r">Departure · full</span><h3>Le Chateaubriand</h3></div>
+  ${P.map((p,k)=>{const [x,y]=pos[k];return `<div class="abs st" style="${pct(x-20,y-118)}"><span class="r">${p.r}</span><h3>${p.n}</h3><p>${p.p}</p><span class="vf">${p.v}</span></div>`}).join('')}
+  <div class="abs legend">${tagBtns((t,i)=>`<i>${'ABC'[i]}</i>`)}</div><button class="abs cta">Save Le Servan</button></div>`},
+
+/* a · scrapbook journal */
+c1:()=>{const shapes=[`<div class="ph" style="background:#86AE7A"><div style="position:absolute;width:60%;aspect-ratio:1;border-radius:50%;background:#FCFBF7;left:20%;top:30%"></div></div>`,
+  `<div class="ph" style="background:#F2A7B5"><div style="position:absolute;inset:20% 25% 0;background:#2E55D4;border-radius:999px 999px 0 0"></div></div>`,
+  `<div class="ph" style="background:#EFB321"><div style="position:absolute;inset:15%;background:repeating-linear-gradient(45deg,#E4472F 0 8px,transparent 8px 16px)"></div></div>`];
+ const pos=[[60,280,-3],[330,300,2],[600,275,-1]];
+ return `<div class="c1 abs" style="inset:0">
+  <div class="abs head"><h2>Le Chateaubriand was full. <span>Here's what's next.</span></h2><div class="hand" style="margin-top:8px">tap a sticker to keep or swap it</div></div>
+  <div class="abs pol" style="${pct(700,40)};width:22%;transform:rotate(3deg)"><span class="tape"></span><div class="ph" style="background:#2E55D4"><div style="position:absolute;width:50%;aspect-ratio:1;border-radius:50%;background:#EFB321;right:-8%;top:-14%"></div><span style="position:absolute;right:10px;bottom:10px;border:3px solid #E4472F;color:#E4472F;background:#FCFBF7;font-weight:700;padding:1px 8px;transform:rotate(-8deg)">COMPLET</span></div><h3>Le Chateaubriand</h3></div>
+  <div class="abs" style="${pct(40,210)};display:flex;gap:10px">${TAGS.map((t,i)=>`<button class="stk ${on[i]?'':'off'}" data-t="${i}" style="transform:rotate(${[-3,2,-1][i]}deg)">${on[i]?'✓':'↻'} ${t.l}</button>`).join('')}</div>
+  ${P.map((p,k)=>{const [x,y,r]=pos[k];const show=p.t.some(i=>on[i]);return `<div class="abs pol" style="${pct(x,y)};width:21%;transform:rotate(${r}deg);opacity:${show?1:.35}"><span class="tape"></span>${shapes[k]}<h3>${p.n}</h3><p>${p.p}</p><span class="hand" style="font-size:19px;color:#24211C">${p.t.filter(i=>on[i]).map(i=>TAGS[i].l.toLowerCase()).join(' + ')||'nothing kept'}</span></div>`}).join('')}
+  <div class="abs ticket" style="${pct(830,350)};transform:rotate(-4deg)">ADMIT ONE · PARIS 11e</div><button class="abs cta">Save Le Servan</button></div>`},
+
+/* b · risograph: blue + pink overprint, grainy zine */
+c2:()=>{const pos=[[40,240],[370,240],[700,240]];
+ const shp=[`<div class="blk" style="position:absolute;inset:0;background:#1C3FAA;border-radius:50%"></div><div class="blk" style="position:absolute;inset:10% 10% 10% 30%;background:#FF6FA0;border-radius:50%"></div>`,
+  `<div class="blk" style="position:absolute;inset:0 15%;background:#FF6FA0;border-radius:999px 999px 0 0"></div><div class="blk" style="position:absolute;inset:30% 0 0 35%;background:#1C3FAA"></div>`,
+  `<div class="blk" style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,#1C3FAA 0 10px,transparent 10px 20px)"></div><div class="blk" style="position:absolute;inset:20% 20%;background:#FF6FA0;border-radius:50%"></div>`];
+ return `<div class="c2 abs" style="inset:0">
+  <div class="abs head"><h2>Full? Swap it.</h2><p>Three tables in Paris that keep what you loved about Le Chateaubriand.</p></div>
+  <div class="abs tg">${tagBtns()}</div>
+  ${P.map((p,k)=>{const [x,y]=pos[k];const show=p.t.some(i=>on[i]);return `<div class="abs it" style="${pct(x,y)};opacity:${show?1:.3}"><div class="shape">${shp[k]}</div><span class="r">${p.r}</span><h3>${p.n}</h3><p>${p.p}</p><span class="vf">${p.v}</span></div>`}).join('')}
+  <button class="abs cta">Save Le Servan</button></div>`},
+
+/* c · Matisse cut-outs: big organic shapes, gallery calm */
+c3:()=>{const pos=[[440,60],[640,250],[790,50]];
+ const blob=(c,d)=>`<svg viewBox="0 0 100 100" style="width:100%;display:block"><path d="${d}" fill="${c}"/></svg>`;
+ const D=['M50 4 C70 10 64 30 84 34 C98 48 82 62 90 80 C78 98 58 86 46 96 C28 98 30 78 12 72 C0 56 18 44 10 28 C20 10 36 16 50 4Z',
+          'M20 10 C40 0 46 22 60 14 C80 6 96 24 88 44 C82 60 98 72 84 88 C66 100 52 84 36 92 C14 98 4 78 10 60 C16 44 0 30 20 10Z',
+          'M50 2 L58 30 L88 22 L70 48 L96 64 L64 68 L66 98 L48 74 L24 94 L32 64 L2 56 L30 42 L14 14 L42 26Z'];
+ return `<div class="c3 abs" style="inset:0">
+  <div class="abs head"><h2>Le Chateaubriand is full. <em>Cut out</em> what you don't need.</h2><p>Each shape is a place. Its colors are the tags it keeps.</p></div>
+  ${P.map((p,k)=>{const [x,y]=pos[k];const kept=p.t.filter(i=>on[i]);const c=kept.length?TAGS[kept[0]].c:'#D8D4C8';
+   return `<div class="abs it" style="${pct(x,y)}"><div style="position:relative">${blob(c,D[k])}${kept[1]!==undefined?`<div style="position:absolute;width:38%;right:-4%;bottom:-4%">${blob(TAGS[kept[1]].c,D[(k+1)%3])}</div>`:''}</div><span class="r">${p.r}</span><h3>${p.n}</h3><p>${p.p}</p><span class="vf">${p.v}</span></div>`}).join('')}
+  <div class="abs tg">${tagBtns()}</div><button class="abs cta">Save Le Servan</button></div>`}
+};
+const ABOUT={
+ t1:[['Immagine','Un telaio da ricamo con il posto pieno al centro; i fili sono punti cuciti verso "toppe" che contengono le alternative.'],['Stile','Lino a trama fine, legno, rosso mattone. Gilda Display + Mulish.'],['Rischio','Molto caldo e artigianale; può sembrare "craft" più che viaggio.']],
+ t2:[['Immagine','La bacheca da detective con il filo rosso: indaghi sul tuo gusto. Polaroid del posto pieno, foglietti puntati con le alternative.'],['Stile','Sughero, carta, macchina da scrivere. Special Elite + Karla.'],['Rischio','Molto riconoscibile e divertente; il sughero va dosato per non appesantire.']],
+ t3:[['Immagine','Una mappa della metro: ogni tag mantenuto è una linea colorata (A, B, C), le alternative sono fermate. "Cambia qui".'],['Stile','Bianco, linee spesse a colori pieni, tipografia da segnaletica. Red Hat Display + Mono.'],['Rischio','La più chiara da leggere; deve restare illustrata per non sembrare un\'app di trasporti.']],
+ c1:[['Immagine','Diario di viaggio: polaroid, scotch, biglietto, adesivi Keep/Change, note a mano.'],['Stile','Carta puntinata, colori pieni. Young Serif + Karla (+ Caveat per le note).'],['Rischio','Simpatico e social; può diventare disordinato se si aggiungono troppi elementi.']],
+ c2:[['Immagine','Una fanzine stampata in risograph: due inchiostri (blu e rosa) che si sovrappongono, grana, titolo enorme.'],['Stile','Carta chiara, solo blu e rosa. Archivo Black + Archivo.'],['Rischio','Molto contemporaneo e grafico; con due soli colori i tag si distinguono meno.']],
+ c3:[['Immagine','Ritagli alla Matisse: ogni posto è una forma di carta; i suoi colori sono i tag che conserva.'],['Stile','Bianco caldo, forme organiche grandi, serif elegante. Bodoni Moda + Outfit.'],['Rischio','La più elegante, da galleria; un po\' meno immediata per spiegare il "perché".']]};
+let cur='t1';
+function render(){
+  document.getElementById('stage').innerHTML=V[cur]();
+  document.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===cur));
+  document.getElementById('about').innerHTML=ABOUT[cur].map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join('');
+}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.v){cur=b.dataset.v;render()}
+  if(b.dataset.t!==undefined){on[+b.dataset.t]=!on[+b.dataset.t];render()}});
+render();
+</script>

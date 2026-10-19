@@ -115,7 +115,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 | 7.4 | Copertura Ticketmaster in Portogallo, Francia, Spagna | Da fare |
 | 7.5 | Metodo di login | Da decidere |
 | 7.6 | Conferma dello stack (Next.js + Vercel) | Da decidere |
-| 7.7 | Nome del prodotto e identità visiva ("TPD" è provvisorio) | Da decidere |
+| 7.7 | Nome del prodotto ("TPD" è provvisorio) | Da decidere; direzione visiva scelta (9.7) |
 | 7.8 | Quota e rate limit effettivi della chiave | Dopo la chiave |
 | 7.9 | Test utenti del problema ("il posto che volevo era pieno") e interviste | Da pianificare |
 
@@ -129,3 +129,18 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 6. Confronto Qloo vs LLM, Transfer e musei/cultura.
 7. Login, collezioni, feedback, scheda condivisibile.
 8. Altre categorie solo se i dati reggono; rifinitura, stati di errore, README, deploy, descrizione in inglese.
+
+## 9. UI e UX (bozza 1, 19 ottobre)
+
+| # | Decisione |
+|---|---|
+| 9.1 | **Web-first** (desktop), con layout che si adatta al telefono. |
+| 9.2 | Navigazione a 3 tab: **Swap** (home) · **Passport** · **Salvati**. Riferimento, Keep/Change, Risultati, Dettaglio e Transfer sono passi del flusso Swap, non voci di menu. |
+| 9.3 | Il confronto Qloo vs LLM è un toggle dentro i Risultati ("With Qloo / Without Qloo"). |
+| 9.4 | Ingresso ospite come percorso principale: 3 profili precompilati, ciascuno con un caso pronto. Obiettivo: risultati veri in meno di 30 secondi. |
+| 9.5 | Chip a 3 stati (Keep → Change → Ignora) a ogni tocco; durante il ricalcolo i risultati precedenti restano visibili ma sfumati. |
+| 9.6 | Dopo il primo Swap compare la card **Transfer** ("Lo stesso gusto, ma per un museo?"). |
+| 9.7 | *(In revisione: tre nuove direzioni in `design/directions.html`, Atlas · Salon · Atelier.)* Prima proposta, scartata: **"Biglietto pop"**: ogni alternativa è un biglietto con il talloncino che indica il ruolo (1 Closest, 2 Practical, 3 Unexpected). Viola `#6B3EF5`, lime `#C6F432`, inchiostro `#16112B`; Bricolage Grotesque (titoli), Figtree (testo), DM Mono (etichette). |
+| 9.8 | Le etichette di verifica L0–L3 usano un'unica componente sobria (grigia, mono, con testo), sempre nella stessa posizione. Il colore non è mai l'unico segnale. |
+| 9.9 | Ogni Swap concluso lascia un timbro sul Passport (parte social e condivisibile). |
+| 9.10 | Prototipo cliccabile: `design/prototype.html`. Dati di esempio, non Qloo. |

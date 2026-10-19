@@ -1,0 +1,218 @@
+<title>TPD Visual Directions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&family=Unbounded:wght@500;700&family=Work+Sans:wght@400;500;600&family=Gloock&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a switcher on top, then one full desktop screen per direction (Swap results view). Below ~900px each screen stacks. All three are light-only by design. */
+:root{--page:#F4F4F6;--ink:#121318;--muted:#6A6C78;color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid #2340E0;outline-offset:2px}
+.top{max-width:1240px;margin:0 auto 20px;display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between}
+.top h1{margin:0;font-size:28px;letter-spacing:-.02em}
+.top p{margin:4px 0 0;color:var(--muted);max-width:60ch}
+.sw{display:flex;gap:6px;flex-wrap:wrap}
+.sw button{border:1px solid #C9CAD3;background:#fff;border-radius:8px;padding:8px 14px;font-weight:600}
+.sw button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.frame{max-width:1240px;margin:0 auto;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px #0001,0 12px 40px #0000000f;border:1px solid #DADBE2}
+.chrome{background:#E9E9EE;padding:9px 14px;display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.chrome i{width:10px;height:10px;border-radius:50%;background:#C9CAD3;display:block}
+.chrome span{margin-left:12px;background:#fff;border-radius:6px;padding:3px 10px;font-family:"IBM Plex Mono",monospace}
+.spec{max-width:1240px;margin:16px auto 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.spec div{background:#fff;border:1px solid #DADBE2;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.spec b{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+@media (max-width:900px){.spec{grid-template-columns:1fr 1fr}}
+.v{font-family:"IBM Plex Mono",monospace;font-size:11px;display:inline-flex;gap:6px;align-items:center;background:#EEF0F3;color:#2B3138;border-radius:4px;padding:3px 7px;width:fit-content}
+.v i{font-style:normal;border:1px solid currentColor;border-radius:3px;padding:0 3px}
+
+/* ---------- A · ATLAS: cool white, cobalt + coral, data-pro ---------- */
+.A{--bg:#F8F9FB;--card:#fff;--line:#E3E6EE;--ink:#0F1730;--mut:#5B6478;--acc:#2340E0;--acc2:#FF6B4A;--soft:#EBEEFF;
+  background:var(--bg);color:var(--ink);font-family:"Schibsted Grotesk",system-ui,sans-serif;display:grid;grid-template-columns:240px minmax(0,1fr) 340px;min-height:640px}
+.A nav{border-right:1px solid var(--line);padding:22px 18px;display:flex;flex-direction:column;gap:18px;background:var(--card)}
+.A .logo{font-weight:800;font-size:20px;letter-spacing:-.03em}.A .logo span{color:var(--acc)}
+.A nav a{display:block;padding:8px 10px;border-radius:6px;color:var(--mut);text-decoration:none;font-weight:500}
+.A nav a.on{background:var(--soft);color:var(--acc)}
+.A .pp{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.A .pp b{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+.A main{padding:26px 28px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.A .search{display:flex;gap:8px}.A .search input{flex:1;min-width:0;border:1px solid var(--line);border-radius:6px;padding:11px 12px;font:inherit;background:var(--card)}
+.A .btn{border:0;border-radius:6px;padding:11px 18px;font-weight:700;background:var(--acc);color:#fff}
+.A .btn.sec{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.A h2{margin:0;font-size:26px;letter-spacing:-.02em}
+.A .chips{display:flex;gap:6px;flex-wrap:wrap}
+.A .chip{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:6px 10px;font-size:13px;display:flex;gap:8px}
+.A .chip em{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500}
+.A .k em{color:var(--acc)}.A .c em{color:var(--acc2)}.A .k{border-color:var(--acc)}.A .c{border-color:var(--acc2)}
+.A table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:14px}
+.A th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);font-weight:500;padding:10px 14px;border-bottom:1px solid var(--line)}
+.A td{padding:14px;border-bottom:1px solid var(--line);vertical-align:top}
+.A .role{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--acc)}
+.A .nm{font-weight:700;font-size:16px}
+.A aside{border-left:1px solid var(--line);background:var(--card);display:flex;flex-direction:column}
+.A .map{flex:1;min-height:260px;background:
+  linear-gradient(90deg,#0000 49.5%,#DCE2F2 49.5% 50.5%,#0000 50.5%) 0 0/64px 64px,
+  linear-gradient(#0000 49.5%,#DCE2F2 49.5% 50.5%,#0000 50.5%) 0 0/64px 64px,#F1F4FB;position:relative}
+.A .pin{position:absolute;width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--acc);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+.A .pin span{transform:rotate(45deg)}.A .pin.ref{background:var(--acc2)}
+.A .det{padding:18px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);font-size:13px}
+
+/* ---------- B · SALON: pure white, black type, emerald + pink, big expressive ---------- */
+.B{--bg:#FFFFFF;--ink:#0B0B0C;--mut:#6B6B70;--line:#EAEAEA;--g:#0E9F6E;--p:#FF5FA2;--y:#FFE14D;
+  background:var(--bg);color:var(--ink);font-family:"Work Sans",system-ui,sans-serif;padding:28px 40px 40px;display:flex;flex-direction:column;gap:28px;min-height:640px}
+.B header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.B .logo{font-family:Unbounded,system-ui;font-weight:700;font-size:22px}
+.B header nav{display:flex;gap:22px;font-weight:500}.B header nav span.on{border-bottom:2px solid var(--ink)}
+.B .hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:end}
+.B h2{font-family:Unbounded,system-ui;font-weight:500;font-size:clamp(30px,4vw,54px);line-height:1;letter-spacing:-.03em;margin:0;text-wrap:balance}
+.B h2 mark{background:var(--p);color:var(--ink);padding:0 .15em;border-radius:.2em}
+.B .ref{border:1.5px solid var(--ink);border-radius:999px;display:flex;align-items:center;gap:10px;padding:6px 6px 6px 20px}
+.B .ref input{border:0;font:inherit;font-size:17px;flex:1;min-width:0;outline:0;background:none}
+.B .btn{border:1.5px solid var(--ink);background:var(--ink);color:#fff;border-radius:999px;padding:12px 22px;font-weight:600;display:inline-flex;gap:10px;align-items:center}
+.B .btn::after{content:"→"}
+.B .btn.o{background:none;color:var(--ink)}
+.B .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.B .chip{border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;border:1.5px solid var(--ink);background:#fff}
+.B .k{background:var(--g);color:#fff;border-color:var(--g)}.B .c{background:var(--y)}
+.B .grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:16px}
+.B .card{border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:10px;min-height:250px;min-width:0}
+.B .card:nth-child(1){background:#E6F6EF}.B .card:nth-child(2){background:#FFEAF3}.B .card:nth-child(3){background:#FFF8D6}
+.B .role{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em}
+.B .nm{font-family:Unbounded,system-ui;font-size:28px;font-weight:500;line-height:1.05}
+.B .card ul{margin:0;padding-left:18px;color:#333}
+.B .card .v{margin-top:auto;background:#fff}
+
+/* ---------- C · ATELIER: pale sky, navy ink, saffron accent, serif display ---------- */
+.C{--bg:#F3F7FD;--card:#FFFFFF;--ink:#14213D;--mut:#5A6785;--line:#D9E2F0;--s:#F2A900;--sky:#4C8DF6;
+  background:var(--bg);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;padding:26px 36px 36px;display:flex;flex-direction:column;gap:22px;min-height:640px}
+.C header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.C .logo{font-family:Gloock,Georgia,serif;font-size:26px}.C .logo span{color:var(--s)}
+.C header nav{display:flex;gap:6px}
+.C header nav span{padding:7px 14px;border-radius:10px;font-weight:600;color:var(--mut)}.C header nav span.on{background:var(--card);color:var(--ink);box-shadow:0 1px 0 var(--line)}
+.C h2{font-family:Gloock,Georgia,serif;font-weight:400;font-size:clamp(28px,3.4vw,44px);line-height:1.05;margin:0;letter-spacing:-.01em}
+.C h2 em{font-style:normal;color:var(--sky)}
+.C .flow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,2.2fr);gap:18px;align-items:start}
+.C .col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.C .step{font-size:12px;font-weight:700;color:var(--mut);display:flex;gap:8px;align-items:center}
+.C .step b{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:11px}
+.C .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.C .nm{font-family:Gloock,Georgia,serif;font-size:22px;line-height:1.1}
+.C .tog{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.C .seg{display:inline-flex;background:var(--bg);border-radius:8px;padding:2px;font-size:12px;font-weight:600}
+.C .seg span{padding:4px 8px;border-radius:6px;color:var(--mut)}
+.C .seg .k{background:var(--sky);color:#fff}.C .seg .c{background:var(--s);color:var(--ink)}
+.C .btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;background:var(--s);color:var(--ink);box-shadow:inset 0 -3px 0 #0002}
+.C .btn.l{background:none;box-shadow:none;padding:12px 4px;text-decoration:underline;text-underline-offset:4px}
+.C .res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.C .res .box{gap:8px}
+.C .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--sky)}
+.C .res .box:nth-child(2) .tag{color:#B07A00}.C .res .box:nth-child(3) .tag{color:#7A5AF5}
+.C .why{font-size:13px;color:var(--mut)}
+
+@media (max-width:900px){
+  .A{grid-template-columns:1fr}.A nav,.A aside{border:0}.A .map{min-height:200px}
+  .B{padding:22px 18px}.B .hero,.B .grid{grid-template-columns:1fr}
+  .C{padding:22px 18px}.C .flow,.C .res{grid-template-columns:1fr}
+  .A table{display:block;overflow-x:auto}
+}
+</style>
+
+<div class="top">
+  <div><h1>TPD · tre direzioni web-first</h1>
+  <p>Stessa schermata (risultati di uno Swap a Parigi) disegnata in tre modi. Sfondo chiaro, accenti diversi, font e pulsanti diversi. Dati di esempio.</p></div>
+  <div class="sw" role="group" aria-label="Direzione">
+    <button data-d="A" aria-pressed="true">A · Atlas</button>
+    <button data-d="B" aria-pressed="false">B · Salon</button>
+    <button data-d="C" aria-pressed="false">C · Atelier</button>
+  </div>
+</div>
+
+<div class="frame"><div class="chrome"><i></i><i></i><i></i><span>tpd.app/swap/le-chateaubriand</span></div>
+
+<section class="A" data-view="A">
+  <nav>
+    <div class="logo">tp<span>d</span></div>
+    <div><a class="on" href="#A">Swap</a><a href="#A">Explore Paris</a><a href="#A">Passport</a><a href="#A">Saved</a></div>
+    <div class="pp"><b>Your Passport</b>In the Mood for Love · Radiohead · Clown Bar · Natural wine<button class="btn sec" style="padding:7px 10px">Edit</button></div>
+  </nav>
+  <main>
+    <div class="search"><input id="a-q" value="Le Chateaubriand, Paris"><button class="btn">Find swaps</button></div>
+    <div><h2>3 swaps for Le Chateaubriand</h2><p style="margin:4px 0 0;color:var(--mut)">Paris only · updated as you change tags</p></div>
+    <div class="chips">
+      <span class="chip k">Natural wine <em>KEEP</em></span><span class="chip k">Neo-bistro <em>KEEP</em></span><span class="chip c">Price €€€ <em>CHANGE</em></span><span class="chip c">Hard to book <em>CHANGE</em></span><span class="chip">11th arr. <em>IGNORE</em></span>
+    </div>
+    <table><thead><tr><th>Swap</th><th>Why it matches you</th><th>Different</th><th>Verified</th></tr></thead><tbody>
+      <tr><td><div class="role">01 CLOSEST CULTURAL</div><div class="nm">Le Servan</div>Neo-bistro · 11e · €€</td><td>Natural wine, neo-bistro; close to Clown Bar</td><td>Cheaper, smaller room</td><td><span class="v"><i>L1</i>Hours · Google</span></td></tr>
+      <tr><td><div class="role">02 BEST PRACTICAL</div><div class="nm">Le Baratin</div>Bistro · 20e · €€</td><td>Lively room, natural-wine list</td><td>18 min by metro</td><td><span class="v"><i>L2</i>Booking page</span></td></tr>
+      <tr><td><div class="role">03 UNEXPECTED</div><div class="nm">Mokonuts</div>Café-bistro · 11e · €€</td><td>Chef-driven, matches your slow-cinema taste</td><td>Lunch only</td><td><span class="v"><i>L1</i>Hours · Google</span></td></tr>
+    </tbody></table>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sec">Compare without Qloo</button><button class="btn sec">Same taste, a museum →</button></div>
+  </main>
+  <aside>
+    <div class="map" aria-label="Mappa di esempio">
+      <span class="pin ref" style="left:46%;top:38%"><span>★</span></span>
+      <span class="pin" style="left:30%;top:52%"><span>1</span></span>
+      <span class="pin" style="left:72%;top:30%"><span>2</span></span>
+      <span class="pin" style="left:58%;top:66%"><span>3</span></span>
+    </div>
+    <div class="det"><strong style="font-size:16px">Le Servan</strong><span style="color:var(--mut)">32 rue Saint-Maur · open tonight 19:30</span><span class="v"><i>—</i>Table availability not verified</span><button class="btn">Save to Paris trip</button></div>
+  </aside>
+</section>
+
+<section class="B" data-view="B" hidden>
+  <header><span class="logo">tpd*</span><nav><span class="on">Swap</span><span>Passport</span><span>Saved</span></nav><button class="btn o">Night Owl</button></header>
+  <div class="hero">
+    <div><h2>Le Chateaubriand was full. Here's your <mark>next table.</mark></h2></div>
+    <div>
+      <div class="ref"><input id="b-q" value="Le Chateaubriand, Paris"><button class="btn">Swap</button></div>
+      <div class="chips"><span class="chip k">✓ Natural wine</span><span class="chip k">✓ Neo-bistro</span><span class="chip c">↻ Price €€€</span><span class="chip c">↻ Hard to book</span><span class="chip">11th arr.</span></div>
+    </div>
+  </div>
+  <div class="grid">
+    <article class="card"><span class="role">Closest cultural match</span><span class="nm">Le Servan</span><span>Neo-bistro · 11e · €€</span><ul><li>Natural-wine and neo-bistro tags you kept</li><li>Close to Clown Bar in your Passport</li></ul><span class="v"><i>L1</i>Exists, hours confirmed · Google</span></article>
+    <article class="card"><span class="role">Best practical</span><span class="nm">Le Baratin</span><span>Bistro · 20e · €€</span><ul><li>Open tonight</li></ul><span class="v"><i>L2</i>Booking page found</span></article>
+    <article class="card"><span class="role">Unexpected</span><span class="nm">Mokonuts</span><span>Café-bistro · 11e</span><ul><li>Chef-driven, lively</li></ul><span class="v"><i>L1</i>Hours · Google</span></article>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn">Same taste, a museum</button><button class="btn o">Compare without Qloo</button></div>
+</section>
+
+<section class="C" data-view="C" hidden>
+  <header><span class="logo">tpd<span>.</span></span><nav><span class="on">Swap</span><span>Passport</span><span>Saved</span></nav></header>
+  <h2>Keep what you loved about <em>Le Chateaubriand</em>. Change the rest.</h2>
+  <div class="flow">
+    <div class="col"><span class="step"><b>1</b>You wanted</span>
+      <div class="box"><span class="nm">Le Chateaubriand</span><span class="why">Neo-bistro · 129 av. Parmentier, 11e · €€€</span><span class="v"><i>MUST</i>Stay in Paris</span></div></div>
+    <div class="col"><span class="step"><b>2</b>Keep or change</span>
+      <div class="box">
+        <div class="tog">Natural wine<span class="seg"><span class="k">Keep</span><span>Change</span></span></div>
+        <div class="tog">Neo-bistro<span class="seg"><span class="k">Keep</span><span>Change</span></span></div>
+        <div class="tog">Price €€€<span class="seg"><span>Keep</span><span class="c">Change</span></span></div>
+        <div class="tog">Hard to book<span class="seg"><span>Keep</span><span class="c">Change</span></span></div>
+        <button class="btn">Update swaps</button></div></div>
+    <div class="col"><span class="step"><b>3</b>Your swaps</span>
+      <div class="res">
+        <div class="box"><span class="tag">Closest cultural</span><span class="nm">Le Servan</span><span class="why">Same wine and bistro tags; close to Clown Bar</span><span class="v"><i>L1</i>Hours · Google</span></div>
+        <div class="box"><span class="tag">Best practical</span><span class="nm">Le Baratin</span><span class="why">Open tonight, lively room</span><span class="v"><i>L2</i>Booking page</span></div>
+        <div class="box"><span class="tag">Unexpected</span><span class="nm">Mokonuts</span><span class="why">Chef-driven, lunch-focused</span><span class="v"><i>L1</i>Hours · Google</span></div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn">Same taste, a museum</button><button class="btn l">Compare without Qloo</button></div></div>
+  </div>
+</section>
+</div>
+
+<div class="spec" id="spec"></div>
+
+<script>
+const SPEC={
+ A:[['Carattere','Strumento preciso, stile app pro. Lista + mappa sempre visibili.'],['Colori','Bianco freddo, blu cobalto, corallo per Change'],['Font','Schibsted Grotesk + IBM Plex Mono'],['Pulsanti','Rettangolari 6px, pieni o bordo sottile']],
+ B:[['Carattere','Espressivo e social, titoli grandi, card colorate a blocchi.'],['Colori','Bianco puro, nero, verde smeraldo, rosa, giallo'],['Font','Unbounded + Work Sans'],['Pulsanti','Pillola nera con freccia, outline per i secondari']],
+ C:[['Carattere','Caldo ma ordinato: il flusso 1-2-3 è visibile in una schermata.'],['Colori','Cielo pallido, blu notte, zafferano, azzurro'],['Font','Gloock (serif) + Hanken Grotesk'],['Pulsanti','Arrotondati 12px zafferano, secondari come link sottolineati']]};
+function show(d){
+  document.querySelectorAll('[data-view]').forEach(s=>s.hidden=s.dataset.view!==d);
+  document.querySelectorAll('[data-d]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.d===d));
+  document.getElementById('spec').innerHTML=SPEC[d].map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join('');
+}
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>show(b.dataset.d));
+show('A');
+</script>

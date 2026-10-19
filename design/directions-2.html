@@ -1,0 +1,235 @@
+<title>TPD Directions Round 2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Instrument+Serif&family=Geist:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: switcher, then one desktop screen per idea. Each idea makes one concept visible (threads, fingerprint, mixer). Light only by design. */
+:root{--page:#F2F2F4;--ink:#1A1A1A;--body:#4E4E4E;color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:Geist,system-ui,sans-serif;font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid #3355FF;outline-offset:2px}
+.top{max-width:1240px;margin:0 auto 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between}
+.top h1{margin:0;font-size:28px;line-height:1.2}
+.top p{margin:8px 0 0;color:var(--body);max-width:64ch}
+.sw{display:flex;gap:8px;flex-wrap:wrap}
+.sw button{border:1px solid #D4D4DA;background:#fff;border-radius:8px;padding:8px 16px;font-weight:600}
+.sw button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.frame{max-width:1240px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 12px 48px #1A1A2814;background:#fff}
+.idea{max-width:1240px;margin:16px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.idea div{background:#fff;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px;min-width:0;color:var(--body);font-size:15px}
+.idea b{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink)}
+@media (max-width:900px){.idea{grid-template-columns:1fr}}
+.v{font-family:ui-monospace,Menlo,monospace;font-size:12px;display:inline-flex;gap:6px;align-items:center;background:#EFF1F4;color:#2B3138;border-radius:6px;padding:4px 8px;width:fit-content}
+.v i{font-style:normal;font-weight:600}
+
+/* ===== D · THREADS: the kept tags are drawn as threads into each swap ===== */
+.D{--bg:#FBFAF8;--card:#fff;--acc:#FF5A1F;--t1:#2F6BFF;--t2:#12A37F;--t3:#B44CF0;--line:#ECE9E4;--mut:#6B6762;
+  background:var(--bg);font-family:Onest,system-ui,sans-serif;padding:32px 48px 48px;position:relative}
+.D header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.D .logo{font-weight:700;font-size:20px}
+.D nav{display:flex;gap:24px;color:var(--mut);font-weight:500}.D nav .on{color:#1A1A1A}
+.D .stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:96px;align-items:center}
+.D svg.threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.D .ref{background:var(--card);border-radius:16px;padding:24px;box-shadow:0 12px 48px #5A3A1A12;display:flex;flex-direction:column;gap:16px;position:relative;z-index:1}
+.D .ref h2{margin:0;font-size:32px;line-height:1.15;font-weight:700}
+.D .status{color:#B42318;font-weight:600;font-size:14px;display:flex;gap:6px;align-items:center}
+.D .tags{display:flex;flex-direction:column;gap:8px}
+.D .tag{display:flex;justify-content:space-between;align-items:center;border-radius:10px;padding:8px 12px;background:#F6F4F1;font-weight:500}
+.D .tag .dot{width:10px;height:10px;border-radius:50%}
+.D .tag button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
+.D .tag.chg{color:var(--mut)}.D .tag.chg span:first-child{text-decoration:line-through}
+.D .swaps{display:flex;flex-direction:column;gap:16px;position:relative;z-index:1}
+.D .sc{background:var(--card);border-radius:16px;padding:20px 24px;box-shadow:0 4px 24px #5A3A1A0D;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:center}
+.D .sc .role{font-size:13px;color:var(--mut);font-weight:500}
+.D .sc h3{margin:0;font-size:22px;line-height:1.2}
+.D .sc p{margin:0;color:#4E4E4E;font-size:15px}
+.D .carried{display:flex;gap:4px}
+.D .carried i{width:10px;height:10px;border-radius:50%;display:block}
+.D .cta{margin-top:32px;display:flex;gap:16px;align-items:center}
+.D .btn{border:0;background:var(--acc);color:#fff;border-radius:10px;padding:12px 24px;font-weight:600;box-shadow:0 6px 20px #FF5A1F40}
+.D .btn2{border:0;background:none;font-weight:600;color:#1A1A1A;text-decoration:underline;text-underline-offset:4px}
+
+/* ===== E · FINGERPRINT: the Passport is a generated taste shape ===== */
+.E{--bg:#F7F6FF;--card:#fff;--acc:#4B3BFF;--mut:#6A6880;
+  background:var(--bg);font-family:Geist,system-ui,sans-serif;padding:32px 48px 48px;display:grid;grid-template-columns:320px minmax(0,1fr);gap:48px}
+.E .side{display:flex;flex-direction:column;gap:16px}
+.E .logo{font-family:"Instrument Serif",Georgia,serif;font-size:30px;line-height:1}
+.E canvas{width:100%;aspect-ratio:1;max-width:100%;display:block}
+.E .pcard{background:var(--card);border-radius:20px;padding:24px;box-shadow:0 12px 48px #4B3BFF14;display:flex;flex-direction:column;gap:12px}
+.E .pcard h3{margin:0;font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:28px;line-height:1.2}
+.E .legend{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--mut)}
+.E .legend span{display:flex;gap:6px;align-items:center}.E .legend i{width:8px;height:8px;border-radius:50%;display:block}
+.E main{display:flex;flex-direction:column;gap:24px;min-width:0}
+.E h2{margin:0;font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:44px;line-height:1.15;max-width:20ch}
+.E .q{display:flex;gap:8px;background:var(--card);border-radius:12px;padding:8px;box-shadow:0 4px 24px #4B3BFF10;max-width:640px}
+.E .q input{flex:1;min-width:0;border:0;font:inherit;padding:8px 12px;outline:0}
+.E .btn{border:0;background:var(--acc);color:#fff;border-radius:8px;padding:12px 20px;font-weight:600}
+.E .res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.E .rc{background:var(--card);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 4px 24px #4B3BFF0D}
+.E .rc canvas{width:96px;height:96px;aspect-ratio:auto}
+.E .rc .role{font-size:13px;color:var(--mut);font-weight:500}
+.E .rc h3{margin:0;font-size:20px;line-height:1.25}
+.E .rc p{margin:0;font-size:15px;color:#4E4E4E}
+.E .rc .ov{font-size:13px;color:var(--mut)}
+
+/* ===== F · MIXER: Keep/Change as faders, list reorders live ===== */
+.F{--bg:#F6F8F7;--card:#fff;--acc:#0B7A75;--acc2:#FF6F59;--mut:#5F6B69;--line:#E2E8E6;
+  background:var(--bg);font-family:Outfit,system-ui,sans-serif;padding:32px 48px 48px;display:flex;flex-direction:column;gap:32px}
+.F header{display:flex;justify-content:space-between;align-items:center}
+.F .logo{font-weight:700;font-size:22px;letter-spacing:-.01em}
+.F .head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
+.F h2{margin:0;font-size:36px;line-height:1.2;font-weight:600;max-width:24ch}
+.F h2 span{color:var(--mut);font-weight:400}
+.F .body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:32px;align-items:start}
+.F .desk{background:var(--card);border-radius:20px;padding:24px;box-shadow:0 12px 48px #0B7A7512;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.F .desk h3{grid-column:1/-1;margin:0 0 8px;font-size:15px;font-weight:600;display:flex;justify-content:space-between;color:var(--mut)}
+.F .fader{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-size:13px}
+.F .fader .lab{font-weight:600;font-size:14px;color:#1A1A1A;line-height:1.25;min-height:36px}
+.F input[type=range]{writing-mode:vertical-lr;direction:rtl;width:32px;height:160px;accent-color:var(--acc)}
+.F .st{font-weight:600;font-size:12px;padding:2px 8px;border-radius:999px}
+.F .st.k{background:#DDF1EF;color:var(--acc)}.F .st.c{background:#FFE7E2;color:#B3412F}.F .st.n{background:#EEF0EF;color:var(--mut)}
+.F .list{display:flex;flex-direction:column;gap:12px}
+.F .row{background:var(--card);border-radius:16px;padding:16px 20px;display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:16px;align-items:center;box-shadow:0 4px 20px #0B7A750D;transition:transform .35s ease}
+.F .rank{font-size:28px;font-weight:600;color:var(--acc);text-align:center}
+.F .row h3{margin:0;font-size:19px}.F .row p{margin:0;font-size:15px;color:#4E4E4E}
+.F .move{font-size:13px;font-weight:600;color:var(--mut)}
+.F .btn{border:0;background:var(--acc);color:#fff;border-radius:999px;padding:12px 24px;font-weight:600}
+.F .btn2{border:1px solid var(--line);background:#fff;border-radius:999px;padding:12px 24px;font-weight:600}
+@media (prefers-reduced-motion:reduce){.F .row{transition:none}}
+
+@media (max-width:900px){
+  .D,.E,.F{padding:24px 16px}
+  .D .stage{grid-template-columns:1fr;gap:32px}.D svg.threads{display:none}
+  .E{grid-template-columns:1fr}.E .res{grid-template-columns:1fr}.E h2{font-size:32px}
+  .F .body{grid-template-columns:1fr}.F .desk{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+
+<div class="top">
+  <div><h1>TPD · seconda tornata</h1>
+  <p>Tre idee in cui il concetto del prodotto diventa l'elemento visivo, invece di uno stile. Ogni schermata ha un solo pulsante principale. Sono interattive: prova a toccare i tag.</p></div>
+  <div class="sw" role="group" aria-label="Direzione">
+    <button data-d="D" aria-pressed="true">D · Threads</button>
+    <button data-d="E" aria-pressed="false">E · Fingerprint</button>
+    <button data-d="F" aria-pressed="false">F · Mixer</button>
+  </div>
+</div>
+
+<div class="frame">
+<section class="D" data-view="D">
+  <header><span class="logo">tpd</span><nav><span class="on">Swap</span><span>Passport</span><span>Saved</span></nav></header>
+  <div class="stage" id="dStage">
+    <svg class="threads" id="dSvg" aria-hidden="true"></svg>
+    <div class="ref">
+      <span style="font-size:13px;color:#6B6762;font-weight:500">You wanted</span>
+      <h2>Le Chateaubriand</h2>
+      <span class="status">✕ Fully booked tonight</span>
+      <div class="tags" id="dTags"></div>
+    </div>
+    <div class="swaps" id="dSwaps"></div>
+  </div>
+  <div class="cta"><button class="btn">Save Le Servan</button><button class="btn2">Compare without Qloo</button></div>
+</section>
+
+<section class="E" data-view="E" hidden>
+  <div class="side">
+    <span class="logo">tpd</span>
+    <div class="pcard">
+      <span style="font-size:13px;color:#6A6880;font-weight:500">Your taste</span>
+      <canvas id="eMain" width="540" height="540" aria-label="Forma generata dal tuo Passport"></canvas>
+      <h3>Night Owl</h3>
+      <div class="legend"><span><i style="background:#4B3BFF"></i>Film</span><span><i style="background:#FF6FAE"></i>Music</span><span><i style="background:#18B39A"></i>Places</span><span><i style="background:#FFB020"></i>Food</span></div>
+    </div>
+  </div>
+  <main>
+    <h2>Three places that share your shape.</h2>
+    <div class="q"><input id="e-q" value="Le Chateaubriand, Paris" aria-label="Posto"><button class="btn">Find swaps</button></div>
+    <div class="res" id="eRes"></div>
+  </main>
+</section>
+
+<section class="F" data-view="F" hidden>
+  <header><span class="logo">tpd</span><span style="color:#5F6B69;font-weight:500">Night Owl · Paris</span></header>
+  <div class="head"><h2>Swaps for Le Chateaubriand <span>· move a fader, the list re-ranks</span></h2><button class="btn">Save top swap</button></div>
+  <div class="body">
+    <div class="desk" id="fDesk"><h3><span>Keep ↑</span><span>↓ Change</span></h3></div>
+    <div class="list" id="fList"></div>
+  </div>
+</section>
+</div>
+
+<div class="idea" id="idea"></div>
+
+<script>
+const IDEA={
+ D:[['L\'idea','I tag del posto che volevi diventano fili colorati che arrivano a ogni alternativa. Si vede a colpo d\'occhio che cosa è stato mantenuto e dove.'],['Stile','Bianco caldo, un solo accento arancio per l\'azione. Font unico: Onest.'],['Perché funziona','Rende visibile la spiegazione ("Why it matches you") senza testo. Il gesto Keep/Change taglia un filo.']],
+ E:[['L\'idea','Il Passport è una forma generata dai tuoi gusti. Ogni risultato ha la sua forma, e vedi quanto si sovrappone alla tua.'],['Stile','Lilla chiarissimo, indaco per l\'azione. Instrument Serif per i titoli, Geist per il testo.'],['Perché funziona','È l\'oggetto social da condividere ("questa è la mia forma"), e lega Passport e risultati con lo stesso segno.']],
+ F:[['L\'idea','Ogni tag è un cursore da Keep (su) a Change (giù). La lista si riordina dal vivo e mostra chi sale e chi scende.'],['Stile','Verde-grigio chiaro, petrolio per l\'azione, corallo per Change. Font unico: Outfit.'],['Perché funziona','Il controllo è fisico e immediato: si capisce che sei tu a guidare il ranking, non un\'AI misteriosa.']]};
+
+/* ---- D threads ---- */
+const DT=[{l:'Natural wine',c:'#2F6BFF',k:true},{l:'Neo-bistro',c:'#12A37F',k:true},{l:'Lively room',c:'#B44CF0',k:true},{l:'Price €€€',c:'#999',k:false}];
+const DS=[{r:'Closest cultural match',n:'Le Servan',p:'Neo-bistro · 11e · €€',t:[0,1,2],v:['L1','Hours · Google']},{r:'Best practical match',n:'Le Baratin',p:'Bistro · 20e · €€ · open tonight',t:[0,2],v:['L2','Booking page']},{r:'Unexpected but relevant',n:'Mokonuts',p:'Café-bistro · 11e · €€',t:[1,2],v:['L1','Hours · Google']}];
+function drawD(){
+  const tags=document.getElementById('dTags'),sw=document.getElementById('dSwaps');
+  tags.innerHTML=DT.map((t,i)=>`<div class="tag ${t.k?'':'chg'}" data-i="${i}"><span style="display:flex;gap:8px;align-items:center"><span class="dot" style="background:${t.k?t.c:'#ccc'}"></span>${t.l}</span><button data-dt="${i}">${t.k?'Keep':'Change'}</button></div>`).join('');
+  sw.innerHTML=DS.map((s,i)=>`<div class="sc" data-s="${i}"><span class="role">${s.r}</span><span class="carried">${s.t.filter(x=>DT[x].k).map(x=>`<i style="background:${DT[x].c}"></i>`).join('')}</span><h3>${s.n}</h3><span></span><p>${s.p}</p><span class="v"><i>${s.v[0]}</i>${s.v[1]}</span></div>`).join('');
+  requestAnimationFrame(threads);
+}
+function threads(){
+  const svg=document.getElementById('dSvg'),st=document.getElementById('dStage');if(!st.offsetParent)return;
+  const b=st.getBoundingClientRect();let out='';
+  DS.forEach((s,si)=>{const card=st.querySelector(`[data-s="${si}"]`).getBoundingClientRect();
+    s.t.forEach((ti,j)=>{const t=DT[ti];if(!t.k)return;const tag=st.querySelector(`.tag[data-i="${ti}"]`).getBoundingClientRect();
+      const x1=tag.right-b.left,y1=tag.top+tag.height/2-b.top,x2=card.left-b.left,y2=card.top+card.height/2-b.top+(j-1)*6;
+      out+=`<path d="M${x1},${y1} C${x1+60},${y1} ${x2-60},${y2} ${x2},${y2}" fill="none" stroke="${t.c}" stroke-width="2.5" stroke-linecap="round" opacity=".75"/>`;});});
+  svg.innerHTML=out;
+}
+
+/* ---- E fingerprint ---- */
+function blob(cv,seed,cols,ref){
+  const c=cv.getContext('2d'),W=cv.width,R=W*0.36;c.clearRect(0,0,W,W);
+  const draw=(sd,alpha,stroke)=>{cols.forEach((col,k)=>{c.beginPath();for(let a=0;a<=Math.PI*2+.01;a+=.05){
+      const r=R*(0.62+0.18*Math.sin(a*(3+k)+sd*(k+1))+0.08*Math.cos(a*5+sd));
+      const x=W/2+Math.cos(a)*r,y=W/2+Math.sin(a)*r;a?c.lineTo(x,y):c.moveTo(x,y);}
+    c.closePath();if(stroke){c.strokeStyle=col;c.lineWidth=W/90;c.globalAlpha=1;c.stroke()}else{c.fillStyle=col;c.globalAlpha=alpha;c.fill()}});c.globalAlpha=1;};
+  c.globalCompositeOperation='multiply';draw(seed,.28,false);c.globalCompositeOperation='source-over';
+  if(ref!==undefined)draw(ref,0,true);
+}
+const EC=['#4B3BFF','#FF6FAE','#18B39A','#FFB020'];
+const ER=[{r:'Closest cultural match',n:'Le Servan',p:'Shares your film and food shapes almost exactly.',o:'Strong overlap on Film, Food',s:1.15,v:['L1','Hours · Google']},{r:'Best practical match',n:'Le Baratin',p:'Open tonight, 18 min away.',o:'Overlap on Food, Places',s:1.9,v:['L2','Booking page']},{r:'Unexpected but relevant',n:'Mokonuts',p:'Different in style, same slow-cinema mood.',o:'Overlap on Film',s:3.2,v:['L1','Hours · Google']}];
+function drawE(){
+  blob(document.getElementById('eMain'),1,EC);
+  document.getElementById('eRes').innerHTML=ER.map((r,i)=>`<article class="rc"><canvas width="192" height="192" data-e="${i}" aria-label="Forma di ${r.n}"></canvas><span class="role">${r.r}</span><h3>${r.n}</h3><p>${r.p}</p><span class="ov">${r.o}</span><span class="v"><i>${r.v[0]}</i>${r.v[1]}</span></article>`).join('');
+  document.querySelectorAll('[data-e]').forEach(cv=>blob(cv,ER[+cv.dataset.e].s,EC,1));
+}
+
+/* ---- F mixer ---- */
+const FT=[{l:'Natural wine',v:90},{l:'Neo-bistro',v:75},{l:'Lively',v:60},{l:'Price €€€',v:15},{l:'Hard to book',v:5}];
+const FP=[{n:'Le Servan',p:'Neo-bistro · 11e · €€',w:[1,1,.6,.2,.2],v:['L1','Hours · Google']},{n:'Le Baratin',p:'Bistro · 20e · €€',w:[1,.3,1,.2,.1],v:['L2','Booking page']},{n:'Mokonuts',p:'Café-bistro · 11e · €€',w:[.4,.6,.8,.3,.3],v:['L1','Hours · Google']},{n:'Septime La Cave',p:'Wine bar · 11e · €€',w:[1,.5,.7,.4,.1],v:['L0','Qloo only']}];
+let prev=null;
+function drawF(){
+  const desk=document.getElementById('fDesk');
+  if(!desk.querySelector('.fader')) desk.insertAdjacentHTML('beforeend',FT.map((t,i)=>`<label class="fader"><span class="lab">${t.l}</span><input type="range" id="f${i}" min="0" max="100" value="${t.v}" data-f="${i}"><span class="st" id="fs${i}"></span></label>`).join(''));
+  FT.forEach((t,i)=>{const s=document.getElementById('fs'+i);const k=t.v>60?'k':t.v<40?'c':'n';s.className='st '+k;s.textContent={k:'Keep',c:'Change',n:'Ignore'}[k]});
+  const sc=FP.map((p,i)=>({i,s:p.w.reduce((a,w,j)=>a+w*(FT[j].v-50),0)})).sort((a,b)=>b.s-a.s);
+  const order=sc.map(x=>x.i);
+  document.getElementById('fList').innerHTML=order.slice(0,3).map((pi,r)=>{const p=FP[pi];const was=prev?prev.indexOf(pi):r;const d=was-r;
+    return `<div class="row"><span class="rank">${r+1}</span><div><h3>${p.n}</h3><p>${p.p}</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:end"><span class="move">${d>0?'▲ up '+d:d<0?'▼ down '+(-d):'—'}</span><span class="v"><i>${p.v[0]}</i>${p.v[1]}</span></div></div>`}).join('');
+  prev=order;
+}
+
+function show(d){
+  document.querySelectorAll('[data-view]').forEach(s=>s.hidden=s.dataset.view!==d);
+  document.querySelectorAll('[data-d]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.d===d));
+  document.getElementById('idea').innerHTML=IDEA[d].map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join('');
+  ({D:drawD,E:drawE,F:drawF})[d]();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.d)show(b.dataset.d);
+  if(b.dataset.dt){const t=DT[+b.dataset.dt];t.k=!t.k;drawD()}});
+document.addEventListener('input',e=>{if(e.target.dataset.f!==undefined){FT[+e.target.dataset.f].v=+e.target.value;drawF()}});
+addEventListener('resize',()=>requestAnimationFrame(threads));
+show('D');
+</script>

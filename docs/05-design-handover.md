@@ -62,3 +62,9 @@ Font dei vecchi A2: Bricolage Grotesque, DM Mono, Instrument Serif. **Non usare 
 - Passo 5: naming e logo restano aperti; TPD provvisorio preservato.
 - Verifica: sintassi JS e smoke route Node; browser integrato blocca file://, quindi nessuna accettazione visiva dichiarata.
 - Prima del backend: stato chiave Qloo, otto query, città effettive, stack e autenticazione. Nessun provider attivato o messaggio inviato.
+
+## Continuazione ticket — 20 ottobre
+
+Registro ordinato: `docs/07-ticket-board.md`. Nessuna issue GitHub trovata nella ricerca corrente. D03 aggiunge validazione dei dati locali, deduplicazione, cancellazione con conferma e avviso storage indisponibile. Verifica: `node scripts/check-prototype.cjs` (logica e 17 route, non browser).
+
+E01 attende la risposta alla domanda sullo stack; I03 attende lo stato della chiave Qloo. Naming e login restano aperti.

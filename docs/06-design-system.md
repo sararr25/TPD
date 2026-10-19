@@ -47,3 +47,7 @@ Controllo sintassi JS e smoke check delle route con DOM minimale Node; non equiv
 ## Prossima implementazione
 
 Prima dello scaffold: confermare stack e stato credenziali; eseguire le otto query Qloo e scegliere città/categorie sulla copertura effettiva. Nessun invio Discord, attivazione affiliati o accettazione termini effettuato in questo incremento.
+
+### Aggiornamento D03
+
+Cancellazione locale tramite dialog di conferma, limitata a `tpd-design-v1`. Dati ricaricati validati e salvataggi deduplicati. Se lo storage non è scrivibile il prototipo dichiara che le modifiche durano solo nella sessione. Verifica ripetibile: `node scripts/check-prototype.cjs`; nessuna nuova prova browser.

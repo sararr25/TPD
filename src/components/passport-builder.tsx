@@ -1,0 +1,16 @@
+'use client';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { PassportCard } from './passport-card';
+import { PASSPORT_KEY, SIGNALS, parsePassport } from '@/lib/passport';
+export function PassportBuilder() {
+ const [selected, setSelected] = useState<string[]>([]);
+ const [ready,setReady] = useState(false);
+ const [status,setStatus] = useState('');
+ const [guest,setGuest] = useState(false);
+ useEffect(()=>{ try{setSelected(parsePassport(localStorage.getItem(PASSPORT_KEY)))}catch{setStatus('Browser storage is unavailable. Your choices will last for this visit.')}setGuest(new URLSearchParams(location.search).has('guest'));setReady(true); },[]);
+ function save(next:string[]) {setSelected(next);try{localStorage.setItem(PASSPORT_KEY,JSON.stringify(next));setStatus('Saved on this browser.')}catch{setStatus('Could not save on this browser. Your choices will last for this visit.')}}
+ function toggle(value:string){if(selected.includes(value))save(selected.filter(x=>x!==value));else if(selected.length<5)save([...selected,value]);else setStatus('Choose up to 5. Remove one to add another.');}
+ function erase(){try{localStorage.removeItem(PASSPORT_KEY);setSelected([]);setStatus('Local Passport deleted.')}catch{setSelected([]);setStatus('Choices cleared for this visit. Use browser settings to clear stored data.')} (document.querySelector('#erase-passport') as HTMLDialogElement).close();}
+ return <><div className="grid"><section><span className="meta">01 / Your cultural identity</span><h1>A few favourites.<br/><em>A starting point.</em></h1><p>Choose 3–5 things you love. You can change them later.</p><p className="muted">Sample choices for now. Qloo entity search is not connected.</p>{guest&&<div className="paper"><h3>Try a guest Passport</h3><div className="actions">{['Late-night listener','Art-house wanderer','Slow city explorer'].map((name,i)=><button key={name} className="stamp" disabled={!ready} onClick={()=>save([[SIGNALS[0],SIGNALS[1],SIGNALS[7]],[SIGNALS[2],SIGNALS[6],SIGNALS[4]],[SIGNALS[3],SIGNALS[5],SIGNALS[7]]][i])}>{name}</button>)}</div></div>}<div className="chips">{SIGNALS.map(value=><button className="choice" key={value} disabled={!ready} aria-pressed={selected.includes(value)} onClick={()=>toggle(value)}>{value}</button>)}</div><p className="meta">{selected.length} of 5 selected</p><p role="status">{status}</p><div className="actions">{ready&&selected.length>=3?<Link className="ticket" href="/swap">This feels like me ↗</Link>:<button className="ticket" disabled>Choose at least 3</button>}</div><p className="muted">These choices stay on this browser. No account or server storage.</p><button className="text" disabled={!ready} onClick={()=> (document.querySelector('#erase-passport') as HTMLDialogElement).showModal()}>Delete my local Passport</button></section><PassportCard signals={selected}/></div><dialog id="erase-passport"><h2>Clear your local edition?</h2><p>Your selected favourites will be removed from this browser. This cannot be undone.</p><div className="actions"><button className="stamp" onClick={erase}>Delete local Passport</button><button className="text" onClick={()=> (document.querySelector('#erase-passport') as HTMLDialogElement).close()}>Keep my Passport</button></div></dialog></>;
+}

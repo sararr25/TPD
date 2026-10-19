@@ -66,7 +66,7 @@ Toggle sulla schermata dei risultati: **"Cosa farebbe un LLM senza Qloo"**. Due 
 | Elemento di prodotto | Uso di Qloo (da confermare con la chiave) |
 |---|---|
 | Passport | Ricerca/risoluzione entità `artist`, `movie`, `tv_show`, `book`, `place` → `signal.interests.entities` |
-| Riferimento "Cosa volevi?" | `signal.interests.entities.query` (nome + indirizzo, `resolve_to`: place) |
+| Riferimento "Cosa volevi?" | `/search` con conferma identità/indirizzo → ID in `signal.interests.entities` (Insights GET; guida hackathon riletta il 20 ottobre) |
 | Chip Keep/Change | Tag del riferimento → `signal.interests.tags` con peso (Keep) e `filter.exclude.tags` (Change) |
 | Vincolo di città | `filter.location.query` o locality con `radius=0` per restare nei confini |
 | Cambia notorietà | `bias.trends` e `filter.popularity.max` |

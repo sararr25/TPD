@@ -85,7 +85,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 | 4.7 | **Le risposte Qloo non si salvano in un repository pubblico.** Cache e casi precalcolati (confronto Qloo vs LLM) stanno in un database privato lato server; il repo contiene solo gli script per rigenerarli. |
 | 4.8 | Nessuno scraping e nessuna ricostruzione di un database dalle API Qloo; retry limitati. |
 | 4.9 | L'adapter Qloo è sostituibile (un solo punto di accesso), così un cambio di accesso non tocca il resto. |
-| 4.10 | Stack proposto: **Next.js + TypeScript su Vercel** (non ancora confermato). |
+| 4.10 | Stack confermato il 20 ottobre: **Next.js + TypeScript su Vercel**. Scaffold locale completato; deploy non eseguito. |
 
 ## 5. Dati operativi e verifica
 
@@ -112,12 +112,12 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 
 | # | Cosa | Stato |
 |---|---|---|
-| 7.1 | Chiave API Qloo | In attesa (richiesta inviata) |
+| 7.1 | Chiave API Qloo | Configurata localmente; accesso HTTP verificato il 20 ottobre, docs/08 |
 | 7.2 | Dati effettivi Qloo per categoria e paese; limiti e parametri abilitati | Da chiedere su `#api-help` (bozza in `docs/03`) e da provare con le 8 query di `docs/01`, sezione 2.5 |
 | 7.3 | Viator Affiliate Basic: attivazione e copertura nelle 6 destinazioni | Da fare |
 | 7.4 | Copertura Ticketmaster in Portogallo, Francia, Spagna | Da fare |
 | 7.5 | Metodo di login | Da decidere |
-| 7.6 | Conferma dello stack (Next.js + Vercel) | Da decidere |
+| 7.6 | Conferma dello stack (Next.js + Vercel) | Confermato dall’utente il 20 ottobre; scaffold locale |
 | 7.7 | Nome del prodotto e identità visiva ("TPD" è provvisorio) | Da decidere; ricerca e moodboard in `docs/04` |
 | 7.8 | Quota e rate limit effettivi della chiave | Dopo la chiave |
 | 7.9 | Test utenti del problema ("il posto che volevo era pieno") e interviste | Da pianificare |
@@ -132,3 +132,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 6. Confronto Qloo vs LLM, Transfer e musei/cultura.
 7. Login, collezioni, feedback, scheda condivisibile.
 8. Altre categorie solo se i dati reggono; rifinitura, stati di errore, README, deploy, descrizione in inglese.
+
+## Aggiornamento tecnico — 20 ottobre 2026
+
+La guida hackathon richiede GET per Insights: risolvere il riferimento con `/search` e usare ID, senza affidarsi alla risoluzione via body POST descritta nelle API generali. Parametro Resy corretto: `filter.external.exists=resy`. Prime prove Qloo e limiti in `docs/08-qloo-verification.md`; nessuna città ancora dichiarata supportata.

@@ -13,9 +13,9 @@ Aggiornato: 20 ottobre 2026. Fonte: DECISIONS.md sezioni 7–8, docs/02 sezione 
 | P01 | Nome e logo | Aperto | Decisione utente; mantenere TPD provvisorio |
 | I01 | Richiesta dettagli Qloo / #api-help | Da fare esternamente | Bozza in docs/03; nessun invio effettuato |
 | I02 | Attivazione Viator Basic | Da fare esternamente | Account, termini e accesso provider; nessuna attivazione effettuata |
-| I03 | Otto verifiche API Qloo | In attesa della chiave | Accesso HTTP, risoluzione, copertura, tag, explainability, differenze filtri, limiti; aggiornare i vecchi scenari Bangkok/Phu Quoc con le destinazioni di DECISIONS 2 prima di eseguire |
+| I03 | Otto verifiche API Qloo | Parziale, docs/08 | Accesso HTTP, risoluzione, copertura, tag, explainability, differenze filtri, limiti; aggiornare i vecchi scenari Bangkok/Phu Quoc con le destinazioni di DECISIONS 2 prima di eseguire |
 | I04 | Copertura Ticketmaster e Viator | In attesa accessi | Evidenza per paese/categoria, nessuna copertura promessa prima delle prove |
-| E01 | Scaffold Next.js + TypeScript | In attesa conferma stack | Domanda inviata il 20 ottobre; docs/06 richiede conferma prima dello scaffold |
+| E01 | Scaffold Next.js + TypeScript | Completato localmente | Stack confermato; build, typecheck, test e smoke HTTP passano. Deploy/QA browser aperti |
 | E02 | Adapter Qloo e cache privata | Dipende da E01/I03 | Solo server, retry limitati, nessuna risposta Qloo nel repo pubblico |
 | E03 | Passport e Restaurant Swap reali | Dipende da E02 | Ricerca entità, tag Keep/Change, vincoli, tre ruoli, provenienza, stati errore |
 | E04 | Benchmark Qloo vs LLM | Dipende da E03 | Casi privati, stessi vincoli, numeri reali, 15–20 richieste |
@@ -33,4 +33,4 @@ Verifica ripetibile dalla root: `node scripts/check-prototype.cjs`. Lo script us
 
 ## Prossimo passo
 
-Ricevuta la scelta stack, avviare E01. La domanda sullo stato della chiave Qloo determina quando si può affrontare I03. Non scegliere il metodo di login né città definitive senza i dati richiesti.
+Completare I03: categorie, confini, tag e filtri esterni; poi E02 adapter unico e cache privata. E01 completato: app locale con landing, Passport, ospiti, stato Swap e health. Metodo login e città definitive ancora aperti.

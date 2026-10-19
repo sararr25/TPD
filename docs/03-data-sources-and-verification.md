@@ -39,7 +39,7 @@ La pagina non elenca quali dati ci siano per ristoranti, hotel, eventi, né la c
 **Quindi la risposta alla tua domanda è no: non dice quali dati Qloo ha a disposizione per Asia, hotel o eventi.** Si scopre in due modi: chiedendolo su `#api-help` e provando le query con la chiave.
 
 ### Messaggio da inviare su #api-help (bozza in inglese)
-> Hi! We're building a taste-based "alternative discovery" app. Before we commit scope, could you tell us (1) which categories have data in the hackathon environment for `urn:entity:place` — restaurants, bars, hotels, museums, attractions, neighborhoods; (2) how deep the coverage is for Japan (Tokyo/Kyoto/Osaka), Vietnam (Hanoi/Ho Chi Minh City/Da Nang), New York, Paris, Lisbon/Porto and Barcelona/Madrid; (3) whether `filter.external.*` (Resy, Michelin, Tripadvisor), `bias.trends`, `diversify.*` and `explainability` are enabled for hackathon keys; (4) whether events or shows exist as entities; (5) current rate limits for our key. Thanks!
+> Hi! We're building a taste-based "alternative discovery" app. Before we commit scope, could you tell us (1) which categories have data in the hackathon environment for `urn:entity:place` — restaurants, bars, hotels, museums, attractions, neighborhoods; (2) how deep the coverage is for Japan (Tokyo/Kyoto/Osaka), Vietnam (Hanoi/Ho Chi Minh City/Da Nang), New York, Paris, Lisbon/Porto and Barcelona/Madrid; (3) whether `filter.external.exists` (Resy/Michelin) e filtri rating Tripadvisor documentati, `bias.trends`, `diversify.*` and `explainability` are enabled for hackathon keys; (4) whether events or shows exist as entities; (5) current rate limits for our key. Thanks!
 
 ---
 
@@ -144,3 +144,7 @@ Tutta la tabella dipende da due cose che non conosco ancora: **quanti dati ha Ql
 3. All'arrivo della chiave Qloo: le 8 query del documento 01 (sezione 2.5), adesso su `hackathon.api.qloo.com`.
 4. Verificare la copertura Ticketmaster per Portogallo, Francia e Spagna.
 5. Decidere città definitive per ogni paese in base ai risultati.
+
+## Verifica del 20 ottobre
+
+Guida hackathon riletta integralmente e accesso HTTP provato. Insights richiede GET; risoluzione riferimento tramite `/search`, poi ID. Per Resy usare `filter.external.exists=resy`, non `filter.external.resy.exists=true`. Stato e limiti delle query in `docs/08-qloo-verification.md`; copertura definitiva ancora aperta.

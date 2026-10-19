@@ -51,3 +51,7 @@ Prima dello scaffold: confermare stack e stato credenziali; eseguire le otto que
 ### Aggiornamento D03
 
 Cancellazione locale tramite dialog di conferma, limitata a `tpd-design-v1`. Dati ricaricati validati e salvataggi deduplicati. Se lo storage non è scrivibile il prototipo dichiara che le modifiche durano solo nella sessione. Verifica ripetibile: `node scripts/check-prototype.cjs`; nessuna nuova prova browser.
+
+### Scaffold locale
+
+Stack confermato il 20 ottobre. App in `src/app`, componenti in `src/components`; token CSS condivisi con il prototipo. Passport Next.js usa `tpd-passport-v1`, separato da `tpd-design-v1` del prototipo storico. Font caricati via CSS da Google Fonts con fallback; rendering font e QA browser ancora da verificare. Stato provider in docs/08.

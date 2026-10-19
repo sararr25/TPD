@@ -68,3 +68,7 @@ Font dei vecchi A2: Bricolage Grotesque, DM Mono, Instrument Serif. **Non usare 
 Registro ordinato: `docs/07-ticket-board.md`. Nessuna issue GitHub trovata nella ricerca corrente. D03 aggiunge validazione dei dati locali, deduplicazione, cancellazione con conferma e avviso storage indisponibile. Verifica: `node scripts/check-prototype.cjs` (logica e 17 route, non browser).
 
 E01 attende la risposta alla domanda sullo stack; I03 attende lo stato della chiave Qloo. Naming e login restano aperti.
+
+## Scaffold e Qloo — 20 ottobre
+
+Utente conferma Next.js/TypeScript su Vercel e indica il file .env del worktree. E01 completato localmente: landing, Passport con 3–5 scelte locali, tre ospiti, cancellazione e Swap non integrato. Build, TypeScript, test e sei controlli HTTP passano. Nessun deploy o nuova prova browser. I03 parziale: accesso API e prime query reali in docs/08. Guida hackathon riletta integralmente; GET Insights, risoluzione entità separata, parametro Resy corretto. Prossimo passo: audit copertura/categorie e poi adapter/cache privata.

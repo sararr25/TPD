@@ -1,0 +1,56 @@
+# TPD
+
+Taste-powered alternative discovery. Working name; early implementation for the Qloo hackathon.
+
+## Local development
+
+Node.js 22.19+ and npm are required. Stack: Next.js App Router, TypeScript, React; intended hosting: Vercel (not deployed yet).
+
+```sh
+npm ci
+cp .env.example .env.local
+# Configure the server-only Qloo credentials in .env.local.
+npm run dev
+```
+
+Open http://localhost:3000. Current routes: `/`, `/passport`, `/passport?guest=1`, `/swap`, `/api/health`.
+
+Landing and a browser-local Passport with 3–5 sample choices, three guest profiles and explicit deletion are implemented. Passport choices are not resolved Qloo entities yet. Swap currently shows the pending-integration state, without invented recommendations. Authentication, real search, ranking, private hosted cache and collections are not connected.
+
+The HTML design walkthrough remains in `design-mockups/A4-product-prototype.html`; it is separate from the Next.js app and uses its own local storage key.
+
+## Checks
+
+```sh
+npm test
+npm run build
+npm run typecheck
+```
+
+Tests cover local-data parsing and the earlier HTML prototype logic. They do not prove browser rendering or provider quality.
+
+## Qloo checks
+
+```sh
+npm run verify:qloo
+npm run verify:qloo-features
+```
+
+These scripts make limited, sequential live API requests and consume quota. The feature probe requires the access probe first. No automatic retries. Raw responses and diagnostic summaries are saved only in ignored `.private/qloo/` with restricted file permissions. Never commit or upload these responses. Do not use that directory as a durable cache on Vercel; hosted private storage remains to be chosen.
+
+Credentials stay in `.env.local` or server environment variables. Never use `NEXT_PUBLIC_` for secrets. The scripts reject hosts other than `https://hackathon.api.qloo.com`, send `X-Api-Key`, reject redirects and use GET query parameters. No app route currently calls Qloo, so no public quota-consuming API has been exposed.
+
+## Vercel
+
+Import the repository using the Next.js preset and npm lockfile. Configure Qloo secrets as server environment variables when the integration is ready. No deployment or Vercel project was created by this increment.
+
+## Project state
+
+- `DECISIONS.md`: product decisions.
+- `docs/05-design-handover.md`: handover.
+- `docs/07-ticket-board.md`: implementation board.
+- `docs/08-qloo-verification.md`: access checks and remaining evidence.
+
+Implementation follows the [Next.js installation guide](https://nextjs.org/docs/app/getting-started/installation). Qloo usage follows the [hackathon developer guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide) and [parameter reference](https://github.com/qloo/docs-public/blob/main/reference/insights-api-deep-dive.md).
+
+A project license has not yet been chosen; open-source submission readiness remains open.

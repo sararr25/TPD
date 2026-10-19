@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TPD · A · Passport and stamps</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&amp;family=DM+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#15172B}a:hover{color:#C2321A}
+</style>
+<div style="width: 100%; box-sizing: border-box; background: #EFEBE3; color: #15172B; font-family: 'Bricolage Grotesque', sans-serif">
+
+  <!-- NAV -->
+  <div style="max-width: 1344px; margin: 0 auto; padding: 0 48px; box-sizing: border-box">
+    <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0">
+      <div style="display: flex; align-items: center; gap: 44px; flex-wrap: wrap">
+        <span style="display: flex; align-items: center; gap: 10px">
+          <span style="width: 40px; height: 40px; border-radius: 50%; border: 2.5px solid #C2321A; color: #C2321A; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; transform: rotate(-12deg)">TPD</span>
+          <span style="font-weight: 800; font-size: 24px; letter-spacing: -0.03em">TPD</span>
+        </span>
+        <nav style="display: flex; gap: 28px; font-size: 16px; font-weight: 600; flex-wrap: wrap">
+          <a href="#how" style="text-decoration: none">How it works</a>
+          <a href="#swap" style="text-decoration: none">Swap</a>
+          <a href="#passport" style="text-decoration: none">Passport</a>
+          <a href="#compare" style="text-decoration: none">Qloo vs LLM</a>
+        </nav>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <a href="#" style="font-size: 16px; font-weight: 600; text-decoration: none; padding: 0 12px">Log in</a>
+        <a href="#swap" style="height: 46px; padding: 0 22px; border-radius: 999px; background: #15172B; color: #F5F2EA; display: flex; align-items: center; font-weight: 800; font-size: 15px; text-decoration: none">Try the demo</a>
+      </div>
+    </header>
+  </div>
+
+  <!-- HERO -->
+  <section style="max-width: 1344px; margin: 0 auto; padding: 40px 48px 80px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+    <div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 26px">
+      <span style="font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #1E2A78">TASTE-POWERED SWAPS · PARIS · TOKYO · NEW YORK</span>
+      <h1 style="margin: 0; font-size: clamp(52px, 5.6vw, 84px); font-weight: 800; line-height: 0.95; letter-spacing: -0.045em">The place you wanted is full. Keep what you <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: #C2321A; letter-spacing: -0.02em">loved</span> about it.</h1>
+      <p style="margin: 0; font-size: 20px; line-height: 1.5; color: #3A3C52; max-width: 560px">Tell us the restaurant, museum or neighbourhood that didn't work out. Your Taste Passport finds three places that feel the same, and tells you honestly what's different.</p>
+
+      <form style="background: #FBF9F4; border: 1.5px solid #15172B; border-radius: 26px; padding: 22px; display: flex; flex-direction: column; gap: 16px; box-shadow: 8px 8px 0 #15172B; max-width: 620px">
+        <div style="display: flex; flex-wrap: wrap; gap: 12px">
+          <label style="flex: 2 1 260px; display: flex; flex-direction: column; gap: 6px">
+            <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #4A4C5E">THE PLACE YOU WANTED</span>
+            <input type="text" value="Bistrot Nº 7" style="height: 54px; border-radius: 14px; border: 1.5px solid #CFC7B6; padding: 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; color: #15172B; background: #FFFFFF">
+          </label>
+          <label style="flex: 1 1 160px; display: flex; flex-direction: column; gap: 6px">
+            <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #4A4C5E">CITY</span>
+            <input type="text" value="Paris" style="height: 54px; border-radius: 14px; border: 1.5px solid #CFC7B6; padding: 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; color: #15172B; background: #FFFFFF">
+          </label>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #4A4C5E; margin-right: 4px">WHAT WENT WRONG?</span>
+          <button type="button" style="height: 38px; padding: 0 14px; border-radius: 999px; border: 0; background: #15172B; color: #F5F2EA; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer">Fully booked</button>
+          <button type="button" style="height: 38px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #CFC7B6; background: transparent; color: #15172B; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer">Too touristy</button>
+          <button type="button" style="height: 38px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #CFC7B6; background: transparent; color: #15172B; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer">Too pricey</button>
+          <button type="button" style="height: 38px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #CFC7B6; background: transparent; color: #15172B; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer">Closed today</button>
+        </div>
+        <button type="button" style="height: 60px; border: 0; border-radius: 999px; background: #C2321A; color: #FFFFFF; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 19px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px">
+          Find my swap
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+      <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: #4A4C5E">No account needed · a demo Passport is ready for you</span>
+    </div>
+
+    <!-- passport visual -->
+    <div id="passport" style="flex: 1 1 480px; min-width: 0; position: relative; height: 600px">
+      <div style="position: absolute; left: 8%; top: 30px; width: 360px; height: 500px; background: #1E2A78; border-radius: 24px; transform: rotate(-8deg); box-shadow: 0 40px 60px -30px rgba(21,23,43,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; color: #D9C77A">
+        <span style="font-family: 'DM Mono', monospace; font-size: 15px; letter-spacing: 0.3em">TASTE PASSPORT</span>
+        <svg width="110" height="110" viewBox="0 0 110 110" fill="none" stroke="#D9C77A" stroke-width="2" aria-hidden="true"><circle cx="55" cy="55" r="50"/><circle cx="55" cy="55" r="34"/><path d="M5 55h100M55 5c-18 16-18 84 0 100M55 5c18 16 18 84 0 100"/></svg>
+        <span style="font-weight: 800; font-size: 26px; letter-spacing: 0.04em">TPD</span>
+      </div>
+      <div style="position: absolute; right: 2%; top: 0; width: 420px; background: #FBF9F4; border-radius: 22px; transform: rotate(4deg); box-shadow: 0 40px 60px -30px rgba(21,23,43,0.55); border: 1px solid #DDD5C6; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.16em; color: #1E2A78">HOLDER</span>
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; color: #4A4C5E">Nº 0427 · DEMO</span>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: center">
+          <div style="width: 76px; height: 92px; border-radius: 10px; background: repeating-linear-gradient(135deg, #E4DDCF 0 8px, #EDE7DB 8px 16px); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; color: #6B6D7E">PHOTO</div>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 40px; font-weight: 800; letter-spacing: -0.04em; line-height: 1">Mara L.</span>
+            <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 20px; color: #3A3C52">low-lit rooms, loud records</span>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px">
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #4A4C5E">MUSIC</span><span style="font-size: 16px; font-weight: 600">Khruangbin, Rosalía</span></div>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #4A4C5E">FILM</span><span style="font-size: 16px; font-weight: 600">In the Mood for Love</span></div>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #4A4C5E">BOOKS</span><span style="font-size: 16px; font-weight: 600">Sally Rooney</span></div>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #4A4C5E">PLACES LOVED</span><span style="font-size: 16px; font-weight: 600">Sant Antoni, BCN</span></div>
+        </div>
+        <div style="position: relative; height: 150px; border-top: 1px dashed #CFC7B6">
+          <div style="position: absolute; left: 4px; top: 18px; width: 112px; height: 112px; border-radius: 50%; border: 2.5px solid #C2321A; color: #C2321A; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-12deg); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; gap: 2px; text-align: center"><span>PARIS 11e</span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 18px">BISTRO</span><span>26·10·26</span></div>
+          <div style="position: absolute; left: 132px; top: 30px; width: 130px; height: 82px; border-radius: 8px; border: 2.5px solid #1E2A78; color: #1E2A78; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(7deg); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; gap: 2px"><span>TOKYO</span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 18px">GALLERY</span><span>02·11·26</span></div>
+          <div style="position: absolute; right: 4px; top: 22px; width: 96px; height: 96px; border-radius: 50%; border: 2px dashed #8A8C9C; color: #5E6072; display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(-4deg); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em">NEXT<br>STAMP</div>
+        </div>
+        <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #6B6D7E; line-height: 1.5">P&lt;TPD&lt;&lt;LOWLIT&lt;NATURALWINE&lt;VINYL&lt;&lt;&lt;&lt;</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAG STRIP -->
+  <div aria-hidden="true" style="background: #15172B; color: #F5F2EA; padding: 18px 0; overflow: hidden; white-space: nowrap; font-family: 'DM Mono', monospace; font-size: 15px; letter-spacing: 0.1em">
+    <span style="display: inline-block; padding-left: 48px">LOW-LIT ✦ NATURAL WINE ✦ VINYL BARS ✦ SMALL GALLERIES ✦ NEIGHBOURHOOD SPOTS ✦ SLOW CINEMA ✦ LATE KITCHENS ✦ LOW-LIT ✦ NATURAL WINE ✦ VINYL BARS ✦ SMALL GALLERIES ✦ NEIGHBOURHOOD SPOTS ✦</span>
+  </div>
+
+  <!-- HOW -->
+  <section id="how" style="max-width: 1344px; margin: 0 auto; padding: 96px 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 44px">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px">
+      <h2 style="margin: 0; font-size: clamp(40px, 4vw, 60px); font-weight: 800; letter-spacing: -0.04em; line-height: 1; max-width: 720px">Three stamps from <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400">"it's full"</span> to "we're going here".</h2>
+      <span style="font-family: 'DM Mono', monospace; font-size: 13px; color: #4A4C5E; max-width: 340px; line-height: 1.5">No itineraries. No booking promises. One good alternative, explained.</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px">
+      <div style="background: #FBF9F4; border: 1px solid #DDD5C6; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+        <span style="width: 74px; height: 74px; border-radius: 50%; border: 2.5px solid #C2321A; color: #C2321A; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 30px; transform: rotate(-10deg)">01</span>
+        <h3 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em">Name the place</h3>
+        <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #3A3C52">The restaurant, museum or area you actually wanted. Not a keyword: that exact place.</p>
+      </div>
+      <div style="background: #FBF9F4; border: 1px solid #DDD5C6; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+        <span style="width: 92px; height: 66px; border-radius: 8px; border: 2.5px solid #1E2A78; color: #1E2A78; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 30px; transform: rotate(6deg)">02</span>
+        <h3 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em">Keep or change</h3>
+        <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #3A3C52">We show what that place is known for. You keep what you loved and change what didn't work.</p>
+      </div>
+      <div style="background: #FBF9F4; border: 1px solid #DDD5C6; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+        <span style="width: 92px; height: 66px; border-radius: 40px; border: 2.5px solid #14523F; color: #14523F; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 30px; transform: rotate(-4deg)">03</span>
+        <h3 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em">Get three swaps</h3>
+        <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #3A3C52">The closest match, the practical one and a surprise. Each says what we checked and what we didn't.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS WORKSPACE -->
+  <section id="swap" style="background: #E6E0D4; border-top: 1px solid #D6CFC1; border-bottom: 1px solid #D6CFC1">
+    <div style="max-width: 1344px; margin: 0 auto; padding: 80px 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #1E2A78">YOUR SWAP · PARIS 11e · TONIGHT</span>
+          <h2 style="margin: 0; font-size: clamp(36px, 3.6vw, 52px); font-weight: 800; letter-spacing: -0.04em; line-height: 1">Instead of <span style="text-decoration: line-through; text-decoration-color: #C2321A; text-decoration-thickness: 4px">Bistrot Nº 7</span></h2>
+        </div>
+        <a href="#" style="font-family: 'DM Mono', monospace; font-size: 13px">What would an LLM say? →</a>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start">
+        <aside style="flex: 1 1 300px; max-width: 360px; background: #FBF9F4; border: 1px solid #D6CFC1; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+          <h3 style="margin: 0; font-size: 20px; font-weight: 800">What Bistrot Nº 7 is known for</h3>
+          <p style="margin: 0; font-size: 14px; color: #4A4C5E; line-height: 1.45">Tap to keep or change. Results update on every tap.</p>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 14px; background: #15172B; color: #F5F2EA"><span style="font-weight: 600">Low-lit room</span><span style="font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 9px; border-radius: 999px; background: #F5F2EA; color: #15172B">KEEP</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 14px; background: #15172B; color: #F5F2EA"><span style="font-weight: 600">Natural wine</span><span style="font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 9px; border-radius: 999px; background: #F5F2EA; color: #15172B">KEEP</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 14px; border: 1.5px solid #C2321A; color: #C2321A"><span style="font-weight: 600">Price €€€</span><span style="font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 9px; border-radius: 999px; background: #C2321A; color: #FFFFFF">CHANGE</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 14px; border: 1.5px solid #C2321A; color: #C2321A"><span style="font-weight: 600">Tasting menu</span><span style="font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 9px; border-radius: 999px; background: #C2321A; color: #FFFFFF">CHANGE</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 14px; border: 1.5px dashed #8A8C9C; color: #4A4C5E"><span style="font-weight: 600">Same street</span><span style="font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 9px; border-radius: 999px; border: 1px solid #8A8C9C">IGNORE</span></div>
+          </div>
+          <div style="border-top: 1px dashed #CFC7B6; padding-top: 14px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #4A4C5E">HARD LIMITS</span>
+            <span style="font-size: 15px; font-weight: 600">Paris 11e · max €€ · tonight</span>
+          </div>
+        </aside>
+
+        <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+          <!-- ticket 1 -->
+          <article style="display: flex; flex-wrap: wrap; background: #FBF9F4; border-radius: 22px; box-shadow: 0 24px 40px -30px rgba(21,23,43,0.6); overflow: hidden">
+            <div style="flex: 999 1 420px; padding: 26px 30px; display: flex; flex-direction: column; gap: 14px; position: relative">
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+                <span style="font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.1em; padding: 6px 10px; border: 2px solid #C2321A; color: #C2321A; border-radius: 6px; transform: rotate(-2deg)">CLOSEST CULTURAL MATCH</span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: #4A4C5E">Bistro · €€ · 6 min walk</span>
+              </div>
+              <h3 style="margin: 0; font-size: 44px; font-weight: 800; letter-spacing: -0.04em; line-height: 1">Maison Ardoise</h3>
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px">
+                <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #1E2A78">WHY IT MATCHES YOU</span><span style="font-size: 16px; line-height: 1.45">Same small candle-lit room and natural-wine list. Fans of Khruangbin and Wong Kar-wai over-index here.</span></div>
+                <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #1E2A78">WHAT'S DIFFERENT</span><span style="font-size: 16px; line-height: 1.45">Cheaper and louder. No tasting menu.</span></div>
+              </div>
+            </div>
+            <div style="flex: 1 1 240px; padding: 26px 24px; border-left: 2px dashed #CFC7B6; display: flex; flex-direction: column; gap: 10px; background: #F4F0E6">
+              <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #1E2A78">WHAT WE VERIFIED</span>
+              <span style="font-family: 'DM Mono', monospace; font-size: 13px">✓ L0 taste match</span>
+              <span style="font-family: 'DM Mono', monospace; font-size: 13px">✓ L1 open tonight 19–23</span>
+              <span style="font-family: 'DM Mono', monospace; font-size: 13px; color: #4A4C5E">○ L2 booking page: check it</span>
+              <div style="display: flex; gap: 8px; margin-top: auto; padding-top: 8px">
+                <button style="flex: 1; height: 44px; border-radius: 999px; border: 0; background: #1E2A78; color: #FFFFFF; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 14px; cursor: pointer">Save</button>
+                <button style="flex: 1; height: 44px; border-radius: 999px; border: 1.5px solid #15172B; background: transparent; color: #15172B; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer">Map</button>
+              </div>
+            </div>
+          </article>
+          <!-- ticket 2 -->
+          <article style="display: flex; flex-wrap: wrap; background: #FBF9F4; border-radius: 22px; box-shadow: 0 24px 40px -30px rgba(21,23,43,0.6); overflow: hidden">
+            <div style="flex: 999 1 420px; padding: 24px 30px; display: flex; flex-direction: column; gap: 12px">
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+                <span style="font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.1em; padding: 6px 10px; border: 2px solid #1E2A78; color: #1E2A78; border-radius: 6px; transform: rotate(1.5deg)">BEST PRACTICAL MATCH</span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: #4A4C5E">Wine bar · €€ · 3 min walk</span>
+              </div>
+              <h3 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.04em; line-height: 1">Le Verre Bleu</h3>
+              <span style="font-size: 16px; line-height: 1.45; color: #3A3C52"><strong style="color: #15172B">Why you:</strong> natural wine, dim light, walk-ins. <strong style="color: #15172B">Different:</strong> small plates, no full dinner.</span>
+            </div>
+            <div style="flex: 1 1 240px; padding: 24px; border-left: 2px dashed #CFC7B6; display: flex; flex-direction: column; gap: 8px; background: #F4F0E6; font-family: 'DM Mono', monospace; font-size: 13px">
+              <span style="font-size: 11px; letter-spacing: 0.12em; color: #1E2A78">WHAT WE VERIFIED</span>
+              <span>✓ L0 taste match</span><span>✓ L1 open now</span>
+            </div>
+          </article>
+          <!-- ticket 3 -->
+          <article style="display: flex; flex-wrap: wrap; background: #FBF9F4; border-radius: 22px; box-shadow: 0 24px 40px -30px rgba(21,23,43,0.6); overflow: hidden">
+            <div style="flex: 999 1 420px; padding: 24px 30px; display: flex; flex-direction: column; gap: 12px">
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+                <span style="font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.1em; padding: 6px 10px; border: 2px solid #14523F; color: #14523F; border-radius: 20px; transform: rotate(-1deg)">UNEXPECTED BUT RELEVANT</span>
+                <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: #4A4C5E">Record shop + bar · € · 9 min walk</span>
+              </div>
+              <h3 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.04em; line-height: 1">Disquaire Soir</h3>
+              <span style="font-size: 16px; line-height: 1.45; color: #3A3C52"><strong style="color: #15172B">Why you:</strong> your Khruangbin side, with a glass of wine. <strong style="color: #15172B">Different:</strong> it's not a restaurant.</span>
+            </div>
+            <div style="flex: 1 1 240px; padding: 24px; border-left: 2px dashed #CFC7B6; display: flex; flex-direction: column; gap: 8px; background: #F4F0E6; font-family: 'DM Mono', monospace; font-size: 13px">
+              <span style="font-size: 11px; letter-spacing: 0.12em; color: #1E2A78">WHAT WE VERIFIED</span>
+              <span>✓ L0 taste match</span><span>✓ L1 hours</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRANSFER -->
+  <section style="background: #1E2A78; color: #F5F2EA">
+    <div style="max-width: 1344px; margin: 0 auto; padding: 96px 48px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+      <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+        <span style="font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #D9C77A">ONE PASSPORT, ANY KIND OF PLACE</span>
+        <h2 style="margin: 0; font-size: clamp(40px, 4vw, 60px); font-weight: 800; letter-spacing: -0.04em; line-height: 1">Your taste travels <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: #D9C77A">across</span> restaurants, museums and neighbourhoods.</h2>
+        <p style="margin: 0; font-size: 18px; line-height: 1.5; color: #C9CCEB">The same three things you love drive every swap. A wine bar, a gallery and a whole area can come from one Passport.</p>
+      </div>
+      <div style="flex: 1 1 560px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 18px">
+        <div style="background: #F5F2EA; color: #15172B; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 12px; transform: rotate(-2deg)">
+          <span style="width: 64px; height: 64px; border-radius: 50%; border: 2.5px solid #C2321A; color: #C2321A; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; transform: rotate(-12deg)">EAT</span>
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #4A4C5E">RESTAURANT</span>
+          <span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">Maison Ardoise</span>
+          <span style="font-size: 14px; color: #3A3C52">from: low-lit · natural wine</span>
+        </div>
+        <div style="background: #F5F2EA; color: #15172B; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 12px; transform: rotate(1.5deg) translateY(20px)">
+          <span style="width: 78px; height: 56px; border-radius: 6px; border: 2.5px solid #1E2A78; color: #1E2A78; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; transform: rotate(6deg)">SEE</span>
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #4A4C5E">GALLERY</span>
+          <span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">Galerie Ordener</span>
+          <span style="font-size: 14px; color: #3A3C52">from: Wong Kar-wai · slow cinema</span>
+        </div>
+        <div style="background: #F5F2EA; color: #15172B; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 12px; transform: rotate(-1deg)">
+          <span style="width: 78px; height: 56px; border-radius: 30px; border: 2.5px solid #14523F; color: #14523F; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; transform: rotate(-5deg)">WANDER</span>
+          <span style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #4A4C5E">NEIGHBOURHOOD</span>
+          <span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">Belleville</span>
+          <span style="font-size: 14px; color: #3A3C52">from: Sant Antoni · vinyl bars</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QLOO VS LLM -->
+  <section id="compare" style="max-width: 1344px; margin: 0 auto; padding: 96px 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 36px">
+    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 760px">
+      <span style="font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #1E2A78">SAME REQUEST, TWO ENGINES</span>
+      <h2 style="margin: 0; font-size: clamp(36px, 3.6vw, 52px); font-weight: 800; letter-spacing: -0.04em; line-height: 1">What changes when taste is real data, not a guess.</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px">
+      <div style="background: #FBF9F4; border: 2px solid #15172B; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 8px 8px 0 #15172B">
+        <div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 24px; font-weight: 800">TPD with Qloo</span><span style="font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 10px; border-radius: 999px; background: #15172B; color: #F5F2EA">TASTE GRAPH</span></div>
+        <span style="font-family: 'DM Mono', monospace; font-size: 14px; border-bottom: 1px dashed #CFC7B6; padding-bottom: 10px">Maison Ardoise · Le Verre Bleu · Disquaire Soir</span>
+        <div style="display: flex; justify-content: space-between; font-size: 16px"><span>Respect your hard limits</span><strong style="font-family: 'DM Mono', monospace">[N] / 3</strong></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px"><span>Verifiable (L1 or more)</span><strong style="font-family: 'DM Mono', monospace">[N] / 3</strong></div>
+      </div>
+      <div style="background: transparent; border: 2px dashed #8A8C9C; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 14px; color: #3A3C52">
+        <div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 24px; font-weight: 800">LLM alone</span><span style="font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 10px; border-radius: 999px; border: 1px solid #8A8C9C">NO TASTE DATA</span></div>
+        <span style="font-family: 'DM Mono', monospace; font-size: 14px; border-bottom: 1px dashed #CFC7B6; padding-bottom: 10px">[LLM RESULT 1] · [LLM RESULT 2] · [LLM RESULT 3]</span>
+        <div style="display: flex; justify-content: space-between; font-size: 16px"><span>Respect your hard limits</span><strong style="font-family: 'DM Mono', monospace">[N] / 3</strong></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px"><span>Verifiable (L1 or more)</span><strong style="font-family: 'DM Mono', monospace">[N] / 3</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="border-top: 1px solid #D6CFC1">
+    <div style="max-width: 1344px; margin: 0 auto; padding: 32px 48px 40px; box-sizing: border-box; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-family: 'DM Mono', monospace; font-size: 12px; color: #4A4C5E">
+      <span>TPD · Qloo Agentic Hackathon 2026</span>
+      <span>Taste data by Qloo · places by Google · we never say "available" unless we checked</span>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

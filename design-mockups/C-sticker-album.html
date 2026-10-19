@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPD · C · Sticker album</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B1A33;--ink-2:#45436B;--bg:#E7E4FF;--card:#FFFFFF;--blue:#2747F5;--orange:#FF7A1A;--yellow:#FFC94D;--mint:#B9F0D2;--pink:#FFB3D9;--line:#D9D6F2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',sans-serif}
+a{color:var(--ink)}a:hover{color:var(--blue)}
+.wrap{max-width:1344px;margin:0 auto;padding:0 48px}
+.display{font-family:'Unbounded',sans-serif;font-weight:700;letter-spacing:-.03em}
+.mono{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em}
+.btn{height:52px;padding:0 24px;border-radius:999px;border:0;font:700 15px 'Unbounded',sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+.btn-ink{background:var(--ink);color:#fff}.btn-white{background:#fff;color:var(--ink)}
+.sticker{border-radius:22px;padding:16px 18px;box-shadow:0 14px 24px -14px rgba(27,26,51,.5),inset 0 0 0 4px rgba(255,255,255,.9);display:flex;flex-direction:column;gap:4px;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer;transition:transform .2s}
+.sticker:hover{transform:rotate(0deg) scale(1.04)!important}
+.sticker .k{font:700 11px 'Space Mono',monospace;letter-spacing:.08em;opacity:.8}
+.sticker .v{font:700 17px 'Unbounded',sans-serif}
+.sticker[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:3px}
+.h2{margin:0;font-family:'Unbounded',sans-serif;font-weight:700;font-size:clamp(34px,3.6vw,54px);line-height:1.05;letter-spacing:-.03em}
+.panel{background:#fff;border-radius:32px}
+.row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;background:#F6F5FD;border-radius:18px;padding:6px 6px 6px 18px}
+.seg{display:flex;gap:4px}
+.seg button{height:44px;min-width:78px;padding:0 12px;border-radius:13px;border:1.5px solid var(--line);background:#fff;color:var(--ink-2);font:600 14px 'Instrument Sans',sans-serif;cursor:pointer}
+.seg button[data-on="keep"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.seg button[data-on="change"]{background:var(--orange);border-color:var(--orange);color:var(--ink)}
+.seg button[data-on="skip"]{background:#D9D6F2;border-color:#D9D6F2;color:var(--ink)}
+.tcard{background:#fff;border-radius:26px;padding:10px;box-shadow:0 22px 34px -22px rgba(27,26,51,.55);display:flex;flex-direction:column}
+.tcard .art{height:150px;border-radius:18px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:14px}
+.tcard .body{padding:16px 12px 12px;display:flex;flex-direction:column;gap:10px}
+@media (prefers-reduced-motion: reduce){.sticker{transition:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="wrap">
+  <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;padding:22px 0">
+    <span class="display" style="font-size:26px;font-weight:800">tpd<span style="color:var(--orange)">.</span></span>
+    <nav style="display:flex;gap:4px;background:#fff;border-radius:999px;padding:5px;flex-wrap:wrap">
+      <a href="#swap" style="text-decoration:none;padding:10px 18px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600">Swap</a>
+      <a href="#pick" style="text-decoration:none;padding:10px 18px;border-radius:999px;font-weight:600">My Passport</a>
+      <a href="#album" style="text-decoration:none;padding:10px 18px;border-radius:999px;font-weight:600">Album</a>
+    </nav>
+    <div style="display:flex;gap:10px;align-items:center"><a href="#" style="font-weight:600;padding:0 10px">Log in</a><a href="#pick" class="btn btn-ink" style="height:46px">Start free</a></div>
+  </header>
+</div>
+
+<!-- HERO -->
+<section class="wrap" style="position:relative;padding-top:30px;padding-bottom:90px;display:flex;flex-wrap:wrap;gap:40px;align-items:center">
+  <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:24px;position:relative;z-index:1">
+    <span class="mono" style="background:#fff;border-radius:999px;padding:8px 14px;align-self:flex-start">★ YOUR TASTE, AS A STICKER COLLECTION</span>
+    <h1 class="display" style="margin:0;font-size:clamp(46px,5.4vw,80px);line-height:1;letter-spacing:-.04em">Collect what you love. <span style="background:var(--yellow);padding:0 12px;border-radius:18px;display:inline-block;transform:rotate(-2deg)">Swap</span> what let you down.</h1>
+    <p style="margin:0;font-size:20px;line-height:1.5;color:var(--ink-2);max-width:560px">Stick 3 to 5 favourites in your Taste Passport. When a place is full, too touristy or too pricey, we find three that feel the same, and say what we checked.</p>
+    <label style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:999px;padding:0 8px 0 24px;height:72px;box-shadow:0 0 0 2.5px var(--ink),6px 6px 0 var(--ink);max-width:620px">
+      <span class="mono" style="color:var(--ink-2);white-space:nowrap">I WANTED</span>
+      <input value="Bistrot Nº 7, Paris" aria-label="The place you wanted" style="flex:1;min-width:0;border:0;outline:none;font:600 20px 'Instrument Sans',sans-serif;color:var(--ink);background:transparent">
+      <a href="#swap" class="btn btn-ink">Swap it</a>
+    </label>
+    <span class="mono" style="color:var(--ink-2)">No account needed · try a ready-made Passport</span>
+  </div>
+
+  <!-- passport trading card -->
+  <div style="flex:1 1 420px;min-width:0;position:relative;height:560px">
+    <div class="sticker" style="position:absolute;left:0;top:10px;background:var(--yellow);transform:rotate(-12deg)"><span class="k">MUSIC</span><span class="v">Khruangbin</span></div>
+    <div class="sticker" style="position:absolute;right:0;top:40px;background:var(--mint);transform:rotate(10deg)"><span class="k">FILM</span><span class="v">Perfect Days</span></div>
+    <div class="sticker" style="position:absolute;left:2%;bottom:40px;background:var(--pink);transform:rotate(8deg)"><span class="k">BOOK</span><span class="v">Sally Rooney</span></div>
+    <div class="sticker" style="position:absolute;right:4%;bottom:10px;background:var(--orange);transform:rotate(-7deg)"><span class="k">PLACE</span><span class="v">Sant Antoni</span></div>
+
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-3deg);width:330px;background:var(--ink);color:#fff;border-radius:30px;padding:14px;box-shadow:0 40px 60px -30px rgba(27,26,51,.8)">
+      <div style="background:linear-gradient(140deg,#2747F5,#7A5CFF 55%,#FFB3D9);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between"><span class="mono">TASTE PASSPORT</span><span class="mono">Nº 0427</span></div>
+        <span class="display" style="font-size:36px;line-height:1">Mara L.</span>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+          <span style="aspect-ratio:1;border-radius:14px;background:var(--yellow);transform:rotate(-6deg)"></span>
+          <span style="aspect-ratio:1;border-radius:14px;background:var(--mint);transform:rotate(4deg)"></span>
+          <span style="aspect-ratio:1;border-radius:14px;background:var(--pink);transform:rotate(-3deg)"></span>
+          <span style="aspect-ratio:1;border-radius:14px;background:var(--orange);transform:rotate(5deg)"></span>
+          <span style="aspect-ratio:1;border-radius:14px;border:2px dashed rgba(255,255,255,.7)"></span>
+          <span style="aspect-ratio:1;border-radius:14px;border:2px dashed rgba(255,255,255,.4)"></span>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;padding:14px 6px 6px">
+        <span class="mono" style="padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14)">low-lit</span>
+        <span class="mono" style="padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14)">natural wine</span>
+        <span class="mono" style="padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14)">vinyl</span>
+        <span class="mono" style="padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14)">small galleries</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PICK STICKERS -->
+<section id="pick" style="background:#fff">
+  <div class="wrap" style="padding-top:90px;padding-bottom:90px;display:flex;flex-direction:column;gap:36px">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:680px"><span class="mono" style="color:var(--blue)">STEP 1 · 20 SECONDS</span><h2 class="h2">Open a pack. Keep 3 to 5 stickers.</h2></div>
+      <div style="display:flex;align-items:center;gap:14px;background:var(--ink);color:#fff;border-radius:999px;padding:8px 8px 8px 22px">
+        <span style="font-weight:600">In your Passport</span><span class="display" id="count" style="font-size:16px">3 / 5</span>
+        <button class="btn btn-white" style="height:44px">Continue</button>
+      </div>
+    </div>
+    <div id="pack" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:22px">
+      <button class="sticker" aria-pressed="true" style="background:var(--yellow);transform:rotate(-3deg)"><span class="k">MUSIC</span><span class="v">Khruangbin</span></button>
+      <button class="sticker" aria-pressed="false" style="background:#fff;box-shadow:0 14px 24px -14px rgba(27,26,51,.4),inset 0 0 0 2px var(--line);transform:rotate(2deg)"><span class="k">MUSIC</span><span class="v">Rosalía</span></button>
+      <button class="sticker" aria-pressed="false" style="background:var(--mint);transform:rotate(-1deg)"><span class="k">FILM</span><span class="v">In the Mood for Love</span></button>
+      <button class="sticker" aria-pressed="true" style="background:var(--pink);transform:rotate(3deg)"><span class="k">BOOK</span><span class="v">Sally Rooney</span></button>
+      <button class="sticker" aria-pressed="false" style="background:#fff;box-shadow:0 14px 24px -14px rgba(27,26,51,.4),inset 0 0 0 2px var(--line);transform:rotate(-2deg)"><span class="k">FILM</span><span class="v">Perfect Days</span></button>
+      <button class="sticker" aria-pressed="true" style="background:var(--orange);transform:rotate(1deg)"><span class="k">PLACE</span><span class="v">Sant Antoni, BCN</span></button>
+      <button class="sticker" aria-pressed="false" style="background:#fff;box-shadow:0 14px 24px -14px rgba(27,26,51,.4),inset 0 0 0 2px var(--line);transform:rotate(-3deg)"><span class="k">MUSIC</span><span class="v">Mulatu Astatke</span></button>
+      <button class="sticker" aria-pressed="false" style="background:var(--blue);color:#fff;transform:rotate(2deg)"><span class="k">PLACE</span><span class="v">Shimokitazawa</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- SWAP -->
+<section id="swap" class="wrap" style="padding-top:90px;padding-bottom:90px;display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px">
+    <span class="display" style="font-size:22px;background:#fff;border-radius:16px;padding:12px 16px;text-decoration:line-through;text-decoration-thickness:3px">Bistrot Nº 7</span>
+    <svg width="110" height="40" viewBox="0 0 110 40" fill="none" stroke="#FF7A1A" stroke-width="4" stroke-linecap="round" aria-hidden="true"><path d="M3 32 C 26 2, 56 2, 72 20 S 96 36, 104 10"/><path d="M95 11 L104 10 L106 20"/></svg>
+    <h2 class="h2" style="font-size:clamp(30px,3vw,44px)">fully booked. What should we keep?</h2>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <div class="panel" style="flex:1 1 420px;max-width:500px;padding:28px;display:flex;flex-direction:column;gap:10px">
+      <span class="mono" style="color:var(--ink-2)">WHAT BISTROT Nº 7 IS KNOWN FOR</span>
+      <div id="chips" style="display:flex;flex-direction:column;gap:8px"></div>
+      <p id="summary" style="margin:8px 0 0;font-weight:600;color:var(--ink-2)"></p>
+      <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <span class="mono" style="color:var(--ink-2)">HARD LIMITS</span>
+        <span style="padding:8px 12px;border-radius:999px;background:#F6F5FD;font-weight:600">Paris 11e</span>
+        <span style="padding:8px 12px;border-radius:999px;background:#F6F5FD;font-weight:600">Max €€</span>
+        <span style="padding:8px 12px;border-radius:999px;background:#F6F5FD;font-weight:600">Tonight</span>
+      </div>
+    </div>
+
+    <div style="flex:999 1 600px;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;padding-top:6px">
+      <article class="tcard" style="transform:rotate(-2deg)">
+        <div class="art" style="background:var(--blue)"><span class="display" style="color:#fff;font-size:15px;background:rgba(0,0,0,.18);padding:6px 10px;border-radius:999px">① Closest cultural match</span>
+          <span style="position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:var(--pink)"></span><span style="position:absolute;right:40px;top:26px;width:46px;height:46px;border-radius:12px;background:var(--yellow);transform:rotate(20deg)"></span></div>
+        <div class="body">
+          <h3 class="display" style="margin:0;font-size:24px">Maison Ardoise</h3>
+          <span style="font-size:14px;color:var(--ink-2)">Bistro · €€ · 6 min walk</span>
+          <p style="margin:0;font-size:15px;line-height:1.45"><strong>Why you:</strong> candle-lit room, natural wine. Khruangbin fans love it.</p>
+          <p style="margin:0;font-size:15px;line-height:1.45"><strong>Different:</strong> cheaper, louder.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding-top:10px"><span class="mono" style="padding:5px 8px;border-radius:8px;background:#F6F5FD">L0 ✓ TASTE</span><span class="mono" style="padding:5px 8px;border-radius:8px;background:#F6F5FD">L1 ✓ OPEN 19–23</span></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-ink" style="flex:1;height:44px;font-size:13px">＋ Album</button><button class="btn" style="flex:1;height:44px;font-size:13px;background:#F6F5FD;color:var(--ink)">Map</button></div>
+        </div>
+      </article>
+      <article class="tcard" style="transform:rotate(1.5deg) translateY(22px)">
+        <div class="art" style="background:var(--yellow)"><span class="display" style="font-size:15px;background:rgba(255,255,255,.6);padding:6px 10px;border-radius:999px">② Best practical match</span>
+          <span style="position:absolute;right:20px;top:18px;width:90px;height:90px;border-radius:50%;border:12px solid var(--orange)"></span></div>
+        <div class="body">
+          <h3 class="display" style="margin:0;font-size:24px">Le Verre Bleu</h3>
+          <span style="font-size:14px;color:var(--ink-2)">Wine bar · €€ · 3 min · open now</span>
+          <p style="margin:0;font-size:15px;line-height:1.45"><strong>Why you:</strong> natural wine, dim light, walk-ins.</p>
+          <p style="margin:0;font-size:15px;line-height:1.45"><strong>Different:</strong> small plates only.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding-top:10px"><span class="mono" style="padding:5px 8px;border-radius:8px;background:#F6F5FD">L0 ✓ TASTE</span><span class="mono" style="padding:5px 8px;border-radius:8px;background:#F6F5FD">L1 ✓ OPEN NOW</span></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-ink" style="flex:1;height:44px;font-size:13px">＋ Album</button><button class="btn" style="flex:1;height:44px;font-size:13px;background:#F6F5FD;color:var(--ink)">Map</button></div>
+        </div>
+      </article>
+      <article class="tcard" style="transform:rotate(-1deg) translateY(8px)">
+        <div class="art" style="background:var(--orange)"><span class="display" style="font-size:15px;background:rgba(255,255,255,.55);padding:6px 10px;border-radius:999px">③ Unexpected but relevant</span>
+          <span style="position:absolute;right:24px;top:20px;width:80px;height:80px;border-radius:50%;background:var(--ink)"></span><span style="position:absolute;right:52px;top:48px;width:24px;height:24px;border-radius:50%;background:var(--orange)"></span></div>
+        <div class="body">
+          <h3 class="display" style="margin:0;font-size:24px">Disquaire Soir</h3>
+          <span style="font-size:14px;color:var(--ink-2)">Record shop + bar · € · 9 min</span>
+          <p style="margin:0;font-size:15px;line-height:1.45"><strong>Why you:</strong> your vinyl side, with a glass.</p>
+          <p style="margin:0;font-size:15px;line-height:1.45"><strong>Different:</strong> not a restaurant.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding-top:10px"><span class="mono" style="padding:5px 8px;border-radius:8px;background:#F6F5FD">L0 ✓ TASTE</span><span class="mono" style="padding:5px 8px;border-radius:8px;background:#F6F5FD">L1 ✓ HOURS</span></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-ink" style="flex:1;height:44px;font-size:13px">＋ Album</button><button class="btn" style="flex:1;height:44px;font-size:13px;background:#F6F5FD;color:var(--ink)">Map</button></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ALBUM + SOCIAL -->
+<section id="album" style="background:var(--ink);color:#fff">
+  <div class="wrap" style="padding-top:90px;padding-bottom:90px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <div style="flex:999 1 620px;min-width:0;display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;flex-direction:column;gap:12px"><span class="mono" style="color:var(--yellow)">YOUR ALBUM</span><h2 class="h2">Every swap you save becomes a sticker.</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
+        <div style="background:#fff;color:var(--ink);border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="display" style="font-size:22px">Paris</span><span class="mono" style="color:var(--ink-2)">3 / 9</span></div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+            <span style="aspect-ratio:1;border-radius:16px;background:var(--blue);transform:rotate(-5deg)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;background:var(--yellow);transform:rotate(4deg)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;background:var(--orange);transform:rotate(-2deg)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;border:2px dashed var(--line)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;border:2px dashed var(--line)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;border:2px dashed var(--line)"></span>
+          </div>
+          <span style="font-size:14px;color:var(--ink-2)">Maison Ardoise · Le Verre Bleu · Disquaire Soir</span>
+        </div>
+        <div style="background:#fff;color:var(--ink);border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="display" style="font-size:22px">Tokyo</span><span class="mono" style="color:var(--ink-2)">1 / 9</span></div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+            <span style="aspect-ratio:1;border-radius:16px;background:var(--mint);transform:rotate(3deg)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;border:2px dashed var(--line)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;border:2px dashed var(--line)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;border:2px dashed var(--line)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;border:2px dashed var(--line)"></span>
+            <span style="aspect-ratio:1;border-radius:16px;border:2px dashed var(--line)"></span>
+          </div>
+          <span style="font-size:14px;color:var(--ink-2)">A small gallery in Kiyosumi</span>
+        </div>
+      </div>
+    </div>
+    <aside style="flex:1 1 360px;min-width:0;background:#2A2950;border-radius:30px;padding:28px;display:flex;flex-direction:column;gap:18px">
+      <span class="mono" style="color:var(--mint)">COMPARE WITH A FRIEND</span>
+      <div style="display:flex;align-items:center">
+        <span style="width:64px;height:64px;border-radius:50%;background:var(--yellow);color:var(--ink);display:flex;align-items:center;justify-content:center" class="display">M</span>
+        <span style="width:64px;height:64px;border-radius:50%;background:var(--pink);color:var(--ink);display:flex;align-items:center;justify-content:center;margin-left:-14px;border:4px solid #2A2950" class="display">J</span>
+      </div>
+      <h3 class="display" style="margin:0;font-size:26px;line-height:1.1">Mara &amp; Jo both stuck:</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span style="padding:8px 12px;border-radius:999px;background:var(--mint);color:var(--ink);font-weight:700">natural wine</span>
+        <span style="padding:8px 12px;border-radius:999px;background:var(--mint);color:var(--ink);font-weight:700">vinyl bars</span>
+        <span style="padding:8px 12px;border-radius:999px;background:var(--mint);color:var(--ink);font-weight:700">Perfect Days</span>
+      </div>
+      <p style="margin:0;color:#CFCDEB;line-height:1.5">Only Jo loves: rooftop bars, street food. Plan a swap that works for both of you.</p>
+      <a href="#" class="btn btn-white">Share my Passport card</a>
+    </aside>
+  </div>
+</section>
+
+<footer class="wrap mono" style="padding-top:28px;padding-bottom:32px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;color:var(--ink-2)">
+  <span>TPD · QLOO AGENTIC HACKATHON 2026</span><span>TASTE BY QLOO · PLACES BY GOOGLE · NO "AVAILABLE" UNLESS CHECKED</span>
+</footer>
+
+<script>
+const tags=[['Low-lit room','keep'],['Natural wine','keep'],['Price €€€','change'],['Tasting menu','change'],['Same street','skip']];
+const chips=document.getElementById('chips'),summary=document.getElementById('summary');
+function render(){
+  chips.innerHTML='';
+  tags.forEach((t,i)=>{
+    const row=document.createElement('div');row.className='row';
+    row.innerHTML='<span style="font-weight:600;font-size:17px">'+t[0]+'</span>';
+    const seg=document.createElement('div');seg.className='seg';
+    ['keep','change','skip'].forEach(m=>{
+      const b=document.createElement('button');b.textContent=m[0].toUpperCase()+m.slice(1);
+      if(t[1]===m){b.dataset.on=m;b.setAttribute('aria-pressed','true')}else b.setAttribute('aria-pressed','false');
+      b.onclick=()=>{tags[i][1]=m;render()};seg.appendChild(b);
+    });
+    row.appendChild(seg);chips.appendChild(row);
+  });
+  const k=tags.filter(t=>t[1]==='keep').length,c=tags.filter(t=>t[1]==='change').length;
+  summary.textContent='Keeping '+k+' · changing '+c+'. The cards on the right update on every tap.';
+}
+render();
+document.querySelectorAll('#pack .sticker').forEach(s=>s.addEventListener('click',()=>{
+  const on=s.getAttribute('aria-pressed')==='true';
+  const n=document.querySelectorAll('#pack .sticker[aria-pressed="true"]').length;
+  if(!on&&n>=5)return;
+  s.setAttribute('aria-pressed',on?'false':'true');
+  document.getElementById('count').textContent=document.querySelectorAll('#pack .sticker[aria-pressed="true"]').length+' / 5';
+}));
+</script>
+</body>
+</html>

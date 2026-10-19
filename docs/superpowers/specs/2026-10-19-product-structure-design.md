@@ -1,6 +1,6 @@
 # Product structure design (Qloo Agentic Hackathon 2026)
 
-**Date:** 2026-10-19 · **Status:** approved in brainstorming · **Working name:** TPD (final name pending)
+**Date:** 2026-10-19 · **Status:** approved in brainstorming · **Product name:** Beesyde
 **Builds on:** `DECISIONS.md`, `docs/02-b2c-product-structure.md`
 
 ## 1. Scope
@@ -77,6 +77,6 @@ No permanent copy of Qloo data is kept, only the cache with expiry, per the hack
 
 ## 6. Still open
 
-- Final product name and visual identity.
+- Visual identity (name decided: Beesyde).
 - Final demo cities, chosen after the Qloo verification queries.
 - Quota and rate limits of the key.

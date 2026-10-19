@@ -1,6 +1,6 @@
-# TPD — Registro delle decisioni
+# Beesyde — Registro delle decisioni
 
-**Progetto:** TPD (nome provvisorio), Qloo Agentic Hackathon 2026
+**Progetto:** Beesyde (ex nome provvisorio TPD), Qloo Agentic Hackathon 2026
 **Aggiornato:** 19 ottobre 2026
 **Scadenza submission:** 30 ottobre 2026, 23:45 EDT (verificare il countdown ufficiale su Devpost)
 
@@ -115,7 +115,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 | 7.4 | Copertura Ticketmaster in Portogallo, Francia, Spagna | Da fare |
 | 7.5 | Metodo di login | Deciso: Neon Auth + Google |
 | 7.6 | Stack | Deciso: Next.js + Vercel + Neon (vedi spec 2026-10-19) |
-| 7.7 | Nome del prodotto e identità visiva ("TPD" è provvisorio) | Da decidere |
+| 7.7 | Nome del prodotto | Deciso: **Beesyde** (sezione 9). Identità visiva da fare |
 | 7.8 | Quota e rate limit effettivi della chiave | Dopo la chiave |
 | 7.9 | Test utenti del problema ("il posto che volevo era pieno") e interviste | Da pianificare |
 
@@ -129,3 +129,18 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 6. Confronto Qloo vs LLM, Transfer e musei/cultura.
 7. Login, collezioni, feedback, scheda condivisibile.
 8. Altre categorie solo se i dati reggono; rifinitura, stati di errore, README, deploy, descrizione in inglese.
+
+## 9. Decisioni del 19 ottobre 2026 (brainstorming struttura e nome)
+
+Dettaglio in `docs/superpowers/specs/2026-10-19-product-structure-design.md`. Prossimi passi in `docs/04-handover.md`.
+
+| # | Decisione |
+|---|---|
+| 9.1 | **Scope completo per la demo:** Passport, Swap, Explore, Transfer, **Discovery di destinazioni alternative**, login e collezioni. Rischio di scope accettato e gestito con **una sola pipeline** condivisa. |
+| 9.2 | Discovery parte da una città amata (con chip Keep/Change) **oppure** dal solo Passport: il riferimento è opzionale. |
+| 9.3 | Navigazione: **campo unico "Cosa cerchi?"** che riconosce l'intento, più **tre pulsanti piccoli** (Sostituisci · Sono qui · Dove andare). Transfer proposto dopo ogni risultato. |
+| 9.4 | Database **Neon Postgres**; login **Neon Auth + Google**. Stack: Next.js + TypeScript su Vercel. |
+| 9.5 | Nome: **Beesyde**. Gioco di parole su "B-side" (il lato B del disco), "piano B" e l'ape come possibile mascotte. Si pronuncia come "bee side". |
+| 9.6 | Verifica nome (19/10): `beesyde.com` libero secondo whois; nessun uso esistente trovato in ricerca web. Marchi non verificati su registri ufficiali. Dominio **non ancora acquistato**. |
+| 9.7 | Scartati: Plan Bee/PlanBee (planbee.com preso), Bee Side (beeside.com preso), Swappa (marketplace esistente), Take Two (Take-Two Interactive), Vivra (confondibile con ViViRA), Vibeway (settore affollato). |
+| 9.8 | Chiave Qloo in `.env` (`QLOO_API_KEY`), ignorato da git; `.env.example` committato senza segreti. |

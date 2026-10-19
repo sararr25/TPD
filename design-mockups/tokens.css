@@ -1,0 +1,7 @@
+:root {
+  --bg:#F4F4F3; --paper:#FFFFFF; --ink:#1E1D22; --ink-2:#55535C;
+  --line:#E0DFE2; --pass:#26242C; --on-pass:#FFFFFF; --stamp:#D61F69; --third:#D9860B;
+  --display:'Familjen Grotesk',system-ui,sans-serif; --mono:'Martian Mono',monospace;
+  --radius:8px; --radius-card:16px; --shadow:0 18px 40px -28px #26242c66;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-6:24px; --space-8:32px;
+}

@@ -1,6 +1,6 @@
 # TPD: handover design
 
-**Data:** 19 ottobre 2026
+**Data:** 20 ottobre 2026
 **Branch:** `claude/pensive-lovelace-k81d2t` · **PR:** https://github.com/sararr25/TPD/pull/2 (aperta, mergeable, nessun commento aperto)
 
 ## Dove siamo
@@ -8,14 +8,15 @@
 1. **Ricerca fatta** (`docs/04-design-direction-research.md`): analisi dei riferimenti, agenzie bold, competitor (quasi tutti "basic"), tre direzioni di moodboard.
 2. **Piattaforma decisa:** web app **desktop**, non mobile (decisione 3.19). Il brief (`docs/00`, `01`, `02`) è aggiornato.
 3. **Direzione scelta (decisione 3.20):** base **A, "Passport e timbri"**, in versione **calma**. I timbri sono inchiostro su carta, con pochissimi tocchi della C (solo Keep/Change cliccabile).
-4. **Ultimo feedback:** "ok meglio" sulle due versioni A2. Non è stata ancora scelta tra Oltremare e Prugna.
+4. **Scelta definitiva:** Carbone e fucsia, Familjen Grotesk + Martian Mono (decisione 3.21). I candidati A2 sono superati.
+5. **Incremento 20 ottobre:** prototipo navigabile `design-mockups/A4-product-prototype.html`, token condivisi `design-mockups/tokens.css`, specifica `docs/06-design-system.md`.
 
 ## File da guardare
 
 | File | Stato |
 |---|---|
-| `design-mockups/A2-oltremare.html` | **Candidato.** Passaporto blu oltremare, timbri corallo e rosa, fondo grigio-lilla chiaro. |
-| `design-mockups/A2-prugna.html` | **Candidato.** Passaporto prugna, timbri mandarino e blu cobalto, fondo grigio-rosato chiaro. |
+| `design-mockups/A2-oltremare.html` | **Storico, superato da A4.** Passaporto blu oltremare, timbri corallo e rosa, fondo grigio-lilla chiaro. |
+| `design-mockups/A2-prugna.html` | **Storico, superato da A4.** Passaporto prugna, timbri mandarino e blu cobalto, fondo grigio-rosato chiaro. |
 | `design-mockups/AC-1-pop-postale.html` | Scartato: troppo bold. Tenuto solo come storico. |
 | `design-mockups/A-passport-stamps.html`, `B-taste-atlas.html`, `C-sticker-album.html`, `AC-2-mercato.html`, `AC-3-cielo.html` | Scartati. Contengono i colori vietati: **non riproporli**. |
 
@@ -43,7 +44,7 @@ Gli stessi file A2 sono visibili come artefatti privati:
 6. Transfer: pagina "Visas" del passaporto con tre francobolli (ristorante, galleria, quartiere).
 7. Qloo vs LLM affiancati.
 
-Font: Bricolage Grotesque (titoli e testo), DM Mono (etichette e dati), Instrument Serif corsivo (una parola per titolo).
+Font dei vecchi A2: Bricolage Grotesque, DM Mono, Instrument Serif. **Non usare nel nuovo prodotto:** A4 usa Familjen Grotesk e Martian Mono.
 
 ## Prossimi passi
 
@@ -52,3 +53,12 @@ Font: Bricolage Grotesque (titoli e testo), DM Mono (etichette e dati), Instrume
 3. Disegnare le schermate che mancano: costruzione del Passport (3–5 scelte), dettaglio risultato, collezioni, login/ospite, stati vuoti ed errori.
 4. Fissare i token (colori, font, raggi, ombre) in un piccolo design system prima dello scaffold Next.js.
 5. Nome del prodotto e logo (7.7) sono ancora aperti, e influenzano l'identità.
+
+## Stato dei passi al 20 ottobre
+
+- Passo 2: prima rifinitura realizzata in A4: copertina carbone, bianco prevalente, un timbro ad anello, fucsia a inchiostro. Validazione visiva ancora aperta.
+- Passo 3: Passport 3–5 scelte, tre ospiti, dettaglio, collezioni locali, dialog accesso e sei stati navigabili realizzati nel prototipo. Non sono integrazioni live.
+- Passo 4: token CSS e design system documentati in docs/06.
+- Passo 5: naming e logo restano aperti; TPD provvisorio preservato.
+- Verifica: sintassi JS e smoke route Node; browser integrato blocca file://, quindi nessuna accettazione visiva dichiarata.
+- Prima del backend: stato chiave Qloo, otto query, città effettive, stack e autenticazione. Nessun provider attivato o messaggio inviato.

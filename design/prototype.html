@@ -1,0 +1,284 @@
+<title>TPD Ticket Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: on desktop a phone-sized app column beside a design-notes rail; on phone the app alone, full width. Tickets are the core object. */
+:root{
+  --violet:#6B3EF5; --violet-ink:#3A1E9C; --lime:#C6F432;
+  --bg:#F3F0FA; --paper:#FFFFFF; --ink:#16112B; --muted:#5E5873; --line:#DCD6EC;
+  --keep:#C6F432; --keep-ink:#16112B; --change:#6B3EF5; --change-ink:#FFFFFF;
+  --verify-bg:#EEF0F2; --verify-ink:#2B3138;
+  --display:"Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, sans-serif;
+  --mono:"DM Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#110D20; --paper:#1D1734; --ink:#F2EEFF; --muted:#A79FC4; --line:#352C57;
+  --violet:#8F6BFF; --violet-ink:#C9B8FF; --change:#8F6BFF;
+  --verify-bg:#262036; --verify-ink:#D5D9DE; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#110D20; --paper:#1D1734; --ink:#F2EEFF; --muted:#A79FC4; --line:#352C57;
+  --violet:#8F6BFF; --violet-ink:#C9B8FF; --change:#8F6BFF;
+  --verify-bg:#262036; --verify-ink:#D5D9DE; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
+.wrap{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:40px;max-width:1080px;margin:0 auto;align-items:start}
+@media (max-width:820px){.wrap{grid-template-columns:minmax(0,1fr)}.notes{order:2}}
+
+/* App column */
+.app{background:var(--paper);border:2px solid var(--ink);border-radius:28px;min-height:760px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 8px}
+.logo{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.logo b{background:var(--lime);color:#16112B;padding:0 6px;border-radius:6px}
+.back{border:0;background:none;font-family:var(--mono);font-size:12px;color:var(--muted);padding:6px 0}
+.screen{flex:1;padding:8px 18px 20px;display:flex;flex-direction:column;gap:16px;animation:in .28s ease}
+@keyframes in{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--ink)}
+.tabs button{border:0;background:var(--paper);padding:12px 0 14px;font-weight:700;font-size:13px}
+.tabs button[aria-current="true"]{background:var(--ink);color:var(--paper)}
+
+h1,h2{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:.95;margin:0;text-wrap:balance}
+h1{font-size:44px} h2{font-size:28px}
+.eyebrow{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+p{margin:0}
+.lede{color:var(--muted);max-width:34ch}
+.btn{border:2px solid var(--ink);border-radius:999px;padding:13px 18px;font-weight:700;background:var(--lime);color:#16112B;box-shadow:0 4px 0 var(--ink);transition:transform .1s, box-shadow .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.ghost{background:var(--paper);color:var(--ink)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* Ticket */
+.ticket{--notch:10px;display:grid;grid-template-columns:minmax(0,1fr) 76px;border-radius:14px;color:var(--ink);background:var(--paper);border:2px solid var(--ink);position:relative;
+  -webkit-mask:radial-gradient(circle var(--notch) at calc(100% - 76px) 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle var(--notch) at calc(100% - 76px) 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+          mask:radial-gradient(circle var(--notch) at calc(100% - 76px) 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle var(--notch) at calc(100% - 76px) 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
+.ticket .main{padding:14px 14px 14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ticket .stub{border-left:2px dashed var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;text-align:center;padding:8px 4px}
+.stub .n{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:0;line-height:1}
+.ticket.v{background:var(--violet);color:#fff;border-color:var(--ink)} .ticket.v .stub{border-color:#ffffff99}
+.ticket.l{background:var(--lime);color:#16112B}
+.ticket .name{font-family:var(--display);font-weight:800;font-size:22px;line-height:1;letter-spacing:-.02em}
+.ticket .meta{font-size:13px;opacity:.85}
+.ticket button.open{all:unset;cursor:pointer;position:absolute;inset:0;border-radius:14px}
+.ticket button.open:focus-visible{outline:3px solid var(--ink);outline-offset:-5px}
+
+/* Verification label: deliberately sober, same component everywhere */
+.verify{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;background:var(--verify-bg);color:var(--verify-ink);border-radius:4px;padding:3px 7px;width:fit-content}
+.verify i{font-style:normal;font-weight:500;border:1px solid currentColor;border-radius:3px;padding:0 3px}
+
+/* Chips */
+.chip{border:2px solid var(--ink);border-radius:999px;padding:7px 12px;background:var(--paper);font-weight:600;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.chip .st{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.chip[data-s="keep"]{background:var(--keep);color:var(--keep-ink)}
+.chip[data-s="change"]{background:var(--change);color:var(--change-ink)}
+.chip[data-s="ignore"]{border-style:dashed;color:var(--muted)}
+.chip[data-s="ignore"] .lbl{text-decoration:line-through}
+
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:700;font-size:13px}
+.field input{border:2px solid var(--ink);border-radius:12px;padding:12px 14px;font:inherit;background:var(--paper);color:var(--ink);width:100%}
+.profile{all:unset;cursor:pointer;border:2px solid var(--ink);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;background:var(--paper)}
+.profile:hover{background:var(--bg)} .profile:focus-visible{outline:3px solid var(--violet)}
+.profile strong{font-family:var(--display);font-size:18px}
+.profile span{color:var(--muted);font-size:13px}
+
+.toggle{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.toggle button{border:0;background:var(--paper);padding:8px;font-weight:700;font-size:13px}
+.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.results{display:flex;flex-direction:column;gap:12px;transition:opacity .2s}
+.results.busy{opacity:.4}
+.llm{border:2px dashed var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.llm .name{font-weight:700}
+.flag{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.sample{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);text-align:center}
+
+.passport{background:var(--violet);color:#fff;border:2px solid var(--ink);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:6px 6px 0 var(--ink)}
+.passport .who{font-family:var(--display);font-weight:800;font-size:30px;line-height:.95}
+.passport .tags{display:flex;flex-wrap:wrap;gap:6px}
+.passport .tags span{background:var(--lime);color:#16112B;border-radius:999px;padding:4px 10px;font-weight:600;font-size:12px}
+.stamps{display:flex;gap:8px;flex-wrap:wrap}
+.stamp{border:2px solid #fff;border-radius:50%;width:58px;height:58px;display:grid;place-items:center;font-family:var(--mono);font-size:9px;text-transform:uppercase;text-align:center;line-height:1.1;transform:rotate(-8deg)}
+.stamp.empty{opacity:.35;border-style:dashed}
+.section{display:flex;flex-direction:column;gap:6px;border-top:2px solid var(--line);padding-top:12px}
+.section h3{margin:0;font-size:13px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em}
+.section ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.transfer{background:var(--ink);color:var(--paper);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.transfer .btn{align-self:flex-start}
+
+/* Notes rail */
+.notes{display:flex;flex-direction:column;gap:20px;padding-top:8px;min-width:0}
+.notes h1{font-size:clamp(40px,6vw,64px)}
+.notes h1 em{font-style:normal;background:var(--lime);color:#16112B;padding:0 8px;border-radius:10px}
+.flow{display:flex;flex-wrap:wrap;gap:6px}
+.flow button{border:2px solid var(--ink);background:var(--paper);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.flow button[aria-current="true"]{background:var(--violet);color:#fff}
+.note{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;max-width:62ch}
+.note h4{margin:0;font-family:var(--display);font-size:20px;letter-spacing:-.02em}
+.note ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--muted)}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px}
+.sw b{width:22px;height:22px;border-radius:6px;border:2px solid var(--ink);display:block}
+</style>
+
+<div class="wrap">
+  <main class="app" aria-label="Prototipo app">
+    <div class="bar">
+      <button class="back" id="back" hidden>← back</button>
+      <div class="logo">T<b>PD</b></div>
+      <span class="eyebrow" id="where">Paris</span>
+    </div>
+    <div id="view"></div>
+    <nav class="tabs" id="tabs" hidden>
+      <button data-tab="home">Swap</button>
+      <button data-tab="passport">Passport</button>
+      <button data-tab="saved">Saved</button>
+    </nav>
+  </main>
+
+  <aside class="notes">
+    <span class="eyebrow">TPD · direzione UI/UX · bozza 1</span>
+    <h1>Il posto era pieno. <em>Swap</em> it.</h1>
+    <p class="lede" style="max-width:52ch">Prototipo cliccabile del flusso guida della demo. I dati sono di esempio, non arrivano da Qloo. Usa i pulsanti qui sotto per saltare tra le schermate.</p>
+    <div class="flow" id="flow"></div>
+    <div class="note" id="note"></div>
+    <div class="note">
+      <h4>Sistema visivo: Biglietto pop</h4>
+      <ul>
+        <li>Ogni alternativa è un <strong>biglietto</strong>: il talloncino porta il ruolo (1 Closest, 2 Practical, 3 Unexpected). Tre colori, tre ruoli.</li>
+        <li>Chip a 3 stati: <strong>lime = Keep</strong>, <strong>viola = Change</strong>, tratteggiato = Ignora. Un tocco fa ruotare lo stato e ricalcola.</li>
+        <li>Le etichette di verifica (L0–L3) sono l'unico elemento grigio e in mono: fuori dal gioco, sempre nello stesso posto.</li>
+        <li>Ogni Swap concluso lascia un timbro sul Passport: è la parte social e condivisibile.</li>
+      </ul>
+      <div class="swatches">
+        <span class="sw"><b style="background:#6B3EF5"></b>Viola</span>
+        <span class="sw"><b style="background:#C6F432"></b>Lime</span>
+        <span class="sw"><b style="background:#16112B"></b>Inchiostro</span>
+        <span class="sw"><b style="background:#F3F0FA"></b>Lavanda</span>
+        <span class="sw"><b style="background:#EEF0F2"></b>Verifica</span>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const S = {screen:'landing', tab:'home', mode:'qloo', pick:0,
+  chips:[{l:'Natural wine',s:'keep'},{l:'Neo-bistro',s:'keep'},{l:'Price €€€',s:'change'},{l:'11th arr.',s:'ignore'},{l:'Hard to book',s:'change'},{l:'Lively',s:'keep'}]};
+
+const RESULTS = [
+  [{role:'Closest cultural match',n:1,cls:'v',name:'Le Servan',meta:'Neo-bistro · 11e · €€',why:['Same natural-wine and neo-bistro tags you kept','Matches your Passport signal: Clown Bar (place you loved)'],diff:['Lower price level (2 vs 3)','Smaller room, more relaxed'],ver:['L1','Exists, hours confirmed · Google · 14:02'],unver:'Table availability not verified'},
+   {role:'Best practical match',n:2,cls:'l',name:'Le Baratin',meta:'Bistro · 20e · €€',why:['Natural-wine list, lively room','Open tonight per Google hours'],diff:['Further east, 18 min by metro','More traditional menu'],ver:['L2','Reservation page found · Google'],unver:'Table availability not verified'},
+   {role:'Unexpected but relevant',n:3,cls:'',name:'Mokonuts',meta:'Café-bistro · 11e · €€',why:['Shares your "lively, chef-driven" tags','Fits the slow-cinema taste in your Passport'],diff:['Lunch-focused, closes early','Bakery as much as restaurant'],ver:['L1','Exists, hours confirmed · Google · 14:02'],unver:'Table availability not verified'}],
+  [{role:'Closest cultural match',n:1,cls:'v',name:'Septime La Cave',meta:'Wine bar · 11e · €€',why:['Same team culture as your reference','Natural-wine tag kept'],diff:['Small plates, no full dinner','No reservations'],ver:['L1','Exists, hours confirmed · Google · 14:05'],unver:'Walk-in only'},
+   {role:'Best practical match',n:2,cls:'l',name:'Le Servan',meta:'Neo-bistro · 11e · €€',why:['Neo-bistro tag kept','Clown Bar affinity'],diff:['Lower price level'],ver:['L1','Exists, hours confirmed · Google · 14:05'],unver:'Table availability not verified'},
+   {role:'Unexpected but relevant',n:3,cls:'',name:'Early June',meta:'Wine bar · 10e · €€',why:['Rotating chefs, lively, natural wine'],diff:['Canal-side, more casual'],ver:['L0','Recommended by Qloo only'],unver:'Hours not confirmed yet'}]
+];
+const LLM = [{name:'Septime',flag:'Same restaurant family, also fully booked'},{name:'Le Comptoir du Relais',flag:'Not in the 11th, €€€: breaks your Change on price'},{name:'"Chez Marcel, rue Oberkampf"',flag:'No match found in Places: may not exist'}];
+
+const NOTES = {
+  landing:['Landing','Due ingressi, nessun muro di registrazione. I profili ospite sono il percorso principale per i giudici: un tocco e si è dentro uno Swap reale in meno di 30 secondi.'],
+  build:['Costruzione Passport','Ricerca di entità Qloo (artisti, film, libri, luoghi). 3–5 scelte. La carta si compone mentre scegli, così il risultato è visibile subito.'],
+  home:['Home / Swap','Una sola domanda: "Cosa volevi?". Sotto, scorciatoie per categoria (solo quelle provate con dati reali) e l\'ultimo Swap.'],
+  keep:['Riferimento + Keep/Change','Card del posto riconosciuto, poi 4–6 chip dai tag Qloo. Un tocco fa ruotare Keep → Change → Ignora. La città è un vincolo duro, scritto in chiaro.'],
+  results:['Risultati','Tre biglietti, tre ruoli. Cambiare un chip sfuma i risultati vecchi invece di svuotare lo schermo. Il toggle "Without Qloo" mostra la colonna LLM con i problemi segnalati.'],
+  detail:['Dettaglio','Why it matches you · What\'s different · What we verified. Nessun "Prenota", nessuna percentuale. Sotto, l\'invito al Transfer: lo stesso gusto per un museo.'],
+  passport:['Scheda Passport','La "carta d\'identità del gusto", condivisibile come immagine. I timbri raccontano gli Swap fatti.']
+};
+
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function verify(v){return `<span class="verify"><i>${v[0]}</i>${esc(v[1])}</span>`}
+function ticket(r,i){return `<article class="ticket ${r.cls}">
+  <div class="main"><span class="eyebrow" style="color:inherit;opacity:.8">${r.role}</span>
+  <span class="name">${esc(r.name)}</span><span class="meta">${esc(r.meta)}</span>${verify(r.ver)}</div>
+  <div class="stub"><span>Admit</span><span class="n">${r.n}</span><span>Swap</span></div>
+  <button class="open" aria-label="Open ${esc(r.name)}" data-open="${i}"></button></article>`}
+
+const V = {
+landing:()=>`<div class="screen">
+  <span class="eyebrow">Taste Passport · beta</span>
+  <h1>The place you wanted is full?</h1>
+  <p class="lede">Keep what you love about it. Change what doesn't work. Get three alternatives picked for your taste.</p>
+  <button class="btn" data-go="build">Build my Passport</button>
+  <div class="stack"><span class="eyebrow">Or try a ready-made Passport</span>
+   <button class="profile" data-go="home"><strong>The Night Owl</strong><span>Wong Kar-wai · Radiohead · Clown Bar → Paris</span></button>
+   <button class="profile" data-go="home"><strong>The Slow Looker</strong><span>Agnès Varda · Sally Rooney · Fondation Cartier → Paris</span></button>
+   <button class="profile" data-go="home"><strong>The Block Hopper</strong><span>Kendrick Lamar · Atlanta · Katz's → New York</span></button></div></div>`,
+build:()=>`<div class="screen">
+  <span class="eyebrow">Step 1 of 1 · pick 3 to 5</span><h2>What do you love?</h2>
+  <div class="field"><label for="q">Artists, films, books, places</label><input id="q" value="Wong Kar" autocomplete="off"></div>
+  <div class="row">${['In the Mood for Love','Chungking Express','Wong Kar-wai (director)'].map((t,i)=>`<button class="chip" ${i<2?'data-s="keep"':''}><span class="lbl">${t}</span></button>`).join('')}</div>
+  <div class="passport"><span class="eyebrow" style="color:#fff">Your Passport so far</span><span class="who">Night Owl</span>
+   <div class="tags"><span>In the Mood for Love</span><span>Chungking Express</span><span>Radiohead</span><span>Clown Bar</span></div></div>
+  <button class="btn" data-go="home">Done, 4 picked</button></div>`,
+home:()=>`<div class="screen">
+  <span class="eyebrow">Hi, Night Owl</span><h2>What did you want?</h2>
+  <div class="field"><label for="ref">Place name and city</label><input id="ref" value="Le Chateaubriand, Paris" autocomplete="off"></div>
+  <button class="btn" data-go="keep">Find my swap</button>
+  <div class="stack"><span class="eyebrow">Or explore where you are</span>
+   <div class="row"><button class="chip">Restaurants</button><button class="chip">Museums</button><button class="chip">Neighborhoods</button></div></div>
+  <div class="stack"><span class="eyebrow">Last swap</span>${ticket({role:'Swap · Oct 18',n:1,cls:'',name:'Fondation Cartier → Le Bal',meta:'Museums · Paris',ver:['L1','Exists, hours confirmed · Google']},-1)}</div></div>`,
+keep:()=>`<div class="screen">
+  <span class="eyebrow">You wanted</span>
+  <article class="ticket l"><div class="main"><span class="name">Le Chateaubriand</span><span class="meta">Neo-bistro · 129 av. Parmentier, 11e</span></div><div class="stub"><span>Ref</span><span class="n">★</span></div></article>
+  <div class="stack"><h2>Keep or change?</h2><p class="lede">Tap a tag to switch it. Results update each time.</p></div>
+  <div class="row" id="chips">${chips()}</div>
+  <div class="row"><span class="verify"><i>MUST</i>Stay in Paris</span></div>
+  <button class="btn" data-go="results">Show 3 swaps</button></div>`,
+results:()=>`<div class="screen">
+  <div class="row" style="justify-content:space-between"><span class="eyebrow">Swaps for Le Chateaubriand</span></div>
+  <div class="toggle" role="group" aria-label="Compare"><button data-mode="qloo" aria-pressed="${S.mode==='qloo'}">With Qloo</button><button data-mode="llm" aria-pressed="${S.mode==='llm'}">Without Qloo</button></div>
+  <div class="row" id="chips">${chips()}</div>
+  <div class="results" id="res">${resultsHTML()}</div>
+  <p class="sample">Sample data · not from Qloo</p></div>`,
+detail:()=>{const r=RESULTS[S.pick][S.open??0];return `<div class="screen">
+  ${ticket(r,-1)}
+  <div class="section"><h3>Why it matches you</h3><ul>${r.why.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+  <div class="section"><h3>What's different</h3><ul>${r.diff.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+  <div class="section"><h3>What we verified</h3>${verify(r.ver)}<span class="verify"><i>—</i>${esc(r.unver)}</span></div>
+  <div class="row"><button class="btn">Save</button><button class="btn ghost">Directions</button><button class="btn ghost">Not for me</button></div>
+  <div class="transfer"><span class="eyebrow" style="color:inherit">Transfer</span><strong style="font-family:var(--display);font-size:22px;line-height:1">Same taste, but a museum?</strong><button class="btn" data-go="passport">Try it in Paris</button></div></div>`},
+passport:()=>`<div class="screen">
+  <div class="passport"><span class="eyebrow" style="color:#fff">Taste Passport · №0042</span><span class="who">The Night Owl</span>
+   <div class="tags"><span>In the Mood for Love</span><span>Radiohead</span><span>Clown Bar</span><span>Natural wine</span></div>
+   <div class="stamps"><span class="stamp">Paris<br>Swap 1</span><span class="stamp">Paris<br>Swap 2</span><span class="stamp empty">Next<br>stamp</span></div></div>
+  <button class="btn">Share my Passport</button><button class="btn ghost">Edit signals</button></div>`,
+saved:()=>`<div class="screen"><h2>Saved</h2><p class="lede">Sign in to keep collections across devices. Guests can do everything else.</p>
+  <div class="stack">${ticket({role:'Paris · dinner',n:1,cls:'v',name:'Le Servan',meta:'Neo-bistro · 11e',ver:['L1','Exists, hours confirmed · Google']},-1)}</div></div>`
+};
+function chips(){return S.chips.map((c,i)=>`<button class="chip" data-chip="${i}" data-s="${c.s}" aria-label="${c.l}: ${c.s}"><span class="lbl">${c.l}</span><span class="st">${c.s}</span></button>`).join('')}
+function resultsHTML(){
+  if(S.mode==='llm') return `<p class="flag">Same request, plain LLM, no Qloo. Cached example.</p>`+LLM.map(x=>`<div class="llm"><span class="name">${esc(x.name)}</span><span class="flag">⚠ ${esc(x.flag)}</span></div>`).join('')+`<span class="verify"><i>0/3</i>meet all your constraints</span>`;
+  return RESULTS[S.pick].map(ticket).join('');
+}
+const ORDER=['landing','build','home','keep','results','detail','passport'];
+function render(){
+  $('#view').innerHTML=V[S.screen]();
+  $('#back').hidden=S.screen==='landing';
+  $('#tabs').hidden=['landing','build'].includes(S.screen);
+  const tab=S.screen==='passport'?'passport':S.screen==='saved'?'saved':'home';
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===tab));
+  $('#flow').innerHTML=ORDER.map(k=>`<button data-go="${k}" aria-current="${S.screen===k}">${NOTES[k][0]}</button>`).join('');
+  const n=NOTES[S.screen]||NOTES.home; $('#note').innerHTML=`<h4>${n[0]}</h4><p class="lede" style="max-width:none">${n[1]}</p>`;
+}
+const hist=[];
+function go(s){if(s!==S.screen){hist.push(S.screen);S.screen=s;render();}}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button'); if(!t) return;
+  if(t.id==='back'){S.screen=hist.pop()||'landing';render();return}
+  if(t.dataset.go) go(t.dataset.go);
+  if(t.dataset.tab) go(t.dataset.tab);
+  if(t.dataset.open && t.dataset.open!=='-1'){S.open=+t.dataset.open;go('detail')}
+  if(t.dataset.mode){S.mode=t.dataset.mode;render()}
+  if(t.dataset.chip){
+    const c=S.chips[+t.dataset.chip]; c.s={keep:'change',change:'ignore',ignore:'keep'}[c.s];
+    t.dataset.s=c.s; t.querySelector('.st').textContent=c.s; t.setAttribute('aria-label',c.l+': '+c.s);
+    const res=$('#res'); if(res){res.classList.add('busy');setTimeout(()=>{S.pick=1-S.pick;res.innerHTML=resultsHTML();res.classList.remove('busy')},450)}
+  }
+});
+render();
+</script>

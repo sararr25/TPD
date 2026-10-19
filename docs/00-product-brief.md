@@ -20,7 +20,7 @@ La proposta di valore è racchiusa in una frase, da considerare come **tagline d
 
 > **Keep what you love. Change what doesn't work.**
 
-**Strategia:** costruire per il **Qloo Agentic Hackathon 2026** un'esperienza B2C mobile-first, pubblica e utilizzabile end-to-end, che dimostri il valore delle affinità culturali di Qloo. Disegnare il prodotto e raccogliere segnali di utilizzo in modo che possa evolvere in un'offerta **B2B per hotel, boutique resort, concierge e organizzazioni turistiche**, senza cercare di realizzare già oggi l'intera piattaforma enterprise.
+**Strategia:** costruire per il **Qloo Agentic Hackathon 2026** un'esperienza B2C **web app desktop**, pubblica e utilizzabile end-to-end, che dimostri il valore delle affinità culturali di Qloo. Disegnare il prodotto e raccogliere segnali di utilizzo in modo che possa evolvere in un'offerta **B2B per hotel, boutique resort, concierge e organizzazioni turistiche**, senza cercare di realizzare già oggi l'intera piattaforma enterprise.
 
 ---
 
@@ -282,7 +282,7 @@ Dimostrare in modo **misurabile e intuitivo** che TPD trova alternative più per
 
 **Must have:**
 
-1. Web app mobile-first, senza login obbligatorio per provare la demo.
+1. Web app desktop (non mobile), senza login obbligatorio per provare la demo.
 2. Taste Passport minimo: 3–5 segnali selezionabili e riutilizzabili fra ricerche.
 3. Ricerca di un **luogo specifico** come riferimento.
 4. Interfaccia **Keep / Change**, più vincoli duri (stessa città, budget, data se rilevante).
@@ -333,7 +333,7 @@ Dimostrare in modo **misurabile e intuitivo** che TPD trova alternative più per
 **Stack suggerito, non obbligatorio:** Next.js / React + TypeScript, backend server-side, database Postgres o Supabase per profili e feedback, Qloo API lato server; un LLM per orchestrazione strutturata e spiegazioni; Google Maps/Places o altra fonte POI licenziata; provider eventi opzionale.
 
 ```text
-Mobile-first UI
+Web app UI (desktop)
   ├── Taste Passport
   ├── Keep / Change
   ├── Results + Map + Evidence

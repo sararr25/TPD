@@ -35,7 +35,7 @@ Complementa il brief `TPD_Product_Research_and_Hackathon_Brief.md`. Dove i dati 
 | Segmento | Momento | Job | Perché TPD |
 |---|---|---|---|
 | **Viaggiatore con un riferimento in testa** (primario) | Prima/durante il viaggio, il posto desiderato è pieno, affollato o fuori budget | "Dammi la stessa cosa, ma che si possa fare" | Reference-based + Keep/Change |
-| **Viaggiatore già sul posto** | Sera libera, pioggia, piano saltato | "Cosa faccio qui, nel mio stile?" | Within-destination, mobile |
+| **Viaggiatore già sul posto** | Sera libera, pioggia, piano saltato | "Cosa faccio qui, nel mio stile?" | Within-destination (oggi web app desktop; mobile fuori scope) |
 | **Concierge / boutique hotel** (futuro) | L'ospite chiede, il tavolo non c'è | "Proponi qualcosa che gli somigli" | Widget brandizzato |
 | **DMO** (futuro) | Distribuire i flussi oltre i punti noti | "Mostra il resto del territorio ai profili giusti" | Alternative + dati aggregati |
 

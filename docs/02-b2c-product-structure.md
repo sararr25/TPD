@@ -49,7 +49,7 @@ Dopo uno Swap, un invito: "Usa lo stesso gusto in un'altra categoria o città". 
 ### 2.5 Confronto Qloo vs LLM
 Toggle sulla schermata dei risultati: **"Cosa farebbe un LLM senza Qloo"**. Due colonne sulla stessa richiesta e con gli stessi vincoli, risultati precalcolati e in cache per non consumare quota. Ogni colonna mostra quanti risultati rispettano i vincoli duri e quanti sono verificabili.
 
-## 3. Schermate (mobile-first)
+## 3. Schermate (web app desktop)
 
 1. **Landing** — promessa ("Il posto che volevi è pieno? Trova quello giusto per te"), ingresso Passport, ingresso ospite.
 2. **Costruzione Passport** — ricerca di entità Qloo (artista, film, libro, luogo), 3–5 scelte, anteprima della "carta del gusto".

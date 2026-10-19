@@ -68,6 +68,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 | 3.16 | Momento guida della demo: **Transfer cross-domain** (stesso Passport su ristorante → museo → quartiere). |
 | 3.17 | Secondo momento: **Qloo vs LLM affiancati** sulla stessa richiesta. |
 | 3.18 | Identità: **giocosa e social**, con la scheda Passport come "carta d'identità del gusto". Le etichette di verifica restano sobrie e precise. |
+| 3.19 | **Piattaforma: web app desktop, non mobile.** Le schermate si disegnano a 1440 px; il layout deve solo non rompersi su schermi stretti. |
 
 ## 4. Qloo e architettura
 

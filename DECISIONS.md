@@ -5,7 +5,7 @@
 **Scadenza submission:** 30 ottobre 2026, 23:45 EDT (verificare il countdown ufficiale su Devpost)
 
 Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fonti sono in `docs/`:
-`00-product-brief.md` · `01-research-and-brainstorm.md` · `02-b2c-product-structure.md` · `03-data-sources-and-verification.md` · `04-design-direction-research.md`.
+`00-product-brief.md` · `01-research-and-brainstorm.md` · `02-b2c-product-structure.md` · `03-data-sources-and-verification.md` · `04-design-direction-research.md` · `05-design-handover.md`.
 
 ---
 

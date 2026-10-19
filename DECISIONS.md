@@ -113,8 +113,8 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 | 7.2 | Dati effettivi Qloo per categoria e paese; limiti e parametri abilitati | Da chiedere su `#api-help` (bozza in `docs/03`) e da provare con le 8 query di `docs/01`, sezione 2.5 |
 | 7.3 | Viator Affiliate Basic: attivazione e copertura nelle 6 destinazioni | Da fare |
 | 7.4 | Copertura Ticketmaster in Portogallo, Francia, Spagna | Da fare |
-| 7.5 | Metodo di login | Da decidere |
-| 7.6 | Conferma dello stack (Next.js + Vercel) | Da decidere |
+| 7.5 | Metodo di login | Deciso: Neon Auth + Google |
+| 7.6 | Stack | Deciso: Next.js + Vercel + Neon (vedi spec 2026-10-19) |
 | 7.7 | Nome del prodotto e identità visiva ("TPD" è provvisorio) | Da decidere |
 | 7.8 | Quota e rate limit effettivi della chiave | Dopo la chiave |
 | 7.9 | Test utenti del problema ("il posto che volevo era pieno") e interviste | Da pianificare |

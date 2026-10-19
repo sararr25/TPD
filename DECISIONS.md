@@ -5,7 +5,7 @@
 **Scadenza submission:** 30 ottobre 2026, 23:45 EDT (verificare il countdown ufficiale su Devpost)
 
 Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fonti sono in `docs/`:
-`00-product-brief.md` · `01-research-and-brainstorm.md` · `02-b2c-product-structure.md` · `03-data-sources-and-verification.md`.
+`00-product-brief.md` · `01-research-and-brainstorm.md` · `02-b2c-product-structure.md` · `03-data-sources-and-verification.md` · `04-design-direction-research.md`.
 
 ---
 
@@ -115,7 +115,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 | 7.4 | Copertura Ticketmaster in Portogallo, Francia, Spagna | Da fare |
 | 7.5 | Metodo di login | Da decidere |
 | 7.6 | Conferma dello stack (Next.js + Vercel) | Da decidere |
-| 7.7 | Nome del prodotto e identità visiva ("TPD" è provvisorio) | Da decidere |
+| 7.7 | Nome del prodotto e identità visiva ("TPD" è provvisorio) | Da decidere; ricerca e moodboard in `docs/04` |
 | 7.8 | Quota e rate limit effettivi della chiave | Dopo la chiave |
 | 7.9 | Test utenti del problema ("il posto che volevo era pieno") e interviste | Da pianificare |
 

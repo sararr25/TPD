@@ -69,6 +69,7 @@ Questo file raccoglie tutte le decisioni prese fino ad ora. Il dettaglio e le fo
 | 3.17 | Secondo momento: **Qloo vs LLM affiancati** sulla stessa richiesta. |
 | 3.18 | Identità: **giocosa e social**, con la scheda Passport come "carta d'identità del gusto". Le etichette di verifica restano sobrie e precise. |
 | 3.19 | **Piattaforma: web app desktop, non mobile.** Le schermate si disegnano a 1440 px; il layout deve solo non rompersi su schermi stretti. |
+| 3.20 | **Direzione visiva:** base A (Passport e timbri), più calma; timbri a inchiostro su carta, pochi tocchi della C. **Mai azzurro chiaro né verde scuro** nella palette. Prototipi in `design-mockups/A2-*.html`. |
 
 ## 4. Qloo e architettura
 

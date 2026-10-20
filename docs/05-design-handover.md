@@ -80,3 +80,7 @@ Primo flusso locale reale: Passport con entità Qloo e due ospiti, ricerca refer
 ## Museum Swap e Transfer — 20 ottobre
 
 E05 ora implementato localmente: categoria musei, reference confermata per categoria/Parigi, chip culturali reali, nessun budget ristorante nei musei, stesso Passport tra categorie e reset delle scelte contestuali. Verificati test automatici, build/typecheck, endpoint reali Qloo e percorso browser ristorante → Transfer → museo → Keep/Change → dettaglio L0. Evidenza e limiti in docs/10. Prossimo: benchmark E04; vantaggio qualitativo ancora da misurare. Nessun deploy.
+
+## Benchmark E04 — 20 ottobre
+
+Harness ripetibile in scripts/benchmark; protocollo, comandi e limiti in docs/11. Raccolti 16 casi TPD (48 alternative) solo in .private/benchmark. Import dei baseline con provenienza e hash degli stessi input, schede cieche A/B/C e aggregazione voti implementati e testati con fixture sintetiche. Nessun output LLM/ricerca normale né voto umano raccolto: E04 parziale, nessuna superiorità dichiarata e nessun toggle fittizio nell’app. Scelta provider LLM chiesta all’utente; chiave locale corrente solo Qloo. Il preflight Louvre non risolto è registrato, non dichiarato assenza di copertura Qloo.

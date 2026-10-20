@@ -144,3 +144,7 @@ Parigi è il primo pilot dopo audit categoria/città (docs/09); nessuna copertur
 ## Musei e Transfer — 20 ottobre 2026
 
 Seconda categoria live del pilot Parigi: Museum Swap con lo stesso Passport e nuova reference. Keep/Change usa tag culturali Qloo; il budget ristorante non viene applicato ai musei. Tre ruoli distinti e provenienza L0 verificati nel campione live e nel browser. Nessuna copertura gallerie/quartieri implicita. Dettaglio in docs/10; benchmark Qloo vs LLM ancora aperto.
+
+## Benchmark tecnico — 20 ottobre 2026
+
+E04 avviato con 16 scenari nel pilot Parigi: colonna TPD raccolta e controllata, harness privato con input identici per i baseline e schede cieche predisposte. LLM, ricerca normale e valutazioni umane ancora mancanti; nessuna superiorità dimostrata. Il campione usa riferimenti risolvibili e non misura copertura generale. Protocollo ed evidenze in docs/11.

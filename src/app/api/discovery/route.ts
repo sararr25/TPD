@@ -1,5 +1,6 @@
 import { DiscoveryError } from "@/lib/server/qloo";
 import { lookup, guest, swap } from "@/lib/server/discovery-service";
+import { checkBudget } from "@/lib/server/budget";
 export const runtime = "nodejs";
 const headers = {
   "Cache-Control": "private, no-store",
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
     }
     if (!body || typeof body !== "object")
       throw new DiscoveryError("invalid_request", 400);
+    await checkBudget(request, body.action === "swap");
     let result;
     if (body.action === "guest") result = await guest(body.profile);
     else if (body.action === "search") {
@@ -70,8 +72,15 @@ export async function POST(request: Request) {
     if (error instanceof DiscoveryError)
       return Response.json(
         { error: error.code },
-        { status: error.status, headers },
+        {
+          status: error.status,
+          headers:
+            error.code === "rate_limited"
+              ? { ...headers, "Retry-After": "600" }
+              : headers,
+        },
       );
+    console.error("[discovery] unexpected error", error);
     return Response.json(
       { error: "unexpected_error" },
       { status: 500, headers },

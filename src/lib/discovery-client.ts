@@ -3,6 +3,8 @@ export type Selection = { entity: Entity; token: string };
 export const MESSAGES: Record<string, string> = {
   quota:
     "The discovery service has reached its limit. Try again later; your Passport is still here.",
+  rate_limited:
+    "You have made a lot of searches in a short time. Wait about ten minutes and try again; your Passport is still here.",
   busy: "A few discoveries are in progress. Try again in a moment.",
   not_configured: "Discovery is not configured on this server yet.",
   provider_unavailable:

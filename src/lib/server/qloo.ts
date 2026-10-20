@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import type { Entity, Tag } from "../discovery.ts";
+import { store } from "./store.ts";
 export class DiscoveryError extends Error {
   code: string;
   status: number;
@@ -18,17 +19,11 @@ const text = (v: unknown): string | null =>
   typeof v === "string" && v.length > 0 ? v : null;
 const number = (v: unknown): number | null =>
   typeof v === "number" && Number.isFinite(v) ? v : null;
-const cache = new Map<
-  string,
-  { expires: number; data: unknown; checkedAt: string }
->();
 const inflight = new Map<
   string,
   Promise<{ data: unknown; checkedAt: string }>
 >();
-let nextSlot = 0;
 let blockedUntil = 0;
-const MAX_CACHE = 100;
 const TTL = 15 * 60 * 1000;
 export async function qloo(
   path: "/search" | "/v2/insights" | "/v2/tags",
@@ -47,17 +42,15 @@ export async function qloo(
   const id = createHash("sha256")
     .update(key + "|" + url)
     .digest("hex");
-  const existing = cache.get(id);
-  if (existing && existing.expires > Date.now()) return existing;
   const pending = inflight.get(id);
   if (pending) return pending;
-  if (blockedUntil > Date.now()) throw new DiscoveryError("quota", 429);
   const task = (async () => {
-    const now = Date.now();
-    const slot = Math.max(now, nextSlot);
-    if (slot - now > 2500) throw new DiscoveryError("busy", 429);
-    nextSlot = slot + 300;
-    await new Promise((r) => setTimeout(r, Math.max(0, slot - now)));
+    const existing = await store().get(id);
+    if (existing) return existing;
+    if (blockedUntil > Date.now()) throw new DiscoveryError("quota", 429);
+    const wait = await store().reserve("qloo", 300, 2500);
+    if (wait === null) throw new DiscoveryError("busy", 429);
+    await new Promise((r) => setTimeout(r, wait));
     let res: Response;
     try {
       res = await fetch(url, {
@@ -87,9 +80,7 @@ export async function qloo(
     if (object(data).success === false)
       throw new DiscoveryError("invalid_response");
     const result = { data, checkedAt: new Date().toISOString() };
-    for (const [k, v] of cache) if (v.expires <= Date.now()) cache.delete(k);
-    if (cache.size >= MAX_CACHE) cache.delete(cache.keys().next().value!);
-    cache.set(id, { ...result, expires: Date.now() + TTL });
+    await store().set(id, result, TTL);
     return result;
   })();
   inflight.set(id, task);

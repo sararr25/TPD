@@ -1,10 +1,10 @@
 import { mkdir, readFile, writeFile, rename, open, unlink } from "node:fs/promises";
-import { CASES, REFERENCES, CONDITIONS, hash, promptFor, validateItems, validateImport, report, blindCase, profileSensitivity, aggregateVotes } from "./core.mjs";
+import { CASES, REFERENCES, CONDITIONS, hash, promptFor, validateItems, validateImport, report, blindCase, profileSensitivity, aggregateVotes, manualChatgptPacket } from "./core.mjs";
 import { validPlace } from "../../src/lib/discovery.ts";
 
 const [command = "collect", runId = new Date().toISOString().replace(/[:.]/g, "-"), condition, importFile] = process.argv.slice(2);
 if (!/^[a-zA-Z0-9_-]{1,100}$/.test(runId)) throw Error("Invalid run ID");
-if (!["collect", "report", "import", "blind", "score"].includes(command)) throw Error("Use collect, report, import, blind or score");
+if (!["collect", "report", "import", "blind", "score", "manual"].includes(command)) throw Error("Use collect, report, import, blind, score or manual");
 const dir = `.private/benchmark/${runId}`;
 const origin = "http://127.0.0.1:3000";
 await mkdir(dir, { recursive: true, mode: 0o700 });
@@ -74,6 +74,11 @@ try {
   for (const baseline of ["llm", "search"]) {
     if (await read(`${baseline}-import-template`, null)) continue;
     await save(`${baseline}-import-template`, run.cases.filter(c => !records[c.id]?.[baseline]).map(c => ({ caseId: c.id, condition: baseline, inputHash: c.inputHash, items: [], provenance: { source: "", collectedAt: "", qlooUsed: false, ...(baseline === "llm" ? { model: "", browsing: false } : { query: "", urls: [] }) } })));
+  }
+  if (command === "manual") {
+    const path = `${dir}/chatgpt-manual.md`;
+    await writeFile(path, manualChatgptPacket(run, records), { mode: 0o600, flag: "wx" });
+    console.log(`Manual collection packet: ${path}`);
   }
   if (command === "import") {
     if (!["llm", "search"].includes(condition) || !importFile) throw Error("Use import RUN_ID llm|search FILE.json");

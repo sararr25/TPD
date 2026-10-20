@@ -148,3 +148,5 @@ Seconda categoria live del pilot Parigi: Museum Swap con lo stesso Passport e nu
 ## Benchmark tecnico — 20 ottobre 2026
 
 E04 avviato con 16 scenari nel pilot Parigi: colonna TPD raccolta e controllata, harness privato con input identici per i baseline e schede cieche predisposte. LLM, ricerca normale e valutazioni umane ancora mancanti; nessuna superiorità dimostrata. Il campione usa riferimenti risolvibili e non misura copertura generale. Protocollo ed evidenze in docs/11.
+
+Per il baseline LLM l’utente ha scelto la raccolta manuale da ChatGPT. Prompt dei 16 casi esportati privatamente; modello effettivo e provenienza verranno annotati alla raccolta. Nessuna API LLM necessaria e nessuna risposta ancora importata.

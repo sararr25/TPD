@@ -20,7 +20,7 @@ Nel preflight iniziale «Musée du Louvre» non è stato risolto dalla ricerca d
 ## Tre condizioni, stessi input
 
 1. **TPD:** l'app locale con Qloo, Passport, reference e vincoli, senza variazioni al ranking per il benchmark.
-2. **LLM senza Qloo:** esattamente il prompt esportato, modello identificato, nessuna navigazione, ricerca o accesso ai risultati TPD. Raccogliere ogni risposta in una conversazione indipendente per evitare contaminazione tra casi. Conservare modello/versione, timestamp ed eventuale configurazione effettiva nel record di provenienza. La modalità API o raccolta manuale deve essere esplicita. Il provider non è stato ancora scelto/configurato.
+2. **LLM senza Qloo:** esattamente il prompt esportato, modello identificato, nessuna navigazione, ricerca o accesso ai risultati TPD. Raccogliere ogni risposta in una conversazione indipendente per evitare contaminazione tra casi. Conservare modello/versione, timestamp ed eventuale configurazione effettiva nel record di provenienza. La modalità API o raccolta manuale deve essere esplicita. L’utente ha scelto la raccolta manuale da ChatGPT; nessuna API LLM da attivare per questo baseline.
 3. **Ricerca normale:** ricerca web/Maps realmente eseguita, usando gli stessi vincoli e preferenze come contesto; registrare query effettiva, fonte, URL e timestamp. La curatela dell'operatore va dichiarata. Non sostituire questa condizione con una query Qloo senza Passport.
 
 `baseline-inputs.json` esporta solo i contesti umani e i prompt, senza risultati TPD, entità provider complete o token. Le risposte devono usare lo stesso formato, con massimo tre alternative distinte; sono ammessi meno risultati o una lista vuota. Non inventare indirizzi, fasce prezzo o disponibilità. Nessun riempimento automatico di colonne mancanti.
@@ -113,3 +113,17 @@ Il report mantiene `complete=false` e `qualityUplift=null`. Non sono state valut
 `npm test` comprende fixture sintetiche per i 16 scenari, prompt/hash, provenienza, import, duplicati, rifiuto del confronto incompleto, etichette casuali persistenti e aggregazione voti. La prova integrata dei comandi usa solo dati sintetici e pulisce la propria directory temporanea. `npm run typecheck` passa. Nessuna nuova build necessaria: l'incremento modifica script e documentazione, non il bundle dell'app.
 
 Per chiudere E04: scegliere e raccogliere il baseline LLM, raccogliere la ricerca normale, controllare i fatti con lo stesso criterio per tutte le condizioni (ignoto resta ignoto), effettuare la valutazione umana e analizzare anche casi neutri o sfavorevoli a TPD. Il pannello di confronto nel prodotto e lo storage privato ospitato restano successivi a risultati reali; nessun confronto fittizio viene esposto.
+
+## Raccolta manuale ChatGPT scelta dall’utente
+
+Esportazione senza chiamate provider:
+
+```sh
+npm run benchmark -- manual RUN_ID
+```
+
+Genera `chatgpt-manual.md` privato con i prompt esatti dei soli casi LLM mancanti. Il file non include risultati TPD, token o chiavi e non viene sovrascritto se esiste già. Il pacchetto del run corrente è stato generato e contiene 16 casi.
+
+Usare una conversazione nuova per ogni caso, stesso modello dichiarato, senza strumenti di ricerca o contesto TPD. Annotare l’etichetta del modello effettivamente mostrata e l’eventuale personalizzazione/memoria applicata. Il nome commerciale visibile non garantisce la riproducibilità di una versione interna: questo limite deve restare esplicito. Conservare la prima risposta integrale, inclusi errori, rifiuti e richieste di chiarimento, senza rigenerazioni selettive. Restituire a Codex risposta originale, ID caso, modello, data/ora e stato strumenti; gli hash sono già nel manifest e non serve compilarli a mano.
+
+Le risposte non conformi non vanno trasformate in una lista vuota o in consigli inventati. La normalizzazione di un output realmente raccolto deve conservarne l’originale e non correggerne i fatti; eventuali fallimenti di formato vanno registrati separatamente prima dell’import. Nessuna risposta manuale è stata ancora ricevuta/importata.

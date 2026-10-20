@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { CASES, hash, promptFor, validateItems, validateImport, report, blindCase } from "./benchmark/core.mjs";
+import { CASES, hash, promptFor, validateItems, validateImport, report, blindCase, manualChatgptPacket } from "./benchmark/core.mjs";
 assert.equal(CASES.length, 16);
 assert.equal(new Set(CASES.map(c => c.id)).size, 16);
 assert.equal(CASES.filter(c => c.category === "museum").length, 8);
@@ -67,6 +67,8 @@ try {
     execute("import", id, condition, `${dir}/import.json`);
     assert.throws(() => execute("import", id, condition, `${dir}/import.json`));
   }
+  execute("manual", id);
+  assert.throws(() => execute("manual", id));
   execute("blind", id);
   const generated = JSON.parse(await readFile(`${dir}/blind-review.json`, "utf8"));
   assert.equal(generated.cases.length, 1);
@@ -87,3 +89,12 @@ try {
 console.log("PASS: private CLI import, duplicate protection, incomplete-blind refusal, stable blind labels, ballot export and aggregation; synthetic data only.");
 assert.throws(() => aggregateVotes([{ ...ballot, votes: [] }], packet, { a: blind.key }));
 assert.throws(() => aggregateVotes([{ ...ballot, votes: [{caseId:"constructor",winner:"A"}] }], packet, { a: blind.key }));
+
+const manualRun = { id: "synthetic-manual", cases: [{ id: "case-a", input, inputHash, prompt: promptFor(input), request: { reference: "SECRET-SYNTHETIC-TOKEN" } }] };
+const manual = manualChatgptPacket(manualRun, { "case-a": { tpd: { items: [{ name: "DO-NOT-EXPORT-RECOMMENDATION" }] } } });
+assert(manual.includes(promptFor(input)));
+assert(!manual.includes("SECRET-SYNTHETIC-TOKEN"));
+assert(!manual.includes("DO-NOT-EXPORT-RECOMMENDATION"));
+assert(!manualChatgptPacket(manualRun, { "case-a": { llm: record } }).includes("## case-a"));
+assert.throws(() => manualChatgptPacket({ ...manualRun, cases: [{ ...manualRun.cases[0], inputHash: "wrong" }] }));
+console.log("PASS: manual ChatGPT packet preserves exact prompts, omits collected cases, and exports no TPD results or signed tokens.");

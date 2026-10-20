@@ -103,3 +103,22 @@ export function aggregateVotes(ballots, packet, keys) {
   }
   return { evaluators: ids.size, comparisons, possibleComparisons: ids.size * packet.cases.length, preferences: wins, note: "Descriptive votes from declared-blind evaluators; no statistical uplift claim. Empty ballots are not evaluations." };
 }
+
+export function manualChatgptPacket(run, records = {}) {
+  const cases = run.cases.filter(c => !records[c.id]?.llm);
+  const intro = [
+    "# Raccolta manuale ChatGPT — baseline senza Qloo",
+    `Run: ${run.id}. Casi ancora da raccogliere: ${cases.length}.`,
+    "Usa lo stesso modello dichiarato per tutti i casi e annota il nome esatto mostrato nell'interfaccia. Non assumere una versione interna non visibile.",
+    "Per ogni caso apri una conversazione nuova, senza contesto di questo progetto, senza ricerca web, app collegate o risultati TPD. Incolla esclusivamente il prompt nel riquadro. Registra eventuale personalizzazione/memoria applicata: se presente, il confronto non è perfettamente isolato.",
+    "Conserva la prima risposta completa, anche se restituisce meno risultati, nessun risultato o non segue il formato. Non rigenerare selettivamente le risposte sfavorevoli e non correggere nomi, indirizzi o motivazioni. Una richiesta di chiarimento o un rifiuto è un esito da conservare, non una lista vuota da inventare.",
+    "Riporta a Codex ogni risposta originale con ID del caso, modello mostrato, data/ora di raccolta (con fuso orario) e conferma dell'assenza di ricerca/strumenti. Puoi iniziare da un solo caso. Codex potrà normalizzare il formato conservando l'originale e segnalare eventuali risposte non conformi; non devi compilare hash o JSON di provenienza a mano.",
+    "Questo pacchetto contiene solo gli input comuni. Non contiene suggerimenti TPD, token firmati o chiavi API. La raccolta non costituisce ancora una valutazione di qualità.",
+  ];
+  for (const c of cases) {
+    if (hash(c.input) !== c.inputHash || promptFor(c.input) !== c.prompt) throw Error("Run inputs or prompts have changed");
+    const fence = "`".repeat(Math.max(3, ...[...c.prompt.matchAll(/`+/g)].map(m => m[0].length + 1)));
+    intro.push(`## ${c.id}`, `${fence}text\n${c.prompt}\n${fence}`);
+  }
+  return intro.join("\n\n") + "\n";
+}

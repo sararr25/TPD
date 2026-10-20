@@ -4,7 +4,7 @@ Continued from `docs/14-handover.md`.
 
 ## Done in this session
 
-Branch: `claude/handover-prossimi-passi-7562ac` (worktree). In production (https://beesyde.vercel.app, from the default branch `claude/blissful-gauss-dymbeo`): the Beesyde rename and the E06 Passport-in-account (`27f0abe`). The rest of E06 (collections, "Not for me", account deletion, commit `49889b6`) is pushed to this branch only, **not yet in production**: to deploy, fast-forward `claude/blissful-gauss-dymbeo` to this branch and push. The database tables are already created in Neon.
+Branch: `claude/handover-prossimi-passi-7562ac` (worktree). In production (https://beesyde.vercel.app, from the default branch `claude/blissful-gauss-dymbeo`): the Beesyde rename and the E06 Passport-in-account (`27f0abe`). The rest of E06 (collections, "Not for me", account deletion, commit `49889b6`) is **live** since the push of `ce9a91e` to `claude/blissful-gauss-dymbeo` (checked on the live site as a guest: Swap from Le Baratin, "Not for me" hides Du Pain et des Idées and the next Swap returns La Marine instead; "Show again" works; `/collections` asks to sign in; all account APIs answer 401 to guests and 403 to other sites; no console errors).
 
 | Commit | What |
 |---|---|

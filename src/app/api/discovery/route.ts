@@ -1,5 +1,5 @@
 import { DiscoveryError } from "@/lib/server/qloo";
-import { lookup, guest, swap } from "@/lib/server/discovery-service";
+import { lookup, guest, quiz, swap } from "@/lib/server/discovery-service";
 import { checkBudget } from "@/lib/server/budget";
 export const runtime = "nodejs";
 const headers = {
@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     await checkBudget(request, body.action === "swap");
     let result;
     if (body.action === "guest") result = await guest(body.profile);
+    else if (body.action === "quiz") result = await quiz(body.cards);
     else if (body.action === "search") {
       if (
         typeof body.query !== "string" ||

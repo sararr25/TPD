@@ -17,6 +17,7 @@ import {
   DiscoveryError,
 } from "./qloo.ts";
 import { checkVenues } from "./osm.ts";
+import { ENTITY_CARDS, MAX_ENTITIES } from "../quiz.ts";
 export type Selection = { entity: Entity; token: string };
 const CHIP_TYPE =
   /^urn:tag:(ambience:qloo|cuisine:place|offerings:place|beverage_offering:qloo)$/;
@@ -110,6 +111,32 @@ export async function guest(profile:unknown=0) {
         (type !== "movie" || c.entity.context === "1995"),
     );
     if (exact.length !== 1) throw new DiscoveryError("guest_unresolved", 503);
+    choices.push(exact[0]);
+  }
+  return { choices };
+}
+// Passport quiz: the entity cards the user liked become signed Qloo entities.
+// A card counts only when Qloo returns exactly one entity with that name
+// (and that year, for films).
+export async function quiz(cards: unknown) {
+  if (
+    !Array.isArray(cards) ||
+    cards.length < 1 ||
+    cards.length > MAX_ENTITIES ||
+    new Set(cards).size !== cards.length ||
+    !cards.every((id) => typeof id === "string" && Object.hasOwn(ENTITY_CARDS, id))
+  )
+    throw new DiscoveryError("invalid_request", 400);
+  const choices: Selection[] = [];
+  for (const id of cards as string[]) {
+    const { name, type, year } = ENTITY_CARDS[id].entity;
+    const found = await lookup(name, type);
+    const exact = found.choices.filter(
+      (c) =>
+        c.entity.name.toLowerCase() === name.toLowerCase() &&
+        (!year || c.entity.context === year),
+    );
+    if (exact.length !== 1) throw new DiscoveryError("quiz_unresolved", 503);
     choices.push(exact[0]);
   }
   return { choices };

@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PassportCard } from "./passport-card";
+import { QuizFlow } from "./quiz-flow";
+import { QUIZ_KEY, parseQuiz, profileLines, type Answers } from "@/lib/quiz";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import {
   discovery,
@@ -29,7 +31,9 @@ export function PassportBuilder() {
     [ready, setReady] = useState(false),
     [showGuest, setShowGuest] = useState(false),
     [guestProfile,setGuestProfile]=useState(0),
-    [hidden, setHidden] = useState<Hidden[]>([]);
+    [hidden, setHidden] = useState<Hidden[]>([]),
+    [quizOpen, setQuizOpen] = useState(false),
+    [profile, setProfile] = useState<Answers>({});
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
   // Places marked "Not for me" in Swap (E06), with a way to show them again.
@@ -66,6 +70,7 @@ export function PassportBuilder() {
     try {
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem(HIDDEN_KEY);
+      localStorage.removeItem(QUIZ_KEY);
     } catch {
       setStatus(
         "Your account is deleted. This browser's copy could not be cleared: remove it in browser settings.",
@@ -78,7 +83,11 @@ export function PassportBuilder() {
   const writes = useRef<Promise<unknown>>(Promise.resolve());
   useEffect(() => {
     try {
-      setSelected(readSelections(localStorage.getItem(LIVE_PASSPORT_KEY)));
+      const local = readSelections(localStorage.getItem(LIVE_PASSPORT_KEY));
+      setSelected(local);
+      setProfile(parseQuiz(localStorage.getItem(QUIZ_KEY)));
+      // No Passport yet: the quiz is the way in.
+      setQuizOpen(!local.length);
     } catch {
       setStatus(
         "Browser storage is unavailable. Keep this page open to retain your choices.",
@@ -99,6 +108,7 @@ export function PassportBuilder() {
       if (account) {
         setSelected(account);
         storeLocally(account);
+        setQuizOpen(false);
         setStatus("Loaded your Passport from your account.");
         return;
       }
@@ -140,6 +150,26 @@ export function PassportBuilder() {
       .then(() => saveAccountPassport(next))
       .then(() => setStatus("Saved to your account."))
       .catch((e) => setStatus((e as Error).message));
+  }
+  async function finishQuiz(answers: Answers, cards: string[]) {
+    setBusy(true);
+    setStatus("Building your Passport with Qloo…");
+    try {
+      const data = await discovery<{ choices: Selection[] }>({
+        action: "quiz",
+        cards,
+      });
+      save(data.choices);
+      setProfile(answers);
+      try {
+        localStorage.setItem(QUIZ_KEY, JSON.stringify(answers));
+      } catch {}
+      setQuizOpen(false);
+    } catch (e) {
+      setStatus((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
   }
   async function search(e: React.FormEvent) {
     e.preventDefault();
@@ -208,6 +238,7 @@ export function PassportBuilder() {
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem("tpd-passport-v1");
       localStorage.removeItem("tpd-design-v1");
+      localStorage.removeItem(QUIZ_KEY);
       setStatus(
         userId
           ? "Passport deleted from your account and this browser."
@@ -219,7 +250,30 @@ export function PassportBuilder() {
       );
     }
     setSelected([]);
+    setProfile({});
   }
+  if (quizOpen)
+    return (
+      <div className="grid">
+        <div>
+          <QuizFlow
+            busy={busy}
+            onFinish={finishQuiz}
+            onCancel={selected.length ? () => setQuizOpen(false) : undefined}
+          />
+          <p role="status" aria-live="polite">
+            {status}
+          </p>
+          {!selected.length && (
+            <button className="text" disabled={busy} onClick={() => setQuizOpen(false)}>
+              I&apos;d rather search for my favourites
+            </button>
+          )}
+        </div>
+        <PassportCard signals={selected.map((s) => s.entity.name)} />
+      </div>
+    );
+  const lines = profileLines(profile);
   return (
     <>
       <div className="grid">
@@ -231,6 +285,22 @@ export function PassportBuilder() {
             <em>A starting point.</em>
           </h1>
           <p>Choose 3–5 artists, films, books or places you love.</p>
+          <button className="stamp" disabled={busy || !ready} onClick={() => {
+              setStatus("");
+              setQuizOpen(true);
+            }}>
+            {lines.length ? "Redo the quiz" : "Take the 2-minute quiz"}
+          </button>
+          {lines.length > 0 && (
+            <details>
+              <summary>From your quiz</summary>
+              <ul className="muted">
+                {lines.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
+              </ul>
+            </details>
+          )}
           {showGuest && (
             <div className="paper">
               <h3>Borrow a Passport</h3>

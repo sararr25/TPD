@@ -8,13 +8,14 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types scripts/check-passport.mjs && node scripts/check-prototype.cjs && node --experimental-strip-types --conditions=react-server scripts/check-discovery.mjs && node scripts/check-benchmark.mjs",
+    "test": "node --experimental-strip-types scripts/check-passport.mjs && node scripts/check-prototype.cjs && node --experimental-strip-types --conditions=react-server scripts/check-discovery.mjs && node scripts/check-benchmark.mjs && node scripts/check-benchmark-cli.mjs",
     "verify:qloo": "node scripts/verify-qloo.mjs",
     "verify:qloo-features": "node scripts/check-qloo-features.mjs",
     "check:prototype": "node scripts/check-prototype.cjs",
     "verify:qloo-coverage": "node scripts/audit-qloo-coverage.mjs",
     "verify:qloo-transfer": "node --experimental-strip-types scripts/verify-qloo-transfer.mjs",
-    "benchmark": "node --experimental-strip-types scripts/benchmark/run.mjs"
+    "benchmark": "node --experimental-strip-types scripts/benchmark/run.mjs",
+    "benchmark:cli": "node --experimental-strip-types scripts/benchmark/collect-cli.mjs"
   },
   "engines": {
     "node": ">=22.19.0"

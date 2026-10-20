@@ -1,6 +1,6 @@
 # Benchmark Qloo / LLM / ricerca normale
 
-20 ottobre 2026. E04 **parziale**: harness implementato, colonna TPD raccolta; LLM, ricerca normale e valutazioni umane non ancora raccolti. Nessun confronto vincente dichiarato, nessun nuovo provider attivato, nessuna modifica alla UI pubblica.
+20 ottobre 2026. E04 **parziale**: harness implementato, TPD e LLM via Codex CLI raccolti (16 casi ciascuno); ricerca normale e valutazioni umane mancanti. Nessun confronto vincente dichiarato e nessuna modifica alla UI pubblica. La raccolta manuale ChatGPT descritta sotto è stata sostituita, su richiesta dell’utente dopo il blocco web, dal trasporto CLI dichiarato in docs/12.
 
 ## Protocollo del pilot
 
@@ -20,7 +20,7 @@ Nel preflight iniziale «Musée du Louvre» non è stato risolto dalla ricerca d
 ## Tre condizioni, stessi input
 
 1. **TPD:** l'app locale con Qloo, Passport, reference e vincoli, senza variazioni al ranking per il benchmark.
-2. **LLM senza Qloo:** esattamente il prompt esportato, modello identificato, nessuna navigazione, ricerca o accesso ai risultati TPD. Raccogliere ogni risposta in una conversazione indipendente per evitare contaminazione tra casi. Conservare modello/versione, timestamp ed eventuale configurazione effettiva nel record di provenienza. La modalità API o raccolta manuale deve essere esplicita. L’utente ha scelto la raccolta manuale da ChatGPT; nessuna API LLM da attivare per questo baseline.
+2. **LLM senza Qloo:** esattamente il prompt esportato, modello identificato, nessuna navigazione, ricerca o accesso ai risultati TPD. Raccogliere ogni risposta in una conversazione indipendente per evitare contaminazione tra casi. Conservare modello/versione, timestamp ed eventuale configurazione effettiva nel record di provenienza. La modalità API o raccolta manuale deve essere esplicita. L’utente aveva scelto la raccolta manuale da ChatGPT; dopo il blocco web ha richiesto un’alternativa da terminale. Il baseline è stato raccolto con Codex CLI e identificato come tale (docs/12), senza attivare un’API key.
 3. **Ricerca normale:** ricerca web/Maps realmente eseguita, usando gli stessi vincoli e preferenze come contesto; registrare query effettiva, fonte, URL e timestamp. La curatela dell'operatore va dichiarata. Non sostituire questa condizione con una query Qloo senza Passport.
 
 `baseline-inputs.json` esporta solo i contesti umani e i prompt, senza risultati TPD, entità provider complete o token. Le risposte devono usare lo stesso formato, con massimo tre alternative distinte; sono ammessi meno risultati o una lista vuota. Non inventare indirizzi, fasce prezzo o disponibilità. Nessun riempimento automatico di colonne mancanti.
@@ -99,7 +99,7 @@ Run privato `paris-pilot-2026-10-20`:
 | Condizione | Casi raccolti | Alternative restituite |
 |---|---:|---:|
 | TPD | 16/16 | 48 |
-| LLM senza Qloo | 0/16 | — |
+| LLM senza Qloo (Codex CLI) | 16/16 | 48 |
 | Ricerca normale | 0/16 | — |
 
 Nei 16 casi TPD: tre alternative distinte per caso, nessun risultato vuoto, 20 candidati ammessi per caso e zero scarti locali riportati. Tutte le 48 alternative rispettano i controlli locali sui metadati Qloo: categoria, Paris/FR, indirizzo/coordinate, riferimento escluso, tag Change e fascia massima dove presente. Si tratta di controlli della risposta filtrata dell'app, non di una verifica operativa indipendente né di una misura comparativa di precisione. Il ranking a monte e i candidati scartati da Qloo non sono osservati da questo harness.
@@ -112,7 +112,7 @@ Il report mantiene `complete=false` e `qualityUplift=null`. Non sono state valut
 
 `npm test` comprende fixture sintetiche per i 16 scenari, prompt/hash, provenienza, import, duplicati, rifiuto del confronto incompleto, etichette casuali persistenti e aggregazione voti. La prova integrata dei comandi usa solo dati sintetici e pulisce la propria directory temporanea. `npm run typecheck` passa. Nessuna nuova build necessaria: l'incremento modifica script e documentazione, non il bundle dell'app.
 
-Per chiudere E04: scegliere e raccogliere il baseline LLM, raccogliere la ricerca normale, controllare i fatti con lo stesso criterio per tutte le condizioni (ignoto resta ignoto), effettuare la valutazione umana e analizzare anche casi neutri o sfavorevoli a TPD. Il pannello di confronto nel prodotto e lo storage privato ospitato restano successivi a risultati reali; nessun confronto fittizio viene esposto.
+Per chiudere E04: raccogliere la ricerca normale, controllare i fatti con lo stesso criterio per tutte le condizioni (ignoto resta ignoto), effettuare la valutazione umana e analizzare anche casi neutri o sfavorevoli a TPD. Il pannello di confronto nel prodotto e lo storage privato ospitato restano successivi a risultati reali; nessun confronto fittizio viene esposto.
 
 ## Raccolta manuale ChatGPT scelta dall’utente
 
@@ -133,3 +133,5 @@ Le risposte non conformi non vanno trasformate in una lista vuota o in consigli 
 Dopo l’accesso dell’utente, il selettore visibile ha mostrato GPT-6 con livello High. Il primo caso è stato inviato una sola volta in una conversazione temporanea separata, preceduto dall’istruzione costante di usare solo la conoscenza esistente, senza browsing, app, Qloo o lookup esterni. Il prompt comune del manifest è rimasto invariato ed è stato incluso integralmente. Prompt effettivo, etichette del selettore, timestamp e stato visibile sono conservati in `.private/benchmark/paris-pilot-2026-10-20/chatgpt-raw/baratin-p0-baseline-attempt.json`.
 
 L’invio è fallito con `cloudflare_challenge`: nessuna risposta del modello raccolta, nessun record LLM importato e nessun retry automatico. La verifica richiede intervento dell’utente nella scheda ChatGPT aperta; non è stata aggirata. Il modello selezionato è un’etichetta UI, non prova di una versione interna effettivamente eseguita, dato che la generazione non è partita. Screenshot privato in `.private/qa/chatgpt-cloudflare.png`.
+
+Il blocco browser sopra documentato resta un tentativo fallito separato. La raccolta LLM successiva tramite CLI è completa e verificata in docs/12; non serve risolvere Cloudflare per continuare il benchmark.

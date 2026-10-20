@@ -94,3 +94,7 @@ Su richiesta utente, il blocco web è stato risolto usando il Codex CLI ufficial
 ## Terza condizione, audit e scheda umana — 20 ottobre
 
 Ricerca web con estrazione assistita raccolta su 16 casi, con query/fonti/ordine documentati e limite del pool condiviso tra profili (docs/13). Ora 144 occorrenze complessive tra tre condizioni. Audit comune via Qloo /search: 53 lookup distinti; unknown preservati, nessuna equivalenza tra copertura Qloo e verità esterna. Emersi conflitti di identità/indirizzo anche in TPD: ticket E09 prima del deploy. Nessun dato del campione riscritto o corretto dopo l’audit. Scheda A/B/C e server loopback su 3212/study verificati; zero voti umani raccolti. Campo report rinominato collectionComplete per separare raccolta da validazione. Test/typecheck passano, nessun deploy.
+
+## Valutazione umana rimandata — 20 ottobre 2026
+
+Su richiesta dell’utente, saltiamo per ora la scheda anonima A/B/C: l’utente non conosce i luoghi e usa il prodotto proprio per scoprirli. Nessuna compilazione, reclutamento o raccolta voti richiesta nel lavoro corrente. Strumenti e dati tecnici restano disponibili, ma E04 non blocca lo sviluppo e non viene dichiarato concluso o vincente. La priorità passa all’affidabilità dei suggerimenti: identità, attività e indirizzi (E09), con limiti operativi espliciti. Un eventuale studio con valutatori adatti richiederà una decisione futura.

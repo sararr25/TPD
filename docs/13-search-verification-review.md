@@ -1,5 +1,7 @@
 # Ricerca web, verifica comune e scheda A/B/C
 
+> Decisione successiva del 20 ottobre: scheda anonima e valutazione umana rimandate su richiesta utente; non sono richieste per proseguire lo sviluppo. Conserviamo raccolte e audit tecnici senza conclusioni sulla superiorità qualitativa. Priorità corrente: affidabilità dei luoghi (E09). Il protocollo sotto resta documentazione disponibile per un eventuale studio futuro.
+
 20 ottobre 2026. Raccolta completa del pilot: 16 casi × tre condizioni × tre alternative = 144 occorrenze. E04 resta **parziale**: i voti umani e una verifica indipendente sistematica dei fatti sono ancora aperti. Nessuna superiorità qualitativa è stata misurata.
 
 ## Terza condizione: cosa rappresenta

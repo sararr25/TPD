@@ -1,5 +1,7 @@
 # Benchmark Qloo / LLM / ricerca normale
 
+> Decisione successiva del 20 ottobre: scheda anonima e valutazione umana rimandate su richiesta utente; non sono richieste per proseguire lo sviluppo. Conserviamo raccolte e audit tecnici senza conclusioni sulla superiorità qualitativa. Priorità corrente: affidabilità dei luoghi (E09). Il protocollo sotto resta documentazione disponibile per un eventuale studio futuro.
+
 20 ottobre 2026. E04 **parziale**: harness implementato, TPD e LLM via Codex CLI raccolti (16 casi ciascuno); ricerca web assistita successivamente raccolta e scheda umana pronta (docs/13); verifica indipendente e voti umani ancora mancanti. Nessun confronto vincente dichiarato e nessuna modifica alla UI pubblica. La raccolta manuale ChatGPT descritta sotto è stata sostituita, su richiesta dell’utente dopo il blocco web, dal trasporto CLI dichiarato in docs/12.
 
 ## Protocollo del pilot

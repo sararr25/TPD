@@ -204,3 +204,11 @@ Dettaglio in `docs/superpowers/specs/2026-10-19-product-structure-design.md`. Pr
 - Saving and hiding accept only places the server signed (every Swap result now carries its signed selection), so the account cannot be filled with arbitrary data.
 - **Delete my account** (Passport page, signed in) deletes the Neon Auth user row; every table that belongs to the user cascades (sessions, Google link, Passport, hidden places, collections). The response also expires the `__Secure-neon-auth*` cookies so a cached session cannot outlive the account. The Google account itself is not touched.
 - We delete the user directly in the database instead of Better Auth's `delete-user` endpoint, because whether that endpoint is enabled on Neon Auth is not visible from here; the cascade was checked in `npm run verify:userdata`.
+
+## Passport quiz (20 October 2026)
+
+- The swipe quiz (`docs/16-passport-quiz-draft.md`, `src/lib/quiz.ts`) is the way into the Passport for anyone without one; search stays available, and "Redo the quiz" replaces the Passport.
+- Only music and film cards are Qloo entities, matched by exact name (and year for films), checked live on 20 Oct. The other answers are a plain-language profile kept for Claude; they do not change Swap yet.
+- At least 3 entity cards are needed; with fewer likes a "Pick N more" screen follows.
+- Answers live in the browser (`beesyde-quiz-v1`) and, when signed in, in table `user_quiz` (applied to Neon). API `/api/quiz` (signed-in only, same-origin writes) accepts only answers that fit the current questions. The account copy wins on sign-in; an empty account adopts the browser's. "Delete my Passport" also deletes the answers; account deletion cascades.
+- Checks: `npm test` (`check-quiz`, `check-user-quiz`), `npm run verify:quiz` (live, temporary user, cleaned up).

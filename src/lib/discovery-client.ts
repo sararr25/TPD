@@ -25,6 +25,7 @@ export const MESSAGES: Record<string, string> = {
   invalid_collection: "Give the collection a name (up to 60 characters) and keep the note under 280.",
   collection_limit: "This collection, or your account, is full. Remove something first.",
   hidden_limit: "You have hidden 100 places. Show some again on your Passport page first.",
+  invalid_quiz: "Your quiz answers could not be saved. Take the quiz again.",
   quiz_unresolved:
     "Qloo could not confirm one of your picks. Try again, or search for your favourites instead.",
   guest_unresolved:

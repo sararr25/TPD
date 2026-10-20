@@ -15,6 +15,9 @@ import {
   loadAccountPassport,
   saveAccountPassport,
   deleteAccountPassport,
+  loadAccountQuiz,
+  saveAccountQuiz,
+  deleteAccountQuiz,
   loadHidden,
   unhidePlace,
   deleteAccount,
@@ -103,6 +106,22 @@ export function PassportBuilder() {
     setBusy(true);
     setStatus("Loading your Passport from your account…");
     (async () => {
+      // Quiz answers: the account copy wins; an empty account adopts this browser's.
+      const accountQuiz = await loadAccountQuiz();
+      if (!active) return;
+      if (accountQuiz) {
+        setProfile(accountQuiz);
+        try {
+          localStorage.setItem(QUIZ_KEY, JSON.stringify(accountQuiz));
+        } catch {}
+      } else {
+        let localQuiz: Answers = {};
+        try {
+          localQuiz = parseQuiz(localStorage.getItem(QUIZ_KEY));
+        } catch {}
+        if (Object.keys(localQuiz).length) await saveAccountQuiz(localQuiz);
+        if (!active) return;
+      }
       const account = await loadAccountPassport();
       if (!active) return;
       if (account) {
@@ -164,6 +183,10 @@ export function PassportBuilder() {
       try {
         localStorage.setItem(QUIZ_KEY, JSON.stringify(answers));
       } catch {}
+      if (userId)
+        writes.current = writes.current
+          .then(() => saveAccountQuiz(answers))
+          .catch((e) => setStatus((e as Error).message));
       setQuizOpen(false);
     } catch (e) {
       setStatus((e as Error).message);
@@ -227,6 +250,7 @@ export function PassportBuilder() {
       setBusy(true);
       try {
         await deleteAccountPassport();
+        await deleteAccountQuiz();
       } catch (e) {
         setStatus((e as Error).message);
         setBusy(false);

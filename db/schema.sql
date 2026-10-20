@@ -63,3 +63,11 @@ CREATE TABLE IF NOT EXISTS collection_item (
   created_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (collection_id, place_id)
 );
+
+-- Passport quiz answers of a signed-in user (src/lib/quiz.ts), kept as the
+-- plain-language taste profile. Rows go away when the Neon Auth user is deleted.
+CREATE TABLE IF NOT EXISTS user_quiz (
+  user_id uuid PRIMARY KEY REFERENCES neon_auth."user" (id) ON DELETE CASCADE,
+  answers jsonb NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);

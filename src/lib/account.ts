@@ -1,4 +1,5 @@
 import { MESSAGES, type Selection } from "./discovery-client";
+import type { Answers } from "./quiz";
 
 // Browser side of the signed-in-only API (E06): Passport, hidden places,
 // collections and account deletion. Hidden places also live in this browser,
@@ -30,6 +31,16 @@ export async function saveAccountPassport(passport: Selection[]) {
 }
 export async function deleteAccountPassport() {
   await call("/api/passport", "DELETE");
+}
+
+export async function loadAccountQuiz(): Promise<Answers | null> {
+  return (await call<{ answers: Answers | null }>("/api/quiz", "GET")).answers;
+}
+export async function saveAccountQuiz(answers: Answers) {
+  await call("/api/quiz", "PUT", { answers });
+}
+export async function deleteAccountQuiz() {
+  await call("/api/quiz", "DELETE");
 }
 
 export type Hidden = { id: string; name: string };

@@ -10,3 +10,6 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 .claude/worktrees/
+.vercel
+.env*
+!.env.example

@@ -84,3 +84,5 @@ E05 ora implementato localmente: categoria musei, reference confermata per categ
 ## Benchmark E04 — 20 ottobre
 
 Harness ripetibile in scripts/benchmark; protocollo, comandi e limiti in docs/11. Raccolti 16 casi TPD (48 alternative) solo in .private/benchmark. Import dei baseline con provenienza e hash degli stessi input, schede cieche A/B/C e aggregazione voti implementati e testati con fixture sintetiche. Nessun output LLM/ricerca normale né voto umano raccolto: E04 parziale, nessuna superiorità dichiarata e nessun toggle fittizio nell’app. L’utente ha poi scelto risposte raccolte manualmente da ChatGPT: pacchetto privato di 16 prompt generato con il comando benchmark manual; nessuna API LLM da configurare. Chiave locale corrente solo Qloo. Il preflight Louvre non risolto è registrato, non dichiarato assenza di copertura Qloo.
+
+Raccolta ChatGPT tentata dopo login utente: GPT-6/High visibile, primo caso in chat temporanea, bloccato da cloudflare_challenge. Tentativo originale e istruzione offline conservati privatamente; zero risposte LLM importate, nessun retry automatico. Serve completare la verifica nella scheda aperta prima di riprendere (docs/11).

@@ -20,7 +20,7 @@ Aggiornato: 20 ottobre 2026. Fonte: DECISIONS.md sezioni 7–8, docs/02 sezione 
 | E03 | Passport e Restaurant Swap reali | Flusso Parigi verificato nel browser, docs/09 | Ricerca entità, tag Keep/Change, vincoli, tre ruoli, provenienza, stati errore |
 | E04 | Benchmark Qloo vs LLM | Parziale; valutazione umana rimandata per decisione utente. Tre condizioni 16/16 e audit metadati conservati, docs/13 | Casi privati, stessi vincoli, numeri reali, 15–20 richieste |
 | E05 | Musei e Transfer | Flusso Parigi implementato e verificato localmente, docs/10 | Stesso Passport, nuova categoria con copertura provata |
-| E06 | Login, collezioni e feedback | Passport saved to the account (Neon, 20 Oct): done and verified without a real sign-in; collections and feedback still open | Account reale, persistenza privata, cancellazione, feedback verificato |
+| E06 | Login, collezioni e feedback | Built 20 Oct: Passport in the account, collections, "Not for me" feedback, account deletion. Verified with unit tests, live database checks and guest browser runs; not yet with a real Google sign-in | Account reale, persistenza privata, cancellazione, feedback verificato |
 | E07 | Scheda Passport condivisibile | Dipende da E06 | Esportazione e condivisione deliberate, nessun dato privato involontario |
 | E08 | Categorie aggiuntive | Condizionato ai dati | Quartieri → hotel → attività solo dopo evidenza di copertura |
 | E09 | Identità, attività e indirizzi: conflitti con fonte operativa | Implementato localmente con OpenStreetMap/Nominatim (gratuito, senza chiave); test unitari, live e browser. Google Places rimandato a L1 (orari/stato) | Fonte esterna, disambiguazione omonimi/sedi, conflitti espliciti; nessuna blacklist ad hoc |

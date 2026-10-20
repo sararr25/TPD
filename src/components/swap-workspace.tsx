@@ -13,7 +13,14 @@ import {
   type Selection,
 } from "@/lib/discovery-client";
 import { authClient } from "@/lib/auth/client";
-import { loadAccountPassport } from "@/lib/account-passport";
+import {
+  loadAccountPassport,
+  loadHidden,
+  hidePlace,
+  loadCollections,
+  type Hidden,
+} from "@/lib/account";
+import { SaveToCollection } from "./save-to-collection";
 import type { CheckStatus } from "@/lib/venue-check";
 type Payload = {
   results: Result[];
@@ -68,7 +75,14 @@ function CategoryWorkspace({ category, onTransfer }: {
     [status, setStatus] = useState(""),
     [data, setData] = useState<Payload | null>(null),
     [started, setStarted] = useState(false),
-    [attempt, setAttempt] = useState(0);
+    [attempt, setAttempt] = useState(0),
+    [hidden, setHidden] = useState<Hidden[]>([]),
+    [names, setNames] = useState<string[]>([]);
+  // Read at request time so hiding a card does not re-run the current Swap.
+  const hiddenIds = useRef<string[]>([]);
+  useEffect(() => {
+    hiddenIds.current = hidden.map((h) => h.id);
+  }, [hidden]);
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
   // Signed in: use the account Passport (freshly signed, works on any device).
@@ -81,8 +95,19 @@ function CategoryWorkspace({ category, onTransfer }: {
         "Your browser Passport could not be read. Reopen the Passport and choose your favourites.",
       );
     }
-    if (!userId) return setReady(true);
     let active = true;
+    loadHidden(!!userId)
+      .then((list) => active && setHidden(list))
+      .catch((e) => active && setStatus((e as Error).message));
+    if (!userId) {
+      setReady(true);
+      return () => {
+        active = false;
+      };
+    }
+    loadCollections()
+      .then((list) => active && setNames(list.map((c) => c.name)))
+      .catch((e) => active && setStatus((e as Error).message));
     loadAccountPassport()
       .then((account) => {
         if (!active || !account) return;
@@ -111,6 +136,7 @@ function CategoryWorkspace({ category, onTransfer }: {
         reference: reference.token,
         passport: passport.map((s) => s.token),
         choices,
+        exclude: hiddenIds.current,
         ...(budget ? { maxPrice: Number(budget) } : {}),
       },
       controller.signal,
@@ -180,6 +206,18 @@ function CategoryWorkspace({ category, onTransfer }: {
       "Choose what to keep and what to change. City and category stay fixed.",
     );
     setMatches([]);
+  }
+  async function notForMe(result: Result) {
+    const place = { id: result.place.id, name: result.place.name };
+    setHidden((list) => [...list.filter((h) => h.id !== place.id), place]);
+    try {
+      await hidePlace(place, result.token!, !!userId);
+      setStatus(
+        `${place.name} won’t come up in your next Swaps. Show it again from your Passport page.`,
+      );
+    } catch (error) {
+      setStatus((error as Error).message);
+    }
   }
   function changeTag(tagId: string, mode: Choice["mode"]) {
     setData(null);
@@ -366,7 +404,9 @@ function CategoryWorkspace({ category, onTransfer }: {
               </button>
             </div>
             <div className="cards">
-              {data.results.map((result) => (
+              {data.results
+                .filter((result) => !hidden.some((h) => h.id === result.place.id))
+                .map((result) => (
                 <article className="result" key={result.place.id}>
                   <div className="body">
                     <span className="role">{result.role}</span>
@@ -428,6 +468,26 @@ function CategoryWorkspace({ category, onTransfer }: {
                           Open directions ↗
                         </a>
                       </div>
+                    )}
+                    {result.token && (
+                      <>
+                        <div className="actions">
+                          <button className="text" onClick={() => notForMe(result)}>
+                            Not for me
+                          </button>
+                        </div>
+                        {userId ? (
+                          <SaveToCollection
+                            token={result.token}
+                            names={names}
+                            onSaved={(name) =>
+                              setNames((list) => (list.includes(name) ? list : [...list, name]))
+                            }
+                          />
+                        ) : (
+                          <p className="muted">Sign in to save places to a collection.</p>
+                        )}
+                      </>
                     )}
                   </div>
                   <div className="stub" data-check={result.check?.status}>

@@ -8,7 +8,7 @@ import { DiscoveryError } from "./qloo.ts";
 // entities the server itself signed are accepted; reads re-sign them so a
 // Passport saved days ago still works for Swap. Account data needs the real
 // database: without DATABASE_URL this is a configuration error.
-function db() {
+export function db() {
   if (!process.env.DATABASE_URL) throw new DiscoveryError("not_configured", 503);
   return neon(process.env.DATABASE_URL);
 }

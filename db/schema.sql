@@ -33,3 +33,33 @@ CREATE TABLE IF NOT EXISTS user_passport (
   entities jsonb NOT NULL,
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- E06: places a user hid with "Not for me"; excluded from their next Swaps.
+CREATE TABLE IF NOT EXISTS user_hidden_place (
+  user_id uuid NOT NULL REFERENCES neon_auth."user" (id) ON DELETE CASCADE,
+  place_id uuid NOT NULL,
+  name text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, place_id)
+);
+
+-- E06: collections (e.g. one per trip) of saved Swap results. Each item keeps
+-- the Qloo place ID plus the few fields needed to show it, not Qloo data in bulk.
+CREATE TABLE IF NOT EXISTS collection (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES neon_auth."user" (id) ON DELETE CASCADE,
+  name text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (user_id, name)
+);
+CREATE TABLE IF NOT EXISTS collection_item (
+  collection_id uuid NOT NULL REFERENCES collection (id) ON DELETE CASCADE,
+  place_id uuid NOT NULL,
+  name text NOT NULL,
+  address text,
+  lat double precision,
+  lon double precision,
+  note text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (collection_id, place_id)
+);

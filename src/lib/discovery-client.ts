@@ -21,6 +21,10 @@ export const MESSAGES: Record<string, string> = {
   invalid_passport: "Choose 3–5 different favourites in your Passport first.",
   location_unconfirmed:
     "The provider did not confirm the city. We have not widened your search.",
+  signed_out: "Your session has ended. Sign in again to use your account.",
+  invalid_collection: "Give the collection a name (up to 60 characters) and keep the note under 280.",
+  collection_limit: "This collection, or your account, is full. Remove something first.",
+  hidden_limit: "You have hidden 100 places. Show some again on your Passport page first.",
   guest_unresolved:
     "The guest profile could not be resolved unambiguously. Please search for your favourites instead.",
 };

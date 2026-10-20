@@ -23,6 +23,7 @@ export default function RootLayout({
           <nav aria-label="Main">
             <Link href="/passport">Taste Passport</Link>
             <Link href="/swap">Swap a place</Link>
+            <Link href="/collections">Collections</Link>
           </nav>
           <AuthButton />
         </header>

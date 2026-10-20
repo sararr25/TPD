@@ -13,7 +13,12 @@ import {
   loadAccountPassport,
   saveAccountPassport,
   deleteAccountPassport,
-} from "@/lib/account-passport";
+  loadHidden,
+  unhidePlace,
+  deleteAccount,
+  HIDDEN_KEY,
+  type Hidden,
+} from "@/lib/account";
 export function PassportBuilder() {
   const [selected, setSelected] = useState<Selection[]>([]),
     [matches, setMatches] = useState<Selection[]>([]),
@@ -23,9 +28,52 @@ export function PassportBuilder() {
     [status, setStatus] = useState(""),
     [ready, setReady] = useState(false),
     [showGuest, setShowGuest] = useState(false),
-    [guestProfile,setGuestProfile]=useState(0);
+    [guestProfile,setGuestProfile]=useState(0),
+    [hidden, setHidden] = useState<Hidden[]>([]);
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
+  // Places marked "Not for me" in Swap (E06), with a way to show them again.
+  useEffect(() => {
+    if (!ready) return;
+    let active = true;
+    loadHidden(!!userId)
+      .then((list) => active && setHidden(list))
+      .catch((e) => active && setStatus((e as Error).message));
+    return () => {
+      active = false;
+    };
+  }, [ready, userId]);
+  async function showAgain(place: Hidden) {
+    try {
+      await unhidePlace(place.id, !!userId);
+      setHidden((list) => list.filter((h) => h.id !== place.id));
+      setStatus(`${place.name} can come up in your Swaps again.`);
+    } catch (e) {
+      setStatus((e as Error).message);
+    }
+  }
+  async function removeAccount() {
+    (document.querySelector("#delete-account") as HTMLDialogElement).close();
+    setBusy(true);
+    setStatus("Deleting your account…");
+    try {
+      await deleteAccount();
+    } catch (e) {
+      setStatus((e as Error).message);
+      setBusy(false);
+      return;
+    }
+    try {
+      localStorage.removeItem(LIVE_PASSPORT_KEY);
+      localStorage.removeItem(HIDDEN_KEY);
+    } catch {
+      setStatus(
+        "Your account is deleted. This browser's copy could not be cleared: remove it in browser settings.",
+      );
+      return;
+    }
+    location.assign("/passport");
+  }
   // Account writes run one after another so the last edit is the one kept.
   const writes = useRef<Promise<unknown>>(Promise.resolve());
   useEffect(() => {
@@ -299,6 +347,41 @@ export function PassportBuilder() {
           >
             {userId ? "Delete my Passport" : "Delete my local Passport"}
           </button>
+          {hidden.length > 0 && (
+            <div className="divider">
+              <span className="meta">Hidden from your Swaps</span>
+              <ul className="entity-list">
+                {hidden.map((h) => (
+                  <li key={h.id}>
+                    <div>
+                      <strong>{h.name}</strong>
+                    </div>
+                    <button className="text" disabled={busy} onClick={() => showAgain(h)}>
+                      Show again
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {userId && (
+            <div className="divider">
+              <span className="meta">Your account</span>
+              <p className="muted">
+                Deleting your account removes your Passport, collections and
+                hidden places from Beesyde, and signs you out.
+              </p>
+              <button
+                className="text"
+                disabled={busy}
+                onClick={() =>
+                  (document.querySelector("#delete-account") as HTMLDialogElement).showModal()
+                }
+              >
+                Delete my account
+              </button>
+            </div>
+          )}
         </section>
         <PassportCard signals={selected.map((s) => s.entity.name)} />
       </div>
@@ -323,6 +406,27 @@ export function PassportBuilder() {
             }
           >
             Keep my Passport
+          </button>
+        </div>
+      </dialog>
+      <dialog id="delete-account">
+        <h2>Delete your account?</h2>
+        <p>
+          This permanently deletes your Beesyde account with its Passport,
+          collections and hidden places. Your Google account is not affected.
+          This cannot be undone.
+        </p>
+        <div className="actions">
+          <button className="stamp" onClick={removeAccount}>
+            Delete my account
+          </button>
+          <button
+            className="text"
+            onClick={() =>
+              (document.querySelector("#delete-account") as HTMLDialogElement).close()
+            }
+          >
+            Keep my account
           </button>
         </div>
       </dialog>

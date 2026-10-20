@@ -193,4 +193,14 @@ Dettaglio in `docs/superpowers/specs/2026-10-19-product-structure-design.md`. Pr
 - The server accepts only selections it signed itself (max 5, no duplicates), so an account cannot hold arbitrary data.
 - When a user signs in: if the account already has a Passport, it wins and replaces the browser copy; if the account is empty, the browser's Passport is uploaded. Guests keep browser-only storage, unchanged.
 - "Delete my Passport" when signed in removes it from both the account and the browser.
-- Not done yet in E06: collections, feedback, account deletion from inside the app.
+- Collections, feedback and account deletion: see the next section.
+
+## E06 — Collections, "Not for me" and account deletion (20 October 2026)
+
+- **Collections** need an account (DECISIONS 3.3). A Swap result has a "Save to a collection" form: collection name (e.g. one per trip; same name = same collection) and an optional note. New page `/collections` lists them, with remove and delete. Limits: 20 collections, 100 places each, name ≤ 60, note ≤ 280 characters.
+- Each saved place keeps its Qloo ID plus name, address and coordinates, only what the list and the directions link need: no bulk copy of Qloo data (product doc 02, "Collezioni").
+- **Feedback = "Not for me"** on a Swap result: the place is hidden and sent to Qloo as `filter.exclude.entities` in the next Swaps (also filtered locally). Guests keep the list in this browser; signed-in users also in their account. The Passport page lists hidden places with "Show again". Max 100.
+- A thumbs-up is **not** built: there is nothing honest for it to change yet. Saving to a collection is the positive signal for now.
+- Saving and hiding accept only places the server signed (every Swap result now carries its signed selection), so the account cannot be filled with arbitrary data.
+- **Delete my account** (Passport page, signed in) deletes the Neon Auth user row; every table that belongs to the user cascades (sessions, Google link, Passport, hidden places, collections). The response also expires the `__Secure-neon-auth*` cookies so a cached session cannot outlive the account. The Google account itself is not touched.
+- We delete the user directly in the database instead of Better Auth's `delete-user` endpoint, because whether that endpoint is enabled on Neon Auth is not visible from here; the cascade was checked in `npm run verify:userdata`.

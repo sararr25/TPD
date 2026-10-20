@@ -28,6 +28,8 @@ export type Result = {
   different: string;
   distanceKm: number | null;
   check?: VenueCheck;
+  // Signed selection of the place, used to save it or mark it "Not for me".
+  token?: string;
 };
 export const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

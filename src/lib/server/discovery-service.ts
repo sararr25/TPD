@@ -120,8 +120,17 @@ export async function swap(
   values: unknown,
   maxPrice: unknown,
   categoryValue: unknown = "restaurant",
+  excludeValue: unknown = [],
 ) {
   const category = placeCategory(categoryValue);
+  // Places the user marked "Not for me" (E06), as Qloo place IDs.
+  if (
+    !Array.isArray(excludeValue) ||
+    excludeValue.length > 100 ||
+    !excludeValue.every((id) => typeof id === "string" && UUID.test(id))
+  )
+    throw new DiscoveryError("invalid_request", 400);
+  const hidden = new Set<string>(excludeValue);
   if (!category) throw new DiscoveryError("invalid_category", 400);
   const ref = verifySelection(referenceToken);
   if (!validPlace(ref, "Paris", category))
@@ -166,7 +175,7 @@ export async function swap(
     "filter.location.query": "Paris",
     "filter.location.radius": "0",
     "filter.tags": `urn:tag:genre:place:${category}`,
-    "filter.exclude.entities": ref.id,
+    "filter.exclude.entities": [ref.id, ...hidden].join(","),
     "signal.interests.entities": signals.map((e) => e.id).join(","),
     "feature.explainability": "true",
     take: "20",
@@ -181,13 +190,15 @@ export async function swap(
   if (!localityMatches(data, "Paris"))
     throw new DiscoveryError("location_unconfirmed", 502);
   const candidates = entities(data);
-  const filtered = candidates.filter((e) =>
-    validPlace(e, "Paris", category, maxPrice as number | undefined, change),
+  const filtered = candidates.filter(
+    (e) =>
+      !hidden.has(e.id) &&
+      validPlace(e, "Paris", category, maxPrice as number | undefined, change),
   );
   const roles = selectRoles(filtered, ref, signals, category);
   const checks = await checkVenues(roles.map((r) => r.place), category);
   return {
-    results: roles.map((r, i) => ({ ...r, check: checks[i] })),
+    results: roles.map((r, i) => ({ ...r, check: checks[i], token: selection(r.place).token })),
     checkedAt,
     city: "Paris",
     category,

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
+import { AuthButton } from "@/components/auth-button";
 export const metadata: Metadata = {
   title: "TPD · Taste Passport",
   description: "Keep what you love. Change what does not work.",
@@ -23,7 +24,7 @@ export default function RootLayout({
             <Link href="/passport">Taste Passport</Link>
             <Link href="/swap">Swap a place</Link>
           </nav>
-          <span className="meta">Guest edition</span>
+          <AuthButton />
         </header>
         <main>{children}</main>
         <footer>TPD · Working name · Your taste, a different way in.</footer>

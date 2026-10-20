@@ -7,6 +7,9 @@ import {
   placeCategory,
   swapCity,
   CITIES,
+  exploreCategory,
+  explorePlace,
+  EXPLORE_TAGS,
   type PlaceCategory,
   type Entity,
   type Choice,
@@ -259,5 +262,69 @@ export async function swap(
     verification: "L0",
     notice:
       "Qloo recommendations, cross-checked by name, category and address against OpenStreetMap. Opening hours, price and availability have not been checked with an operational provider.",
+  };
+}
+
+// Explore a city (docs/17 D2): the Passport (+ quiz traits, C7) alone picks
+// places in one city and category. Same fallback as Swap when traits leave < 3.
+export const EXPLORE_RESULTS = 9;
+export async function explore(
+  passportTokens: unknown,
+  cityValue: unknown,
+  categoryValue: unknown,
+  quizValue: unknown = {},
+  excludeValue: unknown = [],
+) {
+  const city = swapCity(cityValue);
+  if (!city) throw new DiscoveryError("invalid_city", 400);
+  const category = exploreCategory(categoryValue);
+  if (!category) throw new DiscoveryError("invalid_category", 400);
+  if (
+    !Array.isArray(excludeValue) ||
+    excludeValue.length > 100 ||
+    !excludeValue.every((id) => typeof id === "string" && UUID.test(id))
+  )
+    throw new DiscoveryError("invalid_request", 400);
+  const hidden = new Set<string>(excludeValue);
+  if (
+    !Array.isArray(passportTokens) ||
+    passportTokens.length < 3 ||
+    passportTokens.length > 5
+  )
+    throw new DiscoveryError("invalid_passport", 400);
+  const passport = passportTokens.map(verifySelection);
+  if (new Set(passport.map((e) => e.id)).size !== passport.length)
+    throw new DiscoveryError("invalid_passport", 400);
+  const params: Record<string, string> = {
+    "filter.type": "urn:entity:place",
+    "filter.location.query": city,
+    "filter.location.radius": "0",
+    "filter.tags": EXPLORE_TAGS[category],
+    "signal.interests.entities": passport.map((e) => e.id).join(","),
+    take: "30",
+  };
+  if (hidden.size) params["filter.exclude.entities"] = [...hidden].join(",");
+  const traits = qlooParams(buildProfile(cleanAnswers(quizValue)), category);
+  const run = async (extra: Record<string, string>) => {
+    const { data, checkedAt } = await qloo("/v2/insights", { ...params, ...extra });
+    if (!localityMatches(data, CITIES[city].locality))
+      throw new DiscoveryError("location_unconfirmed", 502);
+    const places = entities(data).filter((e) => !hidden.has(e.id) && explorePlace(e, city, category));
+    return { checkedAt, places };
+  };
+  let { checkedAt, places } = await run(traits);
+  const traitsUsed = Object.keys(traits).length > 0 && places.length >= 3;
+  if (Object.keys(traits).length && !traitsUsed) ({ checkedAt, places } = await run({}));
+  return {
+    city,
+    category,
+    checkedAt,
+    traitsUsed,
+    results: places.slice(0, EXPLORE_RESULTS).map((place) => ({
+      place,
+      token: selection(place).token,
+    })),
+    notice:
+      "Qloo taste recommendations for your Passport. Opening hours, prices and availability are not verified.",
   };
 }

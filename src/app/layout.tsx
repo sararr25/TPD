@@ -21,6 +21,7 @@ export default function RootLayout({
             <span className="ring">B</span>Beesyde
           </Link>
           <nav aria-label="Main">
+            <Link href="/explore">Explore</Link>
             <Link href="/passport">Taste Passport</Link>
             <Link href="/swap">Swap a place</Link>
             <Link href="/collections">Collections</Link>

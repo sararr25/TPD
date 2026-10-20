@@ -256,6 +256,16 @@ export function parseQuiz(raw: string | null): Answers {
   }
 }
 
+// Browser only: the stored quiz answers, used to steer Swap and Explore (C7).
+// Unreadable storage means no steering.
+export function readStoredQuiz(): Answers {
+  try {
+    return parseQuiz(localStorage.getItem(QUIZ_KEY));
+  } catch {
+    return {};
+  }
+}
+
 // Entity cards the user swiped right on, in quiz order.
 export function likedEntities(answers: Answers): string[] {
   return QUESTIONS.flatMap((q) =>

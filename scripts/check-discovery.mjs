@@ -233,3 +233,17 @@ console.log("PASS: museum Keep sends a weighted taste signal, empty responses re
   assert.equal(inCity({ city: "Sintra (Santa Maria e São Miguel)", country: "PT" }, "Lisbon"), false);
   assert.equal(inCity({ city: "East Hampton", country: "US" }, "New York"), false);
 }
+
+// Explore (docs/17 D2): category tag, city, address and coordinates required; bars use restaurant cleaning.
+{
+  const { explorePlace, exploreCategory } = await import("../src/lib/discovery.ts");
+  assert.equal(exploreCategory("bar"), "bar");
+  assert.equal(exploreCategory("neighbourhood"), null);
+  const base = { type: "place", closed: false, city: "Shibuya", country: "JP", lat: 35.6, lon: 139.7, address: "1-1 Shibuya", price: 2, popularity: 0.5, evidence: [] };
+  const tags = (...ids) => ids.map((id) => ({ id, name: id, type: "x" }));
+  assert.equal(explorePlace({ ...base, tags: tags("urn:tag:category:place:bar") }, "Tokyo", "bar"), true);
+  assert.equal(explorePlace({ ...base, tags: tags("urn:tag:category:place:bar", "urn:tag:genre:place:hotel") }, "Tokyo", "bar"), false);
+  assert.equal(explorePlace({ ...base, tags: tags("urn:tag:genre:place:hotel") }, "Tokyo", "hotel"), true);
+  assert.equal(explorePlace({ ...base, address: null, tags: tags("urn:tag:genre:place:hotel") }, "Tokyo", "hotel"), false);
+  assert.equal(explorePlace({ ...base, tags: tags("urn:tag:genre:place:museum") }, "Osaka", "museum"), false);
+}

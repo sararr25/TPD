@@ -14,16 +14,7 @@ import {
   type Selection,
 } from "@/lib/discovery-client";
 import { authClient } from "@/lib/auth/client";
-import { QUIZ_KEY, parseQuiz } from "@/lib/quiz";
-
-// Quiz answers steer the Swap (C7). Unreadable storage means no steering.
-function readQuiz() {
-  try {
-    return parseQuiz(localStorage.getItem(QUIZ_KEY));
-  } catch {
-    return {};
-  }
-}
+import { readStoredQuiz } from "@/lib/quiz";
 import {
   loadAccountPassport,
   loadHidden,
@@ -164,7 +155,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
         passport: passport.map((s) => s.token),
         choices,
         exclude: hiddenIds.current,
-        quiz: readQuiz(),
+        quiz: readStoredQuiz(),
         city,
         ...(budget ? { maxPrice: Number(budget) } : {}),
       },

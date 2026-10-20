@@ -406,7 +406,7 @@ export function PassportBuilder() {
           </p>
           <div className="actions">
             {ready && selected.length >= 3 ? (
-              <Link className="ticket" href="/swap">
+              <Link className="ticket" href="/explore">
                 This feels like me ↗
               </Link>
             ) : (

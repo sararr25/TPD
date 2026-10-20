@@ -39,6 +39,33 @@ export const CITIES: Record<string, City> = {
   Hanoi: { country: "VN", locality: "Hà Nội", places: ["Ha Noi"], museums: "few" },
   "Phu Quoc": { country: "VN", locality: "Phú Quốc", places: ["Phu Quoc"], museums: "none" },
 };
+// Explore (docs/17 D2): places for the Passport in a city, no reference.
+// Bars have no genre tag of their own in Qloo (docs/18): they use the category tag.
+export const EXPLORE_TAGS = {
+  restaurant: "urn:tag:genre:place:restaurant",
+  bar: "urn:tag:category:place:bar",
+  museum: "urn:tag:genre:place:museum",
+  hotel: "urn:tag:genre:place:hotel",
+} as const;
+export type ExploreCategory = keyof typeof EXPLORE_TAGS;
+export function exploreCategory(value: unknown): ExploreCategory | null {
+  return typeof value === "string" && Object.hasOwn(EXPLORE_TAGS, value)
+    ? (value as ExploreCategory)
+    : null;
+}
+export function explorePlace(e: Entity, city: string, category: ExploreCategory): boolean {
+  return (
+    e.type === "place" &&
+    !e.closed &&
+    inCity(e, city) &&
+    e.tags.some((t) => t.id === EXPLORE_TAGS[category]) &&
+    e.lat !== null &&
+    e.lon !== null &&
+    !!e.address &&
+    // Restaurant cleaning rules apply to bars too (both are food & drink).
+    !((category === "restaurant" || category === "bar") && offCategory(e, "restaurant"))
+  );
+}
 export function swapCity(value: unknown = "Paris"): string | null {
   return typeof value === "string" && Object.hasOwn(CITIES, value) ? value : null;
 }

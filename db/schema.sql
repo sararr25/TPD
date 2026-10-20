@@ -24,3 +24,12 @@ CREATE TABLE IF NOT EXISTS request_budget (
   count integer NOT NULL,
   window_end timestamptz NOT NULL
 );
+
+-- E06: one Passport per signed-in user. Stores Qloo entities only (no signed
+-- tokens: those expire after 24 h and are re-issued on read). Rows go away
+-- when the Neon Auth user is deleted.
+CREATE TABLE IF NOT EXISTS user_passport (
+  user_id uuid PRIMARY KEY REFERENCES neon_auth."user" (id) ON DELETE CASCADE,
+  entities jsonb NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);

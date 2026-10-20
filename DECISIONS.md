@@ -185,3 +185,12 @@ Dettaglio in `docs/superpowers/specs/2026-10-19-product-structure-design.md`. Pr
 | 9.6 | Verifica nome (19/10): `beesyde.com` libero secondo whois; nessun uso esistente trovato in ricerca web. Marchi non verificati su registri ufficiali. Dominio **non ancora acquistato**. |
 | 9.7 | Scartati: Plan Bee/PlanBee (planbee.com preso), Bee Side (beeside.com preso), Swappa (marketplace esistente), Take Two (Take-Two Interactive), Vivra (confondibile con ViViRA), Vibeway (settore affollato). |
 | 9.8 | Chiave Qloo in `.env` (`QLOO_API_KEY`), ignorato da git; `.env.example` committato senza segreti. |
+
+## E06 — Passport saved to the account (20 October 2026)
+
+- One Passport per signed-in user in Neon, table `user_passport` (`db/schema.sql`), linked to `neon_auth."user"` with `ON DELETE CASCADE`: deleting the user deletes their Passport.
+- Only the Qloo entities are stored, never the signed selection tokens (they expire after 24 h). Reading the Passport re-signs the entities, so a Passport saved days ago still works for Swap, on any device.
+- The server accepts only selections it signed itself (max 5, no duplicates), so an account cannot hold arbitrary data.
+- When a user signs in: if the account already has a Passport, it wins and replaces the browser copy; if the account is empty, the browser's Passport is uploaded. Guests keep browser-only storage, unchanged.
+- "Delete my Passport" when signed in removes it from both the account and the browser.
+- Not done yet in E06: collections, feedback, account deletion from inside the app.

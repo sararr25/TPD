@@ -12,6 +12,8 @@ import {
   readSelections,
   type Selection,
 } from "@/lib/discovery-client";
+import { authClient } from "@/lib/auth/client";
+import { loadAccountPassport } from "@/lib/account-passport";
 import type { CheckStatus } from "@/lib/venue-check";
 type Payload = {
   results: Result[];
@@ -67,7 +69,11 @@ function CategoryWorkspace({ category, onTransfer }: {
     [data, setData] = useState<Payload | null>(null),
     [started, setStarted] = useState(false),
     [attempt, setAttempt] = useState(0);
+  const { data: session, isPending } = authClient.useSession();
+  const userId = session?.user?.id;
+  // Signed in: use the account Passport (freshly signed, works on any device).
   useEffect(() => {
+    if (isPending) return;
     try {
       setPassport(readSelections(localStorage.getItem(LIVE_PASSPORT_KEY)));
     } catch {
@@ -75,8 +81,22 @@ function CategoryWorkspace({ category, onTransfer }: {
         "Your browser Passport could not be read. Reopen the Passport and choose your favourites.",
       );
     }
-    setReady(true);
-  }, []);
+    if (!userId) return setReady(true);
+    let active = true;
+    loadAccountPassport()
+      .then((account) => {
+        if (!active || !account) return;
+        setPassport(account);
+        try {
+          localStorage.setItem(LIVE_PASSPORT_KEY, JSON.stringify(account));
+        } catch {}
+      })
+      .catch((e) => active && setStatus((e as Error).message))
+      .finally(() => active && setReady(true));
+    return () => {
+      active = false;
+    };
+  }, [isPending, userId]);
   useEffect(() => {
     if (!started || !reference) return;
     const controller = new AbortController();

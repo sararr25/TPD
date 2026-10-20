@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PassportCard } from "./passport-card";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
@@ -8,6 +8,12 @@ import {
   readSelections,
   type Selection,
 } from "@/lib/discovery-client";
+import { authClient } from "@/lib/auth/client";
+import {
+  loadAccountPassport,
+  saveAccountPassport,
+  deleteAccountPassport,
+} from "@/lib/account-passport";
 export function PassportBuilder() {
   const [selected, setSelected] = useState<Selection[]>([]),
     [matches, setMatches] = useState<Selection[]>([]),
@@ -18,6 +24,10 @@ export function PassportBuilder() {
     [ready, setReady] = useState(false),
     [showGuest, setShowGuest] = useState(false),
     [guestProfile,setGuestProfile]=useState(0);
+  const { data: session } = authClient.useSession();
+  const userId = session?.user?.id;
+  // Account writes run one after another so the last edit is the one kept.
+  const writes = useRef<Promise<unknown>>(Promise.resolve());
   useEffect(() => {
     try {
       setSelected(readSelections(localStorage.getItem(LIVE_PASSPORT_KEY)));
@@ -29,16 +39,59 @@ export function PassportBuilder() {
     setShowGuest(new URLSearchParams(location.search).has("guest"));
     setReady(true);
   }, []);
-  function save(next: Selection[]) {
-    setSelected(next);
+  // Signed in: the account copy wins; an empty account adopts this browser's Passport.
+  useEffect(() => {
+    if (!ready || !userId) return;
+    let active = true;
+    setBusy(true);
+    setStatus("Loading your Passport from your account…");
+    (async () => {
+      const account = await loadAccountPassport();
+      if (!active) return;
+      if (account) {
+        setSelected(account);
+        storeLocally(account);
+        setStatus("Loaded your Passport from your account.");
+        return;
+      }
+      let local: Selection[] = [];
+      try {
+        local = readSelections(localStorage.getItem(LIVE_PASSPORT_KEY));
+      } catch {}
+      if (!local.length) return setStatus("");
+      await saveAccountPassport(local);
+      if (active) setStatus("This browser's Passport is now saved to your account.");
+    })()
+      .catch((e) => active && setStatus((e as Error).message))
+      .finally(() => active && setBusy(false));
+    return () => {
+      active = false;
+    };
+  }, [ready, userId]);
+  function storeLocally(next: Selection[]) {
     try {
       localStorage.setItem(LIVE_PASSPORT_KEY, JSON.stringify(next));
-      setStatus("Saved on this browser.");
+      return true;
     } catch {
-      setStatus(
-        "Browser storage could not save these choices. Keep this page open.",
-      );
+      return false;
     }
+  }
+  function save(next: Selection[]) {
+    setSelected(next);
+    const local = storeLocally(next);
+    if (!userId) {
+      setStatus(
+        local
+          ? "Saved on this browser."
+          : "Browser storage could not save these choices. Keep this page open.",
+      );
+      return;
+    }
+    setStatus("Saving to your account…");
+    writes.current = writes.current
+      .then(() => saveAccountPassport(next))
+      .then(() => setStatus("Saved to your account."))
+      .catch((e) => setStatus((e as Error).message));
   }
   async function search(e: React.FormEvent) {
     e.preventDefault();
@@ -90,19 +143,34 @@ export function PassportBuilder() {
     }
     save([...selected, s]);
   }
-  function erase() {
+  async function erase() {
+    (document.querySelector("#erase-passport") as HTMLDialogElement).close();
+    if (userId) {
+      setBusy(true);
+      try {
+        await deleteAccountPassport();
+      } catch (e) {
+        setStatus((e as Error).message);
+        setBusy(false);
+        return;
+      }
+      setBusy(false);
+    }
     try {
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem("tpd-passport-v1");
       localStorage.removeItem("tpd-design-v1");
-      setStatus("Local Passport and old prototype data deleted.");
+      setStatus(
+        userId
+          ? "Passport deleted from your account and this browser."
+          : "Local Passport and old prototype data deleted.",
+      );
     } catch {
       setStatus(
         "Could not clear browser storage. Use browser settings to remove saved data.",
       );
     }
     setSelected([]);
-    (document.querySelector("#erase-passport") as HTMLDialogElement).close();
   }
   return (
     <>
@@ -215,8 +283,10 @@ export function PassportBuilder() {
             )}
           </div>
           <p className="muted">
-            Saved on this browser. No account needed. Old sample choices are not
-            treated as live entities.
+            {userId
+              ? "Saved to your account and this browser."
+              : "Saved on this browser. No account needed; sign in to keep it across devices."}{" "}
+            Old sample choices are not treated as live entities.
           </p>
           <button
             className="text"
@@ -227,20 +297,22 @@ export function PassportBuilder() {
               ).showModal()
             }
           >
-            Delete my local Passport
+            {userId ? "Delete my Passport" : "Delete my local Passport"}
           </button>
         </section>
         <PassportCard signals={selected.map((s) => s.entity.name)} />
       </div>
       <dialog id="erase-passport">
-        <h2>Clear your local edition?</h2>
+        <h2>{userId ? "Delete your Passport?" : "Clear your local edition?"}</h2>
         <p>
-          This removes your Passport and old prototype data from this browser.
+          {userId
+            ? "This removes your Passport from your account and from this browser."
+            : "This removes your Passport and old prototype data from this browser."}{" "}
           This cannot be undone.
         </p>
         <div className="actions">
           <button className="stamp" onClick={erase}>
-            Delete local data
+            {userId ? "Delete Passport" : "Delete local data"}
           </button>
           <button
             className="text"

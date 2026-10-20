@@ -11,7 +11,7 @@ Legend: ✅ built and live · 🟡 built, limited · ⬜ not built.
 | C1 | Taste Passport — quiz | 18 questions → traveller type, 4 axes, 4 interests | Trait scoring (no AI), storage local + account | — | — | ✅ |
 | C2 | Taste Passport — signals | 3–5 artists/films/books/places | Search UI, signed choices | Entity search (`/search`) → entity IDs | — | ✅ |
 | C3 | Visual passport | Passport "data page" on the profile | Rendering | — | — | ✅ |
-| C4 | Swap | "The place I wanted is full/not for me" → 3 alternatives | Reference resolution, Keep/Change chips, 3 roles, constraints | Insights with entity + tags signals, `filter.exclude.tags`, price, popularity, location | OpenStreetMap: identity/address check | 🟡 Paris only, restaurants + museums |
+| C4 | Swap | "The place I wanted is full/not for me" → 3 alternatives | Reference resolution, Keep/Change chips, 3 roles, constraints | Insights with entity + tags signals, `filter.exclude.tags`, price, popularity, location | OpenStreetMap: identity/address check | 🟡 11 cities (21 Oct), restaurants + museums |
 | C5 | Transfer | Same taste, another category | Category switch | Same signals, different `filter.type`/tags | — | 🟡 restaurant → museum, Paris |
 | C6 | Explore Within ("I'm already here") | Places for me in this city, no reference | Same pipeline without reference | Insights with Passport only, `sort_by=distance` | Geolocation (browser) | ⬜ |
 | C7 | Profile → results | Calm → fewer crowded places; thrifty → cheaper; adventurous → wider swaps | Map axes to Qloo params | `filter.popularity`, `bias.trends`, `filter.price_level`, `diversify` | — | ✅ in Swap (docs/18) |
@@ -19,7 +19,7 @@ Legend: ✅ built and live · 🟡 built, limited · ⬜ not built.
 | C9 | Collections | Save places by trip/city | Account storage | — | — | ✅ |
 | C10 | Account | Google login, delete everything | Neon Auth + Postgres | — | Google | ✅ |
 | C11 | Shareable passport (E07) | Image/link of the passport | Image export, public link without private data | — | — | ⬜ |
-| C12 | Destinations | Which cities work | Coverage check per city/category | Insights coverage | — | 🟡 Paris only |
+| C12 | Destinations | Which cities work | Coverage check per city/category | Insights coverage | — | ✅ 11 cities in Swap (docs/18) |
 | C13 | Practical info | Opening hours, map, directions | Show + label "not verified" | — | Google Places (L1) or OSM; maps link | 🟡 address only |
 | C14 | Events | Concerts/shows tonight | — | — | Ticketmaster | ⬜ |
 | C15 | Qloo vs LLM | Side-by-side proof for the demo | Cached cases | — | LLM | 🟡 data collected, no UI |

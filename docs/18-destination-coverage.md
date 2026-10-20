@@ -94,4 +94,4 @@ Side effect to watch: tight filters shrink the pool in small places (Porto bars 
 
 1. Neighbourhood level filter.
 2. Ticketmaster coverage per city, once the key exists.
-3. Open the Swap to the other 10 cities (it is still Paris-only in code).
+3. ~~Open the Swap to the other 10 cities~~ Done 21 Oct: city picker in Swap; per-city rules in `CITIES` (`src/lib/discovery.ts`): country + accepted place-city names (Tokyo's 23 wards, Porto's municipal parishes; Sintra/Cascais are not Lisbon, the Hamptons are not New York). Museums: "few" note for Osaka, Ho Chi Minh City, Hanoi; "none" for Phu Quoc. Live check: a reference + Swap returned 3 results in all 11 cities (restaurants), Barcelona and Osaka museums too.

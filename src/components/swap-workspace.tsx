@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   LIVE_PASSPORT_KEY,
+  CITIES,
   type Choice,
   type Result,
   type PlaceCategory,
@@ -47,9 +48,18 @@ const CHECK_LABEL: Record<CheckStatus, string> = {
   unavailable: "could not be checked right now",
 };
 export function SwapWorkspace() {
-  const [category, setCategory] = useState<PlaceCategory>("restaurant");
+  const [category, setCategory] = useState<PlaceCategory>("restaurant"),
+    [city, setCity] = useState("Paris");
   return (
     <>
+      <label htmlFor="swap-city">City</label>
+      <select id="swap-city" value={city} onChange={(e) => setCity(e.target.value)}>
+        {Object.keys(CITIES).map((name) => (
+          <option key={name} value={name}>
+            {name}
+          </option>
+        ))}
+      </select>
       <div className="chips" role="group" aria-label="Discovery category">
         {(["restaurant", "museum"] as const).map((value) => (
           <button
@@ -62,15 +72,22 @@ export function SwapWorkspace() {
           </button>
         ))}
       </div>
-      <CategoryWorkspace key={category} category={category} onTransfer={setCategory} />
+      <CategoryWorkspace
+        key={`${city}-${category}`}
+        city={city}
+        category={category}
+        onTransfer={setCategory}
+      />
     </>
   );
 }
-function CategoryWorkspace({ category, onTransfer }: {
+function CategoryWorkspace({ city, category, onTransfer }: {
+  city: string;
   category: PlaceCategory;
   onTransfer: (category: PlaceCategory) => void;
 }) {
   const museum = category === "museum";
+  const museums = CITIES[city].museums;
   const searchController = useRef<AbortController | null>(null);
   useEffect(() => () => searchController.current?.abort(), []);
   const [passport, setPassport] = useState<Selection[]>([]),
@@ -148,6 +165,7 @@ function CategoryWorkspace({ category, onTransfer }: {
         choices,
         exclude: hiddenIds.current,
         quiz: readQuiz(),
+        city,
         ...(budget ? { maxPrice: Number(budget) } : {}),
       },
       controller.signal,
@@ -158,7 +176,7 @@ function CategoryWorkspace({ category, onTransfer }: {
           setStatus(
             result.results.length
               ? `${result.results.length} alternatives. City and category checked against the Qloo response.`
-              : "No alternatives passed your constraints. Try ignoring a preference or choosing another reference; Paris stays fixed.",
+              : `No alternatives passed your constraints. Try ignoring a preference or choosing another reference; ${city} stays fixed.`,
           );
         }
       })
@@ -172,7 +190,7 @@ function CategoryWorkspace({ category, onTransfer }: {
       active = false;
       controller.abort();
     };
-  }, [started, reference, passport, choices, budget, attempt, category]);
+  }, [started, reference, passport, choices, budget, attempt, category, city]);
   async function search(e: React.FormEvent) {
     e.preventDefault();
     searchController.current?.abort();
@@ -180,7 +198,7 @@ function CategoryWorkspace({ category, onTransfer }: {
     searchController.current = controller;
     setSearching(true);
     setMatches([]);
-    setStatus(`Looking for your ${category} in Paris…`);
+    setStatus(`Looking for your ${category} in ${city}…`);
     try {
       const found = await discovery<{ choices: Selection[] }>({
         action: "search",
@@ -188,13 +206,14 @@ function CategoryWorkspace({ category, onTransfer }: {
         type: "place",
         reference: true,
         category,
+        city,
       }, controller.signal);
       if (controller.signal.aborted) return;
       setMatches(found.choices);
       setStatus(
         found.choices.length
           ? `Confirm the ${category} and its address.`
-          : `No Paris ${category} with address and coordinates was resolved. Try a more precise name.`,
+          : `No ${category} in ${city} with address and coordinates was resolved. Try a more precise name.`,
       );
     } catch (error) {
       if (!controller.signal.aborted) setStatus((error as Error).message);
@@ -238,7 +257,7 @@ function CategoryWorkspace({ category, onTransfer }: {
   }
   return (
     <>
-      <span className="meta">02 / {museum ? "Museum" : "Restaurant"} Swap · Paris pilot</span>
+      <span className="meta">02 / {museum ? "Museum" : "Restaurant"} Swap · {city}</span>
       <h1>
         Keep the feeling.
         <br />
@@ -248,6 +267,13 @@ function CategoryWorkspace({ category, onTransfer }: {
         A different {category} in the same city, guided by your cultural taste.
         {museum && " Your music, film and book favourites travel with you. Admission prices and exhibitions are not checked."}
       </p>
+      {museum && museums !== "ok" && (
+        <p className="muted" role="note">
+          {museums === "none"
+            ? `Our data has no museums in ${city}. Try restaurants, or another city.`
+            : `Our data has only a few museums in ${city}: results will be the same for most Passports.`}
+        </p>
+      )}
       {ready && passport.length < 3 ? (
         <section className="paper">
           <h2>First, a little about you.</h2>
@@ -267,7 +293,7 @@ function CategoryWorkspace({ category, onTransfer }: {
                 <label htmlFor="reference">The {category} you wanted</label>
                 <input
                   id="reference"
-                  placeholder={museum ? "Museum name, e.g. Musée d’Orsay" : "Restaurant name, e.g. Le Baratin"}
+                  placeholder={museum ? "Museum name" : "Restaurant name"}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   minLength={2}
@@ -275,8 +301,7 @@ function CategoryWorkspace({ category, onTransfer }: {
                   required
                   disabled={!ready || searching}
                 />
-                <label htmlFor="city">Stay in</label>
-                <input id="city" value="Paris · pilot" readOnly />
+                <p className="meta">Stay in {city}</p>
                 <div className="actions">
                   <button className="stamp" disabled={!ready || searching}>
                     Find the {category}
@@ -409,7 +434,7 @@ function CategoryWorkspace({ category, onTransfer }: {
             </p>
             <div className="divider">
               <h2>Same Passport. A different experience.</h2>
-              <p>Carry your favourites into {museum ? "restaurants" : "museums"} in Paris. Choose a new reference to guide the next Swap.</p>
+              <p>Carry your favourites into {museum ? "restaurants" : "museums"} in {city}. Choose a new reference to guide the next Swap.</p>
               <button className="stamp" onClick={() => onTransfer(museum ? "restaurant" : "museum")}>
                 Try {museum ? "restaurants" : "museums"} with this Passport ↗
               </button>
@@ -433,7 +458,7 @@ function CategoryWorkspace({ category, onTransfer }: {
                     <details>
                       <summary>What we verified</summary>
                       <p>
-                        Qloo returned a {category} in Paris with an address and
+                        Qloo returned a {category} in {city} with an address and
                         coordinates
                         {budget ? ", within your chosen price tier" : ""}. We
                         filtered out the reference, duplicates, closed flags and

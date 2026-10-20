@@ -54,10 +54,11 @@ export async function POST(request: Request) {
       if (body.reference && body.type !== "place")
         throw new DiscoveryError("invalid_request", 400);
       result = await lookup(
-        body.reference ? body.query.trim() + " Paris" : body.query.trim(),
+        body.query.trim(),
         body.type,
         body.reference === true,
         body.category,
+        body.city,
       );
     } else if (body.action === "swap")
       result = await swap(
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
         body.category,
         body.exclude ?? [],
         body.quiz ?? {},
+        body.city,
       );
     else throw new DiscoveryError("invalid_request", 400);
     return Response.json(result, { headers });

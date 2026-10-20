@@ -216,3 +216,20 @@ console.log("PASS: museum Keep sends a weighted taste signal, empty responses re
   assert.equal(offCategory(place(g("restaurant"), g("shopping"), g("market")), "restaurant"), false);
   assert.equal(offCategory(place(g("museum"), g("hotel")), "museum"), false);
 }
+
+// Swap cities (docs/17 D1): country must match and the place's city must be one the city accepts.
+{
+  const { inCity, swapCity } = await import("../src/lib/discovery.ts");
+  assert.equal(swapCity("Tokyo"), "Tokyo");
+  assert.equal(swapCity("Atlantis"), null);
+  assert.equal(swapCity("toString"), null);
+  assert.equal(inCity({ city: "Paris", country: "FR" }, "Paris"), true);
+  assert.equal(inCity({ city: "Paris", country: "US" }, "Paris"), false);
+  assert.equal(inCity({ city: "Shibuya", country: "JP" }, "Tokyo"), true);
+  assert.equal(inCity({ city: "Chūō", country: "JP" }, "Tokyo"), true);
+  assert.equal(inCity({ city: "Yokohama", country: "JP" }, "Tokyo"), false);
+  assert.equal(inCity({ city: "Hà Nội", country: "VN" }, "Hanoi"), true);
+  assert.equal(inCity({ city: "Lordelo do Ouro e Massarelos", country: "PT" }, "Porto"), true);
+  assert.equal(inCity({ city: "Sintra (Santa Maria e São Miguel)", country: "PT" }, "Lisbon"), false);
+  assert.equal(inCity({ city: "East Hampton", country: "US" }, "New York"), false);
+}

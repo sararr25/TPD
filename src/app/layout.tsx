@@ -13,7 +13,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div className="notice">
-          PARIS PILOT · Live Qloo taste recommendations · Operational details
+          11 CITIES · Live Qloo taste recommendations · Operational details
           unverified
         </div>
         <header>

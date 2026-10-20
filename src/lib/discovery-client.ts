@@ -15,8 +15,9 @@ export const MESSAGES: Record<string, string> = {
     "These selections have expired. Search for and select your favourites again.",
   invalid_selection:
     "A saved selection could not be validated. Search for and select it again.",
-  invalid_category: "Choose restaurants or museums in the Paris pilot.",
-  invalid_reference: "Choose a reference in the selected category in Paris.",
+  invalid_category: "Choose restaurants or museums.",
+  invalid_reference: "Choose a reference in the selected category and city.",
+  invalid_city: "Choose one of the listed cities.",
   invalid_budget: "Price tiers are only available for restaurant searches.",
   invalid_passport: "Choose 3–5 different favourites in your Passport first.",
   location_unconfirmed:

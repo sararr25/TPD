@@ -3,6 +3,52 @@ export type PlaceCategory = "restaurant" | "museum";
 export function placeCategory(value: unknown = "restaurant"): PlaceCategory | null {
   return value === "restaurant" || value === "museum" ? value : null;
 }
+// Swap destinations (docs/17 D1, coverage in docs/18). `locality` is the
+// name Qloo confirms in query.localities; `places` are the geocode city
+// names accepted for a result (Qloo puts Tokyo places in their ward and
+// Porto places in their parish), compared without accents or case.
+export type City = { country: string; locality: string; places: string[]; museums: "ok" | "few" | "none" };
+export const CITIES: Record<string, City> = {
+  Paris: { country: "FR", locality: "Paris", places: ["Paris"], museums: "ok" },
+  Lisbon: { country: "PT", locality: "Lisbon", places: ["Lisbon"], museums: "ok" },
+  Porto: {
+    country: "PT",
+    locality: "Porto",
+    places: [
+      "Cedofeita, Santo Ildefonso, Se, Miragaia, Sao Nicolau e Vitoria",
+      "Lordelo do Ouro e Massarelos", "Aldoar, Foz do Douro e Nevogilde",
+      "Ramalde", "Bonfim", "Campanha", "Paranhos",
+    ],
+    museums: "ok",
+  },
+  Barcelona: { country: "ES", locality: "Barcelona", places: ["Barcelona"], museums: "ok" },
+  Madrid: { country: "ES", locality: "Madrid", places: ["Madrid"], museums: "ok" },
+  "New York": { country: "US", locality: "New York", places: ["New York"], museums: "ok" },
+  Tokyo: {
+    country: "JP",
+    locality: "Tokyo",
+    places: [
+      "Chiyoda", "Chuo", "Minato", "Shinjuku", "Bunkyo", "Taito", "Sumida", "Koto",
+      "Shinagawa", "Meguro", "Ota", "Setagaya", "Shibuya", "Nakano", "Suginami",
+      "Toshima", "Kita", "Arakawa", "Itabashi", "Nerima", "Adachi", "Katsushika", "Edogawa",
+    ],
+    museums: "ok",
+  },
+  Osaka: { country: "JP", locality: "Osaka", places: ["Osaka Prefecture"], museums: "few" },
+  "Ho Chi Minh City": { country: "VN", locality: "Ho Chi Minh City", places: ["Ho Chi Minh City"], museums: "few" },
+  Hanoi: { country: "VN", locality: "Hà Nội", places: ["Ha Noi"], museums: "few" },
+  "Phu Quoc": { country: "VN", locality: "Phú Quốc", places: ["Phu Quoc"], museums: "none" },
+};
+export function swapCity(value: unknown = "Paris"): string | null {
+  return typeof value === "string" && Object.hasOwn(CITIES, value) ? value : null;
+}
+const plain = (s: string) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/-ku$|\s+city$/, "").trim();
+export function inCity(e: Pick<Entity, "city" | "country">, city: string): boolean {
+  const c = CITIES[city];
+  return !!c && e.country === c.country && !!e.city &&
+    c.places.some((p) => plain(p) === plain(e.city!));
+}
 export type Tag = { id: string; name: string; type: string };
 export type Entity = {
   id: string;
@@ -114,8 +160,7 @@ export function validPlace(
   return (
     e.type === "place" &&
     !e.closed &&
-    e.city === city &&
-    e.country === "FR" &&
+    inCity(e, city) &&
     e.tags.some((t) => t.id === `urn:tag:genre:place:${category}`) &&
     e.lat !== null &&
     e.lon !== null &&

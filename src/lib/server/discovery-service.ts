@@ -5,6 +5,8 @@ import {
   selectRoles,
   validPlace,
   placeCategory,
+  swapCity,
+  CITIES,
   type PlaceCategory,
   type Entity,
   type Choice,
@@ -73,12 +75,16 @@ export async function lookup(
   type: string,
   reference = false,
   categoryValue: unknown = "restaurant",
+  cityValue: unknown = "Paris",
 ) {
   const category = placeCategory(categoryValue);
   if (!category) throw new DiscoveryError("invalid_category", 400);
-  const result = await searchEntities(query, type);
+  const city = swapCity(cityValue);
+  if (!city) throw new DiscoveryError("invalid_city", 400);
+  // A reference is searched inside its city ("Le Baratin Paris").
+  const result = await searchEntities(reference ? `${query} ${city}` : query, type);
   const values = reference
-    ? result.entities.filter((e) => validPlace(e, "Paris", category))
+    ? result.entities.filter((e) => validPlace(e, city, category))
     : result.entities;
   return {
     choices: values.map((e) =>
@@ -149,8 +155,11 @@ export async function swap(
   categoryValue: unknown = "restaurant",
   excludeValue: unknown = [],
   quizValue: unknown = {},
+  cityValue: unknown = "Paris",
 ) {
   const category = placeCategory(categoryValue);
+  const city = swapCity(cityValue);
+  if (!city) throw new DiscoveryError("invalid_city", 400);
   // Places the user marked "Not for me" (E06), as Qloo place IDs.
   if (
     !Array.isArray(excludeValue) ||
@@ -161,7 +170,7 @@ export async function swap(
   const hidden = new Set<string>(excludeValue);
   if (!category) throw new DiscoveryError("invalid_category", 400);
   const ref = verifySelection(referenceToken);
-  if (!validPlace(ref, "Paris", category))
+  if (!validPlace(ref, city, category))
     throw new DiscoveryError("invalid_reference", 400);
   if (
     !Array.isArray(passportTokens) ||
@@ -200,7 +209,7 @@ export async function swap(
   const signals = [ref, ...passport];
   const params: Record<string, string> = {
     "filter.type": "urn:entity:place",
-    "filter.location.query": "Paris",
+    "filter.location.query": city,
     "filter.location.radius": "0",
     "filter.tags": `urn:tag:genre:place:${category}`,
     "filter.exclude.entities": [ref.id, ...hidden].join(","),
@@ -223,13 +232,13 @@ export async function swap(
   }
   const run = async (extra: Record<string, string>) => {
     const { data, checkedAt } = await qloo("/v2/insights", { ...params, ...extra });
-    if (!localityMatches(data, "Paris"))
+    if (!localityMatches(data, CITIES[city].locality))
       throw new DiscoveryError("location_unconfirmed", 502);
     const candidates = entities(data);
     const filtered = candidates.filter(
       (e) =>
         !hidden.has(e.id) &&
-        validPlace(e, "Paris", category, maxPrice as number | undefined, change),
+        validPlace(e, city, category, maxPrice as number | undefined, change),
     );
     return { checkedAt, candidates, filtered };
   };
@@ -242,7 +251,7 @@ export async function swap(
   return {
     results: roles.map((r, i) => ({ ...r, check: checks[i], token: selection(r.place).token })),
     checkedAt,
-    city: "Paris",
+    city,
     category,
     candidateCount: filtered.length,
     traitsUsed,

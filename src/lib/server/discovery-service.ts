@@ -17,7 +17,7 @@ import {
   DiscoveryError,
 } from "./qloo.ts";
 import { checkVenues } from "./osm.ts";
-import { ENTITY_CARDS, MAX_ENTITIES } from "../quiz.ts";
+import { ENTITY_CARDS, MAX_ENTITIES, cleanAnswers, buildProfile, qlooParams } from "../quiz.ts";
 export type Selection = { entity: Entity; token: string };
 const CHIP_TYPE =
   /^urn:tag:(ambience:qloo|cuisine:place|offerings:place|beverage_offering:qloo)$/;
@@ -148,6 +148,7 @@ export async function swap(
   maxPrice: unknown,
   categoryValue: unknown = "restaurant",
   excludeValue: unknown = [],
+  quizValue: unknown = {},
 ) {
   const category = placeCategory(categoryValue);
   // Places the user marked "Not for me" (E06), as Qloo place IDs.
@@ -213,15 +214,29 @@ export async function swap(
   }
   if (change.length) params["filter.exclude.tags"] = change.join(",");
   if (maxPrice) params["filter.price_level.max"] = String(maxPrice);
-  const { data, checkedAt } = await qloo("/v2/insights", params);
-  if (!localityMatches(data, "Paris"))
-    throw new DiscoveryError("location_unconfirmed", 502);
-  const candidates = entities(data);
-  const filtered = candidates.filter(
-    (e) =>
-      !hidden.has(e.id) &&
-      validPlace(e, "Paris", category, maxPrice as number | undefined, change),
-  );
+  // Quiz traits steer popularity and price (C7, docs/18); a budget the user
+  // chose here wins over the quiz's price leaning.
+  const traits = qlooParams(buildProfile(cleanAnswers(quizValue)), category);
+  if (maxPrice) {
+    delete traits["filter.price_level.min"];
+    delete traits["filter.price_level.max"];
+  }
+  const run = async (extra: Record<string, string>) => {
+    const { data, checkedAt } = await qloo("/v2/insights", { ...params, ...extra });
+    if (!localityMatches(data, "Paris"))
+      throw new DiscoveryError("location_unconfirmed", 502);
+    const candidates = entities(data);
+    const filtered = candidates.filter(
+      (e) =>
+        !hidden.has(e.id) &&
+        validPlace(e, "Paris", category, maxPrice as number | undefined, change),
+    );
+    return { checkedAt, candidates, filtered };
+  };
+  let { checkedAt, candidates, filtered } = await run(traits);
+  // Too narrow with the quiz traits: fall back to the Passport alone.
+  const traitsUsed = Object.keys(traits).length > 0 && filtered.length >= 3;
+  if (Object.keys(traits).length && !traitsUsed) ({ checkedAt, candidates, filtered } = await run({}));
   const roles = selectRoles(filtered, ref, signals, category);
   const checks = await checkVenues(roles.map((r) => r.place), category);
   return {
@@ -230,6 +245,7 @@ export async function swap(
     city: "Paris",
     category,
     candidateCount: filtered.length,
+    traitsUsed,
     discarded: candidates.length - filtered.length,
     verification: "L0",
     notice:

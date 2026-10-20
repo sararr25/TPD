@@ -351,3 +351,25 @@ export function buildProfile(answers: Answers): Profile | null {
   ].join(" · ");
   return { axes, interests, title: `The ${adjective} ${NOUN[ranked[0]]}`, motto, answered };
 }
+
+// Profile → Qloo parameters (C7, docs/17). Only the axes that are clearly
+// leaning one way change anything; a neutral profile sends nothing.
+// Popularity is Qloo's 0–1 percentile; price level is 1–4. Museums get
+// nothing (too few per city, docs/18) and hotels no price (Qloo has none).
+export function qlooParams(
+  profile: Profile | null,
+  category: "restaurant" | "bar" | "museum" | "hotel",
+): Record<string, string> {
+  if (!profile || category === "museum") return {};
+  const withPrice = category === "restaurant" || category === "bar";
+  const { energy, curiosity, spend } = profile.axes;
+  const out: Record<string, string> = {};
+  // Calm or adventurous people get fewer of the most popular places.
+  const away = Math.max((50 - energy) / 50, (curiosity - 50) / 50);
+  if (away >= 0.2) out["filter.popularity.max"] = (1 - 0.3 * away).toFixed(2);
+  // Familiar-leaning people keep well-known places.
+  else if (curiosity <= 35) out["filter.popularity.min"] = "0.8";
+  if (withPrice && spend <= 35) out["filter.price_level.max"] = "2";
+  if (withPrice && spend >= 65) out["filter.price_level.min"] = "3";
+  return out;
+}

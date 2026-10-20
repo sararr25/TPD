@@ -202,3 +202,17 @@ assert.equal(noMatches.candidateCount, 0);
 globalThis.fetch = async () => Response.json({ results: { entities: museums.map(raw) }, query: {} });
 await assert.rejects(swap(museumToken, tokens, [], undefined, "museum"), e => e.code === "location_unconfirmed");
 console.log("PASS: museum Keep sends a weighted taste signal, empty responses remain empty, and unconfirmed localities fail closed.");
+
+// Category cleaning (docs/18): hotels, shops-only, schools and canteens are not restaurants.
+{
+  const { offCategory } = await import("../src/lib/discovery.ts");
+  const place = (...ids) => ({ tags: ids.map((id) => ({ id })) });
+  const g = (x) => "urn:tag:genre:place:" + x;
+  assert.equal(offCategory(place(g("restaurant"), g("restaurant:french")), "restaurant"), false);
+  assert.equal(offCategory(place(g("restaurant"), g("hotel")), "restaurant"), true);
+  assert.equal(offCategory(place(g("restaurant"), g("toy_store")), "restaurant"), true);
+  assert.equal(offCategory(place(g("restaurant"), g("restaurant:cafeteria")), "restaurant"), true);
+  assert.equal(offCategory(place(g("restaurant"), g("restaurant:cafeteria"), g("restaurant:vietnamese")), "restaurant"), false);
+  assert.equal(offCategory(place(g("restaurant"), g("shopping"), g("market")), "restaurant"), false);
+  assert.equal(offCategory(place(g("museum"), g("hotel")), "museum"), false);
+}

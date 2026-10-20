@@ -3,6 +3,8 @@
 // Raw responses stay in .private/qloo (git-ignored).
 import { loadEnvFile } from "node:process";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
+import { buildProfile, qlooParams } from "../src/lib/quiz.ts";
+import { offCategory } from "../src/lib/discovery.ts";
 try {
   loadEnvFile(".env.local");
 } catch {}
@@ -18,6 +20,13 @@ const PASSPORTS = {
   A: [["Khruangbin", "artist"], ["Nina Simone", "artist"], ["Before Sunrise", "movie"]],
   B: [["Daft Punk", "artist"], ["Bad Bunny", "artist"], ["Mad Max: Fury Road", "movie"]],
 };
+// Each Passport also carries quiz answers, so the grid measures what the app sends (C7).
+// A: calm, adventurous, thrifty. B: lively, familiar, treat-seeker.
+const QUIZ = {
+  A: { crowds: 5, company: 1, "food-adventure": 5, openness: ["ask-local", "get-lost"], budget: 1 },
+  B: { crowds: 1, company: 5, "food-adventure": 1, budget: 5 },
+};
+const MODE = process.argv.includes("--traits") ? "traits" : "plain";
 const CITIES = [
   "Paris", "Lisbon", "Porto", "Barcelona", "Madrid", "New York",
   "Tokyo", "Osaka", "Ho Chi Minh City", "Hanoi", "Phu Quoc",
@@ -70,14 +79,19 @@ for (const city of CITIES)
         "filter.location.query": city,
         "filter.location.radius": "0",
         "signal.interests.entities": ids[key].join(","),
-        take: "10",
+        take: "20",
+        ...(MODE === "traits" ? qlooParams(buildProfile(QUIZ[key]), category) : {}),
       });
       await writeFile(
-        `.private/qloo/destinations-passport/${slug}-${key}.json`,
+        `.private/qloo/destinations-passport/${slug}-${key}${MODE === "traits" ? "-traits" : ""}.json`,
         JSON.stringify(data),
         { mode: 0o600 },
       );
-      runs[key] = data.results?.entities ?? [];
+      // Same cleaning rule as the app (restaurants and bars both use "restaurant" rules).
+      runs[key] = (data.results?.entities ?? [])
+        .filter((e) => category === "museum" || category === "hotel" ||
+          !offCategory({ tags: (e.tags ?? []).map((t) => ({ id: t.id || t.tag_id })) }, "restaurant"))
+        .slice(0, 10);
     }
     const row = {
       city,
@@ -96,7 +110,7 @@ for (const city of CITIES)
     console.log(JSON.stringify(row));
   }
 await writeFile(
-  ".private/qloo/destinations-passport-summary.json",
-  JSON.stringify({ checkedAt: new Date().toISOString(), passports: PASSPORTS, checks: summary }, null, 2),
+  `.private/qloo/destinations-passport-${MODE}-summary.json`,
+  JSON.stringify({ checkedAt: new Date().toISOString(), mode: MODE, passports: PASSPORTS, quiz: QUIZ, checks: summary }, null, 2),
   { mode: 0o600 },
 );

@@ -90,6 +90,20 @@ export function validRestaurant(
 ): boolean {
   return validPlace(e, city, "restaurant", maxPrice, exclude);
 }
+// Qloo tags some shops, hotels, schools and canteens as restaurants or bars
+// (docs/18). A place is off-category when it also carries one of these
+// top-level genres, or when "cafeteria" is its only kind of restaurant.
+const OFF_CATEGORY = [
+  "hotel", "library", "toy_store", "hobby_store", "clothing_store",
+  "wedding_service", "educational_institution",
+];
+export function offCategory(e: Entity, category: PlaceCategory): boolean {
+  if (category !== "restaurant") return false;
+  const ids = e.tags.map((t) => t.id);
+  if (OFF_CATEGORY.some((g) => ids.includes(`urn:tag:genre:place:${g}`))) return true;
+  const kinds = ids.filter((id) => id.startsWith("urn:tag:genre:place:restaurant:"));
+  return kinds.length > 0 && kinds.every((id) => id.endsWith(":cafeteria"));
+}
 export function validPlace(
   e: Entity,
   city: string,
@@ -107,7 +121,8 @@ export function validPlace(
     e.lon !== null &&
     !!e.address &&
     (!maxPrice || (e.price !== null && e.price <= maxPrice)) &&
-    !e.tags.some((t) => exclude.includes(t.id))
+    !e.tags.some((t) => exclude.includes(t.id)) &&
+    !offCategory(e, category)
   );
 }
 export function selectRoles(

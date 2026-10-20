@@ -67,6 +67,7 @@ export async function POST(request: Request) {
         body.maxPrice,
         body.category,
         body.exclude ?? [],
+        body.quiz ?? {},
       );
     else throw new DiscoveryError("invalid_request", 400);
     return Response.json(result, { headers });

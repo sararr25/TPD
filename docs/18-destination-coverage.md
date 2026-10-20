@@ -65,9 +65,33 @@ Run with `npm run verify:qloo-destinations-passport` (needs the baseline above f
 3. **Museums don't personalise in thin cities.** Osaka, Ho Chi Minh City and Hanoi return only 3–5 museums with a Passport, identical for A and B. Show them as "the museums in our data", not as "picked for you".
 4. **Category noise that a user would notice:** Goethe-Institut and a university cafeteria as Madrid "restaurants", Pokémon Center as an Osaka restaurant, "Little Italy" (a neighbourhood) as a New York restaurant, hostels and hotels under "bars", a Phu Quoc hotel as a "bar". Results need a cleaning step (e.g. drop places whose main category differs, or that are hotels when the category isn't hotel).
 
+## Cleaning rule + quiz traits (C7), 21 Oct 2026
+
+Both are in the app now and in the grid script (`npm run verify:qloo-destinations-passport -- --traits`).
+
+**Cleaning rule** (`offCategory`): for restaurants and bars, drop a place that also carries a top-level genre `hotel`, `library`, `toy_store`, `hobby_store`, `clothing_store`, `wedding_service` or `educational_institution`, or whose only restaurant kind is `cafeteria`. An allowlist was tried first and rejected: it removed pubs, jazz clubs and flamenco tablaos, and "shopping"/"market" also cover real food places (Mercado de San Miguel, Kopke Wine House).
+
+**Quiz traits → Qloo** (`qlooParams`):
+| Profile | Parameter |
+|---|---|
+| Calm or adventurous (energy ≤ 40 or curiosity ≥ 60) | `filter.popularity.max` = 1 − 0.3 × strength (0.70–0.94) |
+| Familiar (curiosity ≤ 35) | `filter.popularity.min` = 0.8 |
+| Thrifty (spend ≤ 35), restaurants/bars only | `filter.price_level.max` = 2 |
+| Treat-seeker (spend ≥ 65), restaurants/bars only | `filter.price_level.min` = 3 |
+| Museums | nothing |
+
+A budget the user picks in Swap wins over the quiz's price leaning. If fewer than 3 results survive, the Swap reruns with the Passport alone.
+
+**Result, A (calm, adventurous, thrifty) vs B (lively, familiar, treat-seeker):** A∩B goes from 30–90% to **0% for restaurants, bars and hotels in all 11 cities**. Museums are unchanged (by design).
+
+Two things the first trait run showed and that the rules above fix: hotels have no Qloo price level, so a price filter returned 0 hotels; and a popularity cap on museums left 0–5 odd results (a cement museum for Barcelona).
+
+**In the app (Paris Swap from Le Baratin, guest Passport):** no quiz → Du Pain et des Idées, La Cave à Michel, La Crèmerie; calm + thrifty → Le Sentier, Le Petit Balcon, Chez Taeko (popularity 0.13–0.27, price 1–2); lively + treat → Les Enfants du Marché, Le Châteaubriand, Brutos (popularity 0.82–0.98, price 3–4).
+
+Side effect to watch: tight filters shrink the pool in small places (Porto bars and Phu Quoc with the treat-seeker profile: 1–4 results). The app's fallback covers it; the Explore page will need the same.
+
 ## Next checks
 
-1. Cleaning rule for category noise, then rerun.
-2. C7: add popularity/price/diversify from quiz traits and check that A∩B drops.
-3. Neighbourhood level filter.
-4. Ticketmaster coverage per city, once the key exists.
+1. Neighbourhood level filter.
+2. Ticketmaster coverage per city, once the key exists.
+3. Open the Swap to the other 10 cities (it is still Paris-only in code).

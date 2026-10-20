@@ -14,7 +14,7 @@ Legend: ✅ built and live · 🟡 built, limited · ⬜ not built.
 | C4 | Swap | "The place I wanted is full/not for me" → 3 alternatives | Reference resolution, Keep/Change chips, 3 roles, constraints | Insights with entity + tags signals, `filter.exclude.tags`, price, popularity, location | OpenStreetMap: identity/address check | 🟡 Paris only, restaurants + museums |
 | C5 | Transfer | Same taste, another category | Category switch | Same signals, different `filter.type`/tags | — | 🟡 restaurant → museum, Paris |
 | C6 | Explore Within ("I'm already here") | Places for me in this city, no reference | Same pipeline without reference | Insights with Passport only, `sort_by=distance` | Geolocation (browser) | ⬜ |
-| C7 | Profile → results | Calm → fewer crowded places; thrifty → cheaper; adventurous → wider swaps | Map axes to Qloo params | `filter.popularity`, `bias.trends`, `filter.price_level`, `diversify` | — | ⬜ (decided: next) |
+| C7 | Profile → results | Calm → fewer crowded places; thrifty → cheaper; adventurous → wider swaps | Map axes to Qloo params | `filter.popularity`, `bias.trends`, `filter.price_level`, `diversify` | — | ✅ in Swap (docs/18) |
 | C8 | Feedback | "Not for me" hides a place; "Yes" strengthens | Hidden list, exclusions | `filter.exclude.entities`; positive → add entity to signals | — | 🟡 negative only |
 | C9 | Collections | Save places by trip/city | Account storage | — | — | ✅ |
 | C10 | Account | Google login, delete everything | Neon Auth + Postgres | — | Google | ✅ |

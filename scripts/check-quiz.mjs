@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { QUESTIONS, ENTITY_CARDS, cleanAnswers, parseQuiz, likedEntities, profileLines, buildProfile, BOTH } from "../src/lib/quiz.ts";
+import { QUESTIONS, ENTITY_CARDS, cleanAnswers, parseQuiz, likedEntities, profileLines, buildProfile, BOTH, qlooParams } from "../src/lib/quiz.ts";
 import { quiz } from "../src/lib/server/discovery-service.ts";
 
 assert.ok(QUESTIONS.length >= 15 && QUESTIONS.length <= 20);
@@ -34,3 +34,15 @@ assert.match(nature.title, /Wanderer$/);
 assert.ok(night.axes.energy > 60 && nature.axes.energy < 40);
 const both = buildProfile({ dinner: BOTH });
 assert.ok(both.interests.food === 100 && both.interests.night > 0);
+
+// Quiz traits → Qloo parameters (C7): neutral sends nothing, museums never, hotels no price.
+assert.deepEqual(qlooParams(null, "restaurant"), {});
+assert.deepEqual(qlooParams(buildProfile({ planning: 3 }), "restaurant"), {});
+const calm = buildProfile({ crowds: 5, company: 1, "food-adventure": 5, budget: 1 });
+assert.ok(Number(qlooParams(calm, "restaurant")["filter.popularity.max"]) < 1);
+assert.equal(qlooParams(calm, "restaurant")["filter.price_level.max"], "2");
+assert.equal(qlooParams(calm, "hotel")["filter.price_level.max"], undefined);
+assert.deepEqual(qlooParams(calm, "museum"), {});
+const familiar = buildProfile({ crowds: 1, company: 5, "food-adventure": 1, budget: 5 });
+assert.equal(qlooParams(familiar, "restaurant")["filter.popularity.min"], "0.8");
+assert.equal(qlooParams(familiar, "restaurant")["filter.price_level.min"], "3");

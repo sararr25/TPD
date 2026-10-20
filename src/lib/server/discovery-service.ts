@@ -16,6 +16,7 @@ import {
   searchEntities,
   DiscoveryError,
 } from "./qloo.ts";
+import { checkVenues } from "./osm.ts";
 export type Selection = { entity: Entity; token: string };
 const CHIP_TYPE =
   /^urn:tag:(ambience:qloo|cuisine:place|offerings:place|beverage_offering:qloo)$/;
@@ -183,8 +184,10 @@ export async function swap(
   const filtered = candidates.filter((e) =>
     validPlace(e, "Paris", category, maxPrice as number | undefined, change),
   );
+  const roles = selectRoles(filtered, ref, signals, category);
+  const checks = await checkVenues(roles.map((r) => r.place), category);
   return {
-    results: selectRoles(filtered, ref, signals, category),
+    results: roles.map((r, i) => ({ ...r, check: checks[i] })),
     checkedAt,
     city: "Paris",
     category,
@@ -192,6 +195,6 @@ export async function swap(
     discarded: candidates.length - filtered.length,
     verification: "L0",
     notice:
-      "Qloo data only. Identity, opening hours, price and availability have not been checked with an operational provider.",
+      "Qloo recommendations, cross-checked by name, category and address against OpenStreetMap. Opening hours, price and availability have not been checked with an operational provider.",
   };
 }

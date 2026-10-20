@@ -118,6 +118,7 @@ const raw = (e) => ({
   tags: e.tags,
 });
 globalThis.fetch = async (url, options) => {
+  if (url.hostname === "nominatim.openstreetmap.org") return Response.json([]);
   calls++;
   assert.equal(url.hostname, "hackathon.api.qloo.com");
   assert.equal(options.redirect, "error");
@@ -142,6 +143,7 @@ const result = await swap(
 assert.equal(result.results.length, 3);
 assert(result.results.every((r) => r.place.city === "Paris"));
 assert.equal(result.verification, "L0");
+assert(result.results.every((r) => r.check.status === "not_found" && r.check.source === "OpenStreetMap"));
 await assert.rejects(
   swap(
     signed.token,
@@ -171,6 +173,7 @@ await assert.rejects(swap(museumToken, tokens, [], undefined, "hotel"), e => e.c
 await assert.rejects(lookup("Synthetic", "place", true, "hotel"), e => e.code === "invalid_category");
 const museums = [11, 12, 13].map(n => make(n, { tags: [museumTag], price: null }));
 globalThis.fetch = async (url) => {
+  if (url.hostname === "nominatim.openstreetmap.org") return Response.json([]);
   assert.equal(url.searchParams.get("filter.tags"), museumTag.id);
   assert.equal(url.searchParams.get("filter.price_level.max"), null);
   assert.equal(url.searchParams.get("signal.interests.entities"), [museum.id, ...passport.map(s => s.entity.id)].join(","));

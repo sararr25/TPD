@@ -6,3 +6,4 @@
 .ticket{text-decoration:none;display:inline-block}.passport-page{background:var(--paper);border:1px solid var(--line);border-left:3px double var(--line);padding:30px 22px;border-radius:0 12px 12px 0}.cover .ring{border-color:white;color:white}dialog{max-width:520px;width:calc(100% - 32px)}
 
 .search-form .stamp{margin:24px 4px 10px}.entity-list{list-style:none;padding:0;margin:20px 0}.entity-list li{display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid var(--line);padding:14px 0}.entity-list p{margin:4px 0}summary{cursor:pointer;text-decoration:underline;text-underline-offset:4px}details p{font-size:15px}button:disabled{cursor:not-allowed}.segment button{text-transform:capitalize}.result h3{font-size:19px}.result{overflow-wrap:anywhere}
+.stub[data-check=conflict],.stub[data-check=ambiguous]{color:var(--stamp)}

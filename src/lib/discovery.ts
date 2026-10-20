@@ -1,3 +1,4 @@
+import type { VenueCheck } from "./venue-check.ts";
 export type PlaceCategory = "restaurant" | "museum";
 export function placeCategory(value: unknown = "restaurant"): PlaceCategory | null {
   return value === "restaurant" || value === "museum" ? value : null;
@@ -26,6 +27,7 @@ export type Result = {
   why: string;
   different: string;
   distanceKm: number | null;
+  check?: VenueCheck;
 };
 export const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

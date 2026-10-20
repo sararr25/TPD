@@ -12,12 +12,20 @@ import {
   readSelections,
   type Selection,
 } from "@/lib/discovery-client";
+import type { CheckStatus } from "@/lib/venue-check";
 type Payload = {
   results: Result[];
   checkedAt: string;
   candidateCount: number;
   discarded: number;
   notice: string;
+};
+const CHECK_LABEL: Record<CheckStatus, string> = {
+  confirmed: "name, category and address agree",
+  conflict: "conflict found — check before going",
+  ambiguous: "several places share this name nearby",
+  not_found: "not listed nearby (coverage is incomplete)",
+  unavailable: "could not be checked right now",
 };
 export function SwapWorkspace() {
   const [category, setCategory] = useState<PlaceCategory>("restaurant");
@@ -365,6 +373,26 @@ function CategoryWorkspace({ category, onTransfer }: {
                         {museum ? "admission prices, exhibitions and ticket availability" : "menu prices and table availability"} are not independently
                         verified.
                       </p>
+                      {result.check && (
+                        <>
+                          <p>
+                            OpenStreetMap cross-check: {CHECK_LABEL[result.check.status]}.
+                            {result.check.match && (
+                              <>
+                                {" "}Matched{" "}
+                                <a href={result.check.match.url} target="_blank" rel="noreferrer">
+                                  {result.check.match.name} ↗
+                                </a>{" "}
+                                ({result.check.match.category}={result.check.match.type},{" "}
+                                {result.check.match.distanceM} m from the Qloo position).
+                              </>
+                            )}
+                          </p>
+                          {result.check.notes.map((note) => (
+                            <p key={note}>{note}</p>
+                          ))}
+                        </>
+                      )}
                       <p className="meta">
                         Response checked:{" "}
                         {new Date(data.checkedAt).toLocaleString()}
@@ -382,10 +410,12 @@ function CategoryWorkspace({ category, onTransfer }: {
                       </div>
                     )}
                   </div>
-                  <div className="stub">
+                  <div className="stub" data-check={result.check?.status}>
                     L0 · Qloo taste recommendation
                     <br />
-                    Operational verification pending
+                    {result.check
+                      ? `OpenStreetMap: ${CHECK_LABEL[result.check.status]}`
+                      : "Operational verification pending"}
                   </div>
                 </article>
               ))}

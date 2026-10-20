@@ -14,6 +14,7 @@
     "check:prototype": "node scripts/check-prototype.cjs",
     "verify:qloo-coverage": "node scripts/audit-qloo-coverage.mjs",
     "verify:qloo-destinations": "node scripts/audit-qloo-destinations.mjs",
+    "verify:qloo-destinations-passport": "node scripts/audit-qloo-destinations-passport.mjs",
     "verify:qloo-transfer": "node --experimental-strip-types scripts/verify-qloo-transfer.mjs",
     "benchmark": "node --experimental-strip-types scripts/benchmark/run.mjs",
     "benchmark:cli": "node --experimental-strip-types scripts/benchmark/collect-cli.mjs",

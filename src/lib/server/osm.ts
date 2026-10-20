@@ -13,7 +13,7 @@ import { store } from "./store.ts";
 // Nominatim usage policy: max 1 request/second, identifying User-Agent, cache results.
 // https://operations.osmfoundation.org/policies/nominatim/
 const BASE = "https://nominatim.openstreetmap.org/search";
-const USER_AGENT = "TPD-hackathon-venue-check/0.1";
+const USER_AGENT = "Beesyde-venue-check/0.1";
 const TTL = 24 * 3600 * 1000;
 const GAP_MS = 1100;
 const MAX_WAIT_MS = 10000;

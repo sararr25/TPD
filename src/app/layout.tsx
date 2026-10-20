@@ -3,7 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 import { AuthButton } from "@/components/auth-button";
 export const metadata: Metadata = {
-  title: "TPD · Taste Passport",
+  title: "Beesyde · Taste Passport",
   description: "Keep what you love. Change what does not work.",
 };
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
         </div>
         <header>
           <Link className="brand" href="/">
-            <span className="ring">TPD</span>TPD
+            <span className="ring">B</span>Beesyde
           </Link>
           <nav aria-label="Main">
             <Link href="/passport">Taste Passport</Link>
@@ -27,7 +27,7 @@ export default function RootLayout({
           <AuthButton />
         </header>
         <main>{children}</main>
-        <footer>TPD · Working name · Your taste, a different way in.</footer>
+        <footer>Beesyde · Your taste, a different way in.</footer>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import {
   QUESTIONS,
+  BOTH,
   ENTITY_CARDS,
   SLIDER_STOPS,
   MIN_ENTITIES,
@@ -163,6 +164,16 @@ function QuestionScreen({
               {i === 0 && <span className="quiz-or" aria-hidden>or</span>}
             </button>
           ))}
+        </div>
+        <div className="actions quiz-both">
+          <button
+            className="stamp"
+            disabled={busy}
+            aria-pressed={value === BOTH}
+            onClick={() => onLeave(BOTH)}
+          >
+            🤹 Both, it depends on the day
+          </button>
         </div>
         {nav}
       </>

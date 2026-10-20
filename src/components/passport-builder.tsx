@@ -2,8 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PassportCard } from "./passport-card";
+import { PassportProfile } from "./passport-profile";
 import { QuizFlow } from "./quiz-flow";
-import { QUIZ_KEY, parseQuiz, profileLines, type Answers } from "@/lib/quiz";
+import { QUIZ_KEY, parseQuiz, buildProfile, type Answers } from "@/lib/quiz";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import {
   discovery,
@@ -297,7 +298,7 @@ export function PassportBuilder() {
         <PassportCard signals={selected.map((s) => s.entity.name)} />
       </div>
     );
-  const lines = profileLines(profile);
+  const traveller = buildProfile(profile);
   return (
     <>
       <div className="grid">
@@ -313,18 +314,8 @@ export function PassportBuilder() {
               setStatus("");
               setQuizOpen(true);
             }}>
-            {lines.length ? "Redo the quiz" : "Take the 2-minute quiz"}
+            {traveller ? "Redo the quiz" : "Take the 3-minute quiz"}
           </button>
-          {lines.length > 0 && (
-            <details>
-              <summary>From your quiz</summary>
-              <ul className="muted">
-                {lines.map((l) => (
-                  <li key={l}>{l}</li>
-                ))}
-              </ul>
-            </details>
-          )}
           {showGuest && (
             <div className="paper">
               <h3>Borrow a Passport</h3>
@@ -477,7 +468,15 @@ export function PassportBuilder() {
             </div>
           )}
         </section>
-        <PassportCard signals={selected.map((s) => s.entity.name)} />
+        {traveller ? (
+          <PassportProfile
+            profile={traveller}
+            holder={session?.user?.name}
+            signals={selected.map((s) => s.entity.name)}
+          />
+        ) : (
+          <PassportCard signals={selected.map((s) => s.entity.name)} />
+        )}
       </div>
       <dialog id="erase-passport">
         <h2>{userId ? "Delete your Passport?" : "Clear your local edition?"}</h2>

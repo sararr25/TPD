@@ -1,6 +1,6 @@
 # Benchmark Qloo / LLM / ricerca normale
 
-20 ottobre 2026. E04 **parziale**: harness implementato, TPD e LLM via Codex CLI raccolti (16 casi ciascuno); ricerca normale e valutazioni umane mancanti. Nessun confronto vincente dichiarato e nessuna modifica alla UI pubblica. La raccolta manuale ChatGPT descritta sotto è stata sostituita, su richiesta dell’utente dopo il blocco web, dal trasporto CLI dichiarato in docs/12.
+20 ottobre 2026. E04 **parziale**: harness implementato, TPD e LLM via Codex CLI raccolti (16 casi ciascuno); ricerca web assistita successivamente raccolta e scheda umana pronta (docs/13); verifica indipendente e voti umani ancora mancanti. Nessun confronto vincente dichiarato e nessuna modifica alla UI pubblica. La raccolta manuale ChatGPT descritta sotto è stata sostituita, su richiesta dell’utente dopo il blocco web, dal trasporto CLI dichiarato in docs/12.
 
 ## Protocollo del pilot
 
@@ -100,19 +100,19 @@ Run privato `paris-pilot-2026-10-20`:
 |---|---:|---:|
 | TPD | 16/16 | 48 |
 | LLM senza Qloo (Codex CLI) | 16/16 | 48 |
-| Ricerca normale | 0/16 | — |
+| Ricerca web con estrazione assistita | 16/16 | 48 |
 
 Nei 16 casi TPD: tre alternative distinte per caso, nessun risultato vuoto, 20 candidati ammessi per caso e zero scarti locali riportati. Tutte le 48 alternative rispettano i controlli locali sui metadati Qloo: categoria, Paris/FR, indirizzo/coordinate, riferimento escluso, tag Change e fascia massima dove presente. Si tratta di controlli della risposta filtrata dell'app, non di una verifica operativa indipendente né di una misura comparativa di precisione. Il ranking a monte e i candidati scartati da Qloo non sono osservati da questo harness.
 
 Nelle otto coppie a parità di reference/configurazione, cambiando Passport cambia il primo risultato in 3 coppie e il set di tre risultati in 6. Overlap Jaccard medio 0,5125. Sono misure di sensibilità dell'output; non provano che una proposta sia migliore. I due Passport hanno gusti in parte condivisi e i casi sono correlati.
 
-Il report mantiene `complete=false` e `qualityUplift=null`. Non sono state valutate qualità soggettiva, esistenza/orari/prezzi esterni, superiorità rispetto al modello o preferenze di utenti. Nessun numero di vittoria va inserito nel pitch o nell'app finché mancano confronti e voti.
+Aggiornamento docs/13: `collectionComplete=true` indica la raccolta, mentre `qualityUplift=null` resta invariato. Il vecchio campo `complete` è stato rinominato per evitare ambiguità. Non sono state valutate qualità soggettiva, esistenza/orari/prezzi esterni, superiorità rispetto al modello o preferenze di utenti. Nessun numero di vittoria va inserito nel pitch o nell'app finché mancano confronti e voti.
 
 ## Verifica dell'harness e prossimi passi
 
 `npm test` comprende fixture sintetiche per i 16 scenari, prompt/hash, provenienza, import, duplicati, rifiuto del confronto incompleto, etichette casuali persistenti e aggregazione voti. La prova integrata dei comandi usa solo dati sintetici e pulisce la propria directory temporanea. `npm run typecheck` passa. Nessuna nuova build necessaria: l'incremento modifica script e documentazione, non il bundle dell'app.
 
-Per chiudere E04: raccogliere la ricerca normale, controllare i fatti con lo stesso criterio per tutte le condizioni (ignoto resta ignoto), effettuare la valutazione umana e analizzare anche casi neutri o sfavorevoli a TPD. Il pannello di confronto nel prodotto e lo storage privato ospitato restano successivi a risultati reali; nessun confronto fittizio viene esposto.
+Per chiudere E04: controllare i fatti con lo stesso criterio per tutte le condizioni (ignoto resta ignoto), effettuare la valutazione umana e analizzare anche casi neutri o sfavorevoli a TPD. Il pannello di confronto nel prodotto e lo storage privato ospitato restano successivi a risultati reali; nessun confronto fittizio viene esposto.
 
 ## Raccolta manuale ChatGPT scelta dall’utente
 

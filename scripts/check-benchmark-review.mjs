@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {renderReview} from './benchmark/review.mjs';
+import {hash} from './benchmark/core.mjs';
+import {Script} from 'node:vm';
+const input={reference:{name:'Fictional reference',address:null},city:'Paris',category:'museum',passport:[],keep:[],change:[],maxPriceTier:null};
+const cases=[{caseId:'synthetic',input,columns:['A','B','C'].map(label=>({label,items:[{name:'</script><img src=x onerror=alert(1)>',address:null}],source:'FORBIDDEN_SOURCE_LABEL'}))}];
+const packet={packetHash:hash(cases),cases,secretKey:'FORBIDDEN_SOURCE_KEY'};
+const html=renderReview(packet);
+assert(!html.includes('FORBIDDEN_SOURCE_LABEL'));
+assert(!html.includes('FORBIDDEN_SOURCE_KEY'));
+assert(!html.includes('</script><img'));
+assert(html.includes('connect-src \'none\''));
+const script=html.match(/<script nonce="[^"]+">([\s\S]*?)<\/script>/)[1];
+new Script(script);
+assert.throws(()=>renderReview({...packet,packetHash:'wrong'}));
+console.log('PASS: blind review validates packet hash, omits source keys/labels, escapes script injection and has syntactically valid client code with network disabled by CSP.');

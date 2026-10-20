@@ -18,11 +18,12 @@ Aggiornato: 20 ottobre 2026. Fonte: DECISIONS.md sezioni 7–8, docs/02 sezione 
 | E01 | Scaffold Next.js + TypeScript | Completato localmente | Stack confermato; build, typecheck, test e smoke HTTP passano. Deploy/QA browser aperti |
 | E02 | Adapter Qloo e cache privata | Implementato localmente, cache in memoria; storage distribuito aperto | Solo server, retry limitati, nessuna risposta Qloo nel repo pubblico |
 | E03 | Passport e Restaurant Swap reali | Flusso Parigi verificato nel browser, docs/09 | Ricerca entità, tag Keep/Change, vincoli, tre ruoli, provenienza, stati errore |
-| E04 | Benchmark Qloo vs LLM | Parziale: TPD e LLM CLI 16/16 raccolti, docs/11–12; ricerca normale e voti mancanti | Casi privati, stessi vincoli, numeri reali, 15–20 richieste |
+| E04 | Benchmark Qloo vs LLM | Parziale: tre condizioni 16/16 raccolte e audit metadati comune, docs/13; verifica indipendente e voti mancanti | Casi privati, stessi vincoli, numeri reali, 15–20 richieste |
 | E05 | Musei e Transfer | Flusso Parigi implementato e verificato localmente, docs/10 | Stesso Passport, nuova categoria con copertura provata |
 | E06 | Login, collezioni e feedback | Dipende da E03 / scelta login | Account reale, persistenza privata, cancellazione, feedback verificato |
 | E07 | Scheda Passport condivisibile | Dipende da E06 | Esportazione e condivisione deliberate, nessun dato privato involontario |
 | E08 | Categorie aggiuntive | Condizionato ai dati | Quartieri → hotel → attività solo dopo evidenza di copertura |
+| E09 | Identità, attività e indirizzi: conflitti con fonte operativa | Aperto prima del deploy, docs/13 | Fonte esterna, disambiguazione omonimi/sedi, conflitti espliciti; nessuna blacklist ad hoc |
 | R01 | README, licenza, deploy e submission inglese | Dipende dai flussi reali | Demo pubblica provata, fonti/limiti, regole ufficiali ricontrollate |
 
 ## Incremento D03
@@ -33,4 +34,4 @@ Verifica ripetibile dalla root: `node scripts/check-prototype.cjs`. Lo script us
 
 ## Prossimo passo
 
-E05 completato localmente sul pilot musei Parigi: stessi segnali Passport, nuova reference, Keep/Change, tre ruoli L0, test live e browser (docs/10). E04: 16 casi TPD e 16 casi LLM CLI raccolti; import e valutazione cieca predisposti. Dopo il blocco ChatGPT web, alternativa da terminale richiesta dall’utente e verificata: Codex CLI/gpt-6-sol, senza strumenti né Qloo (docs/12). Mancano ricerca normale, verifica comune dei fatti e voti umani. Prossimo: completare E04; completare verifica operativa e cache/rate limiting condivisi prima del deploy. I03 resta aperto sulle altre destinazioni. E02/E03 locali descritti in docs/09. Metodo login e naming ancora aperti.
+E05 completato localmente sul pilot musei Parigi: stessi segnali Passport, nuova reference, Keep/Change, tre ruoli L0, test live e browser (docs/10). E04: 16 casi TPD e 16 casi LLM CLI raccolti; import e valutazione cieca predisposti. Dopo il blocco ChatGPT web, alternativa da terminale richiesta dall’utente e verificata: Codex CLI/gpt-6-sol, senza strumenti né Qloo (docs/12). Ora anche ricerca web assistita 16/16 raccolta; audit comune su 144 occorrenze completato con metadati Qloo (non indipendente). Scheda A/B/C locale pronta. Restano verifica indipendente sistematica e voti umani; conflitti di identità registrati in E09 (docs/13). Prossimo: completare E04; completare verifica operativa e cache/rate limiting condivisi prima del deploy. I03 resta aperto sulle altre destinazioni. E02/E03 locali descritti in docs/09. Metodo login e naming ancora aperti.

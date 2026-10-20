@@ -21,7 +21,7 @@ const search = { ...record, condition: "search", provenance: { ...record.provena
 validateImport(search, inputHash, "search");
 assert.throws(() => validateImport({ ...search, provenance: { ...search.provenance, urls: ["javascript:alert(1)"] } }, inputHash, "search"));
 const run = { id: "synthetic", cases: [{ id: "a", inputHash }] };
-assert.equal(report(run, { a: { tpd: record } }).complete, false);
+assert.equal(report(run, { a: { tpd: record } }).collectionComplete, false);
 assert.equal(report(run, { a: { tpd: record } }).conditions.llm.collected, 0);
 assert.throws(() => blindCase(input, { tpd: record }));
 const rows = { tpd: record, llm: record, search };
@@ -31,7 +31,7 @@ assert(!JSON.stringify(blind.review).includes("provenance"));
 assert(!JSON.stringify(blind.review).includes("Fictional reason"));
 assert.equal(blind.review.columns[0].items[0].name, item.name);
 const fullReport = report(run, { a: rows });
-assert(fullReport.complete);
+assert(fullReport.collectionComplete);
 assert.equal(fullReport.qualityUplift, null);
 console.log("PASS: 16 balanced scenarios, shared prompts, input fingerprints, strict provenance, duplicate rejection, incomplete conditions, and blinded source-free review. No provider calls.");
 const { profileSensitivity, aggregateVotes } = await import("./benchmark/core.mjs");
@@ -81,7 +81,7 @@ try {
   const scores = JSON.parse(await readFile(`${dir}/evaluation-summary.json`, "utf8"));
   assert.equal(scores.preferences.tie, 1);
   const summary = JSON.parse(await readFile(`${dir}/summary.json`, "utf8"));
-  assert.equal(summary.complete, true);
+  assert.equal(summary.collectionComplete, true);
   assert.equal(summary.qualityUplift, null);
 } finally {
   await rm(dir, { recursive: true, force: true });

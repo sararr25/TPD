@@ -57,6 +57,7 @@ Import the repository using the Next.js preset and npm lockfile. Configure Qloo 
 - `docs/10-museum-transfer-implementation.md`: Museum Swap, same-Passport Transfer and live checks.
 - `docs/11-qloo-benchmark.md`: private 16-case benchmark, baseline imports and blind evaluation.
 - `docs/12-cli-baseline.md`: supported CLI alternative to blocked ChatGPT web, isolation and provenance.
+- `docs/13-search-verification-review.md`: assisted web-search baseline, common metadata audit and private human review.
 
 Implementation follows the [Next.js installation guide](https://nextjs.org/docs/app/getting-started/installation). Qloo usage follows the [hackathon developer guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide) and [parameter reference](https://github.com/qloo/docs-public/blob/main/reference/insights-api-deep-dive.md).
 
@@ -67,3 +68,5 @@ A project license has not yet been chosen; open-source submission readiness rema
 With the local app running on `127.0.0.1:3000`, `npm run benchmark -- collect RUN_ID` collects 16 TPD scenarios sequentially and checkpoints them under ignored `.private/benchmark/`. It consumes Qloo quota. `npm run benchmark -- report RUN_ID` reads the current state without provider calls. Baseline imports, blind packets and vote aggregation are documented in docs/11. Missing LLM/search responses are never filled automatically, and output sensitivity is not a quality-uplift claim.
 
 `npm run benchmark:cli -- RUN_ID` collects the LLM condition using the installed Codex CLI and its existing ChatGPT sign-in. Each case runs in a fresh process without tools or Qloo. The source is explicitly labelled Codex CLI / gpt-6-sol, not ChatGPT web; see docs/12 for controls and limits. No API key is created or passed to the model subprocess.
+
+All three 16-case conditions are collected. The third is explicitly labelled assisted web-search extraction; the common audit uses Qloo metadata and is not independent ground truth. `npm run benchmark:verify -- RUN_ID` checks all conditions with identical lookup rules, consuming quota only for missing checkpoints. `npm run benchmark:review -- RUN_ID` serves the anonymous study at `127.0.0.1:3212/study` after a blind packet is generated; it exposes no source key or directory. `collectionComplete` means collection only: independent fact checks and human votes remain open.

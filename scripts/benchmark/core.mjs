@@ -54,12 +54,12 @@ export function validateImport(record, inputHash, condition) {
   return { ...record, items: validateItems(record.items) };
 }
 export function report(run, records) {
-  const complete = CONDITIONS.every(condition => run.cases.every(c => records[c.id]?.[condition]));
+  const collectionComplete = CONDITIONS.every(condition => run.cases.every(c => records[c.id]?.[condition]));
   const conditions = Object.fromEntries(CONDITIONS.map(condition => {
     const rows = run.cases.map(c => records[c.id]?.[condition]).filter(Boolean);
     return [condition, { collected: rows.length, total: run.cases.length, returnedItems: rows.reduce((n, r) => n + r.items.length, 0), emptyCases: rows.filter(r => !r.items.length).length }];
   }));
-  return { runId: run.id, complete, conditions, qualityUplift: null, independentOperationalVerification: false };
+  return { runId: run.id, collectionComplete, conditions, qualityUplift: null, independentOperationalVerification: false };
 }
 export function blindCase(input, records, shuffle = values => {
   const a = [...values];

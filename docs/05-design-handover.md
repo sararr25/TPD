@@ -90,3 +90,7 @@ Raccolta ChatGPT tentata dopo login utente: GPT-6/High visibile, primo caso in c
 ## Alternativa CLI riuscita — 20 ottobre
 
 Su richiesta utente, il blocco web è stato risolto usando il Codex CLI ufficiale con il login ChatGPT locale già esistente, senza estrarre cookie o creare API key. Raccolti tutti i 16 casi LLM (48 alternative) con gpt-6-sol/high, processi nuovi, directory vuota/read-only e strumenti disabilitati. Audit di tutti gli eventi e corrispondenza tra originali e record superati; dati solo in .private. Il baseline è dichiarato CLI, non risposta della UI ChatGPT. Test e TypeScript passano. Metodo, evidenze e limiti in docs/12. E04 resta parziale: mancano ricerca normale, verifica dei fatti comparabile e voti umani; nessuna superiorità ancora misurata. Non è più necessario sbloccare la scheda browser.
+
+## Terza condizione, audit e scheda umana — 20 ottobre
+
+Ricerca web con estrazione assistita raccolta su 16 casi, con query/fonti/ordine documentati e limite del pool condiviso tra profili (docs/13). Ora 144 occorrenze complessive tra tre condizioni. Audit comune via Qloo /search: 53 lookup distinti; unknown preservati, nessuna equivalenza tra copertura Qloo e verità esterna. Emersi conflitti di identità/indirizzo anche in TPD: ticket E09 prima del deploy. Nessun dato del campione riscritto o corretto dopo l’audit. Scheda A/B/C e server loopback su 3212/study verificati; zero voti umani raccolti. Campo report rinominato collectionComplete per separare raccolta da validazione. Test/typecheck passano, nessun deploy.

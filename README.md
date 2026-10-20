@@ -15,7 +15,7 @@ npm run dev
 
 Open http://localhost:3000. Current routes: `/`, `/passport`, `/passport?guest=1`, `/swap`, `/api/health`.
 
-Live Qloo entity search powers a browser-local Passport with 3–5 choices and two guest profiles. The Paris Restaurant Swap resolves a reference, exposes Keep/Change tags and returns up to three distinct alternatives with L0 provenance. Budget tiers, city/country/category and excluded tags are checked locally. Operational verification, authentication, shared hosted cache and collections are not connected.
+Live Qloo entity search powers a browser-local Passport with 3–5 choices and two guest profiles. The Paris Restaurant and Museum Swap resolves a reference, exposes Keep/Change tags and returns up to three distinct alternatives with L0 provenance. Restaurant budget tiers, city/country/category and excluded tags are checked locally. The same Passport transfers between the two categories with a new reference. Operational verification, authentication, shared hosted cache and collections are not connected.
 
 The HTML design walkthrough remains in `design-mockups/A4-product-prototype.html`; it is separate from the Next.js app and uses its own local storage key.
 
@@ -35,6 +35,8 @@ Tests cover local-data parsing, filtering, signed selections, distinct roles, ad
 npm run verify:qloo
 npm run verify:qloo-features
 npm run verify:qloo-coverage
+# With the local app running on 127.0.0.1:3000:
+npm run verify:qloo-transfer
 ```
 
 These scripts make limited, sequential live API requests and consume quota. The feature probe requires the access probe first. No automatic retries. Raw responses and diagnostic summaries are saved only in ignored `.private/qloo/` with restricted file permissions. Never commit or upload these responses. Do not use that directory as a durable cache on Vercel; hosted private storage remains to be chosen.
@@ -52,6 +54,7 @@ Import the repository using the Next.js preset and npm lockfile. Configure Qloo 
 - `docs/07-ticket-board.md`: implementation board.
 - `docs/08-qloo-verification.md`: access checks and remaining evidence.
 - `docs/09-restaurant-swap-implementation.md`: live pilot, cache and validation limits.
+- `docs/10-museum-transfer-implementation.md`: Museum Swap, same-Passport Transfer and live checks.
 
 Implementation follows the [Next.js installation guide](https://nextjs.org/docs/app/getting-started/installation). Qloo usage follows the [hackathon developer guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide) and [parameter reference](https://github.com/qloo/docs-public/blob/main/reference/insights-api-deep-dive.md).
 

@@ -54,6 +54,7 @@ export async function POST(request: Request) {
         body.reference ? body.query.trim() + " Paris" : body.query.trim(),
         body.type,
         body.reference === true,
+        body.category,
       );
     } else if (body.action === "swap")
       result = await swap(
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
         body.passport,
         body.choices,
         body.maxPrice,
+        body.category,
       );
     else throw new DiscoveryError("invalid_request", 400);
     return Response.json(result, { headers });

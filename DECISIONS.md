@@ -140,3 +140,7 @@ La guida hackathon richiede GET per Insights: risolvere il riferimento con `/sea
 ## Pilot locale — 20 ottobre 2026
 
 Parigi è il primo pilot dopo audit categoria/città (docs/09); nessuna copertura generale promessa. Passport e Restaurant Swap sono ora collegati a Qloo. In GET i Keep usano un peso comune del gruppo di tag, non pesi per-tag in un body. Cache privata in memoria per processo; persistenza e limiti distribuiti restano aperti prima del deploy. I tre ruoli usano ordine Qloo, distanza dal riferimento e popolarità tra candidati distinti, dichiarando le rispettive limitazioni.
+
+## Musei e Transfer — 20 ottobre 2026
+
+Seconda categoria live del pilot Parigi: Museum Swap con lo stesso Passport e nuova reference. Keep/Change usa tag culturali Qloo; il budget ristorante non viene applicato ai musei. Tre ruoli distinti e provenienza L0 verificati nel campione live e nel browser. Nessuna copertura gallerie/quartieri implicita. Dettaglio in docs/10; benchmark Qloo vs LLM ancora aperto.

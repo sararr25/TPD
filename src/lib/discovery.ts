@@ -1,3 +1,7 @@
+export type PlaceCategory = "restaurant" | "museum";
+export function placeCategory(value: unknown = "restaurant"): PlaceCategory | null {
+  return value === "restaurant" || value === "museum" ? value : null;
+}
 export type Tag = { id: string; name: string; type: string };
 export type Entity = {
   id: string;
@@ -80,11 +84,21 @@ export function validRestaurant(
   maxPrice?: number,
   exclude: string[] = [],
 ): boolean {
+  return validPlace(e, city, "restaurant", maxPrice, exclude);
+}
+export function validPlace(
+  e: Entity,
+  city: string,
+  category: PlaceCategory,
+  maxPrice?: number,
+  exclude: string[] = [],
+): boolean {
   return (
+    e.type === "place" &&
     !e.closed &&
     e.city === city &&
     e.country === "FR" &&
-    e.tags.some((t) => t.id === "urn:tag:genre:place:restaurant") &&
+    e.tags.some((t) => t.id === `urn:tag:genre:place:${category}`) &&
     e.lat !== null &&
     e.lon !== null &&
     !!e.address &&
@@ -96,6 +110,7 @@ export function selectRoles(
   places: Entity[],
   reference: Entity,
   signals: Entity[],
+  category: PlaceCategory = "restaurant",
 ): Result[] {
   const seen = new Set<string>();
   const pool = places.filter(
@@ -133,7 +148,7 @@ export function selectRoles(
             ? `Nearest remaining candidate to your reference${km !== null ? ` (${km.toFixed(1)} km straight-line)` : ""}. Travel time, hours and availability are not checked.`
             : role === "Unexpected but relevant"
               ? "Lower Qloo popularity among the remaining candidates. This does not measure crowds."
-              : `${km !== null ? `About ${km.toFixed(1)} km from your reference, measured in a straight line. ` : "Distance could not be established. "}${e.price !== null && reference.price !== null ? `Qloo price tier ${e.price}, compared with ${reference.price} for the reference.` : "A price-tier comparison is not available."}`,
+              : `${km !== null ? `About ${km.toFixed(1)} km from your reference, measured in a straight line. ` : "Distance could not be established. "}${category === "restaurant" && e.price !== null && reference.price !== null ? `Qloo price tier ${e.price}, compared with ${reference.price} for the reference.` : category === "museum" ? "Admission prices and exhibitions have not been checked." : "A price-tier comparison is not available."}`,
         distanceKm: km,
       },
     ];

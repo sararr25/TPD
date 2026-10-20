@@ -76,3 +76,7 @@ Utente conferma Next.js/TypeScript su Vercel e indica il file .env del worktree.
 ## Restaurant Swap live — 20 ottobre
 
 Primo flusso locale reale: Passport con entità Qloo e due ospiti, ricerca reference con indirizzo, Keep/Change con ricalcolo, vincolo Parigi/FR e fascia prezzo, tre ruoli distinti, provenienza L0, dettaglio verifica e indicazioni. Adapter unico e cache privata in memoria per processo; nessun deploy o servizio esterno attivato. Prova browser del percorso principale, Change e budget completata; layout verificato a 1440 e 390 px. Documentazione e limiti in docs/09. Nuova chiave locale Passport: tpd-passport-v2, nessuna trasformazione automatica dei dati campione.
+
+## Museum Swap e Transfer — 20 ottobre
+
+E05 ora implementato localmente: categoria musei, reference confermata per categoria/Parigi, chip culturali reali, nessun budget ristorante nei musei, stesso Passport tra categorie e reset delle scelte contestuali. Verificati test automatici, build/typecheck, endpoint reali Qloo e percorso browser ristorante → Transfer → museo → Keep/Change → dettaglio L0. Evidenza e limiti in docs/10. Prossimo: benchmark E04; vantaggio qualitativo ancora da misurare. Nessun deploy.

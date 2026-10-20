@@ -1,7 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { LIVE_PASSPORT_KEY, type Choice, type Result } from "@/lib/discovery";
+import {
+  LIVE_PASSPORT_KEY,
+  type Choice,
+  type Result,
+  type PlaceCategory,
+} from "@/lib/discovery";
 import {
   discovery,
   readSelections,
@@ -15,6 +20,32 @@ type Payload = {
   notice: string;
 };
 export function SwapWorkspace() {
+  const [category, setCategory] = useState<PlaceCategory>("restaurant");
+  return (
+    <>
+      <div className="chips" role="group" aria-label="Discovery category">
+        {(["restaurant", "museum"] as const).map((value) => (
+          <button
+            className="choice"
+            key={value}
+            aria-pressed={category === value}
+            onClick={() => setCategory(value)}
+          >
+            {value === "restaurant" ? "Restaurants" : "Museums"}
+          </button>
+        ))}
+      </div>
+      <CategoryWorkspace key={category} category={category} onTransfer={setCategory} />
+    </>
+  );
+}
+function CategoryWorkspace({ category, onTransfer }: {
+  category: PlaceCategory;
+  onTransfer: (category: PlaceCategory) => void;
+}) {
+  const museum = category === "museum";
+  const searchController = useRef<AbortController | null>(null);
+  useEffect(() => () => searchController.current?.abort(), []);
   const [passport, setPassport] = useState<Selection[]>([]),
     [ready, setReady] = useState(false),
     [query, setQuery] = useState(""),
@@ -48,6 +79,7 @@ export function SwapWorkspace() {
     discovery<Payload>(
       {
         action: "swap",
+        category,
         reference: reference.token,
         passport: passport.map((s) => s.token),
         choices,
@@ -61,7 +93,7 @@ export function SwapWorkspace() {
           setStatus(
             result.results.length
               ? `${result.results.length} alternatives. City and category checked against the Qloo response.`
-              : "No alternatives passed your constraints. Try ignoring a preference or changing the price limit; Paris stays fixed.",
+              : "No alternatives passed your constraints. Try ignoring a preference or choosing another reference; Paris stays fixed.",
           );
         }
       })
@@ -75,29 +107,34 @@ export function SwapWorkspace() {
       active = false;
       controller.abort();
     };
-  }, [started, reference, passport, choices, budget, attempt]);
+  }, [started, reference, passport, choices, budget, attempt, category]);
   async function search(e: React.FormEvent) {
     e.preventDefault();
+    searchController.current?.abort();
+    const controller = new AbortController();
+    searchController.current = controller;
     setSearching(true);
     setMatches([]);
-    setStatus("Looking for your restaurant in Paris…");
+    setStatus(`Looking for your ${category} in Paris…`);
     try {
       const found = await discovery<{ choices: Selection[] }>({
         action: "search",
         query,
         type: "place",
         reference: true,
-      });
+        category,
+      }, controller.signal);
+      if (controller.signal.aborted) return;
       setMatches(found.choices);
       setStatus(
         found.choices.length
-          ? "Confirm the restaurant and its address."
-          : "No Paris restaurant with address and coordinates was resolved. Try a more precise name.",
+          ? `Confirm the ${category} and its address.`
+          : `No Paris ${category} with address and coordinates was resolved. Try a more precise name.`,
       );
     } catch (error) {
-      setStatus((error as Error).message);
+      if (!controller.signal.aborted) setStatus((error as Error).message);
     } finally {
-      setSearching(false);
+      if (!controller.signal.aborted) setSearching(false);
     }
   }
   function select(s: Selection) {
@@ -107,7 +144,7 @@ export function SwapWorkspace() {
     setBusy(false);
     setChoices(
       s.entity.tags
-        .filter((t) => t.id !== "urn:tag:genre:place:restaurant")
+        .filter((t) => t.id !== `urn:tag:genre:place:${category}`)
         .slice(0, 6)
         .map((t) => ({ tagId: t.id, mode: "ignore" })),
     );
@@ -124,14 +161,15 @@ export function SwapWorkspace() {
   }
   return (
     <>
-      <span className="meta">02 / Restaurant Swap · Paris pilot</span>
+      <span className="meta">02 / {museum ? "Museum" : "Restaurant"} Swap · Paris pilot</span>
       <h1>
         Keep the feeling.
         <br />
         <em>Change the place.</em>
       </h1>
       <p className="lead">
-        A different restaurant in the same city, guided by your cultural taste.
+        A different {category} in the same city, guided by your cultural taste.
+        {museum && " Your music, film and book favourites travel with you. Admission prices and exhibitions are not checked."}
       </p>
       {ready && passport.length < 3 ? (
         <section className="paper">
@@ -149,10 +187,10 @@ export function SwapWorkspace() {
             <section className="paper">
               <span className="meta">01 / Your first choice</span>
               <form onSubmit={search}>
-                <label htmlFor="reference">The restaurant you wanted</label>
+                <label htmlFor="reference">The {category} you wanted</label>
                 <input
                   id="reference"
-                  placeholder="Restaurant name, e.g. Le Baratin"
+                  placeholder={museum ? "Museum name, e.g. Musée d’Orsay" : "Restaurant name, e.g. Le Baratin"}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   minLength={2}
@@ -164,7 +202,7 @@ export function SwapWorkspace() {
                 <input id="city" value="Paris · pilot" readOnly />
                 <div className="actions">
                   <button className="stamp" disabled={!ready || searching}>
-                    Find the restaurant
+                    Find the {category}
                   </button>
                 </div>
               </form>
@@ -230,25 +268,29 @@ export function SwapWorkspace() {
                       Passport still guide the search.
                     </p>
                   )}
-                  <label htmlFor="budget">Maximum Qloo price tier</label>
-                  <select
-                    id="budget"
-                    value={budget}
-                    onChange={(e) => {
-                      setData(null);
-                      setBudget(e.target.value);
-                    }}
-                  >
-                    <option value="">No price constraint</option>
-                    <option value="1">1 / lowest tier</option>
-                    <option value="2">2 / moderate</option>
-                    <option value="3">3 / higher</option>
-                    <option value="4">4 / highest tier</option>
-                  </select>
-                  <p className="muted">
-                    An indicative tier, not a live menu price. Unknown tiers are
-                    excluded when a limit is set.
-                  </p>
+                  {!museum && (
+                    <>
+                      <label htmlFor="budget">Maximum Qloo price tier</label>
+                      <select
+                        id="budget"
+                        value={budget}
+                        onChange={(e) => {
+                          setData(null);
+                          setBudget(e.target.value);
+                        }}
+                      >
+                        <option value="">No price constraint</option>
+                        <option value="1">1 / lowest tier</option>
+                        <option value="2">2 / moderate</option>
+                        <option value="3">3 / higher</option>
+                        <option value="4">4 / highest tier</option>
+                      </select>
+                      <p className="muted">
+                        An indicative tier, not a live menu price. Unknown tiers are
+                        excluded when a limit is set.
+                      </p>
+                    </>
+                  )}
                   <div className="actions">
                     <button
                       className="ticket"
@@ -263,7 +305,7 @@ export function SwapWorkspace() {
                   </div>
                 </>
               ) : (
-                <p>Select a restaurant to see its Keep / Change tags.</p>
+                <p>Select a {category} to see its Keep / Change tags.</p>
               )}
               <div className="divider">
                 <span className="meta">Your Passport</span>
@@ -288,6 +330,13 @@ export function SwapWorkspace() {
               candidate set; roles may be absent if there is insufficient
               evidence.
             </p>
+            <div className="divider">
+              <h2>Same Passport. A different experience.</h2>
+              <p>Carry your favourites into {museum ? "restaurants" : "museums"} in Paris. Choose a new reference to guide the next Swap.</p>
+              <button className="stamp" onClick={() => onTransfer(museum ? "restaurant" : "museum")}>
+                Try {museum ? "restaurants" : "museums"} with this Passport ↗
+              </button>
+            </div>
             <div className="cards">
               {data.results.map((result) => (
                 <article className="result" key={result.place.id}>
@@ -295,9 +344,9 @@ export function SwapWorkspace() {
                     <span className="role">{result.role}</span>
                     <h2>{result.place.name}</h2>
                     <p>{result.place.address}</p>
-                    <p className="muted">
+                    {!museum && <p className="muted">
                       Qloo price tier: {result.place.price ?? "not provided"}
-                    </p>
+                    </p>}
                     <h3>Why it matches you</h3>
                     <p>{result.why}</p>
                     <h3>What’s different</h3>
@@ -305,7 +354,7 @@ export function SwapWorkspace() {
                     <details>
                       <summary>What we verified</summary>
                       <p>
-                        Qloo returned a restaurant in Paris with an address and
+                        Qloo returned a {category} in Paris with an address and
                         coordinates
                         {budget ? ", within your chosen price tier" : ""}. We
                         filtered out the reference, duplicates, closed flags and
@@ -313,7 +362,7 @@ export function SwapWorkspace() {
                       </p>
                       <p>
                         Qloo data only (L0). Existence, current opening hours,
-                        menu prices and table availability are not independently
+                        {museum ? "admission prices, exhibitions and ticket availability" : "menu prices and table availability"} are not independently
                         verified.
                       </p>
                       <p className="meta">

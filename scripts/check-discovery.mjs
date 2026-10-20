@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import {
   validRestaurant,
+  validPlace,
+  placeCategory,
   selectRoles,
   parseLivePassport,
 } from "../src/lib/discovery.ts";
@@ -9,6 +11,7 @@ import {
   selection,
   verifySelection,
   swap,
+  lookup,
 } from "../src/lib/server/discovery-service.ts";
 process.env.QLOO_API_KEY = "unit-test-only-not-a-real-credential";
 process.env.QLOO_API_URL = "https://hackathon.api.qloo.com";
@@ -151,3 +154,48 @@ await assert.rejects(
 console.log(
   "PASS: city/category/budget/exclusion filters, distinct roles, signed selections, malformed data, warning handling, cache and in-flight deduplication; no live Qloo calls.",
 );
+
+// A restaurant selection cannot be reused as a museum reference, even if signed.
+const museumTag = { ...tag, id: "urn:tag:genre:place:museum", name: "Museum" };
+const museum = make(10, { tags: [museumTag, excluded], price: null });
+assert(validPlace(museum, "Paris", "museum"));
+assert(!validPlace(a, "Paris", "museum"));
+assert(!validPlace(museum, "Paris", "restaurant"));
+assert(!validPlace({ ...museum, type: "artist" }, "Paris", "museum"));
+assert.equal(placeCategory("hotel"), null);
+const museumToken = selection(museum).token;
+const tokens = passport.map(s => s.token);
+await assert.rejects(swap(signed.token, tokens, [], undefined, "museum"), e => e.code === "invalid_reference");
+await assert.rejects(swap(museumToken, tokens, [], 2, "museum"), e => e.code === "invalid_budget");
+await assert.rejects(swap(museumToken, tokens, [], undefined, "hotel"), e => e.code === "invalid_category");
+await assert.rejects(lookup("Synthetic", "place", true, "hotel"), e => e.code === "invalid_category");
+const museums = [11, 12, 13].map(n => make(n, { tags: [museumTag], price: null }));
+globalThis.fetch = async (url) => {
+  assert.equal(url.searchParams.get("filter.tags"), museumTag.id);
+  assert.equal(url.searchParams.get("filter.price_level.max"), null);
+  assert.equal(url.searchParams.get("signal.interests.entities"), [museum.id, ...passport.map(s => s.entity.id)].join(","));
+  assert.equal(url.searchParams.get("filter.exclude.tags"), excluded.id);
+  return Response.json({
+    results: { entities: [museum, ...museums, a, make(14, { tags: [museumTag], city: "Other" })].map(raw) },
+    query: { localities: { filter: [{ name: "Paris" }] } },
+  });
+};
+const transfer = await swap(museumToken, tokens, [{ tagId: excluded.id, mode: "change" }], undefined, "museum");
+assert.equal(transfer.results.length, 3);
+assert.equal(transfer.category, "museum");
+assert.equal(transfer.discarded, 3);
+assert(transfer.results.every(r => r.place.tags.some(t => t.id === museumTag.id)));
+assert(!transfer.results[0].different.includes("Qloo price tier"));
+console.log("PASS: museum Transfer preserves Passport signals, validates category/reference, rejects restaurant budgets, filters wrong category/city, and selects distinct L0 roles.");
+globalThis.fetch = async (url) => {
+  assert.equal(url.searchParams.get("signal.interests.tags"), excluded.id);
+  assert.equal(url.searchParams.get("signal.interests.tags.weight"), "2");
+  assert.equal(url.searchParams.get("filter.exclude.tags"), null);
+  return Response.json({ results: { entities: [] }, query: { localities: { filter: [{ name: "Paris" }] } } });
+};
+const noMatches = await swap(museumToken, tokens, [{ tagId: excluded.id, mode: "keep" }], undefined, "museum");
+assert.deepEqual(noMatches.results, []);
+assert.equal(noMatches.candidateCount, 0);
+globalThis.fetch = async () => Response.json({ results: { entities: museums.map(raw) }, query: {} });
+await assert.rejects(swap(museumToken, tokens, [], undefined, "museum"), e => e.code === "location_unconfirmed");
+console.log("PASS: museum Keep sends a weighted taste signal, empty responses remain empty, and unconfirmed localities fail closed.");

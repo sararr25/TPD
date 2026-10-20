@@ -12,7 +12,8 @@
     "verify:qloo": "node scripts/verify-qloo.mjs",
     "verify:qloo-features": "node scripts/check-qloo-features.mjs",
     "check:prototype": "node scripts/check-prototype.cjs",
-    "verify:qloo-coverage": "node scripts/audit-qloo-coverage.mjs"
+    "verify:qloo-coverage": "node scripts/audit-qloo-coverage.mjs",
+    "verify:qloo-transfer": "node --experimental-strip-types scripts/verify-qloo-transfer.mjs"
   },
   "engines": {
     "node": ">=22.19.0"

@@ -3,7 +3,9 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import {
   UUID,
   selectRoles,
-  validRestaurant,
+  validPlace,
+  placeCategory,
+  type PlaceCategory,
   type Entity,
   type Choice,
 } from "../discovery.ts";
@@ -17,8 +19,12 @@ import {
 export type Selection = { entity: Entity; token: string };
 const CHIP_TYPE =
   /^urn:tag:(ambience:qloo|cuisine:place|offerings:place|beverage_offering:qloo)$/;
-export function chipTags(e: Entity) {
-  return e.tags.filter((t) => CHIP_TYPE.test(t.type)).slice(0, 6);
+export function chipTags(e: Entity, category: PlaceCategory = "restaurant") {
+  const pattern =
+    category === "museum"
+      ? /^urn:tag:(ambience:qloo|interests:qloo|decor:qloo|activity_type:qloo|visit_intent:qloo)$/
+      : CHIP_TYPE;
+  return e.tags.filter((t) => pattern.test(t.type)).slice(0, 6);
 }
 function sign(body: string) {
   if (!process.env.QLOO_API_KEY)
@@ -60,10 +66,17 @@ export function verifySelection(value: unknown): Entity {
     throw new DiscoveryError("expired_selection", 400);
   }
 }
-export async function lookup(query: string, type: string, reference = false) {
+export async function lookup(
+  query: string,
+  type: string,
+  reference = false,
+  categoryValue: unknown = "restaurant",
+) {
+  const category = placeCategory(categoryValue);
+  if (!category) throw new DiscoveryError("invalid_category", 400);
   const result = await searchEntities(query, type);
   const values = reference
-    ? result.entities.filter((e) => validRestaurant(e, "Paris"))
+    ? result.entities.filter((e) => validPlace(e, "Paris", category))
     : result.entities;
   return {
     choices: values.map((e) =>
@@ -73,9 +86,9 @@ export async function lookup(query: string, type: string, reference = false) {
               ...e,
               tags: [
                 ...e.tags.filter(
-                  (t) => t.id === "urn:tag:genre:place:restaurant",
+                  (t) => t.id === `urn:tag:genre:place:${category}`,
                 ),
-                ...chipTags(e),
+                ...chipTags(e, category),
               ],
             }
           : { ...e, tags: [], evidence: [] },
@@ -105,9 +118,12 @@ export async function swap(
   passportTokens: unknown,
   values: unknown,
   maxPrice: unknown,
+  categoryValue: unknown = "restaurant",
 ) {
+  const category = placeCategory(categoryValue);
+  if (!category) throw new DiscoveryError("invalid_category", 400);
   const ref = verifySelection(referenceToken);
-  if (!validRestaurant(ref, "Paris"))
+  if (!validPlace(ref, "Paris", category))
     throw new DiscoveryError("invalid_reference", 400);
   if (
     !Array.isArray(passportTokens) ||
@@ -120,7 +136,7 @@ export async function swap(
     throw new DiscoveryError("invalid_passport", 400);
   if (!Array.isArray(values) || values.length > 6)
     throw new DiscoveryError("invalid_chips", 400);
-  const allowed = new Set(chipTags(ref).map((t) => t.id));
+  const allowed = new Set(chipTags(ref, category).map((t) => t.id));
   const choices: Choice[] = [];
   for (const value of values) {
     if (
@@ -135,7 +151,8 @@ export async function swap(
   }
   if (
     maxPrice !== undefined &&
-    (!Number.isInteger(maxPrice) ||
+    (category !== "restaurant" ||
+      !Number.isInteger(maxPrice) ||
       Number(maxPrice) < 1 ||
       Number(maxPrice) > 4)
   )
@@ -147,7 +164,7 @@ export async function swap(
     "filter.type": "urn:entity:place",
     "filter.location.query": "Paris",
     "filter.location.radius": "0",
-    "filter.tags": "urn:tag:genre:place:restaurant",
+    "filter.tags": `urn:tag:genre:place:${category}`,
     "filter.exclude.entities": ref.id,
     "signal.interests.entities": signals.map((e) => e.id).join(","),
     "feature.explainability": "true",
@@ -164,12 +181,13 @@ export async function swap(
     throw new DiscoveryError("location_unconfirmed", 502);
   const candidates = entities(data);
   const filtered = candidates.filter((e) =>
-    validRestaurant(e, "Paris", maxPrice as number | undefined, change),
+    validPlace(e, "Paris", category, maxPrice as number | undefined, change),
   );
   return {
-    results: selectRoles(filtered, ref, signals),
+    results: selectRoles(filtered, ref, signals, category),
     checkedAt,
     city: "Paris",
+    category,
     candidateCount: filtered.length,
     discarded: candidates.length - filtered.length,
     verification: "L0",

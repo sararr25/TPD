@@ -6,6 +6,7 @@ import {
   CITIES,
   EXPLORE_TAGS,
   citySlug,
+  LOCAL_NAME,
   type Entity,
   type ExploreCategory,
 } from "@/lib/discovery";
@@ -48,16 +49,6 @@ const CATEGORY_NOUN: Record<ExploreCategory, string> = {
   hotel: "hotels",
   neighbourhood: "neighbourhoods",
 };
-// The city's own name, shown under the English one on the cover.
-const LOCAL_NAME: Record<string, string> = {
-  Lisbon: "Lisboa",
-  Tokyo: "東京",
-  Osaka: "大阪",
-  "Ho Chi Minh City": "Thành phố Hồ Chí Minh",
-  Hanoi: "Hà Nội",
-  "Phu Quoc": "Phú Quốc",
-};
-
 // The City page (docs/24, wireframe W2): picks for this city, with or without
 // a Passport, as a card grid beside a map. A Passport only re-ranks them.
 export function CityView({ city }: { city: string }) {

@@ -55,6 +55,21 @@ export function SwapWorkspace() {
   // once the remembered city is known, so no stray Paris workspace is made.
   const key = `${city}|${category}`;
   const [visited, setVisited] = useState<string[]>([]);
+  // Home's search box links here with ?q= (and ?category=museum): that
+  // place name pre-fills, and searches, the first workspace (docs/24).
+  const [prefill, setPrefill] = useState<{ key: string; query: string } | null>(null),
+    [linked, setLinked] = useState<{ query: string; category: PlaceCategory } | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get("q")?.trim().slice(0, 120);
+    if (!query) return;
+    const cat: PlaceCategory = params.get("category") === "museum" ? "museum" : "restaurant";
+    setCategory(cat);
+    setLinked({ query, category: cat });
+  }, []);
+  useEffect(() => {
+    if (cityKnown && linked && !prefill) setPrefill({ key: `${city}|${linked.category}`, query: linked.query });
+  }, [cityKnown, linked, prefill, city]);
   useEffect(() => {
     if (cityKnown) setVisited((list) => (list.includes(key) ? list : [...list, key]));
   }, [key, cityKnown]);
@@ -90,17 +105,23 @@ export function SwapWorkspace() {
         const [c, cat] = k.split("|") as [string, PlaceCategory];
         return (
           <div key={k} hidden={k !== key}>
-            <CategoryWorkspace city={c} category={cat} onTransfer={setCategory} />
+            <CategoryWorkspace
+              city={c}
+              category={cat}
+              onTransfer={setCategory}
+              prefill={prefill?.key === k ? prefill.query : ""}
+            />
           </div>
         );
       })}
     </>
   );
 }
-function CategoryWorkspace({ city, category, onTransfer }: {
+function CategoryWorkspace({ city, category, onTransfer, prefill }: {
   city: string;
   category: PlaceCategory;
   onTransfer: (category: PlaceCategory) => void;
+  prefill: string;
 }) {
   const uid = useId();
   const museum = category === "museum";
@@ -109,7 +130,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
   useEffect(() => () => searchController.current?.abort(), []);
   const [passport, setPassport] = useState<Selection[]>([]),
     [ready, setReady] = useState(false),
-    [query, setQuery] = useState(""),
+    [query, setQuery] = useState(prefill),
     [matches, setMatches] = useState<Selection[]>([]),
     [reference, setReference] = useState<Selection | null>(null),
     [choices, setChoices] = useState<Choice[]>([]),
@@ -221,8 +242,19 @@ function CategoryWorkspace({ city, category, onTransfer }: {
     // Only "Swap it" (attempt) or a new starting place runs a search
     // (docs/22 F14); chips and budget are read from the render that pressed it.
   }, [started, reference, attempt]);
+  // A linked place name (from Home) searches once, as soon as the Passport is read.
+  const prefilled = useRef(false);
+  useEffect(() => {
+    if (!prefill || prefilled.current || !ready || passport.length < 3) return;
+    prefilled.current = true;
+    setQuery(prefill);
+    runSearch(prefill);
+  }, [prefill, ready, passport]);
   async function search(e: React.FormEvent) {
     e.preventDefault();
+    await runSearch(query);
+  }
+  async function runSearch(query: string) {
     searchController.current?.abort();
     const controller = new AbortController();
     searchController.current = controller;

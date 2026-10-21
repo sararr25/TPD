@@ -48,6 +48,15 @@ export const CITIES: Record<string, City> = {
   Hanoi: { country: "VN", locality: "Hà Nội", places: ["Ha Noi"], museums: "few", hood: { ancestor: /^Hà Nội$/, level: 4 } },
   "Phu Quoc": { country: "VN", locality: "Phú Quốc", places: ["Phu Quoc"], museums: "none", hood: { ancestor: /^Phú Quốc$/, level: 6 } },
 };
+// The city's own name, shown under the English one on the cover.
+export const LOCAL_NAME: Record<string, string> = {
+  Lisbon: "Lisboa",
+  Tokyo: "東京",
+  Osaka: "大阪",
+  "Ho Chi Minh City": "Thành phố Hồ Chí Minh",
+  Hanoi: "Hà Nội",
+  "Phu Quoc": "Phú Quốc",
+};
 // City pages live at /lisbon, /new-york… (docs/24).
 export const citySlug = (city: string) => city.toLowerCase().replace(/\s+/g, "-");
 export const cityFromSlug = (slug: string) =>

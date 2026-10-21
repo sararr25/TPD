@@ -1,71 +1,56 @@
 import Link from "next/link";
-import { PassportCard } from "@/components/passport-card";
-import { QuizIcon } from "@/components/quiz-icon";
-import { CITIES } from "@/lib/discovery";
+import { CITIES, citySlug, LOCAL_NAME } from "@/lib/discovery";
+import { HomeSwapSearch } from "@/components/home-swap-search";
+import { HomeExample } from "@/components/home-example";
 
-// Emoji keys of the quiz illustrations (src/lib/quiz-icons.ts).
-const STEPS = [
-  { icon: "🧭", title: "Take the quiz", text: "18 quick questions about how you travel, plus a few films and artists you love." },
-  { icon: "📓", title: "Get your Taste Passport", text: "Your traveller type, what you lean towards, and what you care about most." },
-  { icon: "🗺️", title: "Explore a city", text: "Restaurants, bars, museums, hotels and neighbourhoods picked for your taste. Say yes or not for me, and it learns." },
-];
-
+// Home (docs/24, wireframe W2): two ways in (a city, or a place that's full),
+// a live example of what you get, then every city. No forms, no gate.
 export default function Home() {
+  const cities = Object.keys(CITIES);
   return (
     <>
-      <div className="grid">
-        <section>
-          <span className="meta">Taste Passport · {Object.keys(CITIES).length} cities</span>
-          <h1>
-            Travel by taste,
-            <br />
-            <em>not by top-10 lists.</em>
-          </h1>
-          <p className="lead">
-            Tell us what you love. Beesyde reads a city through it and shows you the places and
-            neighbourhoods that fit you, not everyone.
-          </p>
-          <div className="actions">
-            <Link className="ticket" href="/passport">
-              Take the quiz
-            </Link>
-            <Link href="/passport?guest=1">Try a sample profile</Link>
-          </div>
-          <p className="muted">About 3 minutes. No account needed.</p>
+      <div className="home-top">
+        <section className="home-entrances">
+          <h1>Places that fit your taste, in the city you’re visiting.</h1>
+          <p className="lead">Tell us a few things you love. We read the city through them.</p>
+          <h2 className="meta">Where are you going?</h2>
+          <ul className="home-cities">
+            {cities.map((c) => (
+              <li key={c}>
+                <Link className="pill" href={`/${citySlug(c)}`}>
+                  {c}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <h2 className="meta">Or: had a place in mind that’s full?</h2>
+          <HomeSwapSearch />
         </section>
-        <PassportCard />
+        <HomeExample />
       </div>
 
-      <section className="divider" aria-labelledby="how">
-        <span className="meta" id="how">How it works</span>
-        <ol className="steps">
-          {STEPS.map((s, i) => (
-            <li key={s.title}>
-              <QuizIcon emoji={s.icon} />
-              <span className="meta">Step {i + 1}</span>
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-            </li>
-          ))}
-        </ol>
-        <p className="muted">
-          Already picked a place that is full or not quite right?{" "}
-          <Link href="/swap">Swap it</Link> for one that keeps what you liked.
-        </p>
-      </section>
-
-      <section className="divider" aria-labelledby="cities">
-        <span className="meta" id="cities">Where</span>
-        <ul className="city-list">
-          {Object.keys(CITIES).map((c) => (
+      <section className="home-covers" aria-labelledby="home-covers">
+        <h2 className="meta" id="home-covers">
+          {cities.length} cities
+        </h2>
+        <ul>
+          {cities.map((c) => (
             <li key={c}>
-              <Link href={`/explore?city=${encodeURIComponent(c)}`}>{c}</Link>
+              <Link href={`/${citySlug(c)}`} className="home-cover">
+                <span className="city-stamp" aria-hidden>
+                  {c.slice(0, 3).toUpperCase()}
+                </span>
+                <strong>{c}</strong>
+                {LOCAL_NAME[c] && <span className="home-cover-local">{LOCAL_NAME[c]}</span>}
+                <span className="home-cover-go" aria-hidden>
+                  Explore ↗
+                </span>
+              </Link>
             </li>
           ))}
         </ul>
         <p className="muted">
-          Picks come from Qloo’s taste data. Opening hours, prices and bookings are not checked:
-          confirm before you go.
+          Picks come from Qloo’s taste data. Opening hours, prices and bookings are not checked: confirm before you go.
         </p>
       </section>
     </>

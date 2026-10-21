@@ -258,7 +258,8 @@ console.log("PASS: museum Keep filters Qloo's answer locally (all roles when 3+ 
 {
   const { explorePlace, exploreCategory } = await import("../src/lib/discovery.ts");
   assert.equal(exploreCategory("bar"), "bar");
-  assert.equal(exploreCategory("neighbourhood"), null);
+  assert.equal(exploreCategory("neighbourhood"), "neighbourhood");
+  assert.equal(exploreCategory("toString"), null);
   const base = { type: "place", closed: false, city: "Shibuya", country: "JP", lat: 35.6, lon: 139.7, address: "1-1 Shibuya", price: 2, popularity: 0.5, evidence: [] };
   const tags = (...ids) => ids.map((id) => ({ id, name: id, type: "x" }));
   assert.equal(explorePlace({ ...base, tags: tags("urn:tag:category:place:bar") }, "Tokyo", "bar"), true);
@@ -266,4 +267,47 @@ console.log("PASS: museum Keep filters Qloo's answer locally (all roles when 3+ 
   assert.equal(explorePlace({ ...base, tags: tags("urn:tag:genre:place:hotel") }, "Tokyo", "hotel"), true);
   assert.equal(explorePlace({ ...base, address: null, tags: tags("urn:tag:genre:place:hotel") }, "Tokyo", "hotel"), false);
   assert.equal(explorePlace({ ...base, tags: tags("urn:tag:genre:place:museum") }, "Osaka", "museum"), false);
+}
+
+// Neighbourhoods (docs/18): only localities under the city proper, Latin-script, not counties or boards;
+// ranked by the nearest centre of the Passport's places.
+{
+  const { isNeighbourhood, rankNeighbourhoods, withoutParents } = await import("../src/lib/discovery.ts");
+  const loc = (name, ancestors) => ({ name, properties: { ancestors: ancestors.map(([n, l]) => ({ name: n, admin_level: l })) } });
+  assert.equal(isNeighbourhood(loc("Le Marais", [["Paris", 8], ["Paris", 7]]), "Paris"), true);
+  assert.equal(isNeighbourhood(loc("Paris", [["Paris", 7], ["Paris", 6]]), "Paris"), false);
+  assert.equal(isNeighbourhood(loc("Sintra", [["Lisboa", 6]]), "Lisbon"), false);
+  assert.equal(isNeighbourhood(loc("Belém", [["Lisboa", 7], ["Lisboa", 6]]), "Lisbon"), true);
+  assert.equal(isNeighbourhood(loc("Kings County", [["New York", 5]]), "New York"), false);
+  assert.equal(isNeighbourhood(loc("Midtown South Community Council", [["New York", 5]]), "New York"), false);
+  assert.equal(isNeighbourhood(loc("Manhattan Community Board 5", [["New York", 5]]), "New York"), false);
+  assert.equal(isNeighbourhood(loc("SoHo", [["Manhattan", 7], ["New York", 5]]), "New York"), true);
+  assert.equal(isNeighbourhood(loc("Shibuya-ku", [["武蔵国", 4]]), "Tokyo"), true);
+  assert.equal(isNeighbourhood(loc("Hachioji", [["武蔵国", 4]]), "Tokyo"), false);
+  assert.equal(isNeighbourhood(loc("Marunouchi", [["千代田区", 7]]), "Tokyo"), true);
+  assert.equal(isNeighbourhood(loc("大阪城", [["中央区", 8], ["大阪市", 7]]), "Osaka"), false);
+  assert.equal(isNeighbourhood(loc("Hoàn Kiếm", [["Hà Nội", 4]]), "Hanoi"), true);
+  const at = (id, name, lat, lon) => ({ id, name, lat, lon });
+  const hoods = [at("A", "North", 48.88, 2.34), at("B", "South", 48.83, 2.34)];
+  const ranked = rankNeighbourhoods(hoods, [
+    [at("1", "p1", 48.831, 2.34), at("2", "p2", 48.881, 2.34)],
+    [at("3", "p3", 48.832, 2.341), at("4", "far", 40, 2)],
+  ]);
+  assert.deepEqual(ranked.map((r) => r.hood.id), ["B", "A"]);
+  assert.deepEqual(ranked[0].near, ["p1", "p3"]);
+  assert.deepEqual(rankNeighbourhoods(hoods, [[at("1", "p1", 48.831, 2.34)], [at("1", "p1", 48.831, 2.34)]])[0].near, ["p1"]);
+  assert.deepEqual(rankNeighbourhoods(hoods, [[at("4", "far", 40, 2)]]), []);
+  // Baseline: everyone's places sit in South, so this Passport's extra places in North rank first.
+  const lift = rankNeighbourhoods(
+    hoods,
+    [[at("1", "s1", 48.831, 2.34), at("2", "s2", 48.832, 2.34), at("3", "n1", 48.881, 2.34)]],
+    [[at("1", "s1", 48.831, 2.34), at("2", "s2", 48.832, 2.34), at("5", "s3", 48.833, 2.34)]],
+  );
+  assert.deepEqual(lift.map((r) => r.hood.id), ["A", "B"]);
+  const lv = (name, level, ancestors = []) => ({ name, properties: { admin_level: level, ancestors: ancestors.map(([n, l]) => ({ name: n, admin_level: l })) } });
+  assert.deepEqual(
+    withoutParents([lv("Manhattan", 7), lv("SoHo", 10, [["Manhattan", 7]]), lv("Queens", 7), lv("Manhattan", 6)]).map((l) => `${l.name}${l.properties.admin_level}`),
+    ["SoHo10", "Queens7", "Manhattan6"],
+  );
+  console.log("PASS: neighbourhoods keep only localities under the city proper and rank by the Passport's nearby places.");
 }

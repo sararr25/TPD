@@ -92,7 +92,7 @@ Side effect to watch: tight filters shrink the pool in small places (Porto bars 
 
 ## Next checks
 
-1. Neighbourhood level filter.
+1. ~~Neighbourhood level filter~~ Done 21 Oct, see "Neighbourhoods in Explore" below.
 2. Ticketmaster coverage per city, once the key exists.
 3. ~~Open the Swap to the other 10 cities~~ Done 21 Oct: city picker in Swap; per-city rules in `CITIES` (`src/lib/discovery.ts`): country + accepted place-city names (Tokyo's 23 wards, Porto's municipal parishes; Sintra/Cascais are not Lisbon, the Hamptons are not New York). Museums: "few" note for Osaka, Ho Chi Minh City, Hanoi; "none" for Phu Quoc. Live check: a reference + Swap returned 3 results in all 11 cities (restaurants), Barcelona and Osaka museums too.
 
@@ -103,3 +103,13 @@ Live check, Paris restaurants with a Khruangbin signal: adding `signal.interests
 Consequences:
 - **Feedback (D3)**: a strong "less" tag is sent as `filter.exclude.tags`; a strong "more" tag is applied by Beesyde, moving places that carry it to the top of what Qloo returned (`nudge` in `src/lib/feedback.ts`). Checked live: with "more: Wine" all 9 Explore results carry Wine (7 of 9 without).
 - **Swap "Keep" chips** used the same parameter and did nothing. Fixed 21 Oct: Keep is no longer sent to Qloo; if 3+ candidates carry a kept feature only those compete for the three roles, otherwise they lead and the page says how many matched. Live check from Le Baratin: keeping "Classic", "Coffee and tea" or "Lively" gives 3/3 results with that feature (1–2/3 before).
+
+## Neighbourhoods in Explore (21 Oct 2026)
+
+**Level filter.** Qloo's `admin_level` means different things per country (Paris arrondissements 9, Madrid districts 9, Lisbon parishes 8, Hanoi districts 6), so a single number does not work. Each city in `CITIES` has a `hood`: the city proper as it appears among a locality's ancestors (Paris at 8, Lisboa 7, Porto 7, Barcelona 8, Madrid 8, New York City 5, 大阪市 7, Thành phố Hồ Chí Minh 4, Hà Nội 4, Phú Quốc 6). Only localities under it count, which drops the region, the province and nearby towns (Sintra, Cascais, Alcobendas, Westchester). Tokyo's wards hang off the old province 武蔵国 like Hachioji and Machida, so Tokyo uses any ward (`…区`) as the ancestor plus its 23 ward names. Also dropped: counties, "Community Board/Council", names with no Latin letters (Japanese chōme blocks). A Qloo description is not required: most Paris localities have none.
+
+**Qloo does not personalise localities.** Opposite Passports (Taylor Swift / Barbie / Twilight vs Metallica / Pulp Fiction / Infinite Jest) get the same localities in the same order. So Beesyde ranks neighbourhoods itself: it runs the Passport's Explore searches for restaurants, bars and museums (quiz traits and votes included), gives each place to the nearest neighbourhood centre within 1.5 km (weighted by its rank), and shows up to 6 neighbourhoods with the Passport's places near them. Centres are points, so this is "close to", not "inside". The page says so.
+
+**Two fixes after the first live check.** (1) The centre won for everyone: opposite Passports shared ~5 of 6 neighbourhoods. Now the same three searches also run without a Passport (the baseline, cached), and a neighbourhood ranks by how many more of *your* places it gets than the baseline predicts (observed minus expected, the idea behind lift / TF-IDF). (2) Boroughs and districts sat next to their own neighbourhoods ("Manhattan" beside SoHo): a locality is now dropped when another kept locality lists it as an ancestor, so the finer area wins. A place Qloo lists as both restaurant and bar counts once.
+
+**Live check (all 11 cities; Passports Taylor Swift/Barbie/Twilight + lively, familiar, treat-seeker vs Metallica/Pulp Fiction/Infinite Jest + calm, adventurous, thrifty):** 6 neighbourhoods everywhere except Phu Quoc (Qloo has only 2 usable: Dương Đông, An Thới). Shared neighbourhoods out of 6: Paris 2, Lisbon 3, Porto 5, Barcelona 2, Madrid 2, New York 4, Tokyo 1, Osaka 2, Ho Chi Minh City 1, Hanoi 3 (before the fixes: about 5 everywhere). Without quiz answers the gain is smaller (3–5 shared), because the Passport alone moves Qloo's places less than the quiz traits do. Porto stays similar: its centre is small. No "Manhattan" or counties left.

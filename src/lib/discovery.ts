@@ -7,10 +7,19 @@ export function placeCategory(value: unknown = "restaurant"): PlaceCategory | nu
 // name Qloo confirms in query.localities; `places` are the geocode city
 // names accepted for a result (Qloo puts Tokyo places in their ward and
 // Porto places in their parish), compared without accents or case.
-export type City = { country: string; locality: string; places: string[]; museums: "ok" | "few" | "none" };
+// `hood` is the city proper among a locality's ancestors (name as Qloo
+// writes it, admin level): only localities under it are neighbourhoods,
+// which leaves out the region, province and nearby towns (docs/18).
+export type City = {
+  country: string;
+  locality: string;
+  places: string[];
+  museums: "ok" | "few" | "none";
+  hood: { ancestor: RegExp; level: number };
+};
 export const CITIES: Record<string, City> = {
-  Paris: { country: "FR", locality: "Paris", places: ["Paris"], museums: "ok" },
-  Lisbon: { country: "PT", locality: "Lisbon", places: ["Lisbon"], museums: "ok" },
+  Paris: { country: "FR", locality: "Paris", places: ["Paris"], museums: "ok", hood: { ancestor: /^Paris$/, level: 8 } },
+  Lisbon: { country: "PT", locality: "Lisbon", places: ["Lisbon"], museums: "ok", hood: { ancestor: /^Lisboa$/, level: 7 } },
   Porto: {
     country: "PT",
     locality: "Porto",
@@ -19,11 +28,11 @@ export const CITIES: Record<string, City> = {
       "Lordelo do Ouro e Massarelos", "Aldoar, Foz do Douro e Nevogilde",
       "Ramalde", "Bonfim", "Campanha", "Paranhos",
     ],
-    museums: "ok",
+    museums: "ok", hood: { ancestor: /^Porto$/, level: 7 },
   },
-  Barcelona: { country: "ES", locality: "Barcelona", places: ["Barcelona"], museums: "ok" },
-  Madrid: { country: "ES", locality: "Madrid", places: ["Madrid"], museums: "ok" },
-  "New York": { country: "US", locality: "New York", places: ["New York"], museums: "ok" },
+  Barcelona: { country: "ES", locality: "Barcelona", places: ["Barcelona"], museums: "ok", hood: { ancestor: /^Barcelona$/, level: 8 } },
+  Madrid: { country: "ES", locality: "Madrid", places: ["Madrid"], museums: "ok", hood: { ancestor: /^Madrid$/, level: 8 } },
+  "New York": { country: "US", locality: "New York", places: ["New York"], museums: "ok", hood: { ancestor: /^New York$/, level: 5 } },
   Tokyo: {
     country: "JP",
     locality: "Tokyo",
@@ -32,12 +41,12 @@ export const CITIES: Record<string, City> = {
       "Shinagawa", "Meguro", "Ota", "Setagaya", "Shibuya", "Nakano", "Suginami",
       "Toshima", "Kita", "Arakawa", "Itabashi", "Nerima", "Adachi", "Katsushika", "Edogawa",
     ],
-    museums: "ok",
+    museums: "ok", hood: { ancestor: /区$/, level: 7 },
   },
-  Osaka: { country: "JP", locality: "Osaka", places: ["Osaka Prefecture"], museums: "few" },
-  "Ho Chi Minh City": { country: "VN", locality: "Ho Chi Minh City", places: ["Ho Chi Minh City"], museums: "few" },
-  Hanoi: { country: "VN", locality: "Hà Nội", places: ["Ha Noi"], museums: "few" },
-  "Phu Quoc": { country: "VN", locality: "Phú Quốc", places: ["Phu Quoc"], museums: "none" },
+  Osaka: { country: "JP", locality: "Osaka", places: ["Osaka Prefecture"], museums: "few", hood: { ancestor: /^大阪市$/, level: 7 } },
+  "Ho Chi Minh City": { country: "VN", locality: "Ho Chi Minh City", places: ["Ho Chi Minh City"], museums: "few", hood: { ancestor: /^Thành phố Hồ Chí Minh$/, level: 4 } },
+  Hanoi: { country: "VN", locality: "Hà Nội", places: ["Ha Noi"], museums: "few", hood: { ancestor: /^Hà Nội$/, level: 4 } },
+  "Phu Quoc": { country: "VN", locality: "Phú Quốc", places: ["Phu Quoc"], museums: "none", hood: { ancestor: /^Phú Quốc$/, level: 6 } },
 };
 // Explore (docs/17 D2): places for the Passport in a city, no reference.
 // Bars have no genre tag of their own in Qloo (docs/18): they use the category tag.
@@ -47,13 +56,43 @@ export const EXPLORE_TAGS = {
   museum: "urn:tag:genre:place:museum",
   hotel: "urn:tag:genre:place:hotel",
 } as const;
-export type ExploreCategory = keyof typeof EXPLORE_TAGS;
+export type ExplorePlaceCategory = keyof typeof EXPLORE_TAGS;
+// Neighbourhoods are Qloo localities, not tagged places.
+export type ExploreCategory = ExplorePlaceCategory | "neighbourhood";
 export function exploreCategory(value: unknown): ExploreCategory | null {
-  return typeof value === "string" && Object.hasOwn(EXPLORE_TAGS, value)
+  return value === "neighbourhood" ||
+    (typeof value === "string" && Object.hasOwn(EXPLORE_TAGS, value))
     ? (value as ExploreCategory)
     : null;
 }
-export function explorePlace(e: Entity, city: string, category: ExploreCategory): boolean {
+// A raw Qloo locality, as far as the neighbourhood rule needs it.
+export type Locality = {
+  name?: unknown;
+  properties?: { admin_level?: unknown; ancestors?: { name?: unknown; admin_level?: unknown }[] };
+};
+// Drops a locality when another one in the list sits inside it (Manhattan
+// above SoHo, Hoàn Kiếm above Hàng Bạc): the finer area says more.
+export function withoutParents<T extends Locality>(list: T[]): T[] {
+  const key = (name: unknown, level: unknown) => `${name}|${level}`;
+  const parents = new Set(
+    list.flatMap((l) => (l.properties?.ancestors ?? []).map((a) => key(a.name, a.admin_level))),
+  );
+  return list.filter((l) => !parents.has(key(l.name, l.properties?.admin_level)));
+}
+// Qloo localities mix real neighbourhoods with provinces, counties and
+// nearby towns. Kept: localities under the city proper (`hood`; Tokyo's
+// wards also by their own name) with a Latin-script name, minus counties
+// and community boards/councils. Most have no Qloo description (Paris).
+export function isNeighbourhood(l: Locality, city: string): boolean {
+  const c = CITIES[city];
+  const name = typeof l.name === "string" ? l.name : "";
+  if (!c || !/[a-z]/i.test(name) || /\bcounty\b|community (board|council)/i.test(name)) return false;
+  const under = (l.properties?.ancestors ?? []).some(
+    (a) => a.admin_level === c.hood.level && typeof a.name === "string" && c.hood.ancestor.test(a.name),
+  );
+  return under || (c.places.length > 1 && c.places.some((p) => plain(p) === plain(name)));
+}
+export function explorePlace(e: Entity, city: string, category: ExplorePlaceCategory): boolean {
   return (
     e.type === "place" &&
     !e.closed &&
@@ -65,6 +104,52 @@ export function explorePlace(e: Entity, city: string, category: ExploreCategory)
     // Restaurant cleaning rules apply to bars too (both are food & drink).
     !((category === "restaurant" || category === "bar") && offCategory(e, "restaurant"))
   );
+}
+// Neighbourhoods are ranked by the Passport's own places: each place
+// counts for the nearest neighbourhood centre within HOOD_KM, weighted by
+// its rank in Qloo's answer. Centres are points, so this is "close to",
+// not "inside". The same searches without a Passport (`baseline`) say
+// where everyone's places land; a neighbourhood ranks by how many more of
+// this Passport's places it gets than that baseline predicts (observed
+// minus expected, as in lift / TF-IDF), so the city centre every
+// Passport shares no longer fills the list.
+export const HOOD_SOURCES = ["restaurant", "bar", "museum"] as const;
+const HOOD_KM = 1.5;
+function hoodPoints(hoods: Entity[], lists: Entity[][]) {
+  const score = new Map<string, { points: number; near: string[] }>();
+  // A place Qloo lists as both restaurant and bar counts once.
+  const counted = new Set<string>();
+  for (const list of lists)
+    list.forEach((place, rank) => {
+      if (counted.has(place.id)) return;
+      counted.add(place.id);
+      let best: Entity | null = null,
+        bestKm = HOOD_KM;
+      for (const h of hoods) {
+        const km = distance(place, h);
+        if (km !== null && km <= bestKm) [best, bestKm] = [h, km];
+      }
+      if (!best) return;
+      const row = score.get(best.id) ?? { points: 0, near: [] };
+      row.points += 1 / (1 + rank / 10);
+      if (row.near.length < 3) row.near.push(place.name);
+      score.set(best.id, row);
+    });
+  return score;
+}
+export function rankNeighbourhoods(hoods: Entity[], lists: Entity[][], baseline: Entity[][] = []) {
+  const mine = hoodPoints(hoods, lists),
+    all = hoodPoints(hoods, baseline);
+  const total = (m: Map<string, { points: number }>) => [...m.values()].reduce((n, r) => n + r.points, 0);
+  const scale = total(all) ? total(mine) / total(all) : 0;
+  return hoods
+    .filter((h) => mine.has(h.id))
+    .map((hood) => {
+      const { points, near } = mine.get(hood.id)!;
+      return { hood, near, points, extra: points - scale * (all.get(hood.id)?.points ?? 0) };
+    })
+    .sort((a, b) => b.extra - a.extra || b.points - a.points)
+    .map(({ hood, near }) => ({ hood, near }));
 }
 export function swapCity(value: unknown = "Paris"): string | null {
   return typeof value === "string" && Object.hasOwn(CITIES, value) ? value : null;

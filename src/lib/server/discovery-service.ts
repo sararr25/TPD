@@ -9,6 +9,12 @@ import {
   CITIES,
   exploreCategory,
   explorePlace,
+  isNeighbourhood,
+  withoutParents,
+  rankNeighbourhoods,
+  HOOD_SOURCES,
+  type ExplorePlaceCategory,
+  type Locality,
   EXPLORE_TAGS,
   type PlaceCategory,
   type Entity,
@@ -17,6 +23,7 @@ import {
 import {
   qloo,
   entities,
+  normalizeEntity,
   localityMatches,
   searchEntities,
   DiscoveryError,
@@ -281,6 +288,7 @@ export async function swap(
 // Explore a city (docs/17 D2): the Passport (+ quiz traits, C7) alone picks
 // places in one city and category. Same fallback as Swap when traits leave < 3.
 export const EXPLORE_RESULTS = 9;
+export const HOOD_RESULTS = 6;
 export async function explore(
   passportTokens: unknown,
   cityValue: unknown,
@@ -309,18 +317,69 @@ export async function explore(
   const passport = passportTokens.map(verifySelection);
   if (new Set(passport.map((e) => e.id)).size !== passport.length)
     throw new DiscoveryError("invalid_passport", 400);
+  const feedback = cleanSignal(feedbackValue);
+  const profile = buildProfile(cleanAnswers(quizValue));
+  const search = (c: ExplorePlaceCategory) => explorePlaces(passport, city, c, profile, hidden, feedback);
+  if (category === "neighbourhood") {
+    const none = cleanSignal({});
+    const [hoods, ...picks] = await Promise.all([
+      neighbourhoods(city),
+      ...HOOD_SOURCES.map((c) => search(c)),
+      ...HOOD_SOURCES.map((c) => explorePlaces([], city, c, null, new Set(), none)),
+    ]);
+    const baseline = picks.splice(HOOD_SOURCES.length);
+    return {
+      city,
+      category,
+      checkedAt: picks[0].checkedAt,
+      traitsUsed: picks.some((p) => p.traitsUsed),
+      results: rankNeighbourhoods(
+        hoods.filter((h) => !hidden.has(h.id)),
+        picks.map((p) => p.places),
+        baseline.map((p) => p.places),
+      ).slice(0, HOOD_RESULTS).map(({ hood, near }) => ({
+        place: hood,
+        token: selection(hood).token,
+        near,
+      })),
+      notice:
+        "Neighbourhoods where more of your Qloo restaurants, bars and museums are close to the centre than for a Passport-free search. Qloo itself does not rank neighbourhoods by taste.",
+    };
+  }
+  const { checkedAt, places, traitsUsed } = await search(category);
+  return {
+    city,
+    category,
+    checkedAt,
+    traitsUsed,
+    results: places.slice(0, EXPLORE_RESULTS).map((place) => ({
+      place,
+      token: selection(place).token,
+    })),
+    notice:
+      "Qloo taste recommendations for your Passport. Opening hours, prices and availability are not verified.",
+  };
+}
+async function explorePlaces(
+  passport: Entity[],
+  city: string,
+  category: ExplorePlaceCategory,
+  profile: ReturnType<typeof buildProfile>,
+  hidden: Set<string>,
+  feedback: ReturnType<typeof cleanSignal>,
+) {
   const params: Record<string, string> = {
     "filter.type": "urn:entity:place",
     "filter.location.query": city,
     "filter.location.radius": "0",
     "filter.tags": EXPLORE_TAGS[category],
-    "signal.interests.entities": passport.map((e) => e.id).join(","),
     take: "30",
   };
+  // An empty Passport is the baseline: Qloo's answer for everyone.
+  if (passport.length) params["signal.interests.entities"] = passport.map((e) => e.id).join(",");
   if (hidden.size) params["filter.exclude.entities"] = [...hidden].join(",");
-  const feedback = cleanSignal(feedbackValue);
   Object.assign(params, feedbackParams(feedback));
-  const traits = qlooParams(buildProfile(cleanAnswers(quizValue)), category);
+  const traits = qlooParams(profile, category);
   const run = async (extra: Record<string, string>) => {
     const { data, checkedAt } = await qloo("/v2/insights", { ...params, ...extra });
     if (!localityMatches(data, CITIES[city].locality))
@@ -331,16 +390,27 @@ export async function explore(
   let { checkedAt, places } = await run(traits);
   const traitsUsed = Object.keys(traits).length > 0 && places.length >= 3;
   if (Object.keys(traits).length && !traitsUsed) ({ checkedAt, places } = await run({}));
-  return {
-    city,
-    category,
-    checkedAt,
-    traitsUsed,
-    results: nudge(places, feedback).slice(0, EXPLORE_RESULTS).map((place) => ({
-      place,
-      token: selection(place).token,
-    })),
-    notice:
-      "Qloo taste recommendations for your Passport. Opening hours, prices and availability are not verified.",
-  };
+  return { checkedAt, traitsUsed, places: nudge(places, feedback) };
+}
+// The same for every Passport (checked live: Qloo returns localities in
+// one order whatever the signal), so no signal is sent and it caches well.
+async function neighbourhoods(city: string): Promise<Entity[]> {
+  const { data } = await qloo("/v2/insights", {
+    "filter.type": "urn:entity:locality",
+    "filter.location.query": city,
+    "filter.location.radius": "0",
+    take: "50",
+  });
+  if (!localityMatches(data, CITIES[city].locality))
+    throw new DiscoveryError("location_unconfirmed", 502);
+  const raw = (data as { results?: { entities?: unknown } } | null)?.results?.entities;
+  const seen = new Set<string>();
+  const kept = withoutParents((Array.isArray(raw) ? raw : []).filter((v: Locality) => isNeighbourhood(v, city)));
+  return kept.flatMap((value: Locality) => {
+    const e = normalizeEntity(value);
+    if (!e || e.lat === null || e.lon === null || seen.has(e.name)) return [];
+    seen.add(e.name);
+    const about = (value.properties as { short_description?: unknown } | undefined)?.short_description;
+    return [{ ...e, type: "locality", context: typeof about === "string" ? about.slice(0, 300) : null }];
+  });
 }

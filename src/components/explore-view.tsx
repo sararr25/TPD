@@ -23,7 +23,8 @@ import { useFeedback } from "./use-feedback";
 import { feedbackSignal } from "@/lib/feedback";
 
 type Payload = {
-  results: { place: Entity; token: string }[];
+  // `near`: for neighbourhoods, the Passport's places close to its centre.
+  results: { place: Entity; token: string; near?: string[] }[];
   checkedAt: string;
   traitsUsed: boolean;
   notice: string;
@@ -33,6 +34,7 @@ const CATEGORY_LABEL: Record<ExploreCategory, string> = {
   bar: "Bars",
   museum: "Museums",
   hotel: "Hotels",
+  neighbourhood: "Neighbourhoods",
 };
 // A few readable Qloo tags per place (cuisine, ambience, offerings).
 const SHOWN_TAG = /^urn:tag:(cuisine:place|ambience:qloo|offerings:place|interests:qloo)$/;
@@ -105,7 +107,7 @@ export function ExploreView() {
         setData(result);
         setStatus(
           result.results.length
-            ? `${result.results.length} places in ${city}.`
+            ? `${result.results.length} ${category === "neighbourhood" ? "neighbourhoods" : "places"} in ${city}.`
             : `No ${CATEGORY_LABEL[category].toLowerCase()} in ${city} in our data for this Passport. Try another category.`,
         );
       })
@@ -132,7 +134,7 @@ export function ExploreView() {
     setHidden((list) => [...list.filter((h) => h.id !== item.id), item]);
     try {
       await hidePlace(item, token, !!userId);
-      await vote(place, -1);
+      if (category !== "neighbourhood") await vote(place, -1);
       setStatus(`${place.name} won’t come up again. Show it again from your Passport page.`);
     } catch (error) {
       setStatus((error as Error).message);
@@ -166,7 +168,7 @@ export function ExploreView() {
             ))}
           </select>
           <div className="chips" role="group" aria-label="Category">
-            {(Object.keys(EXPLORE_TAGS) as ExploreCategory[]).map((value) => (
+            {([...Object.keys(EXPLORE_TAGS), "neighbourhood"] as ExploreCategory[]).map((value) => (
               <button
                 className="choice"
                 key={value}
@@ -197,18 +199,27 @@ export function ExploreView() {
               <div className="cards">
                 {data.results
                   .filter((r) => !hidden.some((h) => h.id === r.place.id))
-                  .map(({ place, token }) => (
+                  .map(({ place, token, near }) => (
                     <article className="result" key={place.id}>
                       <div className="body">
                         <h2>{place.name}</h2>
-                        <p>{place.address}</p>
-                        <p className="muted">
-                          {place.tags
-                            .filter((t) => SHOWN_TAG.test(t.type))
-                            .slice(0, 4)
-                            .map((t) => t.name)
-                            .join(" · ")}
-                        </p>
+                        {category === "neighbourhood" ? (
+                          <>
+                            {place.context && <p>{place.context}</p>}
+                            {near && <p className="muted">Close to your picks: {near.join(" · ")}</p>}
+                          </>
+                        ) : (
+                          <>
+                            <p>{place.address}</p>
+                            <p className="muted">
+                              {place.tags
+                                .filter((t) => SHOWN_TAG.test(t.type))
+                                .slice(0, 4)
+                                .map((t) => t.name)
+                                .join(" · ")}
+                            </p>
+                          </>
+                        )}
                         {(category === "restaurant" || category === "bar") && (
                           <p className="muted">Qloo price tier: {place.price ?? "not provided"}</p>
                         )}
@@ -220,13 +231,15 @@ export function ExploreView() {
                           >
                             Open in Maps ↗
                           </a>
-                          <button
-                            className="text"
-                            aria-pressed={voted(place.id) === 1}
-                            onClick={() => like(place)}
-                          >
-                            {voted(place.id) === 1 ? "Liked ✓" : "Yes, more like this"}
-                          </button>
+                          {category !== "neighbourhood" && (
+                            <button
+                              className="text"
+                              aria-pressed={voted(place.id) === 1}
+                              onClick={() => like(place)}
+                            >
+                              {voted(place.id) === 1 ? "Liked ✓" : "Yes, more like this"}
+                            </button>
+                          )}
                           <button className="text" onClick={() => notForMe(place, token)}>
                             Not for me
                           </button>
@@ -248,7 +261,9 @@ export function ExploreView() {
                         <br />
                         {category === "hotel"
                           ? "Prices and availability not verified"
-                          : "Opening hours not verified"}
+                          : category === "neighbourhood"
+                            ? "Ranked by your places nearby"
+                            : "Opening hours not verified"}
                       </div>
                     </article>
                   ))}

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Beesyde · Home A</title>
+<link rel="stylesheet" href="home-final-base.css">
+<style>
+/* Proposal A · Open passport. The Passport is the hero object. */
+.hero{padding:64px 0 88px;background:radial-gradient(1200px 500px at 85% 20%,#fff 0,transparent 60%)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) 600px;gap:56px;align-items:center}
+.hero .wrap>*{min-width:0}
+.hero h1{font-size:76px;line-height:.96;letter-spacing:-.055em;font-weight:600;margin:18px 0 22px}
+.lead{font-size:20px;color:var(--ink-2);max-width:500px;margin:0 0 36px}
+.q{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.q:after{content:"";flex:1;border-top:1px dashed var(--line)}
+.stamps{list-style:none;padding:0;margin:0 0 36px;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;max-width:560px}
+.stamps a{aspect-ratio:1;background:var(--paper);transition:transform .18s,background .18s,color .18s,box-shadow .18s}
+.stamps li:nth-child(4n+1) a{transform:rotate(-7deg)}.stamps li:nth-child(4n+2) a{transform:rotate(5deg)}.stamps li:nth-child(4n+3) a{transform:rotate(-2deg)}.stamps li:nth-child(4n) a{transform:rotate(9deg)}
+.stamps a:hover{transform:rotate(0) scale(1.1);background:var(--stamp);color:#fff;box-shadow:0 10px 20px -10px var(--stamp)}
+.stamps .more a{border-style:dashed;outline:0;color:var(--ink-2);border-color:var(--ink-2)}
+/* Boarding pass search */
+.pass{display:grid;grid-template-columns:minmax(0,1fr) 190px;background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);max-width:560px;position:relative}
+.pass:before,.pass:after{content:"";position:absolute;right:178px;width:22px;height:22px;border-radius:50%;background:var(--bg);border:1px solid var(--line)}
+.pass:before{top:-12px;clip-path:inset(50% 0 0 0)}.pass:after{bottom:-12px;clip-path:inset(0 0 50% 0)}
+.pass-main{padding:18px 22px;display:grid;gap:12px}
+.pass-main label.meta{display:block}
+.pass input{width:100%;border:0;border-bottom:1.5px solid var(--ink);background:transparent;padding:4px 0 8px;font-size:22px;outline:0;letter-spacing:-.01em}
+.pass input::placeholder{color:#a3a2a9}
+.pass-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px}
+.pass select{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--paper);font-size:14px}
+.pass-stub{border-left:2px dashed var(--line);padding:18px;display:grid;align-content:space-between;gap:10px}
+.pass-stub i{display:block;height:26px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 8px)}
+.pass-stub .ticket{height:46px;font-size:15px;padding-left:16px}
+.pass-stub small{font:10px/1.6 var(--mono);color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+/* Open passport */
+.book{position:relative;display:grid;grid-template-columns:230px 1fr;transform:rotate(-2.5deg);filter:drop-shadow(0 40px 50px #26242c45)}
+.cover{background:var(--pass);color:#fff;border-radius:16px 0 0 16px;padding:26px 22px;display:flex;flex-direction:column;justify-content:space-between;gap:20px;background-image:repeating-linear-gradient(45deg,transparent 0 12px,#ffffff05 12px 13px)}
+.cover .meta{color:#b4b3ba}
+.cover .ring{width:118px;height:118px;border-color:#fff;outline-color:#fff;color:#fff;margin:0 auto;font-size:11px;letter-spacing:.1em}
+.holder{display:grid;gap:6px}
+.holder span{display:inline-block;border:1px solid #ffffff44;border-radius:999px;padding:3px 10px;font-size:14px;justify-self:start}
+.page{background:var(--paper);border-radius:0 16px 16px 0;border-left:4px double var(--line);padding:22px 22px 18px;position:relative;background-image:repeating-linear-gradient(135deg,transparent 0 16px,#26242c07 16px 17px)}
+.page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.page-tabs{display:flex;gap:4px}
+.page-tabs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;font:10px var(--mono);letter-spacing:.06em;padding:4px 9px}
+.page-tabs button[aria-pressed=true]{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.page h2{font-size:22px;letter-spacing:-.02em;margin:8px 0 6px}
+.visa{display:grid;grid-template-columns:84px minmax(0,1fr);gap:14px;align-items:center;padding:12px 0;border-top:1px dashed var(--line);text-decoration:none}
+.visa .ph{height:84px;border-radius:10px}
+.visa:hover img{transform:scale(1.08)}
+.why{font:10px/1.5 var(--mono);color:var(--stamp);text-transform:uppercase;letter-spacing:.04em}
+.visa b{display:block;font-size:17px;line-height:1.2;margin:2px 0;letter-spacing:-.01em}
+.visa small{font-size:13px;color:var(--ink-2)}
+.entry{position:absolute;right:-26px;bottom:62px;width:96px;height:96px;background:#ffffffd0;transform:rotate(16deg);font-size:9px}
+.entry b{font-size:20px}
+.mrz{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font:11px var(--mono);letter-spacing:.16em;color:var(--ink-2);white-space:nowrap;overflow:hidden}
+.sample-note{position:absolute;left:0;bottom:-44px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);transform:rotate(2.5deg)}
+.sample-note a{color:var(--stamp)}
+/* Steps */
+.steps{background:var(--paper);border-block:1px solid var(--line);padding:64px 0}
+.steps ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.steps li{padding:0 32px;border-left:1px dashed var(--line);display:grid;grid-template-columns:72px 1fr;gap:20px;align-items:start}
+.steps li:first-child{border-left:0;padding-left:0}
+.steps .ring{width:72px;height:72px;font-size:9px}
+.steps .ring b{font-size:20px}
+.steps h3{margin:4px 0 6px;font-size:21px;letter-spacing:-.02em}
+.steps p{margin:0;font-size:15px;color:var(--ink-2)}
+/* Postcards */
+.cities{padding:88px 0}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px}
+.sec-head h2{font-size:48px;line-height:1;letter-spacing:-.045em;margin:8px 0 0;font-weight:600}
+.cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{display:block;text-decoration:none;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px 10px 14px;position:relative;transition:transform .2s,box-shadow .2s}
+.cards li:nth-child(odd) .card{transform:rotate(-.6deg)}.cards li:nth-child(even) .card{transform:rotate(.6deg)}
+.card:hover{transform:translateY(-6px) rotate(0)!important;box-shadow:var(--shadow)}
+.card:hover img{transform:scale(1.05)}
+.card .ph{height:210px;border-radius:8px}
+.card .ring{position:absolute;right:18px;top:calc(10px + (100% - 24px) * 0);width:64px;height:64px;font-size:8px;background:#ffffffe6;transform:rotate(-12deg);margin-top:-10px}
+.card-body{display:flex;justify-content:space-between;align-items:baseline;padding:12px 4px 0;gap:8px}
+.card strong{font-size:22px;letter-spacing:-.03em}
+.card small{font-size:14px;color:var(--ink-2)}
+.card.wide{grid-column:span 2}
+/* CTA band */
+.band{background:var(--pass);color:#fff;padding:72px 0;overflow:hidden;position:relative}
+.band .wrap{display:flex;justify-content:space-between;align-items:center;gap:40px}
+.band h2{font-size:56px;line-height:1;letter-spacing:-.05em;margin:0;max-width:640px;font-weight:600}
+.band p{color:#c4c3c9;margin:14px 0 0}
+.band .ring{position:absolute;right:-60px;top:-60px;width:260px;height:260px;opacity:.18;border-color:#fff;outline-color:#fff;color:#fff;font-size:20px;transform:rotate(-14deg)}
+.band .cta{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.band .link{color:#fff}
+@media(max-width:1100px){.hero .wrap{grid-template-columns:minmax(0,1fr)}.book{max-width:600px}.cards{grid-template-columns:repeat(2,1fr)}.card.wide{grid-column:auto}}
+@media(max-width:860px){.hero h1{font-size:48px}.stamps{grid-template-columns:repeat(4,1fr)}.pass{grid-template-columns:1fr}.pass:before,.pass:after{display:none}.pass-stub{border-left:0;border-top:2px dashed var(--line);background:none}.pass-stub small{padding:0}.book{grid-template-columns:minmax(0,1fr);transform:none}.cover{border-radius:16px 16px 0 0}.page{border-radius:0 0 16px 16px;border-left:0}.entry{right:8px}.steps ol{grid-template-columns:1fr;gap:28px}.steps li{border:0;padding:0}.band .wrap{flex-direction:column;align-items:flex-start}.band h2,.sec-head h2{font-size:38px}.sec-head{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#"><span class="brand-ring">BSY</span>Beesyde</a>
+  <nav aria-label="Main"><a href="#cities">Explore</a><a href="#">Swap</a><a href="#">Saved</a></nav>
+  <a class="pp-btn" href="#"><i></i>Make my Passport</a>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="meta">Taste passport · 11 cities</span>
+    <h1>Your taste,<br><em>stamped</em> on<br>every city.</h1>
+    <p class="lead">Tell us three things you love: a song, a film, a place. We read the city through them and tell you why each pick fits.</p>
+
+    <p class="q meta">Where are you going?</p>
+    <ul class="stamps" aria-label="Cities">
+      <li><a class="ring" href="#"><b>LIS</b>Lisbon</a></li>
+      <li><a class="ring" href="#"><b>OPO</b>Porto</a></li>
+      <li><a class="ring" href="#"><b>PAR</b>Paris</a></li>
+      <li><a class="ring" href="#"><b>BCN</b>Barcelona</a></li>
+      <li><a class="ring" href="#"><b>MAD</b>Madrid</a></li>
+      <li><a class="ring" href="#"><b>NYC</b>New York</a></li>
+      <li><a class="ring" href="#"><b>TYO</b>Tokyo</a></li>
+      <li><a class="ring" href="#"><b>OSA</b>Osaka</a></li>
+      <li><a class="ring" href="#"><b>SGN</b>Saigon</a></li>
+      <li><a class="ring" href="#"><b>HAN</b>Hanoi</a></li>
+      <li><a class="ring" href="#"><b>PQC</b>Phu Quoc</a></li>
+      <li class="more"><a class="ring" href="#cities"><b>+</b>All</a></li>
+    </ul>
+
+    <p class="q meta">Or: the place you wanted is full?</p>
+    <form class="pass" role="search" aria-label="Swap a place">
+      <div class="pass-main">
+        <label class="meta" for="qa">Passenger wants</label>
+        <input id="qa" placeholder="A restaurant that’s full…" autocomplete="off">
+        <div class="pass-row">
+          <div class="seg" data-for="#qa" role="group" aria-label="Kind of place">
+            <button type="button" aria-pressed="true" data-ph="A restaurant that’s full…">Restaurant</button>
+            <button type="button" aria-pressed="false" data-ph="A museum that’s sold out…">Museum</button>
+          </div>
+          <label class="sr-only" for="ca">City</label>
+          <select id="ca"><option>Lisbon</option><option>Porto</option><option>Paris</option><option>Barcelona</option><option>Madrid</option><option>New York</option><option>Tokyo</option><option>Osaka</option><option>Ho Chi Minh City</option><option>Hanoi</option><option>Phu Quoc</option></select>
+        </div>
+      </div>
+      <div class="pass-stub">
+        <small>Gate S · Swap<br>Seat 1A</small><i aria-hidden="true"></i>
+        <button class="ticket" data-needs="#qa">Find its twin<span>↗</span></button>
+      </div>
+    </form>
+  </div>
+
+  <div class="book" aria-label="Example Passport">
+    <div class="cover">
+      <span class="meta">Beesyde · Passport</span>
+      <span class="ring">Taste<br>passport</span>
+      <div class="holder">
+        <span class="meta">Holder loves</span>
+        <span>♫ Khruangbin</span><span>♫ Nina Simone</span><span>▶ Before Sunrise</span>
+      </div>
+    </div>
+    <div class="page">
+      <div class="page-head">
+        <span class="meta">Visas</span>
+        <div class="page-tabs" role="group" aria-label="Example city">
+          <button type="button" aria-pressed="true" data-city="lis">LIS</button>
+          <button type="button" aria-pressed="false" data-city="tyo">TYO</button>
+        </div>
+      </div>
+      <h2 id="ex-title">Their Lisbon</h2>
+      <div id="ex-list"></div>
+      <div class="mrz" id="ex-mrz">P&lt;LIS&lt;&lt;KHRUANGBIN&lt;SIMONE&lt;SUNRISE&lt;&lt;&lt;&lt;&lt;&lt;</div>
+      <span class="ring entry" id="ex-stamp"><b>LIS</b>Entry<br>22·10</span>
+    </div>
+    <p class="sample-note">Sample passport · real Qloo picks · <a href="#">open it</a></p>
+  </div>
+</div></section>
+
+<section class="steps" aria-label="How it works"><div class="wrap"><ol>
+  <li><span class="ring"><b>01</b>Pick</span><div><h3>Three favourites</h3><p>A song, a film, a place. About a minute.</p></div></li>
+  <li><span class="ring"><b>02</b>Go</span><div><h3>Choose a city</h3><p>Eat, drink, see, stay, or the areas to walk.</p></div></li>
+  <li><span class="ring"><b>03</b>Why</span><div><h3>Picks with a reason</h3><p>“Because you like Nina Simone”, on every card.</p></div></li>
+</ol></div></section>
+
+<section class="cities" id="cities"><div class="wrap">
+  <div class="sec-head">
+    <div><span class="meta">Postcards · 11 cities</span><h2>Pick a city to <em>read</em>.</h2></div>
+    <p class="meta">Open without a Passport · popular picks first</p>
+  </div>
+  <ul class="cards">
+    <li class="wide"><a class="card" href="#"><figure class="ph" data-code="LIS"><img src="https://images.qloo.com/i/85E621E5-F91F-4AB7-B8D3-4E385619C2B1-2Q7xn5-1200x-outside.jpg" alt=""><figcaption>Miradouro de Santa Luzia</figcaption></figure><span class="ring">LIS</span><div class="card-body"><strong>Lisbon</strong><small>Lisboa</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="OPO"><img src="https://images.qloo.com/i/A19EA433-1596-47A4-B408-972D63563EE2-1yqYl4-1200x-outside.jpg" alt=""><figcaption>Torre dos Clérigos</figcaption></figure><span class="ring">OPO</span><div class="card-body"><strong>Porto</strong><small>Portugal</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="PAR"><img src="https://images.qloo.com/i/B1BF01AF-08EA-446A-9491-4A1862ECD8BC-1A0koI-1200x-outside.jpg" alt=""><figcaption>Musée d’Orsay</figcaption></figure><span class="ring">PAR</span><div class="card-body"><strong>Paris</strong><small>France</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="BCN"><img src="https://images.qloo.com/i/E006CA6B-9A73-40B9-909F-58C4A8CEABDA-1fwLCl-1200x-outside.jpg" alt=""><figcaption>La Pedrera</figcaption></figure><span class="ring">BCN</span><div class="card-body"><strong>Barcelona</strong><small>Spain</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="MAD"><img src="https://images.qloo.com/i/B215D185-5A63-4390-8256-D684657B870F-2v6SN2-1200x-outside.jpg" alt=""><figcaption>Palacio de Cristal</figcaption></figure><span class="ring">MAD</span><div class="card-body"><strong>Madrid</strong><small>Spain</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="TYO"><img src="https://images.qloo.com/i/2C22E484-392B-4AE2-A00E-E811AAED1075-0Fv0Om-1200x-outside.jpg" alt=""><figcaption>Mori Art Museum</figcaption></figure><span class="ring">TYO</span><div class="card-body"><strong>Tokyo</strong><small>東京</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="NYC"><img src="https://images.qloo.com/i/5FAFC6A6-45DB-4AC6-80B3-D7BD558420A8-0rXlRA-1200x-outside.jpg" alt=""><figcaption>Guggenheim</figcaption></figure><span class="ring">NYC</span><div class="card-body"><strong>New York</strong><small>USA</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="OSA"><img src="https://images.qloo.com/i/6014C8FD-94EC-447D-BC3A-9F12A75CEDE9-1lTKpz-1200x-outside.jpg" alt=""><figcaption>Osaka Castle</figcaption></figure><span class="ring">OSA</span><div class="card-body"><strong>Osaka</strong><small>大阪</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="SGN"><img src="https://images.qloo.com/i/AAAD1F0C-25CF-4913-8C5B-B6C154FC3952-0tkPJr-1200x-outside.jpg" alt=""><figcaption>Independence Palace</figcaption></figure><span class="ring">SGN</span><div class="card-body"><strong>Saigon</strong><small>TP. Hồ Chí Minh</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph" data-code="HAN"><img src="https://images.qloo.com/i/B41AE803-6C0C-4DC0-AE4D-EA3B36F4ED78-0rFUQG-1200x-outside.jpg" alt=""><figcaption>Fine Arts Museum</figcaption></figure><span class="ring">HAN</span><div class="card-body"><strong>Hanoi</strong><small>Hà Nội</small></div></a></li>
+    <li><a class="card" href="#"><figure class="ph ph-none">PQC</figure><span class="ring">PQC</span><div class="card-body"><strong>Phu Quoc</strong><small>Phú Quốc</small></div></a></li>
+  </ul>
+</div></section>
+
+<section class="band"><span class="ring">Taste<br>passport</span><div class="wrap">
+  <div><h2>Same city. <em>Your</em> version of it.</h2><p>Three favourites, about a minute. No account needed.</p></div>
+  <div class="cta"><a class="ticket hot" href="#">Make my Passport<span>↗</span></a><a class="link" href="#">Or try the sample one</a></div>
+</div></section>
+</main>
+
+<footer class="foot"><div class="wrap"><span>Beesyde · picks from Qloo’s taste data</span><span>Hours, prices and bookings are not checked: confirm before you go</span></div></footer>
+<nav class="mock-nav" aria-label="Proposals"><a href="H2-home-A-passport.html" aria-current="page">A</a><a href="H2-home-B-departures.html">B</a><a href="H2-home-C-collage.html">C</a></nav>
+
+<script src="home-final.js"></script>
+<script>
+// Example passport: real Qloo answers for the sample profile (fetched 22 Oct 2026).
+const Q = (id) => `https://images.qloo.com/i/${id}-420x-outside.jpg`;
+const EX = {
+  lis: { name: "Lisbon", code: "LIS", picks: [
+    ["Drink", "Bar Terraço de Santa Luzia", "Alfama · €", "Before Sunrise", "85E621E5-F91F-4AB7-B8D3-4E385619C2B1-2Q7xn5"],
+    ["See", "Casa Fernando Pessoa", "Campo de Ourique", "Before Sunrise", "D7D651FD-3BD9-4B8C-826D-6319AC77B92F-17Xpz9"],
+    ["Eat", "Barbica", "€€", "Before Sunrise", "E8C3AAC8-1C3D-4DD1-B2BA-972C670364ED-42EuAX"]]},
+  tyo: { name: "Tokyo", code: "TYO", picks: [
+    ["Drink", "LOW LIFE", "Bar", "Khruangbin", "0165D68A-1C2D-4580-86EA-8C0CE30025DF-3ld7ZT"],
+    ["See", "Mori Art Museum", "Roppongi Hills", "Khruangbin", "2C22E484-392B-4AE2-A00E-E811AAED1075-0Fv0Om"],
+    ["Eat", "Chagohan Tokyo", "Tea & rice", "Nina Simone", "F05F0E9B-E7A7-46E7-BB4F-1A4DAE24BA7F-1MaO3z"]]},
+};
+function show(key) {
+  const c = EX[key];
+  document.getElementById("ex-title").textContent = `Their ${c.name}`;
+  document.getElementById("ex-stamp").innerHTML = `<b>${c.code}</b>Entry<br>22·10`;
+  document.getElementById("ex-mrz").textContent = `P<${c.code}<<KHRUANGBIN<SIMONE<SUNRISE<<<<<<`;
+  document.getElementById("ex-list").innerHTML = c.picks.map(([k, n, s, w, id]) =>
+    `<a class="visa" href="#"><figure class="ph" data-code="${k}"><img src="${Q(id)}" alt=""></figure><div><span class="why">Because you like ${w}</span><b>${n}</b><small>${k} · ${s}</small></div></a>`).join("");
+}
+document.querySelector(".page-tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll(".page-tabs button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  show(b.dataset.city);
+});
+show("lis");
+</script>
+</body>
+</html>

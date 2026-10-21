@@ -5,6 +5,7 @@ import {
   placeCategory,
   selectRoles,
   chipTags,
+  anchorCuisines,
   parseLivePassport,
 } from "../src/lib/discovery.ts";
 import { normalizeEntity, entities, qloo } from "../src/lib/server/qloo.ts";
@@ -105,6 +106,24 @@ const [art] = selectRoles(
   "museum",
 );
 assert.equal(art.why, "A close match to Fictional Museum for your taste. Fits your taste for Fictional Film.");
+// Swap anchor (docs/21 A3): the cuisine the place's dishes mention most,
+// unless the user kept or changed a cuisine.
+const fourPs = make(9, {
+  tags: [
+    tag,
+    t("cuisine:qloo", "fusion", "Fusion"),
+    t("category:place", "fusion_restaurant", "Fusion restaurant"),
+    t("cuisine:qloo", "pizza", "Pizza"),
+    t("specialty_dish:place", "cheese_pizza", "Cheese pizza"),
+    t("menu_highlight:qloo", "4_cheese_pizza", "4 cheese pizza"),
+  ],
+});
+assert.deepEqual(chipTags(fourPs).map((c) => c.name).slice(0, 2), ["Pizza", "Fusion"]);
+const pizzaId = "urn:tag:cuisine:qloo:pizza", fusionId = "urn:tag:cuisine:qloo:fusion";
+assert.deepEqual(anchorCuisines(fourPs, [], [], "restaurant").map((c) => c.id), [pizzaId]);
+assert.deepEqual(anchorCuisines(fourPs, [fusionId], [], "restaurant").map((c) => c.id), [fusionId]);
+assert.deepEqual(anchorCuisines(fourPs, [], [pizzaId], "restaurant").map((c) => c.id), [fusionId]);
+assert.deepEqual(anchorCuisines(fourPs, [], [], "museum"), []);
 assert.deepEqual(parseLivePassport("null"), []);
 assert.equal(parseLivePassport(JSON.stringify([a, a, b])).length, 2);
 const normalized = normalizeEntity({

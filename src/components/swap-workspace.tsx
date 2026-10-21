@@ -33,6 +33,9 @@ type Payload = {
   discarded: number;
   // How many candidates have a kept feature (null when nothing is kept).
   keepMatched: number | null;
+  // The cuisine all results share; anchorDropped when too few had it.
+  anchor: string | null;
+  anchorDropped: boolean;
   notice: string;
 };
 const CHECK_LABEL: Record<CheckStatus, string> = {
@@ -178,7 +181,12 @@ function CategoryWorkspace({ city, category, onTransfer }: {
           setData(result);
           setStatus(
             result.results.length
-              ? `${result.results.length} alternatives in ${city}.` +
+              ? `${result.results.length} alternatives in ${city}` +
+                  (result.anchor
+                    ? `, all with ${result.anchor.toLowerCase()} like ${reference.entity.name}.`
+                    : result.anchorDropped
+                      ? `. Too few places shared its cuisine, so these are the closest overall.`
+                      : ".") +
                   (result.keepMatched !== null && result.keepMatched < 3
                     ? ` Only ${result.keepMatched} had what you chose to keep; the others are the next best matches.`
                     : "")

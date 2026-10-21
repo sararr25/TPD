@@ -49,6 +49,15 @@ Fallback that needs no new API: query with the reference as the main signal, the
 results by Passport affinity. Also prefer candidates sharing the reference's sub-genre (pizza),
 falling back to "Italian / casual" when fewer than 3 exist, and say so in the status line.
 
+**Status (21 Oct): fixed.** Live checks (HCMC, Pizza 4P's + Khruangbin signals, 20 results):
+reference + Passport → 0 with pizza; reference alone → 1; signal weights → rejected by Qloo
+(`provider_rejected`); `filter.tags=urn:tag:cuisine:qloo:pizza` → 20 of 20, still ranked by
+taste. Comma-separated `filter.tags` = OR. So Swap now filters on the starting place's
+defining cuisine (`discovery.ts#anchorCuisines`: kept cuisine chips, else the cuisine its other
+tags mention most), dropping traits then the cuisine when fewer than 3 places are left. Live
+result: Sasa Cafe, Italiani's Pizza, Pizza Inn — all pizza. The fallback path is covered by
+the mocked tests only, not checked live.
+
 ### A4. Roles are arbitrary — MEDIUM
 "Best practical match" = nearest; "Unexpected" = least popular (could be a dead listing).
 **Fix:** "Unexpected" = best result from a *different* sub-genre that still matches ≥1 kept chip, with a popularity floor.

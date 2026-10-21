@@ -4,6 +4,7 @@ import {
   UUID,
   selectRoles,
   chipTags,
+  anchorCuisines,
   validPlace,
   placeCategory,
   swapCity,
@@ -248,10 +249,25 @@ export async function swap(
     );
     return { checkedAt, candidates, filtered };
   };
-  let { checkedAt, candidates, filtered } = await run(traits);
-  // Too narrow with the quiz traits: fall back to the Passport alone.
-  const traitsUsed = Object.keys(traits).length > 0 && filtered.length >= 3;
-  if (Object.keys(traits).length && !traitsUsed) ({ checkedAt, candidates, filtered } = await run({}));
+  // Stay in the starting place's cuisine (docs/21 A3), with the quiz traits
+  // first. Each step that leaves < 3 places is dropped: traits, then the
+  // cuisine, so a rare cuisine still gets three alternatives.
+  const anchor = anchorCuisines(ref, keep, change, category);
+  const cuisine = anchor.length ? { "filter.tags": anchor.map((t) => t.id).join(",") } : null;
+  const hasTraits = Object.keys(traits).length > 0;
+  const attempts = [
+    ...(cuisine ? [{ ...cuisine, ...traits }, ...(hasTraits ? [cuisine] : [])] : []),
+    traits,
+    ...(hasTraits ? [{}] : []),
+  ];
+  let checkedAt = "", candidates: Entity[] = [], filtered: Entity[] = [], used: Record<string, string> = {};
+  for (const extra of attempts) {
+    ({ checkedAt, candidates, filtered } = await run(extra));
+    used = extra;
+    if (filtered.length >= 3) break;
+  }
+  const traitsUsed = hasTraits && Object.keys(traits).every((k) => k in used);
+  const anchorUsed = !!cuisine && "filter.tags" in used;
   // Keep: with 3+ candidates that have a kept feature, only those compete for
   // the three roles; with fewer, they come first and the rest fill in.
   const hasKeep = (e: Entity) => e.tags.some((t) => keep.includes(t.id));
@@ -271,6 +287,9 @@ export async function swap(
     candidateCount: filtered.length,
     traitsUsed,
     keepMatched,
+    // The cuisine every result shares, or null when none was kept to.
+    anchor: anchorUsed ? anchor.map((t) => t.name).join(" or ") : null,
+    anchorDropped: !!cuisine && !anchorUsed,
     discarded: candidates.length - filtered.length,
     verification: "L0",
     notice:

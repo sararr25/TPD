@@ -293,6 +293,7 @@ const CHIP_GROUPS: [string[], number][] = [
   [["offerings:place"], 1],
   [["beverage_offering:qloo"], 1],
 ];
+const CUISINE = /^urn:tag:(cuisine:qloo|cuisine:place)$/;
 const MUSEUM_CHIP = /^urn:tag:(ambience:qloo|interests:qloo|decor:qloo|activity_type:qloo|visit_intent:qloo)$/;
 // Tags almost every restaurant has: they say nothing about this one.
 const GENERIC_CHIPS = new Set([
@@ -307,7 +308,14 @@ export function chipTags(e: Entity, category: PlaceCategory = "restaurant"): Tag
   for (const [types, cap] of CHIP_GROUPS) {
     let taken = 0;
     const rank = (t: Tag) => types.indexOf(t.type.replace("urn:tag:", ""));
-    for (const t of e.tags.filter((t) => rank(t) >= 0).sort((a, b) => rank(a) - rank(b))) {
+    // Cuisines first, the one the other tags mention most leading (a
+    // pizzeria lists pizza dishes, not fusion ones): Swap anchors on it.
+    const mentions = (c: Tag) =>
+      CUISINE.test(c.type)
+        ? e.tags.filter((t) => t.id !== c.id && t.name.toLowerCase().includes(c.name.toLowerCase())).length
+        : 0;
+    const order = (t: Tag) => (CUISINE.test(t.type) ? 0 : 1) * 1000 + rank(t) * 100 - mentions(t);
+    for (const t of e.tags.filter((t) => rank(t) >= 0).sort((a, b) => order(a) - order(b))) {
       const key = t.name.toLowerCase();
       if (
         taken < cap &&
@@ -321,6 +329,24 @@ export function chipTags(e: Entity, category: PlaceCategory = "restaurant"): Tag
     }
   }
   return chips;
+}
+// The cuisine a Swap stays in (docs/21 A3). Qloo's entity signal barely
+// follows the starting place (checked live: 0 of 20 results had pizza for a
+// pizzeria) and rejects signal weights, but filter.tags on a cuisine works.
+// Kept cuisines win; otherwise the leading cuisine chip (chipTags puts the
+// defining one first). Changed cuisines never anchor. Restaurants only.
+export function anchorCuisines(
+  reference: Entity,
+  keep: string[],
+  change: string[],
+  category: PlaceCategory,
+): Tag[] {
+  if (category !== "restaurant") return [];
+  const cuisines = chipTags(reference, category).filter(
+    (t) => CUISINE.test(t.type) && !change.includes(t.id),
+  );
+  const kept = cuisines.filter((t) => keep.includes(t.id));
+  return kept.length ? kept : cuisines.slice(0, 1);
 }
 // What a result shares with the place the user started from, by chip name
 // (the same feature can carry a different tag type on each place).

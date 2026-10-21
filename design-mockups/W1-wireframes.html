@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beesyde wireframes v1</title>
+<style>
+  :root{--bg:#ececec;--paper:#fff;--l1:#d6d6d6;--l2:#bdbdbd;--l3:#9a9a9a;--ink:#2b2b2b;--mute:#6b6b6b;--note:#fff6c8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,system-ui,sans-serif}
+  .page{max-width:1400px;margin:auto;padding:32px 16px 80px}
+  h1{font-size:28px;margin:0 0 4px}
+  .intro{max-width:760px;color:var(--mute);margin:0 0 32px}
+  section.screen{margin:0 0 56px}
+  section.screen>h2{font-size:20px;margin:0 0 4px}
+  section.screen>p.job{margin:0 0 16px;color:var(--mute);max-width:760px}
+  .row{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+  .phone{width:360px;min-height:740px;background:var(--paper);border:1px solid var(--l2);border-radius:24px;overflow:hidden;position:relative;display:flex;flex-direction:column;flex-shrink:0}
+  .desk{width:960px;max-width:100%;background:var(--paper);border:1px solid var(--l2);border-radius:12px;overflow:hidden}
+  .label{font:600 11px/1 ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+  .notes{width:300px;flex-shrink:0;display:grid;gap:8px;align-content:start}
+  .note{background:var(--note);border:1px solid #e6d98a;border-radius:8px;padding:8px 12px;font-size:13px}
+  .top{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--l1)}
+  .logo{font-weight:700}
+  .grow{flex:1}
+  .av{width:28px;height:28px;border-radius:50%;background:var(--l1)}
+  .pill{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--l2);border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap}
+  .pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .body{padding:16px;display:grid;gap:16px;flex:1;align-content:start}
+  .h{font-weight:700;font-size:24px;line-height:1.15}
+  .h.s{font-size:18px}
+  .t{color:var(--mute)}
+  .bar{height:10px;background:var(--l1);border-radius:4px}
+  .btn{display:flex;align-items:center;justify-content:center;height:44px;border-radius:8px;background:var(--ink);color:#fff;font-weight:600}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--l3)}
+  .field{height:44px;border:1px solid var(--l3);border-radius:8px;display:flex;align-items:center;padding:0 12px;color:var(--mute)}
+  .img{background:repeating-linear-gradient(45deg,var(--l1) 0 8px,#e2e2e2 8px 16px);border-radius:8px;display:grid;place-items:center;color:var(--mute);font-size:12px}
+  .scroll{display:flex;gap:8px;overflow:hidden}
+  .card{border:1px solid var(--l1);border-radius:16px;overflow:hidden;background:var(--paper)}
+  .card .in{padding:12px;display:grid;gap:6px}
+  .acts{display:flex;gap:8px;margin-top:4px;align-items:center}
+  .ico{width:40px;height:40px;border:1px solid var(--l2);border-radius:8px;display:grid;place-items:center;font-size:15px;flex-shrink:0}
+  .why{font-size:13px;border-left:3px solid var(--l3);padding-left:8px}
+  .chips{display:flex;gap:4px;flex-wrap:wrap}
+  .chip{font-size:11px;background:#f0f0f0;border-radius:999px;padding:2px 8px}
+  .tabs{position:absolute;left:0;right:0;bottom:0;display:flex;border-top:1px solid var(--l1);background:var(--paper)}
+  .tabs div{flex:1;text-align:center;padding:10px 0 14px;font-size:12px;color:var(--mute)}
+  .tabs div.on{color:var(--ink);font-weight:700}
+  .tabs i{display:block;width:20px;height:20px;margin:0 auto 4px;border-radius:6px;background:var(--l2)}
+  .tabs div.on i{background:var(--ink)}
+  .pad-tabs{padding-bottom:72px}
+  .banner{border:1px dashed var(--l3);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .seg{display:flex;border:1px solid var(--l2);border-radius:8px;overflow:hidden}
+  .seg div{flex:1;text-align:center;padding:8px 0;font-size:13px}
+  .seg div.on{background:var(--ink);color:#fff}
+  .sheet{position:absolute;left:0;right:0;bottom:0;top:96px;background:var(--paper);border-radius:20px 20px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.18);padding:16px;display:grid;gap:14px;align-content:start}
+  .scrim{position:absolute;inset:0;background:rgba(0,0,0,.35)}
+  .grab{width:40px;height:4px;border-radius:2px;background:var(--l2);margin:0 auto}
+  .steps{display:flex;gap:4px}.steps div{flex:1;height:4px;border-radius:2px;background:var(--l1)}.steps div.on{background:var(--ink)}
+  .strike{text-decoration:line-through;color:var(--mute)}
+  .list{display:grid;gap:8px}
+  .rowi{display:flex;gap:12px;align-items:center}
+  .card .in.rowi{display:flex}
+  .rowi>.img{width:56px;height:56px;flex-shrink:0}
+  .dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .sm{font-size:12px}
+  @media (max-width:700px){.notes{width:100%}}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Beesyde — grey wireframes v1</h1>
+  <p class="intro">Structure only, no visual style. These are based on docs/24. Mobile is shown first; desktop is shown for the City hub only. The yellow notes say why each block is there. Grey striped boxes are photos.</p>
+
+  <section class="screen">
+    <h2>1 · Home</h2>
+    <p class="job">Job: in 5 seconds, answer "what is this and what's in it for me", then get to value in 1 tap. No forms.</p>
+    <div class="row">
+      <div class="phone pad-tabs">
+        <div class="top"><span class="logo">Beesyde</span><span class="grow"></span><span class="t">Sign in</span></div>
+        <div class="body">
+          <div class="h">Places that fit your taste, in the city you're visiting.</div>
+          <div class="label">Where are you going?</div>
+          <div class="scroll"><span class="pill">Lisbon</span><span class="pill">Paris</span><span class="pill">Tokyo</span><span class="pill">Porto</span><span class="pill">+7</span></div>
+          <div class="label">Or: had a place in mind?</div>
+          <div class="field">🔍 A restaurant or museum that's full…</div>
+          <div class="label">For example</div>
+          <div class="t" style="font-size:13px">Someone who loves <b>Khruangbin</b> and <b>Before Sunrise</b>, in Lisbon:</div>
+          <div class="scroll">
+            <div class="card" style="width:150px;flex-shrink:0"><div class="img" style="height:90px">photo</div><div class="in"><b>Bar name</b><span class="t sm">Slow, vinyl, late</span></div></div>
+            <div class="card" style="width:150px;flex-shrink:0"><div class="img" style="height:90px">photo</div><div class="in"><b>Museum</b><span class="t sm">Quiet, film-y</span></div></div>
+            <div class="card" style="width:150px;flex-shrink:0"><div class="img" style="height:90px">photo</div><div class="in"><b>Street</b></div></div>
+          </div>
+          <div class="banner"><div class="grow"><b>Make it yours</b><div class="t sm">Pick 3 favourites · 1 min</div></div><span class="pill">Start</span></div>
+        </div>
+        <div class="tabs"><div class="on"><i></i>Explore</div><div><i></i>Saved</div><div><i></i>Passport</div></div>
+      </div>
+      <div class="notes">
+        <div class="note"><b>Tap a city</b> → City page with picks right away. 1 tap to value, with no quiz needed.</div>
+        <div class="note"><b>Search box</b> = the core promise (Swap) on the front door: "my place is full".</div>
+        <div class="note"><b>Example row</b> shows the product (real cards) instead of "Step 1/2/3".</div>
+        <div class="note"><b>Make it yours</b> is an invitation, not a gate. It opens the onboarding sheet (screen 5).</div>
+        <div class="note">Sign-in is a quiet text link. Bottom bar: 3 destinations.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen">
+    <h2>2 · City (the hub) — /lisbon</h2>
+    <p class="job">Job: "show me this city, for me." Works without a profile; gets better with one. Swap lives here as a tab, not as a separate page.</p>
+    <div class="row">
+      <div class="phone pad-tabs">
+        <div class="top"><span class="logo">Lisbon ▾</span><span class="grow"></span><span class="av"></span></div>
+        <div class="img" style="height:120px;border-radius:0">city cover · "Lisboa" · stamp</div>
+        <div class="body">
+          <div class="seg"><div class="on">For you</div><div>Map</div><div>Swap</div></div>
+          <div class="scroll"><span class="pill on">Eat</span><span class="pill">Drink</span><span class="pill">See</span><span class="pill">Stay</span><span class="pill">Areas</span><span class="pill">Filters</span></div>
+          <div class="banner"><div class="grow t sm">These are popular picks. <b style="color:var(--ink)">Make them yours</b> in 1 min.</div></div>
+          <div class="card"><div class="img" style="height:160px">photo</div><div class="in">
+            <b class="h s">Place name</b>
+            <div class="why">Because you like Khruangbin: relaxed, vinyl, late</div>
+            <div class="chips"><span class="chip">Portuguese</span><span class="chip">€€</span><span class="chip">Alfama</span></div>
+            <div class="acts"><span class="ico">♡</span><span class="ico">✕</span><span class="grow"></span><span class="pill">Find similar</span></div>
+          </div></div>
+          <div class="card"><div class="img" style="height:160px">photo</div><div class="in"><b class="h s">Place name</b><div class="bar" style="width:70%"></div></div></div>
+        </div>
+        <div class="tabs"><div class="on"><i></i>Explore</div><div><i></i>Saved</div><div><i></i>Passport</div></div>
+      </div>
+      <div class="notes">
+        <div class="note"><b>City switcher</b> in the top bar replaces the dropdown and the hero slogan.</div>
+        <div class="note"><b>Cover</b> = the "visa page" moment of the brand.</div>
+        <div class="note"><b>For you / Map / Swap</b>: one place, three views. Swap is no longer a separate page.</div>
+        <div class="note"><b>Card</b>: photo → name → why it fits you → 3 chips → 2 icons + "Find similar". Tap anywhere else → Place page.</div>
+        <div class="note">♡ = save <i>and</i> learn taste (replaces Save + More like this). ✕ = hide, with an Undo toast.</div>
+        <div class="note">First card visible in the first screen on mobile.</div>
+      </div>
+    </div>
+    <div class="label" style="margin:24px 0 8px">Desktop</div>
+    <div class="desk">
+      <div class="top"><span class="logo">Beesyde</span><span class="pill" style="margin-left:16px">Lisbon ▾</span><span class="grow"></span><span class="t">Saved</span><span class="t" style="margin:0 12px">Passport</span><span class="av"></span></div>
+      <div class="img" style="height:140px;border-radius:0">city cover · Lisbon / Lisboa · stamp</div>
+      <div class="body">
+        <div class="rowi" style="gap:16px"><div class="seg" style="width:300px"><div class="on">For you</div><div>Map</div><div>Swap</div></div><div class="scroll"><span class="pill on">Eat</span><span class="pill">Drink</span><span class="pill">See</span><span class="pill">Stay</span><span class="pill">Areas</span><span class="pill">Filters</span></div></div>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+          <div class="dgrid">
+            <div class="card"><div class="img" style="height:120px">photo</div><div class="in"><b>Place</b><div class="why">why it fits</div><div class="acts"><span class="ico">♡</span><span class="ico">✕</span></div></div></div>
+            <div class="card"><div class="img" style="height:120px">photo</div><div class="in"><b>Place</b><div class="why">why it fits</div><div class="acts"><span class="ico">♡</span><span class="ico">✕</span></div></div></div>
+            <div class="card"><div class="img" style="height:120px">photo</div><div class="in"><b>Place</b><div class="why">why it fits</div><div class="acts"><span class="ico">♡</span><span class="ico">✕</span></div></div></div>
+          </div>
+          <div class="img" style="min-height:220px">map (sticky), pins = cards</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen">
+    <h2>2b · City → Swap tab</h2>
+    <p class="job">Job: the core promise. "My place is full or wrong; give me one that keeps what I loved." ≤ 3 taps.</p>
+    <div class="row">
+      <div class="phone pad-tabs">
+        <div class="top"><span class="logo">Lisbon ▾</span><span class="grow"></span><span class="av"></span></div>
+        <div class="body">
+          <div class="seg"><div>For you</div><div>Map</div><div class="on">Swap</div></div>
+          <div class="field">🔍 Cervejaria Ramiro</div>
+          <div class="card"><div class="in rowi"><div class="img">photo</div><div><b class="strike">Cervejaria Ramiro</b><div class="t sm">Full tonight?</div></div></div></div>
+          <div class="label">Keep</div>
+          <div class="chips"><span class="pill on">Seafood</span><span class="pill on">Lively</span><span class="pill">Cheap</span></div>
+          <div class="label">Change</div>
+          <div class="chips"><span class="pill on">Less touristy</span><span class="pill">Quieter</span></div>
+          <div class="label">3 twins</div>
+          <div class="card"><div class="in rowi"><div class="img">photo</div><div class="grow"><b>Twin place</b><div class="sm">✓ seafood, lively · ↺ fewer tourists</div></div><span class="ico">♡</span></div></div>
+          <div class="card"><div class="in rowi"><div class="img">photo</div><div class="grow"><b>Twin place</b><div class="bar"></div></div><span class="ico">♡</span></div></div>
+        </div>
+        <div class="tabs"><div class="on"><i></i>Explore</div><div><i></i>Saved</div><div><i></i>Passport</div></div>
+      </div>
+      <div class="notes">
+        <div class="note"><b>One column.</b> Search → pick → keep/change chips appear → results under them. There's no empty second column.</div>
+        <div class="note">Results update as you toggle chips, with no extra "Swap it" button.</div>
+        <div class="note"><b>The original is struck through</b> = the "changed ticket" metaphor.</div>
+        <div class="note">Each twin says what was <b>kept</b> and what <b>changed</b>.</div>
+        <div class="note">Also opened pre-filled from "Find similar" on any card or Place page.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen">
+    <h2>3 · Place — /place/[id]</h2>
+    <p class="job">Job: everything about one place, and the bridge to Swap. A full page with a shareable link; on desktop it can be a side panel.</p>
+    <div class="row">
+      <div class="phone">
+        <div class="img" style="height:240px;border-radius:0">photo gallery · ← back</div>
+        <div class="body">
+          <div style="display:grid;gap:8px"><div class="label">Lisbon · Alfama · Eat</div><div class="h">Place name</div></div>
+          <div class="why"><b>Why it fits you</b><br>Because you like Khruangbin and Before Sunrise: slow evenings, vinyl, conversation.</div>
+          <div class="chips"><span class="chip">Portuguese</span><span class="chip">€€</span><span class="chip">Cosy</span><span class="chip">Late</span></div>
+          <div class="img" style="height:110px">mini map · address</div>
+          <div class="t sm">Hours and prices not verified: check before you go.</div>
+          <div class="label">Similar here</div>
+          <div class="scroll"><div class="card" style="width:130px;flex-shrink:0"><div class="img" style="height:70px">photo</div><div class="in"><b style="font-size:13px">Twin</b></div></div><div class="card" style="width:130px;flex-shrink:0"><div class="img" style="height:70px">photo</div><div class="in"><b style="font-size:13px">Twin</b></div></div><div class="card" style="width:130px;flex-shrink:0"><div class="img" style="height:70px">photo</div></div></div>
+        </div>
+        <div style="display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--l1);background:var(--paper)">
+          <div class="btn" style="flex:1">♡ Save to Lisbon trip</div><div class="btn ghost" style="width:120px">Directions</div>
+        </div>
+      </div>
+      <div class="notes">
+        <div class="note"><b>Photo first</b>: this is a travel product.</div>
+        <div class="note"><b>Why it fits you</b> is the hero text, not the address.</div>
+        <div class="note">The disclaimer appears <b>once</b>, here, instead of on every card.</div>
+        <div class="note"><b>Similar here</b> = Swap results inline; "see all" opens the Swap tab pre-filled.</div>
+        <div class="note">Primary action sticky in the thumb zone. One-tap save into the city's trip; "Change list" in the toast.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen">
+    <h2>4 · Saved (trips)</h2>
+    <p class="job">Job: "my trip". Saved places grouped by city, viewable as list or map, shareable.</p>
+    <div class="row">
+      <div class="phone pad-tabs">
+        <div class="top"><span class="logo">Saved</span><span class="grow"></span><span class="av"></span></div>
+        <div class="body">
+          <div class="card"><div class="img" style="height:90px;border-radius:0">Lisbon cover</div><div class="in"><b class="h s">Lisbon trip</b><span class="t sm">6 places · 2 eat · 3 drink · 1 see</span></div></div>
+          <div class="seg"><div class="on">List</div><div>Map</div></div>
+          <div class="scroll"><span class="pill on">All</span><span class="pill">Eat</span><span class="pill">Drink</span><span class="pill">See</span></div>
+          <div class="list">
+            <div class="rowi"><div class="img">photo</div><div class="grow"><b>Place</b><div class="t sm">Alfama · €€</div></div><span class="ico">⋯</span></div>
+            <div class="rowi"><div class="img">photo</div><div class="grow"><b>Place</b><div class="t sm">Bairro Alto</div></div><span class="ico">⋯</span></div>
+            <div class="rowi"><div class="img">photo</div><div class="grow"><b>Place</b></div><span class="ico">⋯</span></div>
+          </div>
+          <div class="btn ghost">Share this trip</div>
+          <div class="card"><div class="img" style="height:60px;border-radius:0">Paris cover</div><div class="in"><b>Paris trip</b><span class="t sm">2 places</span></div></div>
+          <div class="banner"><div class="grow t sm">Saved on this device. <b style="color:var(--ink)">Sign in</b> to keep them everywhere.</div></div>
+        </div>
+        <div class="tabs"><div><i></i>Explore</div><div class="on"><i></i>Saved</div><div><i></i>Passport</div></div>
+      </div>
+      <div class="notes">
+        <div class="note"><b>One trip per city</b>, created automatically on the first save. There's no "name your list" step.</div>
+        <div class="note">Rows open the Place page. "⋯" = move to another trip / remove (with Undo).</div>
+        <div class="note"><b>Map</b> view of the trip; <b>Share</b> = link or postcard image.</div>
+        <div class="note">Empty state: "Nothing yet. Your passport is suspiciously clean." + a "Pick a city" button.</div>
+        <div class="note">Sign-in asked here, in context, as a small banner.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen">
+    <h2>5 · Onboarding sheet ("Make it yours")</h2>
+    <p class="job">Job: optional profile in about 1 minute. It opens over any page and closes back to the same page, now personalised. It replaces the Passport gate.</p>
+    <div class="row">
+      <div class="phone">
+        <div class="top"><span class="logo">Lisbon ▾</span></div>
+        <div class="img" style="height:120px;border-radius:0"></div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="steps"><div class="on"></div><div></div></div>
+          <div class="h s">Three things you love</div>
+          <div class="t" style="font-size:13px">Artists, films, books, places. We'll read Lisbon through them.</div>
+          <div class="field">🔍 Search an artist, film…</div>
+          <div class="chips"><span class="pill on">Khruangbin ✕</span><span class="pill on">Before Sunrise ✕</span></div>
+          <div class="label">Popular picks</div>
+          <div class="grid2">
+            <div class="card"><div class="img" style="height:60px">cover</div><div class="in sm">Artist</div></div>
+            <div class="card"><div class="img" style="height:60px">cover</div><div class="in sm">Film</div></div>
+            <div class="card"><div class="img" style="height:60px">cover</div><div class="in sm">Book</div></div>
+            <div class="card"><div class="img" style="height:60px">cover</div><div class="in sm">Artist</div></div>
+          </div>
+          <div class="btn">Show my Lisbon · 2 of 3</div>
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span class="t">Use a sample profile</span><span class="t">Longer quiz (3 min)</span></div>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="top"><span class="logo">Lisbon ▾</span></div>
+        <div class="img" style="height:120px;border-radius:0"></div>
+        <div class="scrim"></div>
+        <div class="sheet" style="place-items:center;text-align:center;align-content:center">
+          <div class="img" style="width:140px;height:140px;border-radius:50%">stamp animation</div>
+          <div class="h s">Your Passport is stamped</div>
+          <div class="t">Slow Wanderer · loves late evenings, vinyl and film</div>
+          <div class="btn" style="width:100%">See Lisbon for me</div>
+        </div>
+      </div>
+      <div class="notes">
+        <div class="note"><b>Step 1</b>: favourites with search + tappable popular covers (recognition over recall). 3 is enough; the CTA counts.</div>
+        <div class="note"><b>Step 2</b>: the reveal + stamp, then it closes back to the city, now re-ranked.</div>
+        <div class="note"><b>Sample profile</b> = one tap that loads the sample and closes the sheet. The longer quiz stays as an option, not the default.</div>
+        <div class="note">The Passport tab later shows the profile, stamps and share card, and lets you edit it.</div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

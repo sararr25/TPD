@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { AuthButton } from "./auth-button";
 import { authClient } from "@/lib/auth/client";
 import {
   loadCollections,
@@ -40,7 +41,7 @@ export function CollectionsView() {
   }
   return (
     <>
-      <span className="meta">03 / Collections</span>
+      <span className="meta">Collections</span>
       <h1>
         Places worth keeping.
         <br />
@@ -52,22 +53,19 @@ export function CollectionsView() {
         <section className="paper">
           <h2>Sign in to keep collections.</h2>
           <p>
-            Collections are saved to your account, so they follow you across
-            devices. Use “Sign in with Google” at the top of the page, then save
-            places from a Swap.
+            Collections are saved to your account, so they follow you to your phone and back.
+            Sign in, then save places from Explore or Swap.
           </p>
-          <Link className="ticket" href="/swap">
-            Go to Swap ↗
-          </Link>
+          <AuthButton />
         </section>
       ) : collections === null ? (
         <p className="meta">{status || "Loading your collections…"}</p>
       ) : collections.length === 0 ? (
         <section className="paper">
           <h2>No collections yet.</h2>
-          <p>Run a Swap and choose “Save to a collection” on a result you like.</p>
-          <Link className="ticket" href="/swap">
-            Go to Swap ↗
+          <p>Open a city in Explore and choose “Save to a collection” on a place you like.</p>
+          <Link className="ticket" href="/explore">
+            Explore a city
           </Link>
         </section>
       ) : (

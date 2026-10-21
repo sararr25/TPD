@@ -221,7 +221,7 @@ export function ExploreView() {
                           </>
                         )}
                         {(category === "restaurant" || category === "bar") && (
-                          <p className="muted">Qloo price tier: {place.price ?? "not provided"}</p>
+                          <p className="muted">Price level: {place.price ? `${place.price} of 4` : "unknown"}</p>
                         )}
                         <div className="actions">
                           <a

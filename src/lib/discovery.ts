@@ -317,14 +317,14 @@ export function selectRoles(
         role: role as string,
         place: e,
         why: names.length
-          ? `Qloo reports a contribution from: ${names.join(", ")}.`
-          : "Qloo ranked this place from your submitted signals; individual contributions were not provided.",
+          ? `Picked because you like ${names.join(", ")}.`
+          : "Picked from your Passport as a whole.",
         different:
           role === "Best practical match"
-            ? `Nearest remaining candidate to your reference${km !== null ? ` (${km.toFixed(1)} km straight-line)` : ""}. Travel time, hours and availability are not checked.`
+            ? `The closest of the options to your first choice${km !== null ? ` (${km.toFixed(1)} km as the crow flies)` : ""}. Travel time, hours and availability are not checked.`
             : role === "Unexpected but relevant"
-              ? "Lower Qloo popularity among the remaining candidates. This does not measure crowds."
-              : `${km !== null ? `About ${km.toFixed(1)} km from your reference, measured in a straight line. ` : "Distance could not be established. "}${category === "restaurant" && e.price !== null && reference.price !== null ? `Qloo price tier ${e.price}, compared with ${reference.price} for the reference.` : category === "museum" ? "Admission prices and exhibitions have not been checked." : "A price-tier comparison is not available."}`,
+              ? "Less well known than the other options. That says nothing about how busy it is."
+              : `${km !== null ? `About ${km.toFixed(1)} km from your first choice as the crow flies. ` : "Distance could not be established. "}${category === "restaurant" && e.price !== null && reference.price !== null ? `Price level ${e.price} of 4, against ${reference.price} for your first choice.` : category === "museum" ? "Admission prices and exhibitions have not been checked." : "Prices could not be compared."}`,
         distanceKm: km,
       },
     ];

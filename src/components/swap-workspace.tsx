@@ -47,6 +47,12 @@ export function SwapWorkspace() {
     [city, setCity] = useState("Paris");
   return (
     <>
+      <span className="meta">Swap · {city}</span>
+      <h1>
+        Keep the feeling.
+        <br />
+        <em>Change the place.</em>
+      </h1>
       <label htmlFor="swap-city">City</label>
       <select id="swap-city" value={city} onChange={(e) => setCity(e.target.value)}>
         {Object.keys(CITIES).map((name) => (
@@ -55,7 +61,7 @@ export function SwapWorkspace() {
           </option>
         ))}
       </select>
-      <div className="chips" role="group" aria-label="Discovery category">
+      <div className="chips" role="group" aria-label="Category">
         {(["restaurant", "museum"] as const).map((value) => (
           <button
             className="choice"
@@ -172,11 +178,11 @@ function CategoryWorkspace({ city, category, onTransfer }: {
           setData(result);
           setStatus(
             result.results.length
-              ? `${result.results.length} alternatives. City and category checked against the Qloo response.` +
+              ? `${result.results.length} alternatives in ${city}.` +
                   (result.keepMatched !== null && result.keepMatched < 3
                     ? ` Only ${result.keepMatched} had what you chose to keep; the others are the next best matches.`
                     : "")
-              : `No alternatives passed your constraints. Try ignoring a preference or choosing another reference; ${city} stays fixed.`,
+              : `Nothing in ${city} matched everything you asked for. Try keeping fewer things, or start from another place.`,
           );
         }
       })
@@ -266,14 +272,9 @@ function CategoryWorkspace({ city, category, onTransfer }: {
   }
   return (
     <>
-      <span className="meta">02 / {museum ? "Museum" : "Restaurant"} Swap · {city}</span>
-      <h1>
-        Keep the feeling.
-        <br />
-        <em>Change the place.</em>
-      </h1>
       <p className="lead">
-        A different {category} in the same city, guided by your cultural taste.
+        Full, closed or not quite right? Tell us the {category} you wanted and we find another
+        one in {city} that keeps what you liked about it.
         {museum && " Your music, film and book favourites travel with you. Admission prices and exhibitions are not checked."}
       </p>
       {museum && museums !== "ok" && (
@@ -297,7 +298,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
         <>
           <div className="grid">
             <section className="paper">
-              <span className="meta">01 / Your first choice</span>
+              <span className="meta">Step 1 · The place you wanted</span>
               <form onSubmit={search}>
                 <label htmlFor="reference">The {category} you wanted</label>
                 <input
@@ -335,18 +336,18 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                   <h3>{reference.entity.name}</h3>
                   <p>{reference.entity.address}</p>
                   <span className="meta">
-                    Reference selected · Qloo identity only
+                    Your starting point
                   </span>
                 </div>
               )}
             </section>
             <section>
-              <span className="meta">02 / Keep what matters</span>
+              <span className="meta">Step 2 · What to keep</span>
               {reference ? (
                 <>
                   <p>
-                    These tags come from your reference’s Qloo data. Keep
-                    influences taste; Change excludes the selected tag.
+                    What this place is known for. Keep what you liked; Change what you want
+                    to avoid next time.
                   </p>
                   {choices.length ? (
                     choices.map((choice) => {
@@ -375,13 +376,13 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                     })
                   ) : (
                     <p>
-                      No suitable taste tags were returned. Your reference and
-                      Passport still guide the search.
+                      We have no details for this place. It and your Passport still guide the
+                      search.
                     </p>
                   )}
                   {!museum && (
                     <>
-                      <label htmlFor="budget">Maximum Qloo price tier</label>
+                      <label htmlFor="budget">Price, at most</label>
                       <select
                         id="budget"
                         value={budget}
@@ -390,15 +391,15 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                           setBudget(e.target.value);
                         }}
                       >
-                        <option value="">No price constraint</option>
-                        <option value="1">1 / lowest tier</option>
-                        <option value="2">2 / moderate</option>
-                        <option value="3">3 / higher</option>
-                        <option value="4">4 / highest tier</option>
+                        <option value="">Any price</option>
+                        <option value="1">Cheap</option>
+                        <option value="2">Moderate</option>
+                        <option value="3">Pricier</option>
+                        <option value="4">Top end</option>
                       </select>
                       <p className="muted">
-                        An indicative tier, not a live menu price. Unknown tiers are
-                        excluded when a limit is set.
+                        A rough price level, not today’s menu. Places with no known price
+                        are left out when you set a limit.
                       </p>
                     </>
                   )}
@@ -416,7 +417,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                   </div>
                 </>
               ) : (
-                <p>Select a {category} to see its Keep / Change tags.</p>
+                <p>Find your {category} first. Then choose what you liked about it (to keep) and what you would change.</p>
               )}
               <div className="divider">
                 <span className="meta">Your Passport</span>
@@ -443,7 +444,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
             </p>
             <div className="divider">
               <h2>Same Passport. A different experience.</h2>
-              <p>Carry your favourites into {museum ? "restaurants" : "museums"} in {city}. Choose a new reference to guide the next Swap.</p>
+              <p>Carry your favourites into {museum ? "restaurants" : "museums"} in {city}. Pick a starting place there to guide the next Swap.</p>
               <button className="stamp" onClick={() => onTransfer(museum ? "restaurant" : "museum")}>
                 Try {museum ? "restaurants" : "museums"} with this Passport ↗
               </button>
@@ -458,7 +459,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                     <h2>{result.place.name}</h2>
                     <p>{result.place.address}</p>
                     {!museum && <p className="muted">
-                      Qloo price tier: {result.place.price ?? "not provided"}
+                      Price level: {result.place.price ? `${result.place.price} of 4` : "unknown"}
                     </p>}
                     <h3>Why it matches you</h3>
                     <p>{result.why}</p>
@@ -469,12 +470,12 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                       <p>
                         Qloo returned a {category} in {city} with an address and
                         coordinates
-                        {budget ? ", within your chosen price tier" : ""}. We
-                        filtered out the reference, duplicates, closed flags and
-                        excluded tags.
+                        {budget ? ", within your price limit" : ""}. We
+                        left out your starting place, duplicates, places marked
+                        closed and anything you chose to change.
                       </p>
                       <p>
-                        Qloo data only (L0). Existence, current opening hours,
+                        From Qloo’s data only. Existence, current opening hours,
                         {museum ? "admission prices, exhibitions and ticket availability" : "menu prices and table availability"} are not independently
                         verified.
                       </p>
@@ -543,11 +544,11 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                     )}
                   </div>
                   <div className="stub" data-check={result.check?.status}>
-                    L0 · Qloo taste recommendation
+                    Picked by Qloo for your taste
                     <br />
                     {result.check
                       ? `OpenStreetMap: ${CHECK_LABEL[result.check.status]}`
-                      : "Operational verification pending"}
+                      : "Not checked yet"}
                   </div>
                 </article>
               ))}

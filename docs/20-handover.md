@@ -1,4 +1,4 @@
-# Handover — 21 October 2026 (afternoon)
+# Handover — 21 October 2026 (afternoon, updated evening)
 
 Continued from `docs/19-handover.md`.
 
@@ -13,6 +13,9 @@ Continued from `docs/19-handover.md`.
 | Commit | What |
 |---|---|
 | `de91cc8` | **Neighbourhoods in Explore.** Details and numbers in `docs/18-destination-coverage.md` → "Neighbourhoods in Explore". |
+| `be29f32` | **UI pass 1:** new landing (quiz → Passport → Explore in 3 steps, 11 cities, honest note), plain banner; quiz and Passport stamps use Phosphor duotone illustrations instead of emoji (`scripts/build-quiz-icons.mjs` → `src/lib/quiz-icons.ts`, `QuizIcon`); mobile fixes: Passport card no longer cut at 375 px (`.grid>*{min-width:0}`), landing no longer scrolls sideways (`main{overflow-x:clip}`). |
+| `12adb2a` | **UI pass 2:** Swap title before the pickers, "Step 1 / Step 2", plain wording everywhere (no "tier", "reference", "L0"; price as "Cheap…Top end" / "2 of 4"); Swap explanations in `selectRoles` rewritten ("Picked because you like …"). Collections: sign-in button in place, empty state points to Explore. |
+| `718f354` | **Share card (E07):** "Share my Passport" on the Passport page. `GET /api/passport-card?a=<base64url quiz answers>` draws a 1080×1350 PNG with `next/og` `ImageResponse`; the profile is rebuilt server-side from cleaned answers, so no name or free text enters the image. Phones: native share sheet (Web Share API with a file); otherwise download as `taste-passport.png`. |
 
 How it works, in short:
 
@@ -28,6 +31,11 @@ How it works, in short:
 
 ## Not done / not verified
 
+- **Share card on a real phone:** only the download path was tested (desktop browser has no file sharing). The native share sheet on iOS/Android is untested.
+- Signed-in Collections list after the wording change not seen (needs a Google account).
+- Vercel production not checked after `be29f32`, `12adb2a`, `718f354`.
+- Landing passport illustration still says "0 / 5 signals" (a bit technical).
+
 - **Still nothing tested with a real signed-in Google user** (carried over from docs/19).
 - Production `/explore` Neighbourhoods not clicked through on Vercel (only the page HTML checked).
 - One Neighbourhoods request costs **7 Qloo calls** (1 localities + 3 Passport + 3 baseline; localities and baseline are cached). The visitor budget counts it as one Explore. Watch Qloo usage.
@@ -42,14 +50,14 @@ Ordered by value for the hackathon demo vs effort. 🔑 = needs the user.
 | # | Step | Why | Size | Done when |
 |---|---|---|---|---|
 | 1 🔑 | **Signed-in walkthrough on production**: quiz → Passport → Explore (all 5 categories incl. Neighbourhoods) → a few Yes / Not for me → Passport "Learned from your votes" → second device. | Account storage of feedback and the whole flow have never been tested with a real Google user. | S (user drives, Claude watches/fixes) | Every step works on beesyde.vercel.app; bugs fixed and pushed. |
-| 2 | **User journey + UI pass** (`ux-pro`, `ui-pro`): new landing (still the old "Make my Passport" one), quiz illustrations instead of emoji, consistent Explore cards, mobile. | The demo is judged on first impression; landing and quiz are what judges see first. | L | Landing explains Beesyde in one screen; quiz has illustrations; checked at 375 px and desktop. |
-| 3 | **Share card for the visual passport (E07)**: image of the passport data page to download/share. | Shareable artefact = memorable demo moment, low risk. | M | "Share my Passport" produces a PNG with the traveller type; works on mobile. |
+| ~~2~~ | ~~**User journey + UI pass**~~ Done (`be29f32`, `12adb2a`). (`ux-pro`, `ui-pro`): new landing (still the old "Make my Passport" one), quiz illustrations instead of emoji, consistent Explore cards, mobile. | The demo is judged on first impression; landing and quiz are what judges see first. | L | Landing explains Beesyde in one screen; quiz has illustrations; checked at 375 px and desktop. |
+| ~~3~~ | ~~**Share card for the visual passport (E07)**~~ Done (`718f354`); test on a phone in step 1.: image of the passport data page to download/share. | Shareable artefact = memorable demo moment, low risk. | M | "Share my Passport" produces a PNG with the traveller type; works on mobile. |
 | 4 | **Qloo vs LLM demo page (D6)**: same Passport, side by side. | Shows why Qloo matters (the hackathon's point). | M | Separate page, honest labels, no API key in client. |
 | 5 🔑 | **Events in Explore** (Ticketmaster free tier). The user creates the key and puts it in `.env.local` and Vercel env — never in chat or the repo. | Adds "what's on tonight"; only blocked on the key. | M | Coverage check per city, Events chip in Explore, empty-state where none. |
 | 6 | **Geolocation "I'm already here"** in Explore: sort by distance from the user. | Useful on the trip, small with the code already there. | S | Permission asked only on click; denied = normal list. |
 | 7 | **Tidy-ups**: Neighbourhood names at one level for Paris; remove old `SIGNALS` guest storage in `src/lib/passport.ts` if unused; recalibrate quiz weights after real users. | Quality, not features. | S–M | Each as its own small commit. |
 
-Suggested next session: start with **1** (needs the user for ~10 minutes), then **2**.
+Suggested next session: **1** on a phone (now also covers the share sheet and the new pages), then **4** (Qloo vs LLM page).
 
 ## Useful commands
 

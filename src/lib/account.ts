@@ -1,5 +1,6 @@
 import { MESSAGES, type Selection } from "./discovery-client";
 import type { Answers } from "./quiz";
+import { FEEDBACK_KEY, parseFeedback, type Feedback } from "./feedback";
 
 // Browser side of the signed-in-only API (E06): Passport, hidden places,
 // collections and account deletion. Hidden places also live in this browser,
@@ -114,4 +115,40 @@ export async function deleteCollection(collectionId: string) {
 
 export async function deleteAccount() {
   await call("/api/account", "DELETE");
+}
+
+// Gradual feedback (D3): always in this browser; signed in, the account copy
+// wins and an empty account adopts this browser's votes.
+function storeFeedback(fb: Feedback) {
+  try {
+    localStorage.setItem(FEEDBACK_KEY, JSON.stringify(fb));
+  } catch {
+    throw new Error("Browser storage could not save your feedback.");
+  }
+}
+export function localFeedback(): Feedback {
+  try {
+    return parseFeedback(localStorage.getItem(FEEDBACK_KEY));
+  } catch {
+    return { votes: [], dismissed: [] };
+  }
+}
+export async function loadFeedback(signedIn: boolean): Promise<Feedback> {
+  const local = localFeedback();
+  if (!signedIn) return local;
+  const { feedback } = await call<{ feedback: Feedback | null }>("/api/feedback", "GET");
+  if (feedback) {
+    storeFeedback(feedback);
+    return feedback;
+  }
+  if (local.votes.length || local.dismissed.length)
+    await call("/api/feedback", "PUT", { feedback: local });
+  return local;
+}
+export async function saveFeedback(fb: Feedback, signedIn: boolean) {
+  storeFeedback(fb);
+  if (signedIn) await call("/api/feedback", "PUT", { feedback: fb });
+}
+export async function deleteAccountFeedback() {
+  await call("/api/feedback", "DELETE");
 }

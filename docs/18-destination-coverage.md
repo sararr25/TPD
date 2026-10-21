@@ -95,3 +95,11 @@ Side effect to watch: tight filters shrink the pool in small places (Porto bars 
 1. Neighbourhood level filter.
 2. Ticketmaster coverage per city, once the key exists.
 3. ~~Open the Swap to the other 10 cities~~ Done 21 Oct: city picker in Swap; per-city rules in `CITIES` (`src/lib/discovery.ts`): country + accepted place-city names (Tokyo's 23 wards, Porto's municipal parishes; Sintra/Cascais are not Lisbon, the Hamptons are not New York). Museums: "few" note for Osaka, Ho Chi Minh City, Hanoi; "none" for Phu Quoc. Live check: a reference + Swap returned 3 results in all 11 cities (restaurants), Barcelona and Osaka museums too.
+
+## Finding: `signal.interests.tags` has no effect next to entity signals (21 Oct 2026)
+
+Live check, Paris restaurants with a Khruangbin signal: adding `signal.interests.tags` (Japanese cuisine or Wine, weight none / 2 / 5) returned exactly the same top 8 as without it. `filter.exclude.tags` does work (no "Coffee" place survives an exclusion).
+
+Consequences:
+- **Feedback (D3)**: a strong "less" tag is sent as `filter.exclude.tags`; a strong "more" tag is applied by Beesyde, moving places that carry it to the top of what Qloo returned (`nudge` in `src/lib/feedback.ts`). Checked live: with "more: Wine" all 9 Explore results carry Wine (7 of 9 without).
+- **Swap "Keep" chips** use the same parameter, so they probably do nothing today. Not changed yet: needs the same local reordering.

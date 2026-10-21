@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     if (body.action === "guest") result = await guest(body.profile);
     else if (body.action === "quiz") result = await quiz(body.cards);
     else if (body.action === "explore")
-      result = await explore(body.passport, body.city, body.category, body.quiz ?? {}, body.exclude ?? []);
+      result = await explore(body.passport, body.city, body.category, body.quiz ?? {}, body.exclude ?? [], body.feedback ?? {});
     else if (body.action === "search") {
       if (
         typeof body.query !== "string" ||
@@ -72,6 +72,7 @@ export async function POST(request: Request) {
         body.exclude ?? [],
         body.quiz ?? {},
         body.city,
+        body.feedback ?? {},
       );
     else throw new DiscoveryError("invalid_request", 400);
     return Response.json(result, { headers });

@@ -22,6 +22,7 @@ import {
   DiscoveryError,
 } from "./qloo.ts";
 import { checkVenues } from "./osm.ts";
+import { cleanSignal, feedbackParams, nudge } from "../feedback.ts";
 import { ENTITY_CARDS, MAX_ENTITIES, cleanAnswers, buildProfile, qlooParams } from "../quiz.ts";
 export type Selection = { entity: Entity; token: string };
 const CHIP_TYPE =
@@ -159,6 +160,7 @@ export async function swap(
   excludeValue: unknown = [],
   quizValue: unknown = {},
   cityValue: unknown = "Paris",
+  feedbackValue: unknown = {},
 ) {
   const category = placeCategory(categoryValue);
   const city = swapCity(cityValue);
@@ -220,11 +222,15 @@ export async function swap(
     "feature.explainability": "true",
     take: "20",
   };
+  // Strong "less" feedback tags (D3) join the chips the user changed; strong
+  // "more" tags reorder the candidates (nudge), see src/lib/feedback.ts.
+  const feedback = cleanSignal(feedbackValue);
+  const avoidTags = [...new Set([...change, ...feedback.avoid])].filter((t) => !keep.includes(t));
   if (keep.length) {
     params["signal.interests.tags"] = keep.join(",");
     params["signal.interests.tags.weight"] = "2";
   }
-  if (change.length) params["filter.exclude.tags"] = change.join(",");
+  if (avoidTags.length) params["filter.exclude.tags"] = avoidTags.join(",");
   if (maxPrice) params["filter.price_level.max"] = String(maxPrice);
   // Quiz traits steer popularity and price (C7, docs/18); a budget the user
   // chose here wins over the quiz's price leaning.
@@ -249,7 +255,7 @@ export async function swap(
   // Too narrow with the quiz traits: fall back to the Passport alone.
   const traitsUsed = Object.keys(traits).length > 0 && filtered.length >= 3;
   if (Object.keys(traits).length && !traitsUsed) ({ checkedAt, candidates, filtered } = await run({}));
-  const roles = selectRoles(filtered, ref, signals, category);
+  const roles = selectRoles(nudge(filtered, feedback), ref, signals, category);
   const checks = await checkVenues(roles.map((r) => r.place), category);
   return {
     results: roles.map((r, i) => ({ ...r, check: checks[i], token: selection(r.place).token })),
@@ -274,6 +280,7 @@ export async function explore(
   categoryValue: unknown,
   quizValue: unknown = {},
   excludeValue: unknown = [],
+  feedbackValue: unknown = {},
 ) {
   const city = swapCity(cityValue);
   if (!city) throw new DiscoveryError("invalid_city", 400);
@@ -304,6 +311,8 @@ export async function explore(
     take: "30",
   };
   if (hidden.size) params["filter.exclude.entities"] = [...hidden].join(",");
+  const feedback = cleanSignal(feedbackValue);
+  Object.assign(params, feedbackParams(feedback));
   const traits = qlooParams(buildProfile(cleanAnswers(quizValue)), category);
   const run = async (extra: Record<string, string>) => {
     const { data, checkedAt } = await qloo("/v2/insights", { ...params, ...extra });
@@ -320,7 +329,7 @@ export async function explore(
     category,
     checkedAt,
     traitsUsed,
-    results: places.slice(0, EXPLORE_RESULTS).map((place) => ({
+    results: nudge(places, feedback).slice(0, EXPLORE_RESULTS).map((place) => ({
       place,
       token: selection(place).token,
     })),

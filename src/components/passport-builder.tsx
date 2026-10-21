@@ -5,6 +5,7 @@ import { PassportCard } from "./passport-card";
 import { PassportProfile } from "./passport-profile";
 import { QuizFlow } from "./quiz-flow";
 import { QUIZ_KEY, parseQuiz, buildProfile, type Answers } from "@/lib/quiz";
+import { FEEDBACK_KEY, STRONG, strongSignals, type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import {
   discovery,
@@ -22,6 +23,9 @@ import {
   loadHidden,
   unhidePlace,
   deleteAccount,
+  loadFeedback,
+  saveFeedback,
+  deleteAccountFeedback,
   HIDDEN_KEY,
   type Hidden,
 } from "@/lib/account";
@@ -37,7 +41,8 @@ export function PassportBuilder() {
     [guestProfile,setGuestProfile]=useState(0),
     [hidden, setHidden] = useState<Hidden[]>([]),
     [quizOpen, setQuizOpen] = useState(false),
-    [profile, setProfile] = useState<Answers>({});
+    [profile, setProfile] = useState<Answers>({}),
+    [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] });
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
   // Places marked "Not for me" in Swap (E06), with a way to show them again.
@@ -51,6 +56,27 @@ export function PassportBuilder() {
       active = false;
     };
   }, [ready, userId]);
+  // Strong signals learned from "Yes" / "Not for me" votes (D3).
+  useEffect(() => {
+    if (!ready) return;
+    let active = true;
+    loadFeedback(!!userId)
+      .then((fb) => active && setFeedback(fb))
+      .catch((e) => active && setStatus((e as Error).message));
+    return () => {
+      active = false;
+    };
+  }, [ready, userId]);
+  async function undoSignal(tagId: string, name: string) {
+    const next = { ...feedback, dismissed: [...feedback.dismissed, tagId] };
+    setFeedback(next);
+    try {
+      await saveFeedback(next, !!userId);
+      setStatus(`"${name}" no longer steers your results.`);
+    } catch (e) {
+      setStatus((e as Error).message);
+    }
+  }
   async function showAgain(place: Hidden) {
     try {
       await unhidePlace(place.id, !!userId);
@@ -75,6 +101,7 @@ export function PassportBuilder() {
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem(HIDDEN_KEY);
       localStorage.removeItem(QUIZ_KEY);
+      localStorage.removeItem(FEEDBACK_KEY);
     } catch {
       setStatus(
         "Your account is deleted. This browser's copy could not be cleared: remove it in browser settings.",
@@ -252,6 +279,7 @@ export function PassportBuilder() {
       try {
         await deleteAccountPassport();
         await deleteAccountQuiz();
+        await deleteAccountFeedback();
       } catch (e) {
         setStatus((e as Error).message);
         setBusy(false);
@@ -264,6 +292,7 @@ export function PassportBuilder() {
       localStorage.removeItem("tpd-passport-v1");
       localStorage.removeItem("tpd-design-v1");
       localStorage.removeItem(QUIZ_KEY);
+      localStorage.removeItem(FEEDBACK_KEY);
       setStatus(
         userId
           ? "Passport deleted from your account and this browser."
@@ -276,6 +305,7 @@ export function PassportBuilder() {
     }
     setSelected([]);
     setProfile({});
+    setFeedback({ votes: [], dismissed: [] });
   }
   if (quizOpen)
     return (
@@ -432,6 +462,42 @@ export function PassportBuilder() {
           >
             {userId ? "Delete my Passport" : "Delete my local Passport"}
           </button>
+          {feedback.votes.length > 0 && (
+            <div className="divider">
+              <span className="meta">Learned from your votes</span>
+              {(() => {
+                const strong = strongSignals(feedback);
+                const rows = [
+                  ...strong.keep.map((s) => ({ ...s, label: "More" })),
+                  ...strong.avoid.map((s) => ({ ...s, label: "Less" })),
+                ];
+                return rows.length ? (
+                  <ul className="entity-list">
+                    {rows.map((r) => (
+                      <li key={r.id}>
+                        <div>
+                          <strong>
+                            {r.label}: {r.name}
+                          </strong>
+                          <p className="muted">
+                            {r.yes} yes · {r.no} not for me
+                          </p>
+                        </div>
+                        <button className="text" disabled={busy} onClick={() => undoSignal(r.id, r.name)}>
+                          Undo
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="muted">
+                    {feedback.votes.length} vote{feedback.votes.length === 1 ? "" : "s"} so far. Each one gently
+                    reorders your results; when {STRONG} agree on the same thing it changes your Passport.
+                  </p>
+                );
+              })()}
+            </div>
+          )}
           {hidden.length > 0 && (
             <div className="divider">
               <span className="meta">Hidden from your Swaps</span>

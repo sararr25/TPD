@@ -15,7 +15,7 @@ Legend: ✅ built and live · 🟡 built, limited · ⬜ not built.
 | C5 | Transfer | Same taste, another category | Category switch | Same signals, different `filter.type`/tags | — | 🟡 restaurant → museum, Paris |
 | C6 | Explore Within ("I'm already here") | Places for me in this city, no reference | Same pipeline without reference | Insights with Passport only, `sort_by=distance` | Geolocation (browser) | ✅ /explore (21 Oct): 11 cities × restaurants, bars, museums, hotels; no geolocation yet |
 | C7 | Profile → results | Calm → fewer crowded places; thrifty → cheaper; adventurous → wider swaps | Map axes to Qloo params | `filter.popularity`, `bias.trends`, `filter.price_level`, `diversify` | — | ✅ in Swap (docs/18) |
-| C8 | Feedback | "Not for me" hides a place; "Yes" strengthens | Hidden list, exclusions | `filter.exclude.entities`; positive → add entity to signals | — | 🟡 negative only |
+| C8 | Feedback | "Not for me" hides a place; "Yes" strengthens | Hidden list, exclusions | `filter.exclude.tags` for strong "less"; strong "more" reorders locally | — | ✅ gradual Yes / Not for me (21 Oct, see D3) |
 | C9 | Collections | Save places by trip/city | Account storage | — | — | ✅ |
 | C10 | Account | Google login, delete everything | Neon Auth + Postgres | — | Google | ✅ |
 | C11 | Shareable passport (E07) | Image/link of the passport | Image export, public link without private data | — | — | ⬜ |

@@ -71,3 +71,12 @@ CREATE TABLE IF NOT EXISTS user_quiz (
   answers jsonb NOT NULL,
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Gradual feedback of a signed-in user (src/lib/feedback.ts, docs/17 D3):
+-- "Yes" / "Not for me" votes with their taste tags, and undone strong signals.
+-- Rows go away when the Neon Auth user is deleted.
+CREATE TABLE IF NOT EXISTS user_feedback (
+  user_id uuid PRIMARY KEY REFERENCES neon_auth."user" (id) ON DELETE CASCADE,
+  feedback jsonb NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);

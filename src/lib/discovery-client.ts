@@ -18,6 +18,7 @@ export const MESSAGES: Record<string, string> = {
   invalid_category: "Choose restaurants or museums.",
   invalid_reference: "Choose a reference in the selected category and city.",
   invalid_city: "Choose one of the listed cities.",
+  invalid_feedback: "Your feedback could not be saved. Please try again.",
   invalid_budget: "Price tiers are only available for restaurant searches.",
   invalid_passport: "Choose 3–5 different favourites in your Passport first.",
   location_unconfirmed:

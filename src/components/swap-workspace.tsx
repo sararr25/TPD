@@ -15,6 +15,8 @@ import {
 } from "@/lib/discovery-client";
 import { authClient } from "@/lib/auth/client";
 import { readStoredQuiz } from "@/lib/quiz";
+import { feedbackSignal } from "@/lib/feedback";
+import { useFeedback } from "./use-feedback";
 import {
   loadAccountPassport,
   loadHidden,
@@ -103,6 +105,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
   }, [hidden]);
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
+  const { current: feedback, vote, voted } = useFeedback(!isPending, userId, setStatus);
   // Signed in: use the account Passport (freshly signed, works on any device).
   useEffect(() => {
     if (isPending) return;
@@ -157,6 +160,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
         exclude: hiddenIds.current,
         quiz: readStoredQuiz(),
         city,
+        feedback: feedbackSignal(feedback.current),
         ...(budget ? { maxPrice: Number(budget) } : {}),
       },
       controller.signal,
@@ -233,9 +237,18 @@ function CategoryWorkspace({ city, category, onTransfer }: {
     setHidden((list) => [...list.filter((h) => h.id !== place.id), place]);
     try {
       await hidePlace(place, result.token!, !!userId);
+      await vote(result.place, -1);
       setStatus(
         `${place.name} won’t come up in your next Swaps. Show it again from your Passport page.`,
       );
+    } catch (error) {
+      setStatus((error as Error).message);
+    }
+  }
+  async function like(result: Result) {
+    try {
+      await vote(result.place, 1);
+      setStatus(`Noted: more places like ${result.place.name}. A few agreeing votes change your Passport.`);
     } catch (error) {
       setStatus((error as Error).message);
     }
@@ -499,6 +512,13 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                     {result.token && (
                       <>
                         <div className="actions">
+                          <button
+                            className="text"
+                            aria-pressed={voted(result.place.id) === 1}
+                            onClick={() => like(result)}
+                          >
+                            {voted(result.place.id) === 1 ? "Liked ✓" : "Yes, more like this"}
+                          </button>
                           <button className="text" onClick={() => notForMe(result)}>
                             Not for me
                           </button>

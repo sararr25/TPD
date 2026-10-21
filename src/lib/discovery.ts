@@ -48,6 +48,11 @@ export const CITIES: Record<string, City> = {
   Hanoi: { country: "VN", locality: "Hà Nội", places: ["Ha Noi"], museums: "few", hood: { ancestor: /^Hà Nội$/, level: 4 } },
   "Phu Quoc": { country: "VN", locality: "Phú Quốc", places: ["Phu Quoc"], museums: "none", hood: { ancestor: /^Phú Quốc$/, level: 6 } },
 };
+// City pages live at /lisbon, /new-york… (docs/24).
+export const citySlug = (city: string) => city.toLowerCase().replace(/\s+/g, "-");
+export const cityFromSlug = (slug: string) =>
+  Object.keys(CITIES).find((c) => citySlug(c) === slug.toLowerCase()) ?? null;
+
 // Explore (docs/17 D2): places for the Passport in a city, no reference.
 // Bars have no genre tag of their own in Qloo (docs/18): they use the category tag.
 export const EXPLORE_TAGS = {
@@ -177,6 +182,8 @@ export type Entity = {
   tags: Tag[];
   closed: boolean;
   evidence: string[];
+  // First Qloo photo (images.qloo.com); some fail to load, so cards need a fallback.
+  image?: string | null;
 };
 export type Choice = { tagId: string; mode: "keep" | "change" | "ignore" };
 export type Result = {

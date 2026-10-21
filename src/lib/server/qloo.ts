@@ -125,6 +125,7 @@ export function normalizeEntity(value: unknown): Entity | null {
     popularity: number(e.popularity),
     tags,
     closed: p.is_closed === true,
+    image: list(p.images).map((v) => text(object(v).url)).find((u) => !!u && u.startsWith("https://")) ?? null,
     evidence: ex.warning
       ? []
       : list(ex["signal.interests.entities"]).flatMap((v) => {

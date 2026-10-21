@@ -330,9 +330,10 @@ export async function explore(
   )
     throw new DiscoveryError("invalid_request", 400);
   const hidden = new Set<string>(excludeValue);
+  // An empty Passport gets Qloo's popular picks (docs/24: no profile gate).
   if (
     !Array.isArray(passportTokens) ||
-    passportTokens.length < 3 ||
+    (passportTokens.length > 0 && passportTokens.length < 3) ||
     passportTokens.length > 5
   )
     throw new DiscoveryError("invalid_passport", 400);
@@ -378,8 +379,9 @@ export async function explore(
       place,
       token: selection(place).token,
     })),
-    notice:
-      "Qloo taste recommendations for your Passport. Opening hours, prices and availability are not verified.",
+    notice: passport.length
+      ? "Qloo taste recommendations for your Passport. Opening hours, prices and availability are not verified."
+      : "Popular Qloo picks, not yet shaped by your taste. Opening hours, prices and availability are not verified.",
   };
 }
 async function explorePlaces(
@@ -398,7 +400,11 @@ async function explorePlaces(
     take: "30",
   };
   // An empty Passport is the baseline: Qloo's answer for everyone.
-  if (passport.length) params["signal.interests.entities"] = passport.map((e) => e.id).join(",");
+  // Explainability feeds the cards' "Because you like…" line (docs/24).
+  if (passport.length) {
+    params["signal.interests.entities"] = passport.map((e) => e.id).join(",");
+    params["feature.explainability"] = "true";
+  }
   if (hidden.size) params["filter.exclude.entities"] = [...hidden].join(",");
   Object.assign(params, feedbackParams(feedback));
   const traits = qlooParams(profile, category);

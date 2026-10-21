@@ -136,6 +136,7 @@ const normalized = normalizeEntity({
     address: "Synthetic",
     geocode: { city: "Paris" },
     is_closed: true,
+    images: [{ url: "http://insecure.example/a.jpg" }, { url: "https://images.qloo.com/a.jpg" }],
   },
   tags: [{ tag_id: tag.id, name: tag.name, type: tag.type }],
   query: {
@@ -148,6 +149,8 @@ const normalized = normalizeEntity({
 assert(normalized.closed);
 assert.equal(normalized.tags[0].id, tag.id);
 assert.deepEqual(normalized.evidence, []);
+assert.equal(normalized.image, "https://images.qloo.com/a.jpg");
+assert.equal(normalizeEntity({ entity_id: a.id, name: a.name }).image, null);
 assert.deepEqual(entities({ results: "unexpected" }), []);
 const signed = selection(ref);
 assert.equal(verifySelection(signed.token).id, ref.id);

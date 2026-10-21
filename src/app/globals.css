@@ -45,3 +45,36 @@ main{overflow-x:clip}
 /* The save sheet must not be clipped by its card; the stub keeps the round corners. */
 .result{overflow:visible}.result .stub{border-radius:0 0 12px 12px}
 .save-sheet{width:min(320px,calc(100vw - 32px))}
+/* City page + place card (docs/24, wireframe W2). Tokens only: radius 8/16, 4-px spacing. */
+.city{display:grid;gap:16px}.city h1{margin:4px 0 0;font-size:56px}
+.city-cover{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:32px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-card);overflow:visible}
+.city-local{margin:4px 0 0;font-size:18px}
+.city-stamp{position:absolute;right:32px;top:24px;width:88px;height:88px;border:2px solid var(--stamp);outline:1px solid var(--stamp);outline-offset:-6px;border-radius:50%;display:grid;place-items:center;color:var(--stamp);font:14px var(--mono);letter-spacing:.08em;transform:rotate(-12deg);opacity:.85}
+.city-switch{position:relative;margin-right:120px}.city-switch summary{list-style:none;border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:15px;text-decoration:none;background:var(--paper)}.city-switch summary::-webkit-details-marker{display:none}.city-switch summary:after{content:" ▾"}
+.city-switch ul{position:absolute;z-index:20;right:0;top:calc(100% + 8px);list-style:none;margin:0;padding:8px;width:240px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 12px 48px -12px #26242c55}
+.city-switch a{display:block;padding:8px 12px;border-radius:var(--radius);text-decoration:none;font-size:15px}.city-switch a:hover{background:var(--bg)}.city-switch a[aria-current=page]{color:var(--stamp);font-weight:600}
+.city-toolbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--paper)}.seg>*{padding:8px 16px;font-size:15px;text-decoration:none}.seg [aria-current=page]{background:var(--pass);color:var(--on-pass)}.seg a:hover{background:var(--bg)}
+.city-cats{display:flex;gap:8px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);border-radius:999px;padding:8px 16px;background:var(--paper);color:var(--ink);font-size:15px;min-height:40px}.pill:hover{border-color:var(--ink-2)}.pill[aria-pressed=true]{background:var(--pass);border-color:var(--pass);color:var(--on-pass)}
+.city-banner{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 24px;border:1px dashed var(--ink-2);border-radius:var(--radius-card)}.city-banner p{margin:0;font-size:16px}.city-banner .ticket{flex:none;padding:12px 44px 12px 20px}
+.city-split{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start}
+.city-map-wrap{position:sticky;top:16px}.city-map{height:calc(100vh - 32px);max-height:720px;min-height:420px;border:1px solid var(--line);border-radius:var(--radius-card);overflow:hidden;background:var(--bg);position:relative}
+.map-error{position:absolute;inset:auto 16px 16px;margin:0;padding:12px;background:var(--paper);border-radius:var(--radius);font-size:14px}
+.map-pin{width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:var(--pass);color:#fff;font:600 12px var(--display);display:grid;place-items:center;box-shadow:0 2px 8px #0004;cursor:pointer;padding:0;transition:transform .15s,background .15s}.map-pin[data-active]{background:var(--stamp);transform:scale(1.3);z-index:2}
+.city-notice{font-size:13px}
+.place-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.place-card{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-card);overflow:visible;transition:border-color .15s,box-shadow .15s}.place-card[data-active]{border-color:var(--ink);box-shadow:var(--shadow)}
+.place-photo{aspect-ratio:4/3;background:var(--bg);border-radius:var(--radius-card) var(--radius-card) 0 0;overflow:hidden;display:grid;place-items:center;font:12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}.place-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.place-body{padding:16px 16px 8px;display:grid;gap:8px;flex:1;align-content:start}.place-body h3{margin:0;font-size:19px;line-height:1.25;letter-spacing:-.01em}
+.place-why{margin:0;font-size:14px;line-height:1.45;color:var(--ink);border-left:3px solid var(--stamp);padding-left:8px}
+.place-chips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px}.place-chips li{font-size:12px;background:var(--bg);border-radius:999px;padding:4px 8px;color:var(--ink-2)}
+.place-actions{display:flex;align-items:center;gap:8px;padding:8px 16px 16px}.place-actions .grow{flex:1}
+.place-actions .icon-button{width:40px;height:40px;padding:0;display:grid;place-items:center;font-size:17px}
+.pill-link{border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:14px;text-decoration:none;white-space:nowrap}.pill-link:hover{border-color:var(--ink-2)}
+.place-card.skeleton{min-height:340px;background:linear-gradient(90deg,var(--paper) 0,var(--bg) 50%,var(--paper) 100%) 0 0/200% 100%;animation:sk 1.2s linear infinite}@keyframes sk{to{background-position:-200% 0}}
+@media(max-width:1180px){.place-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.city-split{grid-template-columns:minmax(0,1fr) 320px}}
+@media(max-width:850px){.city-split{grid-template-columns:1fr}.city-map-wrap{position:static;order:-1}.city-map{height:280px;min-height:0}.place-grid{grid-template-columns:1fr}.city h1{font-size:40px}.city-switch{margin-right:0}.city-stamp{display:none}.city-cover{flex-wrap:wrap}.city-banner{flex-direction:column;align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){.place-card.skeleton{animation:none}}
+.place-photo{position:relative}.place-pin{position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:var(--pass);color:#fff;font:600 12px var(--display);display:grid;place-items:center;box-shadow:0 2px 8px #0004}.place-card[data-active] .place-pin{background:var(--stamp)}
+.city-status{margin:0;min-height:0}.city-status:empty{display:none}

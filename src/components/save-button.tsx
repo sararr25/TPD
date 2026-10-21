@@ -41,6 +41,8 @@ export function SaveButton({
   lists,
   signedIn,
   onChange,
+  onSaved,
+  iconOnly = false,
 }: {
   place: Entity;
   token: string;
@@ -48,6 +50,9 @@ export function SaveButton({
   lists: SavedList[];
   signedIn: boolean;
   onChange: () => Promise<void>;
+  // Saving also counts as "more like this" on place cards (docs/24).
+  onSaved?: () => void;
+  iconOnly?: boolean;
 }) {
   const id = useId();
   const toast = useToast();
@@ -76,11 +81,12 @@ export function SaveButton({
     setNewName(lists.some((l) => l.name === suggestion) ? "" : suggestion);
     setOpen((v) => !v);
   }
-  async function run(action: () => Promise<void>, message: string, undo?: () => Promise<void>) {
+  async function run(action: () => Promise<void>, message: string, undo?: () => Promise<void>, added = false) {
     setBusy(true);
     try {
       await action();
       await onChange();
+      if (added) onSaved?.();
       toast(message, undo && {
         action: {
           label: "Undo",
@@ -101,6 +107,7 @@ export function SaveButton({
         () => addToList(list.name, place, token, note, signedIn),
         `Saved ${place.name} to “${list.name}”.`,
         () => removeFromList(list, place.id),
+        true,
       );
     return run(
       () => removeFromList(list, place.id),
@@ -111,7 +118,7 @@ export function SaveButton({
   async function create(e: React.FormEvent) {
     e.preventDefault();
     const name = newName.trim();
-    await run(() => addToList(name, place, token, note, signedIn), `Saved ${place.name} to a new list, “${name}”.`);
+    await run(() => addToList(name, place, token, note, signedIn), `Saved ${place.name} to a new list, “${name}”.`, undefined, true);
     setNewName("");
   }
   return (
@@ -122,8 +129,11 @@ export function SaveButton({
         aria-controls={id}
         data-on={saved.length > 0 || undefined}
         onClick={openSheet}
+        aria-label={iconOnly ? `${saved.length ? "Saved" : "Save"} ${place.name}` : undefined}
+        title={iconOnly ? (saved.length ? "Saved" : "Save") : undefined}
       >
-        <span aria-hidden>{saved.length ? "♥" : "♡"}</span> {saved.length ? "Saved" : "Save"}
+        <span aria-hidden>{saved.length ? "♥" : "♡"}</span>
+        {!iconOnly && (saved.length ? " Saved" : " Save")}
       </button>
       {open && (
         <div className="save-sheet" id={id} role="group" aria-label={`Save ${place.name}`}>

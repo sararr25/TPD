@@ -31,6 +31,8 @@ type Payload = {
   checkedAt: string;
   candidateCount: number;
   discarded: number;
+  // How many candidates have a kept feature (null when nothing is kept).
+  keepMatched: number | null;
   notice: string;
 };
 const CHECK_LABEL: Record<CheckStatus, string> = {
@@ -170,7 +172,10 @@ function CategoryWorkspace({ city, category, onTransfer }: {
           setData(result);
           setStatus(
             result.results.length
-              ? `${result.results.length} alternatives. City and category checked against the Qloo response.`
+              ? `${result.results.length} alternatives. City and category checked against the Qloo response.` +
+                  (result.keepMatched !== null && result.keepMatched < 3
+                    ? ` Only ${result.keepMatched} had what you chose to keep; the others are the next best matches.`
+                    : "")
               : `No alternatives passed your constraints. Try ignoring a preference or choosing another reference; ${city} stays fixed.`,
           );
         }

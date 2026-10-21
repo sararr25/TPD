@@ -102,4 +102,4 @@ Live check, Paris restaurants with a Khruangbin signal: adding `signal.interests
 
 Consequences:
 - **Feedback (D3)**: a strong "less" tag is sent as `filter.exclude.tags`; a strong "more" tag is applied by Beesyde, moving places that carry it to the top of what Qloo returned (`nudge` in `src/lib/feedback.ts`). Checked live: with "more: Wine" all 9 Explore results carry Wine (7 of 9 without).
-- **Swap "Keep" chips** use the same parameter, so they probably do nothing today. Not changed yet: needs the same local reordering.
+- **Swap "Keep" chips** used the same parameter and did nothing. Fixed 21 Oct: Keep is no longer sent to Qloo; if 3+ candidates carry a kept feature only those compete for the three roles, otherwise they lead and the page says how many matched. Live check from Le Baratin: keeping "Classic", "Coffee and tea" or "Lively" gives 3/3 results with that feature (1–2/3 before).

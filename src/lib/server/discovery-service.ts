@@ -222,14 +222,11 @@ export async function swap(
     "feature.explainability": "true",
     take: "20",
   };
-  // Strong "less" feedback tags (D3) join the chips the user changed; strong
-  // "more" tags reorder the candidates (nudge), see src/lib/feedback.ts.
+  // Strong "less" feedback tags (D3) join the chips the user changed. Kept
+  // chips are applied after Qloo answers (it ignores signal.interests.tags
+  // next to entity signals, docs/18); strong "more" feedback reorders (nudge).
   const feedback = cleanSignal(feedbackValue);
   const avoidTags = [...new Set([...change, ...feedback.avoid])].filter((t) => !keep.includes(t));
-  if (keep.length) {
-    params["signal.interests.tags"] = keep.join(",");
-    params["signal.interests.tags.weight"] = "2";
-  }
   if (avoidTags.length) params["filter.exclude.tags"] = avoidTags.join(",");
   if (maxPrice) params["filter.price_level.max"] = String(maxPrice);
   // Quiz traits steer popularity and price (C7, docs/18); a budget the user
@@ -255,7 +252,16 @@ export async function swap(
   // Too narrow with the quiz traits: fall back to the Passport alone.
   const traitsUsed = Object.keys(traits).length > 0 && filtered.length >= 3;
   if (Object.keys(traits).length && !traitsUsed) ({ checkedAt, candidates, filtered } = await run({}));
-  const roles = selectRoles(nudge(filtered, feedback), ref, signals, category);
+  // Keep: with 3+ candidates that have a kept feature, only those compete for
+  // the three roles; with fewer, they come first and the rest fill in.
+  const hasKeep = (e: Entity) => e.tags.some((t) => keep.includes(t.id));
+  const keepMatched = keep.length ? filtered.filter(hasKeep).length : null;
+  const pool = !keep.length
+    ? filtered
+    : keepMatched! >= 3
+      ? filtered.filter(hasKeep)
+      : [...filtered.filter(hasKeep), ...filtered.filter((e) => !hasKeep(e))];
+  const roles = selectRoles(nudge(pool, feedback), ref, signals, category);
   const checks = await checkVenues(roles.map((r) => r.place), category);
   return {
     results: roles.map((r, i) => ({ ...r, check: checks[i], token: selection(r.place).token })),
@@ -264,6 +270,7 @@ export async function swap(
     category,
     candidateCount: filtered.length,
     traitsUsed,
+    keepMatched,
     discarded: candidates.length - filtered.length,
     verification: "L0",
     notice:

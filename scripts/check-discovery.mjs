@@ -191,8 +191,8 @@ assert(transfer.results.every(r => r.place.tags.some(t => t.id === museumTag.id)
 assert(!transfer.results[0].different.includes("Qloo price tier"));
 console.log("PASS: museum Transfer preserves Passport signals, validates category/reference, rejects restaurant budgets, filters wrong category/city, and selects distinct L0 roles.");
 globalThis.fetch = async (url) => {
-  assert.equal(url.searchParams.get("signal.interests.tags"), excluded.id);
-  assert.equal(url.searchParams.get("signal.interests.tags.weight"), "2");
+  // Keep is applied to Qloo's answer, not sent (Qloo ignores it next to entities, docs/18).
+  assert.equal(url.searchParams.get("signal.interests.tags"), null);
   assert.equal(url.searchParams.get("filter.exclude.tags"), null);
   return Response.json({ results: { entities: [] }, query: { localities: { filter: [{ name: "Paris" }] } } });
 };
@@ -200,8 +200,28 @@ const noMatches = await swap(museumToken, tokens, [{ tagId: excluded.id, mode: "
 assert.deepEqual(noMatches.results, []);
 assert.equal(noMatches.candidateCount, 0);
 globalThis.fetch = async () => Response.json({ results: { entities: museums.map(raw) }, query: {} });
-await assert.rejects(swap(museumToken, tokens, [], undefined, "museum"), e => e.code === "location_unconfirmed");
-console.log("PASS: museum Keep sends a weighted taste signal, empty responses remain empty, and unconfirmed localities fail closed.");
+// A distinct request (one hidden place), so the cache cannot answer it.
+await assert.rejects(swap(museumToken, tokens, [], undefined, "museum", [uid(99)]), e => e.code === "location_unconfirmed");
+// Keep with 3+ matching candidates: every role has the kept feature.
+const kept = [21, 22, 23].map(n => make(n, { tags: [museumTag, excluded] }));
+globalThis.fetch = async (url) => {
+  if (url.hostname === "nominatim.openstreetmap.org") return Response.json([]);
+  return Response.json({ results: { entities: [...museums, ...kept].map(raw) }, query: { localities: { filter: [{ name: "Paris" }] } } });
+};
+// Distinct hidden lists keep these requests out of the cache.
+const keptSwap = await swap(museumToken, tokens, [{ tagId: excluded.id, mode: "keep" }], undefined, "museum", [uid(98)]);
+assert.equal(keptSwap.keepMatched, 3);
+assert.equal(keptSwap.results.length, 3);
+assert(keptSwap.results.every(r => r.place.tags.some(t => t.id === excluded.id)));
+// Fewer than 3: the matching ones lead, the rest fill in.
+globalThis.fetch = async (url) => {
+  if (url.hostname === "nominatim.openstreetmap.org") return Response.json([]);
+  return Response.json({ results: { entities: [...museums, kept[0]].map(raw) }, query: { localities: { filter: [{ name: "Paris" }] } } });
+};
+const fewKept = await swap(museumToken, tokens, [{ tagId: excluded.id, mode: "keep" }], undefined, "museum", [uid(97)]);
+assert.equal(fewKept.keepMatched, 1);
+assert.equal(fewKept.results[0].place.id, kept[0].id);
+console.log("PASS: museum Keep filters Qloo's answer locally (all roles when 3+ match, first otherwise), empty responses remain empty, and unconfirmed localities fail closed.");
 
 // Category cleaning (docs/18): hotels, shops-only, schools and canteens are not restaurants.
 {

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PassportCard } from "./passport-card";
 import { PassportProfile } from "./passport-profile";
+import { SharePassport } from "./share-passport";
 import { QuizFlow } from "./quiz-flow";
 import { QUIZ_KEY, parseQuiz, buildProfile, type Answers } from "@/lib/quiz";
 import { FEEDBACK_KEY, STRONG, strongSignals, type Feedback } from "@/lib/feedback";
@@ -535,11 +536,14 @@ export function PassportBuilder() {
           )}
         </section>
         {traveller ? (
-          <PassportProfile
-            profile={traveller}
-            holder={session?.user?.name}
-            signals={selected.map((s) => s.entity.name)}
-          />
+          <div>
+            <PassportProfile
+              profile={traveller}
+              holder={session?.user?.name}
+              signals={selected.map((s) => s.entity.name)}
+            />
+            <SharePassport answers={profile} />
+          </div>
         ) : (
           <PassportCard signals={selected.map((s) => s.entity.name)} />
         )}

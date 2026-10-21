@@ -1,13 +1,6 @@
 import { QuizIcon } from "./quiz-icon";
-import { AXES, INTERESTS, type Axis, type Interest, type Profile } from "@/lib/quiz";
+import { AXES, INTERESTS, INTEREST_ICON, type Axis, type Interest, type Profile } from "@/lib/quiz";
 
-// Keys of QUIZ_ICONS: each interest uses the quiz illustration of the same emoji.
-const STAMP_EMOJI: Record<Interest, string> = {
-  culture: "🖼️",
-  food: "🍜",
-  nature: "⛰️",
-  night: "🌙",
-};
 
 // The Passport data page built from the quiz: a traveller type, four axes,
 // interest stamps and the artists/films in use as "visas".
@@ -38,7 +31,7 @@ export function PassportProfile({
       </header>
       <div className="pp-id">
         <div className="pp-photo" aria-hidden>
-          <QuizIcon emoji={STAMP_EMOJI[stamps[0] ?? "culture"]} big />
+          <QuizIcon emoji={INTEREST_ICON[stamps[0] ?? "culture"]} big />
         </div>
         <dl>
           <dt className="meta">Holder</dt>
@@ -74,7 +67,7 @@ export function PassportProfile({
             className="pp-stamp"
             style={{ transform: `rotate(${[-8, 6, -3, 10][i]}deg)` }}
           >
-            <QuizIcon emoji={STAMP_EMOJI[k]} />
+            <QuizIcon emoji={INTEREST_ICON[k]} />
             {INTERESTS[k]}
             <small>{profile.interests[k]}%</small>
           </span>

@@ -16,6 +16,13 @@ export const INTERESTS = {
   night: "Nightlife",
 } as const;
 export type Axis = keyof typeof AXES;
+// Keys of QUIZ_ICONS (src/lib/quiz-icons.ts): each interest's illustration.
+export const INTEREST_ICON = {
+  culture: "🖼️",
+  food: "🍜",
+  nature: "⛰️",
+  night: "🌙",
+} as const;
 export type Interest = keyof typeof INTERESTS;
 export type Traits = Partial<Record<Axis | Interest, number>>;
 export type Option = { id: string; label: string; emoji: string; traits?: Traits };

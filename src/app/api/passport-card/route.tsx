@@ -1,0 +1,75 @@
+import { ImageResponse } from "next/og";
+import { AXES, INTERESTS, INTEREST_ICON, buildProfile, cleanAnswers, type Axis, type Interest } from "@/lib/quiz";
+import { QUIZ_ICONS } from "@/lib/quiz-icons";
+
+// Share card (E07): a 1080×1350 PNG of the Passport data page. The URL
+// carries only quiz answers (`a`, base64url JSON); the profile is rebuilt
+// here, so no name, favourite or free text from the visitor reaches the image.
+const C = { bg: "#F4F4F3", paper: "#FFFFFF", ink: "#1E1D22", ink2: "#55535C", line: "#E0DFE2", pass: "#26242C", stamp: "#D61F69" };
+
+function icon(emoji: string, color: string, size: number) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" color="${color}" style="color:${color}">${QUIZ_ICONS[emoji].replaceAll("currentColor", color)}</svg>`;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img width={size} height={size} src={`data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`} alt="" />;
+}
+
+export async function GET(request: Request) {
+  const raw = new URL(request.url).searchParams.get("a") ?? "";
+  if (raw.length > 4000) return Response.json({ error: "invalid_request" }, { status: 400 });
+  let answers;
+  try {
+    answers = cleanAnswers(JSON.parse(Buffer.from(raw, "base64url").toString("utf8")));
+  } catch {
+    return Response.json({ error: "invalid_request" }, { status: 400 });
+  }
+  const profile = buildProfile(answers);
+  if (!profile) return Response.json({ error: "no_profile" }, { status: 400 });
+  const stamps = (Object.keys(INTERESTS) as Interest[])
+    .filter((k) => profile.interests[k] >= 25)
+    .sort((x, y) => profile.interests[y] - profile.interests[x]);
+  const top = stamps[0] ?? "culture";
+  return new ImageResponse(
+    (
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", background: C.pass, padding: 64, fontFamily: "sans-serif" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", color: "#DEDDE1", fontSize: 26, letterSpacing: 4 }}>
+          <span>BEESYDE</span>
+          <span>TASTE PASSPORT</span>
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.paper, borderRadius: 32, marginTop: 40, padding: 64 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
+            <div style={{ width: 180, height: 220, display: "flex", alignItems: "center", justifyContent: "center", background: C.bg, border: `2px solid ${C.line}`, borderRadius: 20 }}>
+              {icon(INTEREST_ICON[top], C.stamp, 130)}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+              <span style={{ fontSize: 24, color: C.ink2, letterSpacing: 3 }}>TRAVELLER TYPE</span>
+              <span style={{ fontSize: 72, fontWeight: 700, color: C.stamp, lineHeight: 1.05, marginTop: 12 }}>{profile.title}</span>
+            </div>
+          </div>
+          <span style={{ fontSize: 34, color: C.ink, marginTop: 40 }}>{profile.motto}</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 30, marginTop: 56 }}>
+            {(Object.keys(AXES) as Axis[]).map((k) => (
+              <div key={k} style={{ display: "flex", alignItems: "center", gap: 24, fontSize: 26, color: C.ink2 }}>
+                <span style={{ width: 190 }}>{AXES[k][0]}</span>
+                <div style={{ flex: 1, height: 4, background: C.line, display: "flex", position: "relative" }}>
+                  <div style={{ position: "absolute", left: `${profile.axes[k]}%`, top: -14, width: 32, height: 32, marginLeft: -16, borderRadius: 16, background: C.stamp }} />
+                </div>
+                <span style={{ width: 190, textAlign: "right", justifyContent: "flex-end", display: "flex" }}>{AXES[k][1]}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 32, marginTop: "auto" }}>
+            {stamps.map((k, i) => (
+              <div key={k} style={{ width: 170, height: 170, borderRadius: 85, border: `4px solid ${C.stamp}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: C.stamp, fontSize: 24, transform: `rotate(${[-8, 6, -3, 10][i]}deg)` }}>
+                {icon(INTEREST_ICON[k], C.stamp, 56)}
+                <span style={{ marginTop: 6 }}>{INTERESTS[k].toUpperCase()}</span>
+                <span>{profile.interests[k]}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <span style={{ color: "#DEDDE1", fontSize: 26, marginTop: 36 }}>Travel by taste · beesyde.vercel.app</span>
+      </div>
+    ),
+    { width: 1080, height: 1350, headers: { "Cache-Control": "public, max-age=86400, immutable" } },
+  );
+}

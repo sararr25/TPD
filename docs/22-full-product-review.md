@@ -215,4 +215,4 @@ Keep fun optional and quick: animations ≤ 400 ms, never blocking, all off unde
 | E — Delight | Stamps, vibe meter, swipe mode, surprise envelope, micro-copy | On top of a solid base |
 | F — Features | Trip mode, filters, compare cities, shareable lists | After the core works |
 
-Open questions before building: (1) Are Qloo images available on the hackathon key? (needs a quick live check). (2) Should guests save in the browser (recommended) or must saving stay account-only? (3) Is a map dependency acceptable (MapLibre + OSM tiles are free and keyless)?
+Open questions before building: (1) ~~Are Qloo images available?~~ **Answered 21 Oct (live):** every place sampled (Paris restaurants 20/20, HCMC museums 10/10, Tokyo bars 20/20) has `properties.images[].url` on images.qloo.com, 420 px wide; 27 of 30 sampled in Lisbon/Hanoi loaded, 3 failed → cards need an illustrated fallback for broken images. HEAD requests return 403, GET works. (2) Should guests save in the browser (recommended) or must saving stay account-only? (3) Is a map dependency acceptable (MapLibre + OSM tiles are free and keyless)?

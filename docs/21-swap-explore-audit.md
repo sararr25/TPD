@@ -17,9 +17,11 @@ must be verified live before it counts as done.
 returns them. Drink/offering tags (beer, wine, cocktails, coffee) are numerous and come first.
 The cuisine of a pizzeria is a **genre** tag (`urn:tag:genre:place:restaurant:pizza`), which
 is not in `CHIP_TYPE` at all, so "pizza" can never be a chip.
-**Second defect.** The client builds its own chip list (`swap-workspace.tsx:235-239`: every tag
-except the main category tag, first 6) instead of using the server's list. Client and server
-can disagree, which causes hidden `invalid_chips` errors (to confirm live).
+~~Second defect: client/server chip mismatch.~~ Checked while fixing: not a bug. `lookup()`
+already strips the reference to its category tag plus `chipTags()`, so the client list matches.
+**Status (21 Oct): fixed.** Chips moved to `discovery.ts#chipTags` (ranked groups, generic
+drinks dropped, de-duplicated by name). Live, Pizza 4P's Ben Thanh now shows: Fusion, Pizza,
+Modern, Classy, Quick bite, Craft beer.
 **Fix.**
 1. Server returns an explicit `chips` array per reference (one source of truth); client renders only that.
 2. Rank chips by usefulness, max 6: cuisine/sub-genre (`genre:place:restaurant:*`) → ambience → offerings → beverages last, at most 1–2 drink chips.
@@ -54,8 +56,12 @@ falling back to "Italian / casual" when fewer than 3 exist, and say so in the st
 ### A5. Raw error codes shown to users — MEDIUM
 `setStatus(error.message)` in a status line. **Fix:** map each code to human copy, shown next to the button.
 
-### A6. Explore has the same "why" problem — MEDIUM
-Same evidence-names path: apply A2.
+### A6. ~~Explore has the same "why" problem~~ — not a bug
+Checked while fixing: Explore shows no "why" line at all. Nothing to change.
+
+**A2 status (21 Oct): fixed.** Live Swap from Pizza 4P's: "Like Pizza 4P's Ben Thanh: pizza.",
+no artist/film names. Still open (A3): only 1 of 3 results was a pizzeria (a bar and a phở
+shop filled the other roles).
 
 ---
 

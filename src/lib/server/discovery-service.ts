@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import {
   UUID,
   selectRoles,
+  chipTags,
   validPlace,
   placeCategory,
   swapCity,
@@ -32,15 +33,7 @@ import { checkVenues } from "./osm.ts";
 import { cleanSignal, feedbackParams, nudge } from "../feedback.ts";
 import { ENTITY_CARDS, MAX_ENTITIES, cleanAnswers, buildProfile, qlooParams } from "../quiz.ts";
 export type Selection = { entity: Entity; token: string };
-const CHIP_TYPE =
-  /^urn:tag:(ambience:qloo|cuisine:place|offerings:place|beverage_offering:qloo)$/;
-export function chipTags(e: Entity, category: PlaceCategory = "restaurant") {
-  const pattern =
-    category === "museum"
-      ? /^urn:tag:(ambience:qloo|interests:qloo|decor:qloo|activity_type:qloo|visit_intent:qloo)$/
-      : CHIP_TYPE;
-  return e.tags.filter((t) => pattern.test(t.type)).slice(0, 6);
-}
+export { chipTags };
 function sign(body: string) {
   if (!process.env.QLOO_API_KEY)
     throw new DiscoveryError("not_configured", 503);

@@ -4,6 +4,7 @@ import {
   validPlace,
   placeCategory,
   selectRoles,
+  chipTags,
   parseLivePassport,
 } from "../src/lib/discovery.ts";
 import { normalizeEntity, entities, qloo } from "../src/lib/server/qloo.ts";
@@ -65,6 +66,45 @@ assert.deepEqual(
   [a.id, b.id, c.id],
 );
 assert.equal(selectRoles([a], ref, []).length, 1);
+// Swap chips (docs/21 A1): a pizzeria's chips start with pizza, drinks last
+// and at most one, generic tags dropped, one chip per name.
+const t = (type, slug, name) => ({ id: `urn:tag:${type}:${slug}`, name, type: `urn:tag:${type}` });
+const pizzeria = make(6, {
+  name: "Fictional Pizzeria",
+  tags: [
+    tag,
+    t("offerings:place", "cocktails", "Cocktails"),
+    t("offerings:place", "beer", "Beer"),
+    t("beverage_offering:qloo", "craft_beer", "Craft beer"),
+    t("beverage_offering:qloo", "natural_wine", "Natural wine"),
+    t("specialty_dish:place", "pizza", "Pizza"),
+    t("ambience:qloo", "casual", "Casual"),
+    t("cuisine:qloo", "pizza", "Pizza"),
+    t("cuisine:qloo", "italian", "Italian"),
+    t("offerings:place", "vegetarian_options", "Vegetarian options"),
+  ],
+});
+const chips = chipTags(pizzeria);
+assert.deepEqual(chips.map((c) => c.name), ["Pizza", "Italian", "Casual", "Vegetarian options", "Craft beer"]);
+// "Why" (docs/21 A2): shared features, never the starting place or a film
+// for a restaurant; one Passport name for a museum.
+const film = make(7, { name: "Fictional Film", type: "movie" });
+const other = make(8, {
+  name: "Fictional Trattoria",
+  tags: [tag, t("cuisine:qloo", "pizza", "Pizza"), t("ambience:qloo", "casual", "Casual")],
+  evidence: [pizzeria.id.toUpperCase(), film.id.toUpperCase()],
+});
+const [pick] = selectRoles([other], pizzeria, [pizzeria, film]);
+assert.equal(pick.why, "Like Fictional Pizzeria: pizza, casual.");
+assert(!pick.why.includes("Fictional Film"));
+const museumGenre = { id: "urn:tag:genre:place:museum", name: "Museum", type: "urn:tag:genre:place" };
+const [art] = selectRoles(
+  [{ ...other, tags: [museumGenre] }],
+  { ...pizzeria, name: "Fictional Museum", tags: [museumGenre] },
+  [pizzeria, film],
+  "museum",
+);
+assert.equal(art.why, "A close match to Fictional Museum for your taste. Fits your taste for Fictional Film.");
 assert.deepEqual(parseLivePassport("null"), []);
 assert.equal(parseLivePassport(JSON.stringify([a, a, b])).length, 2);
 const normalized = normalizeEntity({

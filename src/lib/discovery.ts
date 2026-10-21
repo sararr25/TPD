@@ -282,6 +282,55 @@ export function validPlace(
     !offCategory(e, category)
   );
 }
+// Swap chips (docs/21 A1): what a place is, before what it pours. Qloo lists
+// drinks first and files cuisine under several types (cuisine:qloo:pizza,
+// specialty_dish:place:pizza), so chips are grouped, ranked and de-duplicated
+// by name. Each group has a cap; drinks get one chip at most.
+// Within a group, earlier types win (the cuisine before a single dish).
+const CHIP_GROUPS: [string[], number][] = [
+  [["cuisine:qloo", "cuisine:place", "specialty_dish:place"], 2],
+  [["ambience:qloo", "ambience:place", "decor:qloo", "culinary_style:qloo"], 2],
+  [["offerings:place"], 1],
+  [["beverage_offering:qloo"], 1],
+];
+const MUSEUM_CHIP = /^urn:tag:(ambience:qloo|interests:qloo|decor:qloo|activity_type:qloo|visit_intent:qloo)$/;
+// Tags almost every restaurant has: they say nothing about this one.
+const GENERIC_CHIPS = new Set([
+  "beer", "wine", "hard_liquor", "hard_cider", "cocktails", "hot_tea", "coffee",
+  "happy_hour", "happy_hour_drinks", "small_plates", "full_bar", "late_night_food",
+]);
+export function chipTags(e: Entity, category: PlaceCategory = "restaurant"): Tag[] {
+  if (category === "museum")
+    return e.tags.filter((t) => MUSEUM_CHIP.test(t.type)).slice(0, 6);
+  const names = new Set<string>();
+  const chips: Tag[] = [];
+  for (const [types, cap] of CHIP_GROUPS) {
+    let taken = 0;
+    const rank = (t: Tag) => types.indexOf(t.type.replace("urn:tag:", ""));
+    for (const t of e.tags.filter((t) => rank(t) >= 0).sort((a, b) => rank(a) - rank(b))) {
+      const key = t.name.toLowerCase();
+      if (
+        taken < cap &&
+        !GENERIC_CHIPS.has(t.id.split(":").pop()!) &&
+        !names.has(key)
+      ) {
+        names.add(key);
+        chips.push(t);
+        taken++;
+      }
+    }
+  }
+  return chips;
+}
+// What a result shares with the place the user started from, by chip name
+// (the same feature can carry a different tag type on each place).
+export function sharedChips(e: Entity, reference: Entity, category: PlaceCategory): string[] {
+  const own = new Set(e.tags.map((t) => t.name.toLowerCase()));
+  return chipTags(reference, category)
+    .filter((t) => own.has(t.name.toLowerCase()))
+    .map((t) => t.name)
+    .slice(0, 3);
+}
 export function selectRoles(
   places: Entity[],
   reference: Entity,
@@ -308,17 +357,24 @@ export function selectRoles(
   ].flatMap(([value, role]) => {
     if (!value || typeof value === "string") return [];
     const e = value as Entity;
-    const names = signals
-      .filter((s) => e.evidence.includes(s.id.toUpperCase()))
-      .map((s) => s.name);
+    // Why (docs/21 A2): what it shares with the starting place first. Qloo's
+    // explainability only says a signal nudged the score, so Passport names
+    // are shown for museums alone (one, never the starting place); a film
+    // or an artist is no reason to pick a restaurant.
+    const shared = sharedChips(e, reference, category);
+    const taste = category === "museum"
+      ? signals.find((s) => s.id !== reference.id && e.evidence.includes(s.id.toUpperCase()))
+      : undefined;
     const km = distance(e, reference);
     return [
       {
         role: role as string,
         place: e,
-        why: names.length
-          ? `Picked because you like ${names.join(", ")}.`
-          : "Picked from your Passport as a whole.",
+        why:
+          (shared.length
+            ? `Like ${reference.name}: ${shared.join(", ").toLowerCase()}.`
+            : `A close match to ${reference.name} for your taste.`) +
+          (taste ? ` Fits your taste for ${taste.name}.` : ""),
         different:
           role === "Best practical match"
             ? `The closest of the options to your first choice${km !== null ? ` (${km.toFixed(1)} km as the crow flies)` : ""}. Travel time, hours and availability are not checked.`

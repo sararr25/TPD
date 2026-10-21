@@ -438,7 +438,7 @@ export function PassportBuilder() {
           <div className="actions">
             {ready && selected.length >= 3 ? (
               <Link className="ticket" href="/explore">
-                This feels like me ↗
+                This feels like me
               </Link>
             ) : (
               <button disabled className="ticket">

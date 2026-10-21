@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { addVote, voteFor, type Feedback } from "@/lib/feedback";
+import { addVote, removeVote, voteFor, type Feedback } from "@/lib/feedback";
 import { loadFeedback, saveFeedback } from "@/lib/account";
 import type { Entity } from "@/lib/discovery";
 
@@ -30,6 +30,12 @@ export function useFeedback(ready: boolean, userId: string | undefined, onError:
     setFeedback(next);
     await saveFeedback(next, !!userId);
   }
+  async function unvote(id: string) {
+    const next = removeVote(current.current, id);
+    current.current = next;
+    setFeedback(next);
+    await saveFeedback(next, !!userId);
+  }
   const voted = (id: string) => feedback.votes.find((v) => v.id === id)?.vote;
-  return { current, vote, voted };
+  return { current, vote, unvote, voted };
 }

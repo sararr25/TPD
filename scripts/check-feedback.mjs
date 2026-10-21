@@ -1,9 +1,18 @@
 import assert from "node:assert/strict";
 import {
   cleanFeedback, parseFeedback, voteFor, addVote, strongSignals, feedbackSignal,
-  cleanSignal, feedbackParams, nudge, STRONG,
+  cleanSignal, feedbackParams, nudge, STRONG, removeVote,
 } from "../src/lib/feedback.ts";
 import { saveUserFeedback, readUserFeedback } from "../src/lib/server/user-feedback.ts";
+// Undo (docs/22 F7, F8): removeVote forgets one place and keeps the rest.
+{
+  const p1 = { id: "00000000-0000-4000-8000-000000000101", name: "One", tags: [] };
+  const p2 = { id: "00000000-0000-4000-8000-000000000102", name: "Two", tags: [] };
+  const both = addVote(addVote({ votes: [], dismissed: [] }, voteFor(p1, 1)), voteFor(p2, -1));
+  const left = removeVote(both, p1.id);
+  assert.deepEqual(left.votes.map((v) => v.id), [p2.id]);
+  assert.deepEqual(removeVote(left, "not-there").votes.length, 1);
+}
 
 const id = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const wine = { id: "urn:tag:offerings:place:natural_wine", name: "Natural wine", type: "urn:tag:offerings:place" };

@@ -49,6 +49,16 @@ export function selection(entity: Entity): Selection {
   return { entity, token: body + "." + sign(body) };
 }
 export function verifySelection(value: unknown): Entity {
+  return checkSelection(value, false);
+}
+// Only for saving to a list (docs/22). The signature still proves the place
+// came from this server; expiry guards fresh discovery, and a guest's list may
+// be days old when it moves to the account. A separate function, not a flag,
+// so `.map(verifySelection)` can never pass an index as "allow expired".
+export function verifySavedSelection(value: unknown): Entity {
+  return checkSelection(value, true);
+}
+function checkSelection(value: unknown, allowExpired: boolean): Entity {
   if (typeof value !== "string" || value.length > 20000)
     throw new DiscoveryError("invalid_selection", 400);
   const [body, signature, ...rest] = value.split(".");
@@ -69,7 +79,7 @@ export function verifySelection(value: unknown): Entity {
     throw new DiscoveryError("invalid_selection", 400);
   try {
     const data = JSON.parse(Buffer.from(body, "base64url").toString());
-    if (data.expires < Date.now() || !UUID.test(data.entity?.id)) throw Error();
+    if ((!allowExpired && data.expires < Date.now()) || !UUID.test(data.entity?.id)) throw Error();
     return data.entity as Entity;
   } catch {
     throw new DiscoveryError("expired_selection", 400);

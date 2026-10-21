@@ -212,3 +212,10 @@ Dettaglio in `docs/superpowers/specs/2026-10-19-product-structure-design.md`. Pr
 - At least 3 entity cards are needed; with fewer likes a "Pick N more" screen follows.
 - Answers live in the browser (`beesyde-quiz-v1`) and, when signed in, in table `user_quiz` (applied to Neon). API `/api/quiz` (signed-in only, same-origin writes) accepts only answers that fit the current questions. The account copy wins on sign-in; an empty account adopts the browser's. "Delete my Passport" also deletes the answers; account deletion cascades.
 - Checks: `npm test` (`check-quiz`, `check-user-quiz`), `npm run verify:quiz` (live, temporary user, cleaned up).
+
+## Phase A (docs/22) — Guest saving, toasts, Swap search (21 Oct 2026)
+
+- **Guests save in the browser** (`beesyde-lists-v1`, same limits as the account: 20 lists, 100 places, 60-char names, 280-char notes). Each guest item keeps its signed selection. On sign-in the lists move to the account; any place the server refuses stays on the device and the user is told which ones — nothing is dropped silently.
+- **Expired selections are accepted only for saving to a list** (`verifySavedSelection`), because a guest's list can be days old when it moves. The HMAC signature is still required, so only places this server returned can be saved. Every other path (Passport, Swap, Explore, hidden places) still rejects expired selections. It is a separate function rather than a flag so `.map(verifySelection)` cannot pass an index as "allow expired" (TypeScript caught that while building).
+- **Feedback is a toast** at the bottom of the screen, with Undo for like, "Not for me" and list changes. Page status lines remain for loading and result counts.
+- **Swap searches only when "Swap it" / "Update results" is pressed.** Changing chips or price marks the results as out of date instead of re-running Qloo.

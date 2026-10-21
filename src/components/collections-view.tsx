@@ -1,44 +1,33 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { AuthButton } from "./auth-button";
 import { authClient } from "@/lib/auth/client";
-import {
-  loadCollections,
-  removeFromCollection,
-  deleteCollection,
-  type Collection,
-} from "@/lib/account";
+import { removeFromList, deleteList } from "@/lib/saved";
+import { useSavedLists } from "./save-button";
+import { useToast } from "./toast";
 
-// Saved Swap results grouped by collection (E06). Signed-in only.
+// Saved places grouped by list (docs/22 F1-F3). Guests see this device's
+// lists; signed in, they move to the account and follow you everywhere.
 export function CollectionsView() {
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
-  const [collections, setCollections] = useState<Collection[] | null>(null),
-    [busy, setBusy] = useState(false),
-    [status, setStatus] = useState("");
-  useEffect(() => {
-    if (!userId) return;
-    let active = true;
-    loadCollections()
-      .then((list) => active && setCollections(list))
-      .catch((e) => active && setStatus((e as Error).message));
-    return () => {
-      active = false;
-    };
-  }, [userId]);
+  const toast = useToast();
+  const { lists, loaded, reload } = useSavedLists(!isPending, userId);
+  const [busy, setBusy] = useState(false);
   async function run(action: () => Promise<void>, done: string) {
     setBusy(true);
     try {
       await action();
-      setCollections(await loadCollections());
-      setStatus(done);
+      await reload();
+      toast(done);
     } catch (e) {
-      setStatus((e as Error).message);
+      toast((e as Error).message, { error: true });
     } finally {
       setBusy(false);
     }
   }
+  const anyLocal = lists.some((l) => l.local);
   return (
     <>
       <span className="meta">Collections</span>
@@ -47,29 +36,18 @@ export function CollectionsView() {
         <br />
         <em>Grouped by trip.</em>
       </h1>
-      {isPending ? (
-        <p className="meta">Checking sign-in…</p>
-      ) : !userId ? (
+      {!loaded ? (
+        <p className="meta">Loading your lists…</p>
+      ) : lists.length === 0 ? (
         <section className="paper">
-          <h2>Sign in to keep collections.</h2>
-          <p>
-            Collections are saved to your account, so they follow you to your phone and back.
-            Sign in, then save places from Explore or Swap.
-          </p>
-          <AuthButton />
-        </section>
-      ) : collections === null ? (
-        <p className="meta">{status || "Loading your collections…"}</p>
-      ) : collections.length === 0 ? (
-        <section className="paper">
-          <h2>No collections yet.</h2>
-          <p>Open a city in Explore and choose “Save to a collection” on a place you like.</p>
+          <h2>No saved places yet.</h2>
+          <p>Open a city in Explore and press ♡ Save on a place you like. You can make one list per trip.</p>
           <Link className="ticket" href="/explore">
             Explore a city
           </Link>
         </section>
       ) : (
-        collections.map((c) => (
+        lists.map((c) => (
           <section className="divider" key={c.id}>
             <div className="row">
               <h2>{c.name}</h2>
@@ -77,13 +55,14 @@ export function CollectionsView() {
                 className="text"
                 disabled={busy}
                 onClick={() => {
-                  if (confirm(`Delete the collection “${c.name}” and its places?`))
-                    run(() => deleteCollection(c.id), `Deleted “${c.name}”.`);
+                  if (confirm(`Delete the list “${c.name}” and its places?`))
+                    run(() => deleteList(c), `Deleted “${c.name}”.`);
                 }}
               >
-                Delete collection
+                Delete list
               </button>
             </div>
+            {c.local && <p className="meta">On this device only</p>}
             {c.items.length === 0 ? (
               <p className="muted">Empty.</p>
             ) : (
@@ -114,10 +93,7 @@ export function CollectionsView() {
                       className="text"
                       disabled={busy}
                       onClick={() =>
-                        run(
-                          () => removeFromCollection(c.id, item.placeId),
-                          `Removed ${item.name} from “${c.name}”.`,
-                        )
+                        run(() => removeFromList(c, item.placeId), `Removed ${item.name} from “${c.name}”.`)
                       }
                     >
                       Remove
@@ -129,9 +105,17 @@ export function CollectionsView() {
           </section>
         ))
       )}
-      <p role="status" aria-live="polite">
-        {collections !== null && status}
-      </p>
+      {loaded && !userId && (
+        <section className="paper">
+          <h2>Keep your lists on every device.</h2>
+          <p>
+            {anyLocal
+              ? "These lists are saved on this device. Sign in and they move to your account, so they follow you to your phone and back."
+              : "Sign in and your lists follow you to your phone and back."}
+          </p>
+          <AuthButton />
+        </section>
+      )}
     </>
   );
 }

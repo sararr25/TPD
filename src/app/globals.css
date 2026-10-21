@@ -15,3 +15,33 @@
 .steps{list-style:none;padding:0;margin:20px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.steps li{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-card);padding:24px}.steps h3{margin:6px 0}.steps .meta{display:block;margin-top:14px}.city-list{list-style:none;padding:0;margin:16px 0;display:flex;flex-wrap:wrap;gap:10px}.city-list li{border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:16px;background:var(--paper)}@media(max-width:850px){.steps{grid-template-columns:1fr}}
 .grid>*{min-width:0}.pp-title{overflow-wrap:anywhere}@media(max-width:850px){.pp-axes li{font-size:11px}}
 main{overflow-x:clip}
+/* Phase A (docs/22): toasts, card actions, save sheet, clickable city pills. */
+.toast-region{position:fixed;left:0;right:0;bottom:24px;display:flex;justify-content:center;padding:0 16px;z-index:50;pointer-events:none}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:16px;max-width:560px;background:var(--pass);color:var(--on-pass);border-radius:var(--radius-card);padding:12px 12px 12px 20px;box-shadow:0 18px 40px -18px #26242caa;font-size:15px;animation:toast-in .2s ease-out}
+.toast[data-error]{box-shadow:inset 4px 0 var(--stamp),0 18px 40px -18px #26242caa}
+.toast button{background:transparent;border:1px solid #ffffff66;color:inherit;border-radius:var(--radius);padding:8px 12px;font:600 14px var(--display)}
+.toast button:hover{border-color:#fff}
+.toast .toast-close{border:0;font-size:20px;line-height:1;padding:4px 8px;opacity:.7}
+@keyframes toast-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.result{display:flex;flex-direction:column}.result .body{flex:1}
+.card-actions{display:flex;flex-wrap:wrap;gap:8px;padding:0 24px 20px}
+.icon-button{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font:500 14px var(--display);color:var(--ink);text-decoration:none;transition:border-color .15s,color .15s,transform .1s}
+.icon-button:hover{border-color:var(--ink)}
+.icon-button:active{transform:scale(.96)}
+.icon-button[aria-pressed=true],.icon-button[data-on]{border-color:var(--stamp);color:var(--stamp)}
+.save{position:relative}
+.save-sheet{position:absolute;left:0;bottom:calc(100% + 8px);z-index:20;width:min(300px,80vw);background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-card);box-shadow:var(--shadow);padding:16px;display:grid;gap:12px;font-size:15px}
+.save-sheet ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:200px;overflow:auto}
+.save-sheet li label{display:flex;align-items:center;gap:8px;margin:0;padding:8px;border-radius:var(--radius);cursor:pointer}
+.save-sheet li label:hover{background:var(--bg)}
+.save-sheet li input{width:auto;accent-color:var(--stamp)}
+.save-sheet li span:first-of-type{flex:1}
+.save-sheet label{margin:0 0 4px}
+.save-new{display:flex;gap:8px}.save-new input{padding:8px}.save-new .stamp{margin:0;white-space:nowrap}
+.save-sheet details input{margin-top:8px;padding:8px}.save-sheet p{margin:0}
+.city-list a{display:block;padding:8px 16px;text-decoration:none}.city-list li{padding:0}.city-list li:hover{border-color:var(--ink)}
+.page-status{min-height:24px;font-size:15px}
+@media(prefers-reduced-motion:reduce){.toast{animation:none}.icon-button{transition:none}}
+/* The save sheet must not be clipped by its card; the stub keeps the round corners. */
+.result{overflow:visible}.result .stub{border-radius:0 0 12px 12px}
+.save-sheet{width:min(320px,calc(100vw - 32px))}

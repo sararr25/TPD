@@ -5,6 +5,7 @@ import {
   LIVE_PASSPORT_KEY,
   CITIES,
   EXPLORE_TAGS,
+  chipTags,
   type Entity,
   type ExploreCategory,
 } from "@/lib/discovery";
@@ -15,11 +16,13 @@ import {
   loadAccountPassport,
   loadHidden,
   hidePlace,
-  loadCollections,
+  unhidePlace,
   type Hidden,
 } from "@/lib/account";
-import { SaveToCollection } from "./save-to-collection";
+import { SaveButton, useSavedLists } from "./save-button";
 import { useFeedback } from "./use-feedback";
+import { useToast } from "./toast";
+import { useCity } from "./use-city";
 import { feedbackSignal } from "@/lib/feedback";
 
 type Payload = {
@@ -36,23 +39,23 @@ const CATEGORY_LABEL: Record<ExploreCategory, string> = {
   hotel: "Hotels",
   neighbourhood: "Neighbourhoods",
 };
-// A few readable Qloo tags per place (cuisine, ambience, offerings).
-const SHOWN_TAG = /^urn:tag:(cuisine:place|ambience:qloo|offerings:place|interests:qloo)$/;
 
 // Explore a city (docs/17 D2): the Passport alone picks places, no reference.
 export function ExploreView() {
+  const toast = useToast();
   const [passport, setPassport] = useState<Selection[]>([]),
     [ready, setReady] = useState(false),
-    [city, setCity] = useState("Paris"),
+    [city, setCity, cityKnown] = useCity(),
     [category, setCategory] = useState<ExploreCategory>("restaurant"),
     [data, setData] = useState<Payload | null>(null),
     [busy, setBusy] = useState(false),
     [status, setStatus] = useState(""),
-    [hidden, setHidden] = useState<Hidden[]>([]),
-    [names, setNames] = useState<string[]>([]);
+    [hidden, setHidden] = useState<Hidden[]>([]);
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
-  const { current: feedback, vote, voted } = useFeedback(!isPending, userId, setStatus);
+  const showError = (m: string) => toast(m, { error: true });
+  const { current: feedback, vote, unvote, voted } = useFeedback(!isPending, userId, showError);
+  const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
   // Same Passport source as Swap: the account copy when signed in.
   useEffect(() => {
     if (isPending) return;
@@ -67,7 +70,6 @@ export function ExploreView() {
     ];
     if (userId)
       loads.push(
-        loadCollections().then((list) => active && setNames(list.map((c) => c.name))),
         loadAccountPassport().then((account) => {
           if (!active || !account) return;
           setPassport(account);
@@ -84,7 +86,8 @@ export function ExploreView() {
     };
   }, [isPending, userId]);
   useEffect(() => {
-    if (!ready || passport.length < 3) return;
+    // Wait for the remembered city, so no Paris search is wasted first.
+    if (!ready || !cityKnown || passport.length < 3) return;
     const controller = new AbortController();
     let active = true;
     setBusy(true);
@@ -120,24 +123,45 @@ export function ExploreView() {
       controller.abort();
     };
     // Hidden places are sent with the next search, not re-run on every hide.
-  }, [ready, passport, city, category]);
+  }, [ready, cityKnown, passport, city, category]);
+  // Like is a toggle (docs/22 F8); the toast confirms where you are looking.
   async function like(place: Entity) {
     try {
-      await vote(place, 1);
-      setStatus(`Noted: more places like ${place.name}. A few agreeing votes change your Passport.`);
+      if (voted(place.id) === 1) {
+        await unvote(place.id);
+        toast(`Removed your like for ${place.name}.`);
+      } else {
+        await vote(place, 1);
+        toast(`Liked ${place.name}. Places like it will come up more.`, {
+          action: { label: "Undo", run: () => unvote(place.id).catch((e) => showError(e.message)) },
+        });
+      }
     } catch (error) {
-      setStatus((error as Error).message);
+      showError((error as Error).message);
     }
   }
+  // Not for me hides the card at once, with Undo in the toast (docs/22 F7).
   async function notForMe(place: Entity, token: string) {
     const item = { id: place.id, name: place.name };
     setHidden((list) => [...list.filter((h) => h.id !== item.id), item]);
     try {
       await hidePlace(item, token, !!userId);
       if (category !== "neighbourhood") await vote(place, -1);
-      setStatus(`${place.name} won’t come up again. Show it again from your Passport page.`);
+      toast(`${place.name} is hidden and won’t come up again.`, {
+        action: { label: "Undo", run: () => undoHide(place) },
+      });
     } catch (error) {
-      setStatus((error as Error).message);
+      showError((error as Error).message);
+    }
+  }
+  async function undoHide(place: Entity) {
+    setHidden((list) => list.filter((h) => h.id !== place.id));
+    try {
+      await unhidePlace(place.id, !!userId);
+      if (category !== "neighbourhood") await unvote(place.id);
+      toast(`${place.name} is back.`);
+    } catch (error) {
+      showError((error as Error).message);
     }
   }
   const museums = CITIES[city].museums;
@@ -154,7 +178,7 @@ export function ExploreView() {
           <h2>First, a little about you.</h2>
           <p>Take the quiz or choose 3–5 favourites so your Passport can pick places.</p>
           <Link className="ticket" href="/passport">
-            Make my Passport ↗
+            Make my Passport
           </Link>
         </section>
       ) : (
@@ -187,9 +211,7 @@ export function ExploreView() {
                 : `Our data has only a few museums in ${city}: most Passports will see the same ones.`}
             </p>
           )}
-          <p role="status" aria-live="polite">
-            {status}
-          </p>
+          <p className="page-status" aria-live="polite">{status}</p>
           {data && data.results.length > 0 && (
             <>
               <p className="muted">
@@ -211,9 +233,9 @@ export function ExploreView() {
                         ) : (
                           <>
                             <p>{place.address}</p>
+                            {/* Cuisine and atmosphere first, like Swap's chips (docs/22 F10). */}
                             <p className="muted">
-                              {place.tags
-                                .filter((t) => SHOWN_TAG.test(t.type))
+                              {chipTags(place, category === "museum" ? "museum" : "restaurant")
                                 .slice(0, 4)
                                 .map((t) => t.name)
                                 .join(" · ")}
@@ -223,38 +245,36 @@ export function ExploreView() {
                         {(category === "restaurant" || category === "bar") && (
                           <p className="muted">Price level: {place.price ? `${place.price} of 4` : "unknown"}</p>
                         )}
-                        <div className="actions">
-                          <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`}
-                            target="_blank"
-                            rel="noreferrer"
+                      </div>
+                      <div className="card-actions">
+                        <SaveButton
+                          place={place}
+                          token={token}
+                          city={city}
+                          lists={lists}
+                          signedIn={signedIn}
+                          onChange={reload}
+                        />
+                        {category !== "neighbourhood" && (
+                          <button
+                            className="icon-button"
+                            aria-pressed={voted(place.id) === 1}
+                            onClick={() => like(place)}
                           >
-                            Open in Maps ↗
-                          </a>
-                          {category !== "neighbourhood" && (
-                            <button
-                              className="text"
-                              aria-pressed={voted(place.id) === 1}
-                              onClick={() => like(place)}
-                            >
-                              {voted(place.id) === 1 ? "Liked ✓" : "Yes, more like this"}
-                            </button>
-                          )}
-                          <button className="text" onClick={() => notForMe(place, token)}>
-                            Not for me
+                            <span aria-hidden>👍</span> {voted(place.id) === 1 ? "Liked" : "More like this"}
                           </button>
-                        </div>
-                        {userId ? (
-                          <SaveToCollection
-                            token={token}
-                            names={names.length ? names : [city]}
-                            onSaved={(name) =>
-                              setNames((list) => (list.includes(name) ? list : [...list, name]))
-                            }
-                          />
-                        ) : (
-                          <p className="muted">Sign in to save places to a collection.</p>
                         )}
+                        <button className="icon-button" onClick={() => notForMe(place, token)}>
+                          <span aria-hidden>✕</span> Not for me
+                        </button>
+                        <a
+                          className="icon-button"
+                          href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <span aria-hidden>↗</span> Map
+                        </a>
                       </div>
                       <div className="stub">
                         Picked by Qloo for your taste

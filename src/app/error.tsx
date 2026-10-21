@@ -9,7 +9,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
       </h1>
       <p>We couldn’t load this page. You can try again.</p>
       <button className="ticket" onClick={reset}>
-        Try again ↗
+        Try again
       </button>
     </section>
   );

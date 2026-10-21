@@ -77,6 +77,11 @@ export function addVote(fb: Feedback, vote: Vote): Feedback {
   return cleanFeedback({ ...fb, votes: [...fb.votes.filter((v) => v.id !== vote.id), vote] });
 }
 
+// Undo (docs/22 F7, F8): forget the vote for one place.
+export function removeVote(fb: Feedback, id: string): Feedback {
+  return cleanFeedback({ ...fb, votes: fb.votes.filter((v) => v.id !== id) });
+}
+
 type Score = { id: string; name: string; yes: number; no: number };
 export function tagScores(fb: Feedback): Score[] {
   const scores = new Map<string, Score>();

@@ -12,6 +12,7 @@ import { normalizeEntity, entities, qloo } from "../src/lib/server/qloo.ts";
 import {
   selection,
   verifySelection,
+  verifySavedSelection,
   swap,
   lookup,
 } from "../src/lib/server/discovery-service.ts";
@@ -151,6 +152,19 @@ assert.deepEqual(entities({ results: "unexpected" }), []);
 const signed = selection(ref);
 assert.equal(verifySelection(signed.token).id, ref.id);
 assert.throws(() => verifySelection(signed.token + "tampered"));
+// Saved lists (docs/22): an expired but genuine selection is accepted only
+// when saving to a list; tampering is refused everywhere, and .map() cannot
+// pass an index that would relax the expiry for Passports.
+const realNow = Date.now;
+Date.now = () => realNow() + 3 * 24 * 3600000;
+try {
+  assert.throws(() => verifySelection(signed.token), (e) => e.code === "expired_selection");
+  assert.throws(() => [signed.token, signed.token].map(verifySelection), (e) => e.code === "expired_selection");
+  assert.equal(verifySavedSelection(signed.token).id, ref.id);
+  assert.throws(() => verifySavedSelection(signed.token + "tampered"), (e) => e.code === "invalid_selection");
+} finally {
+  Date.now = realNow;
+}
 assert.throws(
   () => verifySelection(""),
   (e) => e.code === "invalid_selection",

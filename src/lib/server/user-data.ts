@@ -1,6 +1,6 @@
 import "server-only";
 import { UUID } from "../discovery.ts";
-import { verifySelection } from "./discovery-service.ts";
+import { verifySelection, verifySavedSelection } from "./discovery-service.ts";
 import { DiscoveryError } from "./qloo.ts";
 import { db } from "./user-passport.ts";
 
@@ -84,7 +84,9 @@ export async function saveToCollection(userId: string, nameValue: unknown, token
   if (noteValue !== undefined && (typeof noteValue !== "string" || noteValue.length > LIMITS.note))
     throw new DiscoveryError("invalid_collection", 400);
   const note = typeof noteValue === "string" && noteValue.trim() ? noteValue.trim() : null;
-  const place = verifySelection(token);
+  // Lists may move from a guest's browser days later (docs/22): accept an
+  // expired but genuinely signed selection here only.
+  const place = verifySavedSelection(token);
   const sql = db();
   const existing = await sql.query("SELECT id FROM collection WHERE user_id = $1 AND name = $2", [userId, name]);
   let id: string;

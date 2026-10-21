@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import {
   LIVE_PASSPORT_KEY,
@@ -21,10 +21,12 @@ import {
   loadAccountPassport,
   loadHidden,
   hidePlace,
-  loadCollections,
+  unhidePlace,
   type Hidden,
 } from "@/lib/account";
-import { SaveToCollection } from "./save-to-collection";
+import { SaveButton, useSavedLists } from "./save-button";
+import { useToast } from "./toast";
+import { useCity } from "./use-city";
 import type { CheckStatus } from "@/lib/venue-check";
 type Payload = {
   results: Result[];
@@ -47,7 +49,15 @@ const CHECK_LABEL: Record<CheckStatus, string> = {
 };
 export function SwapWorkspace() {
   const [category, setCategory] = useState<PlaceCategory>("restaurant"),
-    [city, setCity] = useState("Paris");
+    [city, setCity, cityKnown] = useCity();
+  // Each city and category keeps its own progress (docs/22 F15): switching
+  // back shows the place, chips and results you left there. Tracking starts
+  // once the remembered city is known, so no stray Paris workspace is made.
+  const key = `${city}|${category}`;
+  const [visited, setVisited] = useState<string[]>([]);
+  useEffect(() => {
+    if (cityKnown) setVisited((list) => (list.includes(key) ? list : [...list, key]));
+  }, [key, cityKnown]);
   return (
     <>
       <span className="meta">Swap · {city}</span>
@@ -76,12 +86,14 @@ export function SwapWorkspace() {
           </button>
         ))}
       </div>
-      <CategoryWorkspace
-        key={`${city}-${category}`}
-        city={city}
-        category={category}
-        onTransfer={setCategory}
-      />
+      {visited.map((k) => {
+        const [c, cat] = k.split("|") as [string, PlaceCategory];
+        return (
+          <div key={k} hidden={k !== key}>
+            <CategoryWorkspace city={c} category={cat} onTransfer={setCategory} />
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -90,6 +102,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
   category: PlaceCategory;
   onTransfer: (category: PlaceCategory) => void;
 }) {
+  const uid = useId();
   const museum = category === "museum";
   const museums = CITIES[city].museums;
   const searchController = useRef<AbortController | null>(null);
@@ -108,7 +121,10 @@ function CategoryWorkspace({ city, category, onTransfer }: {
     [started, setStarted] = useState(false),
     [attempt, setAttempt] = useState(0),
     [hidden, setHidden] = useState<Hidden[]>([]),
-    [names, setNames] = useState<string[]>([]);
+    // Chips or budget changed since the results on screen (docs/22 F14).
+    [stale, setStale] = useState(false);
+  const toast = useToast();
+  const showError = (m: string) => toast(m, { error: true });
   // Read at request time so hiding a card does not re-run the current Swap.
   const hiddenIds = useRef<string[]>([]);
   useEffect(() => {
@@ -116,7 +132,8 @@ function CategoryWorkspace({ city, category, onTransfer }: {
   }, [hidden]);
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
-  const { current: feedback, vote, voted } = useFeedback(!isPending, userId, setStatus);
+  const { current: feedback, vote, unvote, voted } = useFeedback(!isPending, userId, showError);
+  const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
   // Signed in: use the account Passport (freshly signed, works on any device).
   useEffect(() => {
     if (isPending) return;
@@ -137,9 +154,6 @@ function CategoryWorkspace({ city, category, onTransfer }: {
         active = false;
       };
     }
-    loadCollections()
-      .then((list) => active && setNames(list.map((c) => c.name)))
-      .catch((e) => active && setStatus((e as Error).message));
     loadAccountPassport()
       .then((account) => {
         if (!active || !account) return;
@@ -159,8 +173,8 @@ function CategoryWorkspace({ city, category, onTransfer }: {
     const controller = new AbortController();
     let active = true;
     setBusy(true);
-    setData(null);
-    setStatus("Finding alternatives with Qloo…");
+    setStale(false);
+    setStatus("Finding alternatives…");
     discovery<Payload>(
       {
         action: "swap",
@@ -204,7 +218,9 @@ function CategoryWorkspace({ city, category, onTransfer }: {
       active = false;
       controller.abort();
     };
-  }, [started, reference, passport, choices, budget, attempt, category, city]);
+    // Only "Swap it" (attempt) or a new starting place runs a search
+    // (docs/22 F14); chips and budget are read from the render that pressed it.
+  }, [started, reference, attempt]);
   async function search(e: React.FormEvent) {
     e.preventDefault();
     searchController.current?.abort();
@@ -257,23 +273,42 @@ function CategoryWorkspace({ city, category, onTransfer }: {
     try {
       await hidePlace(place, result.token!, !!userId);
       await vote(result.place, -1);
-      setStatus(
-        `${place.name} won’t come up in your next Swaps. Show it again from your Passport page.`,
-      );
+      toast(`${place.name} is hidden and won’t come up in your next Swaps.`, {
+        action: { label: "Undo", run: () => undoHide(result) },
+      });
     } catch (error) {
-      setStatus((error as Error).message);
+      showError((error as Error).message);
     }
   }
-  async function like(result: Result) {
+  async function undoHide(result: Result) {
+    setHidden((list) => list.filter((h) => h.id !== result.place.id));
     try {
-      await vote(result.place, 1);
-      setStatus(`Noted: more places like ${result.place.name}. A few agreeing votes change your Passport.`);
+      await unhidePlace(result.place.id, !!userId);
+      await unvote(result.place.id);
+      toast(`${result.place.name} is back.`);
     } catch (error) {
-      setStatus((error as Error).message);
+      showError((error as Error).message);
+    }
+  }
+  // Like is a toggle with Undo (docs/22 F8).
+  async function like(result: Result) {
+    const place = result.place;
+    try {
+      if (voted(place.id) === 1) {
+        await unvote(place.id);
+        toast(`Removed your like for ${place.name}.`);
+      } else {
+        await vote(place, 1);
+        toast(`Liked ${place.name}. Places like it will come up more.`, {
+          action: { label: "Undo", run: () => unvote(place.id).catch((e) => showError(e.message)) },
+        });
+      }
+    } catch (error) {
+      showError((error as Error).message);
     }
   }
   function changeTag(tagId: string, mode: Choice["mode"]) {
-    setData(null);
+    if (data) setStale(true);
     setChoices((values) =>
       values.map((c) => (c.tagId === tagId ? { ...c, mode } : c)),
     );
@@ -299,7 +334,7 @@ function CategoryWorkspace({ city, category, onTransfer }: {
             Choose 3–5 real favourites so your Passport can guide this search.
           </p>
           <Link className="ticket" href="/passport">
-            Make my Passport ↗
+            Make my Passport
           </Link>
         </section>
       ) : (
@@ -308,9 +343,9 @@ function CategoryWorkspace({ city, category, onTransfer }: {
             <section className="paper">
               <span className="meta">Step 1 · The place you wanted</span>
               <form onSubmit={search}>
-                <label htmlFor="reference">The {category} you wanted</label>
+                <label htmlFor={uid + "-reference"}>The {category} you wanted</label>
                 <input
-                  id="reference"
+                  id={uid + "-reference"}
                   placeholder={museum ? "Museum name" : "Restaurant name"}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -390,12 +425,12 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                   )}
                   {!museum && (
                     <>
-                      <label htmlFor="budget">Price, at most</label>
+                      <label htmlFor={uid + "-budget"}>Price, at most</label>
                       <select
-                        id="budget"
+                        id={uid + "-budget"}
                         value={budget}
                         onChange={(e) => {
-                          setData(null);
+                          if (data) setStale(true);
                           setBudget(e.target.value);
                         }}
                       >
@@ -420,9 +455,14 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                         setAttempt((n) => n + 1);
                       }}
                     >
-                      {busy ? "Finding alternatives…" : "Swap it ↗"}
+                      {busy ? "Finding alternatives…" : stale ? "Update results" : "Swap it"}
                     </button>
                   </div>
+                  {stale && !busy && (
+                    <p className="muted" role="note">
+                      You changed what to keep or the price. Press Update results to see new alternatives.
+                    </p>
+                  )}
                 </>
               ) : (
                 <p>Find your {category} first. Then choose what you liked about it (to keep) and what you would change.</p>
@@ -512,43 +552,39 @@ function CategoryWorkspace({ city, category, onTransfer }: {
                         {new Date(data.checkedAt).toLocaleString()}
                       </p>
                     </details>
-                    {result.place.lat !== null && result.place.lon !== null && (
-                      <div className="actions">
-                        <a
-                          href={`https://www.google.com/maps/dir/?api=1&destination=${result.place.lat},${result.place.lon}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Open directions ↗
-                        </a>
-                      </div>
-                    )}
+                  </div>
+                  <div className="card-actions">
                     {result.token && (
                       <>
-                        <div className="actions">
-                          <button
-                            className="text"
-                            aria-pressed={voted(result.place.id) === 1}
-                            onClick={() => like(result)}
-                          >
-                            {voted(result.place.id) === 1 ? "Liked ✓" : "Yes, more like this"}
-                          </button>
-                          <button className="text" onClick={() => notForMe(result)}>
-                            Not for me
-                          </button>
-                        </div>
-                        {userId ? (
-                          <SaveToCollection
-                            token={result.token}
-                            names={names}
-                            onSaved={(name) =>
-                              setNames((list) => (list.includes(name) ? list : [...list, name]))
-                            }
-                          />
-                        ) : (
-                          <p className="muted">Sign in to save places to a collection.</p>
-                        )}
+                        <SaveButton
+                          place={result.place}
+                          token={result.token}
+                          city={city}
+                          lists={lists}
+                          signedIn={signedIn}
+                          onChange={reload}
+                        />
+                        <button
+                          className="icon-button"
+                          aria-pressed={voted(result.place.id) === 1}
+                          onClick={() => like(result)}
+                        >
+                          <span aria-hidden>👍</span> {voted(result.place.id) === 1 ? "Liked" : "More like this"}
+                        </button>
+                        <button className="icon-button" onClick={() => notForMe(result)}>
+                          <span aria-hidden>✕</span> Not for me
+                        </button>
                       </>
+                    )}
+                    {result.place.lat !== null && result.place.lon !== null && (
+                      <a
+                        className="icon-button"
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${result.place.lat},${result.place.lon}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <span aria-hidden>↗</span> Directions
+                      </a>
                     )}
                   </div>
                   <div className="stub" data-check={result.check?.status}>

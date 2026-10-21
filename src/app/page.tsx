@@ -58,7 +58,9 @@ export default function Home() {
         <span className="meta" id="cities">Where</span>
         <ul className="city-list">
           {Object.keys(CITIES).map((c) => (
-            <li key={c}>{c}</li>
+            <li key={c}>
+              <Link href={`/explore?city=${encodeURIComponent(c)}`}>{c}</Link>
+            </li>
           ))}
         </ul>
         <p className="muted">

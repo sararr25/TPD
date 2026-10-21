@@ -257,7 +257,7 @@ export function ExploreView() {
                         )}
                       </div>
                       <div className="stub">
-                        L0 · Qloo taste recommendation
+                        Picked by Qloo for your taste
                         <br />
                         {category === "hotel"
                           ? "Prices and availability not verified"

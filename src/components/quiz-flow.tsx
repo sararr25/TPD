@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { QuizIcon } from "./quiz-icon";
 import {
   QUESTIONS,
   BOTH,
@@ -121,7 +122,7 @@ function QuestionScreen({
         <h2 id="quiz-title">{q.title}</h2>
         <div className="quiz-slider">
           <span>
-            <b aria-hidden>{q.left.emoji}</b> {q.left.label}
+            <QuizIcon emoji={q.left.emoji} /> {q.left.label}
           </span>
           <input
             type="range"
@@ -134,7 +135,7 @@ function QuestionScreen({
             onChange={(e) => setValue(Number(e.target.value))}
           />
           <span>
-            <b aria-hidden>{q.right.emoji}</b> {q.right.label}
+            <QuizIcon emoji={q.right.emoji} /> {q.right.label}
           </span>
         </div>
         <div className="actions">
@@ -159,7 +160,7 @@ function QuestionScreen({
               aria-pressed={value === o.id}
               onClick={() => onLeave(o.id)}
             >
-              <span className="quiz-emoji" aria-hidden>{o.emoji}</span>
+              <QuizIcon emoji={o.emoji} />
               {o.label}
               {i === 0 && <span className="quiz-or" aria-hidden>or</span>}
             </button>
@@ -172,7 +173,7 @@ function QuestionScreen({
             aria-pressed={value === BOTH}
             onClick={() => onLeave(BOTH)}
           >
-            🤹 Both, it depends on the day
+            Both, it depends on the day
           </button>
         </div>
         {nav}
@@ -201,7 +202,7 @@ function QuestionScreen({
                   })
                 }
               >
-                <span className="quiz-emoji" aria-hidden>{o.emoji}</span>
+                <QuizIcon emoji={o.emoji} />
                 {o.label}
               </button>
             );
@@ -281,7 +282,7 @@ function SwipeDeck({
           if (e.key === "ArrowLeft") decide(false);
         }}
       >
-        <span className="quiz-emoji big" aria-hidden>{card.emoji}</span>
+        <QuizIcon emoji={card.emoji} big />
         <h3>{card.label}</h3>
         {card.note && <p className="muted">{card.note}</p>}
       </div>
@@ -328,7 +329,7 @@ function TopUp({
               disabled={busy || (!on && extra.length >= room)}
               onClick={() => setExtra(on ? extra.filter((x) => x !== c.id) : [...extra, c.id])}
             >
-              <span className="quiz-emoji" aria-hidden>{c.emoji}</span>
+              <QuizIcon emoji={c.emoji} />
               {c.label}
             </button>
           );
@@ -342,3 +343,4 @@ function TopUp({
     </>
   );
 }
+

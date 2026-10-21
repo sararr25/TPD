@@ -4,7 +4,7 @@ import "./globals.css";
 import { AuthButton } from "@/components/auth-button";
 export const metadata: Metadata = {
   title: "Beesyde · Taste Passport",
-  description: "Keep what you love. Change what does not work.",
+  description: "Travel by taste: a short quiz, a Taste Passport, and places in 11 cities picked for you.",
 };
 export default function RootLayout({
   children,
@@ -13,8 +13,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div className="notice">
-          11 CITIES · Live Qloo taste recommendations · Operational details
-          unverified
+          11 cities · Taste picks by Qloo · Check hours and prices before you go
         </div>
         <header>
           <Link className="brand" href="/">
@@ -29,7 +28,7 @@ export default function RootLayout({
           <AuthButton />
         </header>
         <main>{children}</main>
-        <footer>Beesyde · Your taste, a different way in.</footer>
+        <footer>Beesyde · Travel by taste.</footer>
       </body>
     </html>
   );

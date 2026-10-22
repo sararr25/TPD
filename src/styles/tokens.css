@@ -36,14 +36,17 @@
   --stamp: #e8462e;
   --stamp-ink: #c2321c;
   --sun: #ffe14d;
+  /* Large yellow areas: full lemon is too loud at panel size. Ink 14.7. */
+  --sun-soft: #f6edc4;
 
-  /* The passport cover is the brand colour. */
-  --pass: var(--brand);
+  /* Large brand areas (passport cover, hero, city header) use a desaturated
+     berry; full --brand stays for buttons and small marks. White 7.4, sun 5.7. */
+  --pass: #6b4a73;
   --on-pass: var(--on-brand);
 
   /* Per-city accent (ADR 0004: one colour from the cover photo).
      Not wired per city yet: every city uses the brand colour. */
-  --city-accent: var(--brand);
+  --city-accent: var(--pass);
   --on-city-accent: var(--on-brand);
 
   --scrim: rgb(30 22 48 / 0.45);

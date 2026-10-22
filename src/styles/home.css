@@ -398,7 +398,7 @@
   margin: var(--space-18) 0 var(--space-10);
   padding: clamp(var(--space-8), 5vw, 64px);
   border-radius: var(--radius-panel);
-  background: var(--sun);
+  background: var(--sun-soft);
   color: var(--ink);
 }
 

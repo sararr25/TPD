@@ -13,7 +13,7 @@ const C = {
   ink: "#1E1630",
   ink2: "#565064",
   line: "#D4D6DA",
-  pass: "#7E2B8F",
+  pass: "#6B4A73",
   onPass2: "#F1DDF5",
   brand: "#7E2B8F",
   stamp: "#E8462E",

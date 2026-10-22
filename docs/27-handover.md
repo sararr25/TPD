@@ -80,3 +80,15 @@ Local logs are `/tmp/tpd-continuation-final-tests.log` and
 
 `implement-spec`, `code-review` and, for discovery semantics, `tdd` at the public
 Swap/service seam. Read AGENTS and the bundled Next docs before changes.
+
+## Release receipt
+
+- Implementation commit `22e9f78` pushed to `claude/blissful-gauss-dymbeo`.
+- Vercel deployment `dpl_8R79QvQ2GdXya8Fg17upAuvDKJyy` is READY and assigned
+  to `https://beesyde.vercel.app`; its Git SHA matches `22e9f78`.
+- Public Home smoke verified the new headline and live Swap entry. This is a
+  production smoke check, not full real-phone or authenticated acceptance.
+- GitHub #27, #28, #29, #30, #31, #33 and #34 closed with implementation receipts.
+  #26 and #32 remain open as `ready-for-human`: private screenshot/visual
+  acceptance and real signed-in/cross-device acceptance respectively. Parent #3
+  stays open. No closed tickets from the earlier session were reopened.

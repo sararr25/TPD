@@ -28,6 +28,7 @@ import {
 } from "@/lib/account";
 import { useSavedLists } from "./save-button";
 import { PlaceCard } from "./place-card";
+import { CityMap } from "./city-map";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
 import { EmptyState, LoadingCards } from "./empty-state";
@@ -180,6 +181,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     [started, setStarted] = useState(false),
     [attempt, setAttempt] = useState(0),
     [hidden, setHidden] = useState<Hidden[]>([]),
+    [activeResult, setActiveResult] = useState<string | null>(null),
     // Chips or budget changed since the results on screen (docs/22 F14).
     [stale, setStale] = useState(false);
   // Fewer than 3 picks is no Passport: Swap then runs on the starting place alone.
@@ -189,6 +191,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   const showError = (m: string) => toast(m, { error: true });
   // Read at request time so hiding a card does not re-run the current Swap.
   const hiddenIds = useRef<string[]>([]);
+  const resultsRegion = useRef<HTMLElement>(null);
   useEffect(() => {
     hiddenIds.current = hidden.map((h) => h.id);
   }, [hidden]);
@@ -398,8 +401,8 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       values.map((c) => (c.tagId === tagId ? { ...c, mode } : c)),
     );
   }
-  const traitNames = (mode: Choice["mode"]) =>
-    choices
+  const traitNames = (mode: Choice["mode"], from = choices) =>
+    from
       .filter((c) => c.mode === mode)
       .map((c) => traitLabel(reference?.entity.tags.find((t) => t.id === c.tagId)?.name ?? c.tagId));
   const keepNames = traitNames("keep"),
@@ -421,6 +424,22 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     return { kept, changed };
   }
   const visibleResults = data?.results.filter((result) => !hidden.some((h) => h.id === result.place.id)) ?? [];
+  // CityMap numbers only places with coordinates, in this same order.
+  const mappedPlaces = visibleResults
+    .map((result) => result.place)
+    .filter((place) => place.lat !== null && place.lon !== null);
+  const resultPins = new Map(mappedPlaces.map((place, i) => [place.id, i + 1]));
+  const usedKeepNames = traitNames("keep", usedChoices),
+    usedChangeNames = traitNames("change", usedChoices);
+  function pickResult(id: string) {
+    setActiveResult(id);
+    // Scope to Swap: the city's hidden For you tab can contain this place too.
+    const card = resultsRegion.current?.querySelector<HTMLElement>(`#place-${CSS.escape(id)}`);
+    card?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "center",
+    });
+  }
   return (
     <>
       <p className="lead">
@@ -506,7 +525,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
               </ul>
               {reference && (
                 <div className="divider">
-                  <h3>{reference.entity.name}</h3>
+                  <h3>{started ? <s>{reference.entity.name}</s> : reference.entity.name}</h3>
                   <p>{reference.entity.address}</p>
                   <span className="meta">
                     Your starting point
@@ -623,7 +642,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       <p role="status" aria-live="polite">
         {status}
       </p>
-      <section aria-label="Alternatives" aria-busy={busy}>
+      <section ref={resultsRegion} aria-label="Alternatives" aria-busy={busy}>
         {busy && <LoadingCards label="Finding twins for your starting place…" />}
         {swapError && !busy && (
           <EmptyState title="Your twins couldn’t load" action={
@@ -655,7 +674,8 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                 Try {museum ? "restaurants" : "museums"} {personal ? "with this Passport" : "too"} ↗
               </button>
             </div>
-            <div className="place-grid">
+            <div className="swap-results-layout">
+            <div className="place-grid swap-results-list">
               {visibleResults.map((result) => (
                 <PlaceCard
                   key={result.place.id}
@@ -730,13 +750,23 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                   onListsChange={reload}
                   onSaved={() => saved(result.place)}
                   onHide={() => notForMe(result)}
-                  active={false}
-                  onHover={() => {}}
-                  pin={null}
+                  active={activeResult === result.place.id}
+                  onHover={setActiveResult}
+                  pin={resultPins.get(result.place.id) ?? null}
                   findSimilar={false}
                   directions
                 />
               ))}
+            </div>
+            <aside className="swap-results-map" aria-label="Map and choices used for these twins">
+              <div className="swap-search-recap">
+                <h3>For this search</h3>
+                <p><strong>Keeping:</strong> {usedKeepNames.length ? joinList(usedKeepNames) : "nothing in particular"}.</p>
+                <p><strong>Changing:</strong> {usedChangeNames.length ? joinList(usedChangeNames) : "nothing in particular"}.</p>
+                {stale && <p className="muted">Your edits above apply when you update the results.</p>}
+              </div>
+              {mappedPlaces.length > 0 && <CityMap places={mappedPlaces} active={activeResult} onPick={pickResult} />}
+            </aside>
             </div>
             {data.results.length > 0 && (
               <p className="muted">

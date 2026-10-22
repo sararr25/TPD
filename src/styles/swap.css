@@ -55,6 +55,69 @@ select + .toggle-group {
   background: var(--paper);
 }
 
+/* Atlas results: numbered twins beside their map and the search choices. */
+.swap-results-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+.swap-results-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.swap-results-map {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.swap-search-recap {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+
+.swap-search-recap h3 {
+  margin: 0 0 var(--space-3);
+}
+
+.swap-search-recap p {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+}
+
+.swap-results-map .city-map {
+  height: 400px;
+  min-height: 300px;
+}
+
+@media (max-width: 1000px) {
+  .swap-results-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Cards come first on smaller screens; the map follows them. */
+  .swap-results-map {
+    position: static;
+  }
+
+  .swap-results-map .city-map {
+    height: 300px;
+  }
+}
+
+@media (max-width: 600px) {
+  .swap-results-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 850px) {
   .segment {
     flex-wrap: wrap;

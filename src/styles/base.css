@@ -1,0 +1,279 @@
+/*
+ * Base: reset, type, forms and the small shared layout pieces
+ * (paper panel, two-column grid, action row, entity list, dialog).
+ */
+
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: var(--weight-regular) var(--text-lg) / var(--leading-body) var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Type */
+p {
+  margin: var(--space-3) 0;
+  color: var(--ink-2);
+}
+
+/* Display headings (ADR 0004): Instrument Serif, upright words thickened
+   with a text stroke; the italic accent is not thickened and is in brand.
+   Display sizes only: small headings opt out (see place-card.css). */
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--font-display);
+  font-weight: var(--weight-regular);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  -webkit-text-stroke: var(--display-stroke) currentColor;
+  paint-order: stroke fill;
+}
+
+:is(h1, h2, h3, .display) em {
+  font-style: italic;
+  color: var(--brand);
+  -webkit-text-stroke: 0;
+}
+
+h1 {
+  margin: var(--space-5) 0 var(--space-6);
+  font-size: var(--display-xl);
+  line-height: 1.02;
+}
+
+h2 {
+  margin: var(--space-3) 0 var(--space-4);
+  font-size: var(--display-md);
+  line-height: 1.1;
+}
+
+h3 {
+  margin: var(--space-3) 0;
+  font-size: var(--display-sm);
+  line-height: 1.2;
+}
+
+/* Mono: dates, codes and labels */
+.meta {
+  font: var(--text-xs) / 1.7 var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+}
+
+.lead {
+  max-width: 560px;
+  font-size: var(--text-xl);
+}
+
+.muted {
+  font-size: var(--text-sm);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Forms */
+label {
+  display: block;
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 15px;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: var(--target);
+  padding: var(--space-3);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+input:hover,
+select:hover {
+  border-color: var(--line-strong);
+}
+
+input::placeholder {
+  color: var(--ink-3);
+}
+
+summary {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+details p {
+  font-size: 15px;
+}
+
+/* Page heading */
+.page-head {
+  margin-bottom: var(--space-8);
+}
+
+.page-head h1 {
+  margin: var(--space-3) 0 var(--space-4);
+  max-width: 20ch;
+}
+
+.page-head .lead {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.page-status {
+  min-height: 24px;
+  font-size: 15px;
+}
+
+/* Layout pieces */
+.grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: var(--space-14);
+  align-items: start;
+}
+
+.grid > * {
+  min-width: 0;
+}
+
+.paper {
+  padding: var(--space-8);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+
+.paper + .paper,
+.paper + dialog + .paper {
+  margin-top: var(--space-4);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.divider {
+  margin-top: var(--space-10);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+/* A list of places / entities with an action on the right */
+.entity-list {
+  list-style: none;
+  margin: var(--space-5) 0;
+  padding: 0;
+}
+
+.entity-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.entity-list p {
+  margin: var(--space-1) 0;
+}
+
+/* Dialog */
+dialog {
+  width: calc(100% - var(--space-8));
+  max-width: 520px;
+  padding: var(--space-8);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+}
+
+dialog::backdrop {
+  background: var(--scrim);
+}
+
+@media (max-width: 850px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .paper {
+    padding: var(--space-6);
+  }
+}
+
+/* Motion is always off with prefers-reduced-motion (ADR 0004). Durations
+   are already zero in tokens.css; this also stops keyframe animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

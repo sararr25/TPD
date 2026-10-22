@@ -125,3 +125,18 @@ export async function deleteList(list: SavedList) {
   if (!list.local) return deleteCollection(list.id);
   storeLocal(localLists().filter((l) => l.id !== list.id));
 }
+
+// Writes the note on a saved place (#16: the note comes after saving). The
+// account upserts the note when the place is already in the list; on this
+// device the item is edited in place.
+export async function setNote(list: SavedList, place: Entity, token: string, note: string) {
+  if (note.length > LIMITS.note) throw new Error("Keep the note under 280 characters.");
+  if (!list.local) return void (await saveToCollection(list.name, token, note));
+  storeLocal(
+    localLists().map((l) =>
+      l.id === list.id
+        ? { ...l, items: l.items.map((i) => (i.placeId === place.id ? { ...i, note: note.trim() || null } : i)) }
+        : l,
+    ),
+  );
+}

@@ -1,0 +1,137 @@
+/*
+ * Design tokens: Oltremare (docs/adr/0004-visual-direction.md).
+ * The only source of colour, type, radius, spacing, shadow and motion.
+ * Light theme only. Component CSS reads these; it never hard-codes values.
+ *
+ * Contrast (WCAG 2.x, text uses):
+ *   ink    #1B1640 on bg 16.0  · on paper 17.0
+ *   ink-2  #4F4A72 on bg  7.5  · on paper  8.2
+ *   ink-3  #6B6690 on paper 5.4 (placeholders, small print)
+ *   brand  #3B2BFF on bg  6.4  · on paper  7.1 · white on brand 7.1
+ *   stamp-ink #C2321C on bg 5.1 (text in stamp red: errors, warnings)
+ *   stamp  #E8462E is 3.9 on paper: stamps, borders and large display text only
+ *   sun    #FFC23D: ink on sun 10.6; sun on brand 4.4 (display sizes only)
+ *   on-brand-2 #E4E1FF on brand 5.5
+ */
+:root {
+  color-scheme: light;
+
+  /* Colour */
+  --bg: #f5f3f9;
+  --paper: #ffffff;
+  --ink: #1b1640;
+  --ink-2: #4f4a72;
+  --ink-3: #6b6690;
+  --line: #ddd9ea;
+  --line-strong: #c9c4dc;
+
+  --brand: #3b2bff;
+  --brand-strong: #2a1cd6; /* hover / pressed on brand */
+  --brand-soft: #eceaff; /* tint behind selected things */
+  --on-brand: #ffffff;
+  --on-brand-2: #e4e1ff; /* secondary text on brand */
+  --on-brand-line: rgb(255 255 255 / 0.45);
+
+  --stamp: #e8462e;
+  --stamp-ink: #c2321c;
+  --sun: #ffc23d;
+
+  /* The passport cover is the brand colour. */
+  --pass: var(--brand);
+  --on-pass: var(--on-brand);
+
+  /* Per-city accent (ADR 0004: one colour from the cover photo).
+     Not wired per city yet: every city uses the brand colour. */
+  --city-accent: var(--brand);
+  --on-city-accent: var(--on-brand);
+
+  --scrim: rgb(27 22 64 / 0.45);
+
+  /* Type: families come from next/font (src/app/layout.tsx). */
+  --font-display: var(--font-instrument-serif), "Instrument Serif", Georgia, serif;
+  --font-body: var(--font-hanken-grotesk), "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), "DM Mono", ui-monospace, monospace;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Text sizes (body font) */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+
+  /* Display sizes (Instrument Serif, thickened). Never below ~22px. */
+  --display-sm: 24px;
+  --display-md: clamp(28px, 3.2vw, 40px);
+  --display-lg: clamp(32px, 4vw, 52px);
+  --display-xl: clamp(44px, 5.4vw, 80px);
+  --display-stroke: 0.025em;
+
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
+  --leading-body: 1.5;
+
+  /* Radius */
+  --radius-control: 8px;
+  --radius-card: 16px;
+  --radius-panel: 24px;
+  --radius-pill: 999px;
+
+  /* Spacing: 4-px scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-18: 72px;
+  --space-20: 80px;
+
+  /* Sizes */
+  --target: 44px; /* minimum touch target */
+  --page-max: 1280px;
+  --page-gutter: 32px;
+
+  /* Shadow (ink-tinted) */
+  --shadow-sm: 0 2px 8px rgb(27 22 64 / 0.16);
+  --shadow: 0 22px 36px -28px rgb(27 22 64 / 0.45);
+  --shadow-lg: 0 24px 48px -16px rgb(27 22 64 / 0.4);
+
+  /* Focus */
+  --focus-ring: 3px solid var(--brand);
+  --focus-offset: 3px;
+
+  /* Motion (ADR 0004: rich, always off with prefers-reduced-motion) */
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-slow: 400ms;
+  --dur-slower: 900ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-stamp: cubic-bezier(0.34, 1.56, 0.64, 1); /* overshoot: a stamp landing */
+}
+
+@media (max-width: 850px) {
+  :root {
+    --page-gutter: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 0ms;
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --dur-slower: 0ms;
+  }
+}

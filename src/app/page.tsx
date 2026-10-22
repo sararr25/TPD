@@ -5,7 +5,7 @@ import { HomeCities } from "@/components/home-cities";
 
 const STEPS = [
   ["Make your Passport", "Pick three favourites: a film, a band, a bar. About a minute, no account."],
-  ["Open a city", "Eleven so far. Each one is reordered around your taste."],
+  ["Open a city", "Every city is reordered around your taste."],
   ["Swap when it’s full", "Name the place you wanted. We find the closest match nearby."],
 ];
 
@@ -46,14 +46,10 @@ export default function Home() {
           <h2 id="h-band">Your taste, carried to every city.</h2>
           <p>Make it once. Every city you open is read through it, and the places you save wait for the next trip.</p>
         </div>
-        <Link className="h-btn dark" href="/passport">
+        <Link className="btn btn-primary" href="/passport">
           Make my Passport
         </Link>
       </section>
-
-      <p className="h-foot">
-        Picks come from Qloo’s taste data. Hours, prices and bookings aren’t checked, so confirm before you go.
-      </p>
     </>
   );
 }

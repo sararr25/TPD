@@ -38,7 +38,7 @@ export function SharePassport({ answers }: { answers: Answers }) {
   }
   return (
     <div className="actions">
-      <button className="stamp" disabled={busy} onClick={share}>
+      <button className="btn btn-secondary" disabled={busy} onClick={share}>
         Share my Passport ↗
       </button>
       <span className="muted" role="status" aria-live="polite">

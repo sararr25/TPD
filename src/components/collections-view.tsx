@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { AuthButton } from "./auth-button";
 import { authClient } from "@/lib/auth/client";
-import { removeFromList, deleteList } from "@/lib/saved";
+import { removeFromList, deleteList, type SavedList } from "@/lib/saved";
 import { useSavedLists } from "./save-button";
 import { useToast } from "./toast";
 
@@ -15,6 +15,9 @@ export function CollectionsView() {
   const toast = useToast();
   const { lists, loaded, reload } = useSavedLists(!isPending, userId);
   const [busy, setBusy] = useState(false);
+  // Deleting a list asks in the site dialog, like the Passport (#17).
+  const [pending, setPending] = useState<SavedList | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
   async function run(action: () => Promise<void>, done: string) {
     setBusy(true);
     try {
@@ -41,7 +44,7 @@ export function CollectionsView() {
       ) : lists.length === 0 ? (
         <section className="paper">
           <p>Nothing saved yet. Tap Save on any place to start a trip list.</p>
-          <Link className="ticket" href="/explore">
+          <Link className="btn btn-primary" href="/explore">
             Browse cities
           </Link>
         </section>
@@ -51,11 +54,11 @@ export function CollectionsView() {
             <div className="row">
               <h2>{c.name}</h2>
               <button
-                className="text"
+                className="btn btn-quiet"
                 disabled={busy}
                 onClick={() => {
-                  if (confirm(`Delete the list “${c.name}” and its places?`))
-                    run(() => deleteList(c), `Deleted “${c.name}”.`);
+                  setPending(c);
+                  dialog.current?.showModal();
                 }}
               >
                 Delete list
@@ -89,7 +92,7 @@ export function CollectionsView() {
                       </p>
                     </div>
                     <button
-                      className="text"
+                      className="btn btn-quiet"
                       disabled={busy}
                       onClick={() =>
                         run(() => removeFromList(c, item.placeId), `Removed ${item.name} from “${c.name}”.`)
@@ -104,6 +107,28 @@ export function CollectionsView() {
           </section>
         ))
       )}
+      <dialog ref={dialog} onClose={() => setPending(null)}>
+        <h2>Delete “{pending?.name}”?</h2>
+        <p>
+          This removes the list and its {pending?.items.length ?? 0} saved place
+          {pending?.items.length === 1 ? "" : "s"}. This cannot be undone.
+        </p>
+        <div className="actions">
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              const list = pending;
+              dialog.current?.close();
+              if (list) run(() => deleteList(list), `Deleted “${list.name}”.`);
+            }}
+          >
+            Delete list
+          </button>
+          <button className="btn btn-quiet" onClick={() => dialog.current?.close()}>
+            Keep it
+          </button>
+        </div>
+      </dialog>
       {loaded && !userId && (
         <section className="paper">
           <h2>Keep your lists on every device.</h2>

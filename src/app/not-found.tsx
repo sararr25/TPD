@@ -9,7 +9,7 @@ export default function NotFound() {
         <em>detour.</em>
       </h1>
       <p>This page isn’t in your Passport.</p>
-      <Link className="ticket" href="/">
+      <Link className="btn btn-primary" href="/">
         Back to the start
       </Link>
     </section>

@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Entity } from "@/lib/discovery";
-import { addToList, loadLists, moveLocalLists, removeFromList, type SavedList } from "@/lib/saved";
+import { addToList, deleteList, loadLists, moveLocalLists, removeFromList, setNote, type SavedList } from "@/lib/saved";
 import { useToast } from "./toast";
 
 // Lists for a results page (docs/22 F1-F3). Signed in, this browser's lists
@@ -33,7 +33,8 @@ export function useSavedLists(ready: boolean, userId: string | undefined) {
   return { lists, loaded, reload, signedIn: !!userId };
 }
 
-// "Save" opens a sheet with your lists (tick one or more) and a new list.
+// One tap on ♡ saves into "{City} trip" and offers Undo / Change (#16). Change,
+// or tapping ♥ on a saved place, opens the sheet: tick lists, a new list, a note.
 export function SaveButton({
   place,
   token,
@@ -58,7 +59,7 @@ export function SaveButton({
   const toast = useToast();
   const [open, setOpen] = useState(false),
     [busy, setBusy] = useState(false),
-    [note, setNote] = useState(""),
+    [note, setNote_] = useState(""),
     [newName, setNewName] = useState("");
   const sheet = useRef<HTMLDivElement>(null);
   const saved = lists.filter((l) => l.items.some((i) => i.placeId === place.id));
@@ -76,10 +77,46 @@ export function SaveButton({
       document.removeEventListener("mousedown", click);
     };
   }, [open]);
-  function openSheet() {
-    const suggestion = `${city} trip`;
-    setNewName(lists.some((l) => l.name === suggestion) ? "" : suggestion);
-    setOpen((v) => !v);
+  // The note field shows what is already saved with the place.
+  useEffect(() => {
+    if (open) setNote_(saved.find((l) => l.items.some((i) => i.placeId === place.id && i.note))?.items.find((i) => i.placeId === place.id)?.note ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+  async function quickSave() {
+    const name = `${city} trip`;
+    const existed = lists.some((l) => l.name === name);
+    setBusy(true);
+    try {
+      await addToList(name, place, token, "", signedIn);
+      await onChange();
+      onSaved?.();
+      toast(`Saved to ${name}`, {
+        action: {
+          label: "Undo",
+          run: () => {
+            (async () => {
+              const fresh = await loadLists(signedIn);
+              const list = fresh.find((l) => l.name === name && l.items.some((i) => i.placeId === place.id));
+              if (list) {
+                await removeFromList(list, place.id);
+                // A list this tap created goes with it.
+                if (!existed && list.items.length === 1) await deleteList(list);
+              }
+              await onChange();
+            })().catch((e) => toast((e as Error).message, { error: true }));
+          },
+        },
+        secondary: { label: "Change", run: () => setOpen(true) },
+      });
+    } catch (e) {
+      toast((e as Error).message, { error: true });
+    } finally {
+      setBusy(false);
+    }
+  }
+  function onTap() {
+    if (saved.length) setOpen((v) => !v);
+    else if (!busy) void quickSave();
   }
   async function run(action: () => Promise<void>, message: string, undo?: () => Promise<void>, added = false) {
     setBusy(true);
@@ -115,6 +152,12 @@ export function SaveButton({
       () => addToList(list.name, place, token, note, signedIn),
     );
   }
+  // Writes the note on every list that holds this place.
+  async function saveNote() {
+    await run(async () => {
+      for (const l of saved) await setNote(l, place, token, note);
+    }, note.trim() ? "Note saved." : "Note removed.");
+  }
   async function create(e: React.FormEvent) {
     e.preventDefault();
     const name = newName.trim();
@@ -124,11 +167,11 @@ export function SaveButton({
   return (
     <div className="save" ref={sheet}>
       <button
-        className="icon-button"
+        className="btn btn-icon"
         aria-expanded={open}
         aria-controls={id}
         data-on={saved.length > 0 || undefined}
-        onClick={openSheet}
+        onClick={onTap}
         aria-label={iconOnly ? `${saved.length ? "Saved" : "Save"} ${place.name}` : undefined}
         title={iconOnly ? (saved.length ? "Saved" : "Save") : undefined}
       >
@@ -137,7 +180,7 @@ export function SaveButton({
       </button>
       {open && (
         <div className="save-sheet" id={id} role="group" aria-label={`Save ${place.name}`}>
-          <strong>Save to a list</strong>
+          <strong>Change lists</strong>
           {lists.length > 0 && (
             <ul>
               {lists.map((list) => {
@@ -171,22 +214,27 @@ export function SaveButton({
                 required
                 disabled={busy}
               />
-              <button className="stamp" disabled={busy || !newName.trim()}>
+              <button className="btn btn-secondary" disabled={busy || !newName.trim()}>
                 Create
               </button>
             </div>
           </form>
           <details>
-            <summary>Add a note</summary>
+            <summary>{saved.some((l) => l.items.some((i) => i.placeId === place.id && i.note)) ? "Edit note" : "Add a note"}</summary>
             <input
               aria-label="Note for this place"
               value={note}
-              onChange={(e) => setNote(e.target.value)}
+              onChange={(e) => setNote_(e.target.value)}
               maxLength={280}
               placeholder="e.g. book for Saturday"
               disabled={busy}
             />
-            <p className="muted">Write it before ticking a list: it is saved with the place.</p>
+            <div className="save-new">
+              <p className="muted">Kept with the place; add or change it any time.</p>
+              <button className="btn btn-secondary" type="button" onClick={saveNote} disabled={busy || !saved.length}>
+                Save note
+              </button>
+            </div>
           </details>
           {!signedIn && (
             <p className="muted">Saved on this device. Sign in to keep your lists on every device.</p>

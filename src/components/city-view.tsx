@@ -207,13 +207,13 @@ export function CityView({ city }: { city: string }) {
         </span>
       </section>
       <div className="city-toolbar">
-        <div className="seg" role="group" aria-label="View">
-          <span aria-current="page">For you</span>
-          <Link href={`/swap?city=${encodeURIComponent(city)}`}>Swap a place</Link>
+        <div className="toggle-group segmented" role="group" aria-label="View">
+          <span className="toggle" aria-current="page">For you</span>
+          <Link className="toggle" href={`/swap?city=${encodeURIComponent(city)}`}>Swap a place</Link>
         </div>
-        <div className="city-cats" role="group" aria-label="Category">
+        <div className="toggle-group" role="group" aria-label="Category">
           {([...Object.keys(EXPLORE_TAGS), "neighbourhood"] as ExploreCategory[]).map((value) => (
-            <button key={value} className="pill" aria-pressed={category === value} onClick={() => setCategory(value)}>
+            <button key={value} className="toggle" aria-pressed={category === value} onClick={() => setCategory(value)}>
               {CATEGORY_LABEL[value]}
             </button>
           ))}
@@ -225,7 +225,7 @@ export function CityView({ city }: { city: string }) {
             These are popular picks in {city}. <strong>Make them yours</strong>: pick 3 favourites and we re-rank
             them for your taste.
           </p>
-          <Link className="ticket" href="/passport">
+          <Link className="btn btn-primary" href="/passport">
             Make it mine
           </Link>
         </div>
@@ -242,7 +242,7 @@ export function CityView({ city }: { city: string }) {
       </p>
       {status === MESSAGES.expired_selection && (
         <p>
-          <Link className="ticket" href="/passport">
+          <Link className="btn btn-primary" href="/passport">
             Refresh my Passport
           </Link>
         </p>

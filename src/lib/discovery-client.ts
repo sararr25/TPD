@@ -2,36 +2,36 @@ import type { Entity } from "./discovery";
 export type Selection = { entity: Entity; token: string };
 export const MESSAGES: Record<string, string> = {
   quota:
-    "The discovery service has reached its limit. Try again later; your Passport is still here.",
+    "We’ve hit our daily limit for searches. Try again later; your Passport is still here.",
   rate_limited:
     "You have made a lot of searches in a short time. Wait about ten minutes and try again; your Passport is still here.",
-  busy: "A few discoveries are in progress. Try again in a moment.",
-  not_configured: "Discovery is not configured on this server yet.",
+  busy: "We’re busy right now. Try again in a moment.",
+  not_configured: "Search isn’t set up on this server yet.",
   provider_unavailable:
-    "Qloo did not respond. Your choices are still here; try again.",
+    "Our taste service didn’t respond. Your choices are still here; try again.",
   provider_access:
-    "The provider connection needs attention. Your Passport is still here.",
+    "We can’t reach our taste service right now. Your Passport is still here.",
   expired_selection:
     "Your Passport needs a refresh. Pick your favourites again to see picks for you.",
   invalid_selection:
-    "A saved selection could not be validated. Search for and select it again.",
+    "We couldn’t use that saved favourite. Search for it and pick it again.",
   invalid_category: "Choose restaurants or museums.",
-  invalid_reference: "Choose a reference in the selected category and city.",
+  invalid_reference: "Pick a place in that city and category.",
   invalid_city: "Choose one of the listed cities.",
   invalid_feedback: "Your feedback could not be saved. Please try again.",
   invalid_budget: "Price tiers are only available for restaurant searches.",
   invalid_passport: "Choose 3–5 different favourites in your Passport first.",
   location_unconfirmed:
-    "The provider did not confirm the city. We have not widened your search.",
+    "We couldn’t confirm the city, so we didn’t widen your search.",
   signed_out: "Your session has ended. Sign in again to use your account.",
   invalid_collection: "Give the collection a name (up to 60 characters) and keep the note under 280.",
   collection_limit: "This collection, or your account, is full. Remove something first.",
   hidden_limit: "You have hidden 100 places. Show some again on your Passport page first.",
   invalid_quiz: "Your quiz answers could not be saved. Take the quiz again.",
   quiz_unresolved:
-    "Qloo could not confirm one of your picks. Try again, or search for your favourites instead.",
+    "We couldn’t match one of your picks. Try again, or search for your favourites instead.",
   guest_unresolved:
-    "The guest profile could not be resolved unambiguously. Please search for your favourites instead.",
+    "We couldn’t load that example Passport. Search for your favourites instead.",
 };
 export async function discovery<T>(
   body: object,

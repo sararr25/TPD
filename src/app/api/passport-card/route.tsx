@@ -5,7 +5,19 @@ import { QUIZ_ICONS } from "@/lib/quiz-icons";
 // Share card (E07): a 1080×1350 PNG of the Passport data page. The URL
 // carries only quiz answers (`a`, base64url JSON); the profile is rebuilt
 // here, so no name, favourite or free text from the visitor reaches the image.
-const C = { bg: "#F4F4F3", paper: "#FFFFFF", ink: "#1E1D22", ink2: "#55535C", line: "#E0DFE2", pass: "#26242C", stamp: "#D61F69" };
+// Oltremare palette (docs/adr/0004, mirrors src/styles/tokens.css): the
+// image is rendered outside the page, so CSS variables can't reach it.
+const C = {
+  bg: "#F5F3F9",
+  paper: "#FFFFFF",
+  ink: "#1B1640",
+  ink2: "#4F4A72",
+  line: "#DDD9EA",
+  pass: "#3B2BFF",
+  onPass2: "#E4E1FF",
+  brand: "#3B2BFF",
+  stamp: "#E8462E",
+};
 
 function icon(emoji: string, color: string, size: number) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" color="${color}" style="color:${color}">${QUIZ_ICONS[emoji].replaceAll("currentColor", color)}</svg>`;
@@ -31,7 +43,7 @@ export async function GET(request: Request) {
   return new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", background: C.pass, padding: 64, fontFamily: "sans-serif" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", color: "#DEDDE1", fontSize: 26, letterSpacing: 4 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", color: C.onPass2, fontSize: 26, letterSpacing: 4 }}>
           <span>BEESYDE</span>
           <span>TASTE PASSPORT</span>
         </div>
@@ -42,7 +54,7 @@ export async function GET(request: Request) {
             </div>
             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
               <span style={{ fontSize: 24, color: C.ink2, letterSpacing: 3 }}>TRAVELLER TYPE</span>
-              <span style={{ fontSize: 72, fontWeight: 700, color: C.stamp, lineHeight: 1.05, marginTop: 12 }}>{profile.title}</span>
+              <span style={{ fontSize: 72, fontWeight: 700, color: C.brand, lineHeight: 1.05, marginTop: 12 }}>{profile.title}</span>
             </div>
           </div>
           <span style={{ fontSize: 34, color: C.ink, marginTop: 40 }}>{profile.motto}</span>
@@ -51,7 +63,7 @@ export async function GET(request: Request) {
               <div key={k} style={{ display: "flex", alignItems: "center", gap: 24, fontSize: 26, color: C.ink2 }}>
                 <span style={{ width: 190 }}>{AXES[k][0]}</span>
                 <div style={{ flex: 1, height: 4, background: C.line, display: "flex", position: "relative" }}>
-                  <div style={{ position: "absolute", left: `${profile.axes[k]}%`, top: -14, width: 32, height: 32, marginLeft: -16, borderRadius: 16, background: C.stamp }} />
+                  <div style={{ position: "absolute", left: `${profile.axes[k]}%`, top: -14, width: 32, height: 32, marginLeft: -16, borderRadius: 16, background: C.brand }} />
                 </div>
                 <span style={{ width: 190, textAlign: "right", justifyContent: "flex-end", display: "flex" }}>{AXES[k][1]}</span>
               </div>
@@ -67,7 +79,7 @@ export async function GET(request: Request) {
             ))}
           </div>
         </div>
-        <span style={{ color: "#DEDDE1", fontSize: 26, marginTop: 36 }}>Travel by taste · beesyde.vercel.app</span>
+        <span style={{ color: C.onPass2, fontSize: 26, marginTop: 36 }}>Travel by taste · beesyde.vercel.app</span>
       </div>
     ),
     { width: 1080, height: 1350, headers: { "Cache-Control": "public, max-age=86400, immutable" } },

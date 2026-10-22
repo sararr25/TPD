@@ -75,7 +75,7 @@ export function PassportProfile({
       </div>
       {signals.length > 0 && (
         <p className="pp-visas">
-          <span className="meta">Visas</span> {signals.join(" · ")}
+          <span className="meta">Favourites</span> {signals.join(" · ")}
         </p>
       )}
       <code className="pp-mrz" aria-hidden>

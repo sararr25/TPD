@@ -2,11 +2,12 @@ import { HomeSearch } from "@/components/home-search";
 import { HomeExample } from "@/components/home-example";
 import { HomeCities } from "@/components/home-cities";
 import { OpenQuizButton } from "@/components/quiz-panel";
+import { HomeSwapDemo } from "@/components/home-swap-demo";
 
 const STEPS = [
   ["Make your Passport", "A short quiz about how you travel and what you love. About 3 minutes, no account."],
-  ["Open a city", "Every city is reordered around your taste."],
-  ["Swap when it’s full", "Name the place you wanted. We find the closest match nearby."],
+  ["Open a city", "See popular places, or use your Passport for picks shaped by what you love."],
+  ["Find its twin", "Name the place you wanted. Choose what to keep and what to change."],
 ];
 
 // Home (docs/24): a passport-cover hero with two ways in, a live example,
@@ -19,16 +20,18 @@ export default function Home() {
           <div className="h-seal" aria-hidden />
           <span className="h-mono">Taste Passport</span>
           <h1 id="h-title">
-            Places that fit your taste, <em>in the city you’re visiting.</em>
+            Find places you’ll love, <em>or a twin for the one that’s full.</em>
           </h1>
-          <p className="h-lead">Tell us three things you love. We read the city through them.</p>
+          <p className="h-lead">Pick a city to explore, or start from a place you wanted. A 3-minute quiz makes the picks personal.</p>
           <HomeSearch />
         </section>
         <HomeExample />
       </div>
 
+      <HomeSwapDemo />
+
       <section className="h-how" aria-labelledby="h-how">
-        <h2 id="h-how">Three favourites, and the city starts to look like you.</h2>
+        <h2 id="h-how">A city guide shaped by what you love.</h2>
         <ol className="h-steps">
           {STEPS.map(([title, text]) => (
             <li key={title}>
@@ -44,7 +47,7 @@ export default function Home() {
       <section className="h-band" aria-labelledby="h-band">
         <div>
           <h2 id="h-band">Your taste, carried to every city.</h2>
-          <p>Make it once. Every city you open is read through it, and the places you save wait for the next trip.</p>
+          <p>Your Taste Passport keeps your favourites together and helps choose places in each city. Save a few for your next trip.</p>
         </div>
         <OpenQuizButton />
       </section>

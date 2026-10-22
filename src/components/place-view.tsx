@@ -78,7 +78,7 @@ export function PlaceView({
         )}
         {!hasPassport && (
           <p className="place-why">
-            Want to know why it fits you? <OpenQuizButton className="btn btn-quiet" /> and your picks will say.
+            Your Taste Passport helps us pick places from what you love. <OpenQuizButton className="btn btn-quiet" />
           </p>
         )}
         <div className="place-page-actions">

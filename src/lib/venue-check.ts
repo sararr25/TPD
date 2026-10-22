@@ -116,7 +116,7 @@ export function assessVenue(
   const address = addressCheck(entity, match);
   const notes: string[] = [];
   if (categoryResult === "fail")
-    notes.push(`OpenStreetMap lists this name nearby as ${match.category}=${match.type}, not as a ${category}.`);
+    notes.push(`OpenStreetMap lists a nearby place with this name as ${match.type.replace(/_/g, " ")}, rather than a ${category}.`);
   if (address === "fail")
     notes.push("The OpenStreetMap house number or postcode differs from the address we have; it may be another branch or an outdated record.");
   if (address === "unknown") notes.push("OpenStreetMap has no house number or postcode to compare.");

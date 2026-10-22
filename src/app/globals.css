@@ -11,13 +11,16 @@
 @import "../styles/buttons.css";
 @import "../styles/toggles.css";
 @import "../styles/place-card.css";
+@import "../styles/states.css";
 @import "../styles/place.css";
 @import "../styles/saved.css";
+@import "../styles/collections.css";
 @import "../styles/toast.css";
 
 /* Shell and pages */
 @import "../styles/shell.css";
 @import "../styles/home.css";
+@import "../styles/home-swap-demo.css";
 @import "../styles/city.css";
 @import "../styles/swap.css";
 @import "../styles/passport.css";

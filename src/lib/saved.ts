@@ -1,4 +1,4 @@
-import { CITIES, inCity, type Entity } from "./discovery";
+import { CITIES, LOCAL_NAME, inCity, type Entity } from "./discovery";
 import {
   loadCollections,
   saveToCollection,
@@ -141,18 +141,49 @@ export async function setNote(list: SavedList, place: Entity, token: string, not
   );
 }
 
-// The city of a saved place, so its name can open the Place page. Read from
-// the place's signed token when there is one (the body is plain base64 JSON;
-// this only picks a link, the page re-checks everything on the server), else
-// from a list named "<City> trip". Null when neither says: no link then.
-export function savedItemCity(item: SavedItem, listName: string): string | null {
-  if (item.token) {
-    try {
-      const body = item.token.split(".")[0].replace(/-/g, "+").replace(/_/g, "/");
-      const entity = JSON.parse(atob(body)).entity;
-      const found = Object.keys(CITIES).find((c) => inCity(entity, c));
-      if (found) return found;
-    } catch {}
+// Preview metadata from a saved selection is only for presentation. The Place
+// page still loads and validates the place on the server.
+function savedEntity(item: SavedItem): Partial<Entity> | null {
+  if (!item.token) return null;
+  try {
+    const body = item.token.split(".")[0].replace(/-/g, "+").replace(/_/g, "/");
+    const json = new TextDecoder().decode(Uint8Array.from(atob(body), (byte) => byte.charCodeAt(0)));
+    const entity = JSON.parse(json).entity;
+    return entity && typeof entity === "object" && entity.id === item.placeId ? entity : null;
+  } catch {
+    return null;
   }
+}
+
+// A full address can recover the city for older account records, which did
+// not keep their selection. Match complete address parts, never a substring
+// (a street called Paris must not turn a Lisbon place into a Paris place).
+export function savedItemCity(item: SavedItem, listName: string): string | null {
+  const entity = savedEntity(item);
+  if (entity) {
+    const found = Object.keys(CITIES).find((c) => inCity(entity as Entity, c));
+    if (found) return found;
+  }
+  const parts = (item.address ?? "").split(/[,;\n]/).map((part) =>
+    part.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase()
+      .replace(/^\d[\d\s-]*\s+/, ""),
+  );
+  const matches = Object.keys(CITIES).filter((city) =>
+    [city, LOCAL_NAME[city], ...CITIES[city].places].filter(Boolean).some((name) =>
+      parts.includes(name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()),
+    ),
+  );
+  if (matches.length === 1) return matches[0];
   return Object.keys(CITIES).find((c) => listName === `${c} trip`) ?? null;
+}
+
+export function savedItemPhoto(item: SavedItem): string | null {
+  const image = savedEntity(item)?.image;
+  if (typeof image !== "string") return null;
+  try {
+    const url = new URL(image);
+    return url.protocol === "https:" && url.hostname === "images.qloo.com" ? url.href : null;
+  } catch {
+    return null;
+  }
 }

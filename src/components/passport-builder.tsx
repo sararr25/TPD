@@ -232,13 +232,13 @@ export function PassportBuilder() {
         <section className="passport-editor">
           <div className="page-head">
             <h1>Your Taste Passport</h1>
-            <p className="lead">Choose 3–5 artists, films, books or places you love.</p>
+            <p className="lead">What you love, so we can pick places for you. Add 3–5 favourite artists, films, books or places.</p>
           </div>
           <button className="btn btn-secondary" disabled={busy || !ready} onClick={() => {
               setStatus("");
               setQuizOpen(true);
             }}>
-            {traveller ? "Redo the quiz" : "Take the 3-minute quiz"}
+            {traveller ? "Redo the quiz" : "Make your Passport"}
           </button>
           {showGuest && (
             <div className="paper">
@@ -331,7 +331,7 @@ export function PassportBuilder() {
           <div className="actions">
             {ready && selected.length >= 3 ? (
               <Link className="btn btn-primary" href="/explore">
-                This feels like me
+                Browse cities
               </Link>
             ) : (
               <button disabled className="btn btn-primary">

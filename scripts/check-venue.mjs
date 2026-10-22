@@ -53,7 +53,7 @@ assert(c.match.distanceM < 20);
 c = assessVenue(entity(), "restaurant", [osm({ category: "shop", type: "cheese" })], at);
 assert.equal(c.status, "conflict");
 assert.equal(c.category, "fail");
-assert.match(c.notes[0], /shop=cheese/);
+assert.match(c.notes[0], /as cheese, rather than a restaurant/);
 
 // House number outside the Qloo range -> address conflict, category still passes.
 c = assessVenue(entity(), "restaurant", [osm({ houseNumber: "40" })], at);

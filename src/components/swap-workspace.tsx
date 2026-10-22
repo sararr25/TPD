@@ -54,12 +54,12 @@ type Payload = {
 // The OpenStreetMap check in plain words (#14): a short label on the card,
 // the longer sentence only inside "How we checked".
 const CHECK_BADGE: Partial<Record<CheckStatus, { text: string; warn: boolean }>> = {
-  confirmed: { text: "Address checked ✓", warn: false },
+  confirmed: { text: "Map match found ✓", warn: false },
   conflict: { text: "Check the address before going", warn: true },
   ambiguous: { text: "Check the address before going", warn: true },
 };
 const CHECK_PLAIN: Record<CheckStatus, string> = {
-  confirmed: "The name, the type of place and the address all agree with OpenStreetMap, a free public map.",
+  confirmed: "A nearby place with the same name and kind matches OpenStreetMap, a free public map. Any limits to the address comparison are listed below.",
   conflict: "Something did not agree with OpenStreetMap, a free public map, so check the address before you go.",
   ambiguous: "Several places nearby share this name, so double-check you have the right one.",
   not_found: "OpenStreetMap, a free public map, does not list it nearby. The map is incomplete, so this does not mean it is closed.",
@@ -258,12 +258,12 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                   (result.anchor
                     ? `, all with ${result.anchor.toLowerCase()} like ${reference.entity.name}.`
                     : result.anchorDropped
-                      ? `. Too few places shared its cuisine, so these are the closest overall.`
+                      ? `. Too few places shared its cuisine, so we included other kinds of food.`
                       : ".") +
                   (result.keepMatched !== null && result.keepMatched < 3
-                    ? ` Only ${result.keepMatched} had what you chose to keep; the others are the next best matches.`
+                    ? ` Only ${result.keepMatched} shared at least one thing you chose to keep; the others offer a different option.`
                     : "")
-              : `Nothing in ${city} matched everything you asked for. Try keeping fewer things, or start from another place.`,
+              : `We couldn’t find alternatives in ${city} for these choices. Try a wider price range or another starting place.`,
           );
         }
       })
@@ -322,7 +322,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       setStatus(
         found.choices.length
           ? `Pick the ${category} you meant.`
-          : `No ${category} in ${city} with an address and map spot turned up. Try a more precise name.`,
+          : `We couldn’t find that ${category} in ${city} with an address and map location. Try its full name.`,
       );
     } catch (error) {
       if (!controller.signal.aborted) setStatus((error as Error).message);
@@ -406,22 +406,22 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   return (
     <>
       <p className="lead">
-        Full, closed or not quite right? Tell us the {category} you wanted and we find another
-        one in {city} that keeps what you liked about it.
-        {museum && " Your music, film and book favourites travel with you."}
+        Full, closed or not quite right? Name the {category} you wanted and we look for another
+        one in {city} with what you liked about it.
+        {museum && personal && " Your music, film and book favourites help shape the picks too."}
       </p>
       {museum && museums !== "ok" && (
         <p className="muted" role="note">
           {museums === "none"
-            ? `Our data has no museums in ${city}. Try restaurants, or another city.`
-            : `Our data has only a few museums in ${city}: results will be the same for most Passports.`}
+            ? `We don’t have museums to suggest in ${city} yet. Try restaurants or another city.`
+            : `We have only a few museums to suggest in ${city}, so different Passports may see the same places.`}
         </p>
       )}
       {ready && !personal && (
         <div className="city-banner">
           <p>
-            These alternatives come from your starting place alone. <strong>Make them yours</strong>: pick 3
-            favourites and we re-rank them for your taste.
+            These twins are based on your starting place. <strong>Add your taste</strong>: a 3-minute quiz
+            builds your Taste Passport, so your favourites can guide the picks too.
           </p>
           <OpenQuizButton />
         </div>
@@ -445,7 +445,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                 <p className="meta">Stay in {city}</p>
                 <div className="actions">
                   <button className="btn btn-secondary" disabled={!ready || searching}>
-                    Find the {category}
+                    Search for this place
                   </button>
                 </div>
               </form>
@@ -509,8 +509,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                     })
                   ) : (
                     <p>
-                      We have no details for this place. It and your Passport still guide the
-                      search.
+                      We don’t have traits to compare for this place. Its name{personal ? " and your Passport" : ""} still guides the search.
                     </p>
                   )}
                   {!museum && (
@@ -551,7 +550,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                         setAttempt((n) => n + 1);
                       }}
                     >
-                      {busy ? "Finding alternatives…" : stale ? "Update results" : "Swap it"}
+                      {busy ? "Finding alternatives…" : stale ? "Update results" : "Find its twin"}
                     </button>
                   </div>
                   {stale && !busy && (
@@ -582,8 +581,8 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         {data && (
           <>
             <div className="divider">
-              <h2>{personal ? "Same Passport. A different experience." : "Same feeling. A different experience."}</h2>
-              <p>Carry {personal ? "your favourites" : "this idea"} into {museum ? "restaurants" : "museums"} in {city}. Pick a starting place there to guide the next Swap.</p>
+              <h2>Try {museum ? "restaurants" : "museums"} in {city}</h2>
+              <p>Choose a starting {museum ? "restaurant" : "museum"}{personal ? "; your Passport will help pick its twins too" : " to find its twins"}.</p>
               <button className="btn btn-secondary" onClick={() => onTransfer(museum ? "restaurant" : "museum")}>
                 Try {museum ? "restaurants" : "museums"} {personal ? "with this Passport" : "too"} ↗
               </button>
@@ -599,7 +598,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                   city={city}
                   category={category}
                   eyebrow={result.role}
-                  whyLabel="Why it fits you"
+                  whyLabel={personal ? "Why it fits you" : "Why this twin"}
                   why={result.why}
                   details={
                     <>
@@ -608,7 +607,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                         return (
                           (kept.length > 0 || changed.length > 0) && (
                             <>
-                              <span className="place-label">Against {reference?.entity.name}</span>
+                              <span className="place-label">Compared with {reference?.entity.name}</span>
                               {kept.length > 0 && (
                                 <p className="place-why">
                                   <strong>Keeps:</strong> {joinList(kept)}.
@@ -633,9 +632,9 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                       <details className="place-checked">
                         <summary>How we checked</summary>
                         <p>
-                          This is a {category} in {city} with an address and a spot on the map
-                          {budget ? ", within your price limit" : ""}. We left out your starting
-                          place, duplicates, places marked closed and anything you chose to change.
+                          Our place data lists this as a {category} in {city}, with an address and map location
+                          {budget ? ", in your chosen price range" : ""}. We left out your starting
+                          place, duplicates, places marked closed and places tagged with what you chose to change.
                         </p>
                         {result.check && (
                           <>
@@ -656,11 +655,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                             ))}
                           </>
                         )}
-                        <p>
-                          Opening hours, {museum ? "admission prices, exhibitions and tickets" : "menu prices and table availability"} are
-                          not checked: confirm with the place.
-                        </p>
-                        <p className="meta">Checked {new Date(data.checkedAt).toLocaleString()}</p>
+                        <p className="meta">Place data read {new Date(data.checkedAt).toLocaleString()}</p>
                       </details>
                     </>
                   }
@@ -677,6 +672,12 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                 />
               ))}
             </div>
+            {data.results.length > 0 && (
+              <p className="muted">
+                Opening hours, {museum ? "admission prices, exhibitions and tickets" : "menu prices and table availability"} aren’t
+                checked. Confirm with the place before you go.
+              </p>
+            )}
           </>
         )}
       </section>

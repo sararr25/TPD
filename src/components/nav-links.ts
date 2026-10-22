@@ -2,7 +2,7 @@
 // The optional third item is a shorter label for narrow headers (#12).
 export const NAV_LINKS = [
   ["/explore", "Cities"],
-  ["/swap", "Swap a place", "Swap"],
+  ["/swap", "Swap", "Swap"],
   ["/collections", "Saved"],
-  ["/passport", "Your Passport", "Passport"],
+  ["/passport", "Passport", "Passport"],
 ] as const;

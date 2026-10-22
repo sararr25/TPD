@@ -421,9 +421,9 @@ export function selectRoles(
     .filter((e) => e.id !== practical?.id && e.popularity !== null)
     .sort((a, b) => a.popularity! - b.popularity!)[0];
   return [
-    [closest, "Closest cultural match"],
-    [practical, "Best practical match"],
-    [unexpected, "Unexpected but relevant"],
+    [closest, "Closest match"],
+    [practical, "Nearby option"],
+    [unexpected, "A less-known option"],
   ].flatMap(([value, role]) => {
     if (!value || typeof value === "string") return [];
     const e = value as Entity;
@@ -443,14 +443,14 @@ export function selectRoles(
         why:
           (shared.length
             ? `Like ${reference.name}: ${shared.join(", ").toLowerCase()}.`
-            : `A close match to ${reference.name} for your taste.`) +
-          (taste ? ` Fits your taste for ${taste.name}.` : ""),
+            : `Suggested from ${reference.name}; no shared details are listed.`) +
+          (taste ? ` Your favourite ${taste.name} also helped shape this pick.` : ""),
         different:
-          role === "Best practical match"
-            ? `The closest of the options to your first choice${km !== null ? ` (${km.toFixed(1)} km as the crow flies)` : ""}.`
-            : role === "Unexpected but relevant"
+          role === "Nearby option"
+            ? `Another option near your starting place${km !== null ? ` (${km.toFixed(1)} km in a straight line)` : ""}.`
+            : role === "A less-known option"
               ? "Less well known than the other options. That says nothing about how busy it is."
-              : `${km !== null ? `About ${km.toFixed(1)} km from your first choice as the crow flies. ` : "Distance could not be established. "}${category === "restaurant" && e.price !== null && reference.price !== null ? `Price level ${e.price} of 4, against ${reference.price} for your first choice.` : category === "museum" ? "Admission prices could not be compared." : "Prices could not be compared."}`,
+              : `${km !== null ? `About ${km.toFixed(1)} km from your starting place in a straight line. ` : "We couldn’t compare distances. "}${category === "restaurant" && e.price !== null && reference.price !== null ? `Price level ${e.price} of 4, compared with ${reference.price} for your starting place.` : category === "museum" ? "We couldn’t compare admission prices." : "We couldn’t compare prices."}`,
         distanceKm: km,
       },
     ];

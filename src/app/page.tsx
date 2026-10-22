@@ -4,7 +4,7 @@ import { HomeExample } from "@/components/home-example";
 import { HomeCities } from "@/components/home-cities";
 
 const STEPS = [
-  ["Make your Passport", "Pick three favourites: a film, a band, a bar. About a minute, no account."],
+  ["Make your Passport", "A short quiz about how you travel and what you love. About 3 minutes, no account."],
   ["Open a city", "Every city is reordered around your taste."],
   ["Swap when it’s full", "Name the place you wanted. We find the closest match nearby."],
 ];

@@ -11,9 +11,18 @@ export function MainNav() {
   const current = cityFromSlug(path.slice(1)) ? "/explore" : path;
   return (
     <nav aria-label="Main">
-      {NAV_LINKS.map(([href, label]) => (
-        <Link key={href} href={href} aria-current={current === href ? "page" : undefined}>
-          {label}
+      {NAV_LINKS.map(([href, label, short]) => (
+        <Link key={href} href={href} aria-label={short ? label : undefined} aria-current={current === href ? "page" : undefined}>
+          {short ? (
+            <>
+              <span className="nav-full">{label}</span>
+              <span className="nav-short" aria-hidden>
+                {short}
+              </span>
+            </>
+          ) : (
+            label
+          )}
         </Link>
       ))}
     </nav>

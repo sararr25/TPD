@@ -3,7 +3,8 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth/client";
 
 // Optional Google sign-in. The Passport and Swap keep working as a guest.
-export function AuthButton() {
+// `compact` is the header version: a small link / initial, not a button (#12).
+export function AuthButton({ compact = false }: { compact?: boolean }) {
   const { data, isPending } = authClient.useSession();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -29,10 +30,23 @@ export function AuthButton() {
     setBusy(false);
   }
 
-  if (isPending) return <span className="meta">Checking sign-in…</span>;
+  if (isPending) return <span className="meta">{compact ? "…" : "Checking sign-in…"}</span>;
   return (
-    <span className="auth">
-      {user ? (
+    <span className={compact ? "auth compact" : "auth"}>
+      {user && compact ? (
+        <>
+          <span className="auth-avatar" title={user.name || user.email} aria-label={`Signed in as ${user.name || user.email}`}>
+            {(user.name || user.email || "?").trim().charAt(0).toUpperCase()}
+          </span>
+          <button className="text" onClick={signOut} disabled={busy}>
+            Sign out
+          </button>
+        </>
+      ) : compact ? (
+        <button className="text" onClick={signIn} disabled={busy}>
+          {busy ? "Opening…" : "Sign in"}
+        </button>
+      ) : user ? (
         <>
           <span className="meta">Signed in as {user.name || user.email}</span>
           <button className="text" onClick={signOut} disabled={busy}>

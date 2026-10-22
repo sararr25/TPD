@@ -21,7 +21,7 @@ export default function RootLayout({
               beesyde<span className="dot" aria-hidden="true">.</span>
             </Link>
             <MainNav />
-            <AuthButton />
+            <AuthButton compact />
           </header>
           <main>{children}</main>
           <footer>

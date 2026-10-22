@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { PassportCard } from "./passport-card";
+import { LearnedFromYou } from "./learned-from-you";
 import { PassportProfile } from "./passport-profile";
 import { SharePassport } from "./share-passport";
 import { QuizFlow } from "./quiz-flow";
 import { finishQuiz } from "@/lib/quiz-finish";
 import { QUIZ_KEY, parseQuiz, buildProfile, type Answers } from "@/lib/quiz";
-import { FEEDBACK_KEY, STRONG, dismissTag, strongSignals, type Feedback } from "@/lib/feedback";
+import { type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import {
   discovery,
@@ -18,18 +18,9 @@ import { authClient } from "@/lib/auth/client";
 import {
   loadAccountPassport,
   saveAccountPassport,
-  deleteAccountPassport,
   loadAccountQuiz,
   saveAccountQuiz,
-  deleteAccountQuiz,
-  loadHidden,
-  unhidePlace,
-  deleteAccount,
   loadFeedback,
-  saveFeedback,
-  deleteAccountFeedback,
-  HIDDEN_KEY,
-  type Hidden,
 } from "@/lib/account";
 export function PassportBuilder() {
   const [selected, setSelected] = useState<Selection[]>([]),
@@ -41,23 +32,11 @@ export function PassportBuilder() {
     [ready, setReady] = useState(false),
     [showGuest, setShowGuest] = useState(false),
     [guestProfile,setGuestProfile]=useState(0),
-    [hidden, setHidden] = useState<Hidden[]>([]),
     [quizOpen, setQuizOpen] = useState(false),
     [profile, setProfile] = useState<Answers>({}),
     [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] });
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
-  // Places marked "Not for me" in Swap (E06), with a way to show them again.
-  useEffect(() => {
-    if (!ready) return;
-    let active = true;
-    loadHidden(!!userId)
-      .then((list) => active && setHidden(list))
-      .catch((e) => active && setStatus((e as Error).message));
-    return () => {
-      active = false;
-    };
-  }, [ready, userId]);
   // Strong signals learned from "Yes" / "Not for me" votes (D3).
   useEffect(() => {
     if (!ready) return;
@@ -69,49 +48,6 @@ export function PassportBuilder() {
       active = false;
     };
   }, [ready, userId]);
-  async function undoSignal(tagId: string, name: string) {
-    const next = dismissTag(feedback, tagId);
-    setFeedback(next);
-    try {
-      await saveFeedback(next, !!userId);
-      setStatus(`"${name}" no longer steers your results.`);
-    } catch (e) {
-      setStatus((e as Error).message);
-    }
-  }
-  async function showAgain(place: Hidden) {
-    try {
-      await unhidePlace(place.id, !!userId);
-      setHidden((list) => list.filter((h) => h.id !== place.id));
-      setStatus(`${place.name} can come up in your Swaps again.`);
-    } catch (e) {
-      setStatus((e as Error).message);
-    }
-  }
-  async function removeAccount() {
-    (document.querySelector("#delete-account") as HTMLDialogElement).close();
-    setBusy(true);
-    setStatus("Deleting your account…");
-    try {
-      await deleteAccount();
-    } catch (e) {
-      setStatus((e as Error).message);
-      setBusy(false);
-      return;
-    }
-    try {
-      localStorage.removeItem(LIVE_PASSPORT_KEY);
-      localStorage.removeItem(HIDDEN_KEY);
-      localStorage.removeItem(QUIZ_KEY);
-      localStorage.removeItem(FEEDBACK_KEY);
-    } catch {
-      setStatus(
-        "Your account is deleted. This browser's copy could not be cleared: remove it in browser settings.",
-      );
-      return;
-    }
-    location.assign("/passport");
-  }
   // Account writes run one after another so the last edit is the one kept.
   const writes = useRef<Promise<unknown>>(Promise.resolve());
   useEffect(() => {
@@ -265,41 +201,6 @@ export function PassportBuilder() {
     }
     save([...selected, s]);
   }
-  async function erase() {
-    (document.querySelector("#erase-passport") as HTMLDialogElement).close();
-    if (userId) {
-      setBusy(true);
-      try {
-        await deleteAccountPassport();
-        await deleteAccountQuiz();
-        await deleteAccountFeedback();
-      } catch (e) {
-        setStatus((e as Error).message);
-        setBusy(false);
-        return;
-      }
-      setBusy(false);
-    }
-    try {
-      localStorage.removeItem(LIVE_PASSPORT_KEY);
-      localStorage.removeItem("tpd-passport-v1");
-      localStorage.removeItem("tpd-design-v1");
-      localStorage.removeItem(QUIZ_KEY);
-      localStorage.removeItem(FEEDBACK_KEY);
-      setStatus(
-        userId
-          ? "Passport deleted from your account and this browser."
-          : "Local Passport and old prototype data deleted.",
-      );
-    } catch {
-      setStatus(
-        "Could not clear browser storage. Use browser settings to remove saved data.",
-      );
-    }
-    setSelected([]);
-    setProfile({});
-    setFeedback({ votes: [], dismissed: [] });
-  }
   if (quizOpen)
     return (
       <div className="grid">
@@ -318,7 +219,6 @@ export function PassportBuilder() {
             </button>
           )}
         </div>
-        <PassportCard signals={selected.map((s) => s.entity.name)} />
       </div>
     );
   const traveller = buildProfile(profile);
@@ -443,88 +343,17 @@ export function PassportBuilder() {
               ? "Saved to your account and this browser."
               : "Saved on this browser. No account needed; sign in to keep it across devices."}{" "}
           </p>
-          <button
-            className="btn btn-quiet"
-            disabled={!ready || busy}
-            onClick={() =>
-              (
-                document.querySelector("#erase-passport") as HTMLDialogElement
-              ).showModal()
-            }
-          >
-            {userId ? "Delete my Passport" : "Delete my local Passport"}
-          </button>
           {feedback.votes.length > 0 && (
             <div className="divider">
               <span className="meta">Learned from you</span>
-              {(() => {
-                const strong = strongSignals(feedback);
-                const rows = [
-                  ...strong.keep.map((s) => ({ ...s, label: "You like" })),
-                  ...strong.avoid.map((s) => ({ ...s, label: "You skip" })),
-                ];
-                return rows.length ? (
-                  <ul className="entity-list">
-                    {rows.map((r) => (
-                      <li key={r.id}>
-                        <div>
-                          <strong>
-                            {r.label}: {r.name}
-                          </strong>
-                          <p className="muted">
-                            {r.yes} saved or liked · {r.no} not for me
-                          </p>
-                        </div>
-                        <button className="btn btn-quiet" disabled={busy} onClick={() => undoSignal(r.id, r.name)}>
-                          Undo
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="muted">
-                    {feedback.votes.length} vote{feedback.votes.length === 1 ? "" : "s"} so far. Each one gently
-                    reorders your results; when {STRONG} agree on the same thing, it shows up here.
-                  </p>
-                );
-              })()}
+              <LearnedFromYou feedback={feedback} />
             </div>
           )}
-          {hidden.length > 0 && (
-            <div className="divider">
-              <span className="meta">Hidden from your Swaps</span>
-              <ul className="entity-list">
-                {hidden.map((h) => (
-                  <li key={h.id}>
-                    <div>
-                      <strong>{h.name}</strong>
-                    </div>
-                    <button className="btn btn-quiet" disabled={busy} onClick={() => showAgain(h)}>
-                      Show again
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {userId && (
-            <div className="divider">
-              <span className="meta">Your account</span>
-              <p className="muted">
-                Deleting your account removes your Passport, collections and
-                hidden places from Beesyde, and signs you out.
-              </p>
-              <button
-                className="btn btn-quiet"
-                disabled={busy}
-                onClick={() =>
-                  (document.querySelector("#delete-account") as HTMLDialogElement).showModal()
-                }
-              >
-                Delete my account
-              </button>
-            </div>
-          )}
+          <p>
+            <Link className="btn btn-quiet" href="/passport/settings">
+              Settings &amp; privacy
+            </Link>
+          </p>
         </section>
         {traveller ? (
           <div>
@@ -536,54 +365,29 @@ export function PassportBuilder() {
             <SharePassport answers={profile} />
           </div>
         ) : (
-          <PassportCard signals={selected.map((s) => s.entity.name)} />
+          selected.length > 0 && (
+            <div className="paper">
+              <h3>Your picks so far</h3>
+              <ul className="entity-list">
+                {selected.map((s) => (
+                  <li key={s.entity.id}>
+                    <div>
+                      <strong>{s.entity.name}</strong>
+                      {/* Qloo repeats the name as context for artists; show it only when it adds something (a film's year). */}
+                      {s.entity.context && s.entity.context !== s.entity.name && (
+                        <p className="muted">{s.entity.context}</p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="muted">
+                Take the 3-minute quiz to turn these into your full Taste Passport, the card you can share.
+              </p>
+            </div>
+          )
         )}
       </div>
-      <dialog id="erase-passport">
-        <h2>{userId ? "Delete your Passport?" : "Clear your local edition?"}</h2>
-        <p>
-          {userId
-            ? "This removes your Passport from your account and from this browser."
-            : "This removes your Passport and old prototype data from this browser."}{" "}
-          This cannot be undone.
-        </p>
-        <div className="actions">
-          <button className="btn btn-secondary" onClick={erase}>
-            {userId ? "Delete Passport" : "Delete local data"}
-          </button>
-          <button
-            className="btn btn-quiet"
-            onClick={() =>
-              (
-                document.querySelector("#erase-passport") as HTMLDialogElement
-              ).close()
-            }
-          >
-            Keep my Passport
-          </button>
-        </div>
-      </dialog>
-      <dialog id="delete-account">
-        <h2>Delete your account?</h2>
-        <p>
-          This permanently deletes your Beesyde account with its Passport,
-          collections and hidden places. Your Google account is not affected.
-          This cannot be undone.
-        </p>
-        <div className="actions">
-          <button className="btn btn-secondary" onClick={removeAccount}>
-            Delete my account
-          </button>
-          <button
-            className="btn btn-quiet"
-            onClick={() =>
-              (document.querySelector("#delete-account") as HTMLDialogElement).close()
-            }
-          >
-            Keep my account
-          </button>
-        </div>
-      </dialog>
     </>
   );
 }

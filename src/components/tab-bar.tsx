@@ -31,7 +31,7 @@ const ICONS: Record<string, React.ReactNode> = {
 
 export function TabBar() {
   const path = usePathname();
-  const current = cityFromSlug(path.slice(1)) ? "/explore" : path;
+  const current = cityFromSlug(path.slice(1)) ? "/explore" : path.startsWith("/passport") ? "/passport" : path;
   return (
     <nav className="tab-bar" aria-label="Main (mobile)">
       {NAV_LINKS.map(([href, label, short]) => (

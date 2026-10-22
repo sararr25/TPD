@@ -16,63 +16,6 @@
   margin: var(--space-6) 0;
 }
 
-/* Preview card */
-.passport {
-  display: grid;
-  grid-template-columns: 0.85fr 1fr;
-  min-height: 390px;
-  margin: var(--space-6) 0;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  background: var(--paper);
-  overflow: hidden;
-}
-
-.cover {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: var(--space-8) var(--space-6);
-  background: var(--pass);
-  color: var(--on-pass);
-}
-
-.cover .meta {
-  color: var(--on-brand-2);
-}
-
-.ring {
-  display: inline-grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border: 2px solid var(--on-pass);
-  border-radius: 50%;
-  color: var(--on-pass);
-  font: var(--text-xs) var(--font-mono);
-}
-
-.passport-page {
-  padding: var(--space-8) var(--space-6);
-  background: var(--paper);
-}
-
-.seal {
-  display: grid;
-  place-content: center;
-  width: 126px;
-  height: 126px;
-  margin: var(--space-6) auto;
-  border: 2px solid var(--stamp);
-  border-radius: 50%;
-  outline: 1px solid var(--stamp);
-  outline-offset: -7px;
-  color: var(--stamp-ink);
-  font: var(--text-xs) / 1.7 var(--font-mono);
-  text-align: center;
-  transform: rotate(10deg);
-}
-
 /* Quiz profile: the data page */
 .pp {
   margin: var(--space-6) 0;

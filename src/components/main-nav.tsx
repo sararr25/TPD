@@ -8,7 +8,7 @@ import { NAV_LINKS } from "./nav-links";
 export function MainNav() {
   const path = usePathname();
   // City pages (/lisbon…) are where Cities live now (docs/24).
-  const current = cityFromSlug(path.slice(1)) ? "/explore" : path;
+  const current = cityFromSlug(path.slice(1)) ? "/explore" : path.startsWith("/passport") ? "/passport" : path;
   return (
     <nav aria-label="Main">
       {NAV_LINKS.map(([href, label, short]) => (

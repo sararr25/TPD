@@ -31,6 +31,11 @@ export function PlaceCard({
   active,
   onHover,
   pin,
+  eyebrow,
+  whyLabel,
+  details,
+  findSimilar = true,
+  directions = false,
 }: {
   place: Entity;
   token: string;
@@ -47,6 +52,13 @@ export function PlaceCard({
   onHover: (id: string | null) => void;
   // Its number on the map, when it has coordinates.
   pin: number | null;
+  // Swap results (#14): a role label, extra body (what's different, the
+  // address check), no "Find similar" (already in Swap) and Directions.
+  eyebrow?: string;
+  whyLabel?: string;
+  details?: React.ReactNode;
+  findSimilar?: boolean;
+  directions?: boolean;
 }) {
   // Some Qloo photos are missing or fail to load (docs/22): show the city's
   // cover, and the category text only if the city has none either.
@@ -60,7 +72,10 @@ export function PlaceCard({
     : chipTags(place, category === "museum" ? "museum" : "restaurant")
         .slice(0, 3)
         .map((t) => t.name);
-  const swappable = category === "restaurant" || category === "museum";
+  const swappable = findSimilar && (category === "restaurant" || category === "museum");
+  // "Find similar" starts Swap from this place (#8): name + category + id so
+  // Swap can pick the matching search result without retyping.
+  const similarHref = `/swap?${new URLSearchParams({ city, q: place.name, category, ref: place.id })}`;
   return (
     <article
       className="place-card"
@@ -86,7 +101,9 @@ export function PlaceCard({
         )}
       </div>
       <div className="place-body">
+        {eyebrow && <span className="place-role">{eyebrow}</span>}
         <h3>{place.name}</h3>
+        {why && whyLabel && <span className="place-label">{whyLabel}</span>}
         {why && <p className="place-why">{why}</p>}
         {hood && place.context && <p className="place-why">{place.context}</p>}
         {near && near.length > 0 && <p className="place-why">Close to your picks: {near.join(" · ")}</p>}
@@ -98,26 +115,43 @@ export function PlaceCard({
             {price && <li aria-label={`Price ${place.price} of 4`}>{price}</li>}
           </ul>
         )}
+        {details}
       </div>
       <div className="place-actions">
-        <SaveButton
-          place={place}
-          token={token}
-          city={city}
-          lists={lists}
-          signedIn={signedIn}
-          onChange={onListsChange}
-          onSaved={onSaved}
-          iconOnly
-        />
-        <button className="icon-button" aria-label={`Not for me: hide ${place.name}`} title="Not for me" onClick={onHide}>
-          <span aria-hidden>✕</span>
-        </button>
+        {token && (
+          <>
+            <SaveButton
+              place={place}
+              token={token}
+              city={city}
+              lists={lists}
+              signedIn={signedIn}
+              onChange={onListsChange}
+              onSaved={onSaved}
+              iconOnly
+            />
+            <button className="icon-button" aria-label={`Not for me: hide ${place.name}`} title="Not for me" onClick={onHide}>
+              <span aria-hidden>✕</span>
+            </button>
+          </>
+        )}
+        {directions && place.lat !== null && place.lon !== null && (
+          <a
+            className="icon-button"
+            aria-label={`Directions to ${place.name}`}
+            title="Directions"
+            href={`https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lon}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span aria-hidden>↗</span>
+          </a>
+        )}
         <span className="grow" />
         {swappable && (
           <Link
             className="pill-link"
-            href={`/swap?city=${encodeURIComponent(city)}`}
+            href={similarHref}
             title="Find places that keep what you like about this one"
           >
             Find similar

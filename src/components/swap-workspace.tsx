@@ -24,7 +24,8 @@ import {
   unhidePlace,
   type Hidden,
 } from "@/lib/account";
-import { SaveButton, useSavedLists } from "./save-button";
+import { useSavedLists } from "./save-button";
+import { PlaceCard } from "./place-card";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
 import type { CheckStatus } from "@/lib/venue-check";
@@ -40,12 +41,19 @@ type Payload = {
   anchorDropped: boolean;
   notice: string;
 };
-const CHECK_LABEL: Record<CheckStatus, string> = {
-  confirmed: "name, category and address agree",
-  conflict: "conflict found — check before going",
-  ambiguous: "several places share this name nearby",
-  not_found: "not listed nearby (coverage is incomplete)",
-  unavailable: "could not be checked right now",
+// The OpenStreetMap check in plain words (#14): a short label on the card,
+// the longer sentence only inside "How we checked".
+const CHECK_BADGE: Partial<Record<CheckStatus, { text: string; warn: boolean }>> = {
+  confirmed: { text: "Address checked ✓", warn: false },
+  conflict: { text: "Check the address before going", warn: true },
+  ambiguous: { text: "Check the address before going", warn: true },
+};
+const CHECK_PLAIN: Record<CheckStatus, string> = {
+  confirmed: "The name, the type of place and the address all agree with OpenStreetMap, a free public map.",
+  conflict: "Something did not agree with OpenStreetMap, a free public map, so check the address before you go.",
+  ambiguous: "Several places nearby share this name, so double-check you have the right one.",
+  not_found: "OpenStreetMap, a free public map, does not list it nearby. The map is incomplete, so this does not mean it is closed.",
+  unavailable: "We could not check the map right now.",
 };
 export function SwapWorkspace() {
   const [category, setCategory] = useState<PlaceCategory>("restaurant"),
@@ -57,18 +65,20 @@ export function SwapWorkspace() {
   const [visited, setVisited] = useState<string[]>([]);
   // Home's search box links here with ?q= (and ?category=museum): that
   // place name pre-fills, and searches, the first workspace (docs/24).
-  const [prefill, setPrefill] = useState<{ key: string; query: string } | null>(null),
-    [linked, setLinked] = useState<{ query: string; category: PlaceCategory } | null>(null);
+  // ?ref= (from a card's "Find similar", #8) is that place's id: the search
+  // result with the same id is chosen as the starting point automatically.
+  const [prefill, setPrefill] = useState<{ key: string; query: string; ref: string } | null>(null),
+    [linked, setLinked] = useState<{ query: string; category: PlaceCategory; ref: string } | null>(null);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const query = params.get("q")?.trim().slice(0, 120);
     if (!query) return;
     const cat: PlaceCategory = params.get("category") === "museum" ? "museum" : "restaurant";
     setCategory(cat);
-    setLinked({ query, category: cat });
+    setLinked({ query, category: cat, ref: params.get("ref")?.trim().slice(0, 200) ?? "" });
   }, []);
   useEffect(() => {
-    if (cityKnown && linked && !prefill) setPrefill({ key: `${city}|${linked.category}`, query: linked.query });
+    if (cityKnown && linked && !prefill) setPrefill({ key: `${city}|${linked.category}`, query: linked.query, ref: linked.ref });
   }, [cityKnown, linked, prefill, city]);
   useEffect(() => {
     if (cityKnown) setVisited((list) => (list.includes(key) ? list : [...list, key]));
@@ -110,6 +120,7 @@ export function SwapWorkspace() {
               category={cat}
               onTransfer={setCategory}
               prefill={prefill?.key === k ? prefill.query : ""}
+              prefillRef={prefill?.key === k ? prefill.ref : ""}
             />
           </div>
         );
@@ -117,11 +128,13 @@ export function SwapWorkspace() {
     </>
   );
 }
-function CategoryWorkspace({ city, category, onTransfer, prefill }: {
+function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: {
   city: string;
   category: PlaceCategory;
   onTransfer: (category: PlaceCategory) => void;
   prefill: string;
+  // Id of the linked place: when a search result has it, it is chosen (#8).
+  prefillRef: string;
 }) {
   const uid = useId();
   const museum = category === "museum";
@@ -248,13 +261,13 @@ function CategoryWorkspace({ city, category, onTransfer, prefill }: {
     if (!prefill || prefilled.current || !ready || passport.length < 3) return;
     prefilled.current = true;
     setQuery(prefill);
-    runSearch(prefill);
-  }, [prefill, ready, passport]);
+    runSearch(prefill, prefillRef);
+  }, [prefill, prefillRef, ready, passport]);
   async function search(e: React.FormEvent) {
     e.preventDefault();
     await runSearch(query);
   }
-  async function runSearch(query: string) {
+  async function runSearch(query: string, refId = "") {
     searchController.current?.abort();
     const controller = new AbortController();
     searchController.current = controller;
@@ -271,6 +284,15 @@ function CategoryWorkspace({ city, category, onTransfer, prefill }: {
         city,
       }, controller.signal);
       if (controller.signal.aborted) return;
+      // The linked place is in the results: start from it, no second click.
+      const sameName = found.choices.filter((s) => s.entity.name.toLowerCase() === query.toLowerCase());
+      const linkedMatch = refId
+        ? (found.choices.find((s) => s.entity.id === refId) ?? (sameName.length === 1 ? sameName[0] : undefined))
+        : undefined;
+      if (linkedMatch) {
+        select(linkedMatch);
+        return;
+      }
       setMatches(found.choices);
       setStatus(
         found.choices.length
@@ -322,22 +344,11 @@ function CategoryWorkspace({ city, category, onTransfer, prefill }: {
       showError((error as Error).message);
     }
   }
-  // Like is a toggle with Undo (docs/22 F8).
-  async function like(result: Result) {
-    const place = result.place;
-    try {
-      if (voted(place.id) === 1) {
-        await unvote(place.id);
-        toast(`Removed your like for ${place.name}.`);
-      } else {
-        await vote(place, 1);
-        toast(`Liked ${place.name}. Places like it will come up more.`, {
-          action: { label: "Undo", run: () => unvote(place.id).catch((e) => showError(e.message)) },
-        });
-      }
-    } catch (error) {
-      showError((error as Error).message);
-    }
+  // Saving a place is also "more like this", as on the city page (docs/24:
+  // ♡ replaces 👍).
+  function saved(place: Result["place"]) {
+    if (voted(place.id) === 1) return;
+    vote(place, 1).catch((e) => showError((e as Error).message));
   }
   function changeTag(tagId: string, mode: Choice["mode"]) {
     if (data) setStale(true);
@@ -516,12 +527,6 @@ function CategoryWorkspace({ city, category, onTransfer, prefill }: {
       <section aria-label="Alternatives" aria-busy={busy}>
         {data && (
           <>
-            <p className="muted">
-              {data.candidateCount} eligible candidates · {data.discarded}{" "}
-              discarded by local validation. Three roles are selected from this
-              candidate set; roles may be absent if there is insufficient
-              evidence.
-            </p>
             <div className="divider">
               <h2>Same Passport. A different experience.</h2>
               <p>Carry your favourites into {museum ? "restaurants" : "museums"} in {city}. Pick a starting place there to guide the next Swap.</p>
@@ -529,104 +534,73 @@ function CategoryWorkspace({ city, category, onTransfer, prefill }: {
                 Try {museum ? "restaurants" : "museums"} with this Passport ↗
               </button>
             </div>
-            <div className="cards">
+            <div className="place-grid">
               {data.results
                 .filter((result) => !hidden.some((h) => h.id === result.place.id))
                 .map((result) => (
-                <article className="result" key={result.place.id}>
-                  <div className="body">
-                    <span className="role">{result.role}</span>
-                    <h2>{result.place.name}</h2>
-                    <p>{result.place.address}</p>
-                    {!museum && <p className="muted">
-                      Price level: {result.place.price ? `${result.place.price} of 4` : "unknown"}
-                    </p>}
-                    <h3>Why it matches you</h3>
-                    <p>{result.why}</p>
-                    <h3>What’s different</h3>
-                    <p>{result.different}</p>
-                    <details>
-                      <summary>What we verified</summary>
-                      <p>
-                        Qloo returned a {category} in {city} with an address and
-                        coordinates
-                        {budget ? ", within your price limit" : ""}. We
-                        left out your starting place, duplicates, places marked
-                        closed and anything you chose to change.
-                      </p>
-                      <p>
-                        From Qloo’s data only. Existence, current opening hours,
-                        {museum ? "admission prices, exhibitions and ticket availability" : "menu prices and table availability"} are not independently
-                        verified.
-                      </p>
-                      {result.check && (
-                        <>
-                          <p>
-                            OpenStreetMap cross-check: {CHECK_LABEL[result.check.status]}.
-                            {result.check.match && (
-                              <>
-                                {" "}Matched{" "}
-                                <a href={result.check.match.url} target="_blank" rel="noreferrer">
-                                  {result.check.match.name} ↗
-                                </a>{" "}
-                                ({result.check.match.category}={result.check.match.type},{" "}
-                                {result.check.match.distanceM} m from the Qloo position).
-                              </>
-                            )}
-                          </p>
-                          {result.check.notes.map((note) => (
-                            <p key={note}>{note}</p>
-                          ))}
-                        </>
+                <PlaceCard
+                  key={result.place.id}
+                  place={result.place}
+                  token={result.token ?? ""}
+                  city={city}
+                  category={category}
+                  eyebrow={result.role}
+                  whyLabel="Why it fits you"
+                  why={result.why}
+                  details={
+                    <>
+                      <span className="place-label">What’s different</span>
+                      <p className="place-why">{result.different}</p>
+                      {result.check && CHECK_BADGE[result.check.status] && (
+                        <p className="place-check" data-warn={CHECK_BADGE[result.check.status]!.warn || undefined}>
+                          {CHECK_BADGE[result.check.status]!.text}
+                        </p>
                       )}
-                      <p className="meta">
-                        Response checked:{" "}
-                        {new Date(data.checkedAt).toLocaleString()}
-                      </p>
-                    </details>
-                  </div>
-                  <div className="card-actions">
-                    {result.token && (
-                      <>
-                        <SaveButton
-                          place={result.place}
-                          token={result.token}
-                          city={city}
-                          lists={lists}
-                          signedIn={signedIn}
-                          onChange={reload}
-                        />
-                        <button
-                          className="icon-button"
-                          aria-pressed={voted(result.place.id) === 1}
-                          onClick={() => like(result)}
-                        >
-                          <span aria-hidden>👍</span> {voted(result.place.id) === 1 ? "Liked" : "More like this"}
-                        </button>
-                        <button className="icon-button" onClick={() => notForMe(result)}>
-                          <span aria-hidden>✕</span> Not for me
-                        </button>
-                      </>
-                    )}
-                    {result.place.lat !== null && result.place.lon !== null && (
-                      <a
-                        className="icon-button"
-                        href={`https://www.google.com/maps/dir/?api=1&destination=${result.place.lat},${result.place.lon}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <span aria-hidden>↗</span> Directions
-                      </a>
-                    )}
-                  </div>
-                  <div className="stub" data-check={result.check?.status}>
-                    Picked by Qloo for your taste
-                    <br />
-                    {result.check
-                      ? `OpenStreetMap: ${CHECK_LABEL[result.check.status]}`
-                      : "Not checked yet"}
-                  </div>
-                </article>
+                      <details className="place-checked">
+                        <summary>How we checked</summary>
+                        <p>
+                          This is a {category} in {city} with an address and a spot on the map
+                          {budget ? ", within your price limit" : ""}. We left out your starting
+                          place, duplicates, places marked closed and anything you chose to change.
+                        </p>
+                        {result.check && (
+                          <>
+                            <p>
+                              {CHECK_PLAIN[result.check.status]}
+                              {result.check.match && (
+                                <>
+                                  {" "}It matches{" "}
+                                  <a href={result.check.match.url} target="_blank" rel="noreferrer">
+                                    {result.check.match.name} ↗
+                                  </a>
+                                  , {result.check.match.distanceM} m from where we have it.
+                                </>
+                              )}
+                            </p>
+                            {result.check.notes.map((note) => (
+                              <p key={note}>{note}</p>
+                            ))}
+                          </>
+                        )}
+                        <p>
+                          Opening hours, {museum ? "admission prices, exhibitions and tickets" : "menu prices and table availability"} are
+                          not checked: confirm with the place.
+                        </p>
+                        <p className="meta">Checked {new Date(data.checkedAt).toLocaleString()}</p>
+                      </details>
+                    </>
+                  }
+                  lists={lists}
+                  signedIn={signedIn}
+                  onListsChange={reload}
+                  onSaved={() => saved(result.place)}
+                  onHide={() => notForMe(result)}
+                  active={false}
+                  onHover={() => {}}
+                  pin={null}
+                  findSimilar={false}
+                  directions
+                />
               ))}
             </div>
           </>

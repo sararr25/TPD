@@ -126,3 +126,21 @@
   .saved-place { grid-template-columns: 1fr; }
   .saved-place-photo { min-height: 150px; }
 }
+
+/* Deliberate, read-only sharing. Notes remain only in the owner's Saved view. */
+.trip-head-actions { margin: 0; flex-wrap: wrap; }
+.share-trip-dialog { width: min(680px, calc(100vw - var(--space-8))); max-height: calc(100dvh - var(--space-8)); overflow-y: auto; }
+.share-trip-dialog h2 { margin-top: 0; }
+.share-trip-preview { max-height: 240px; overflow-y: auto; padding: var(--space-4); background: var(--bg); border-radius: var(--radius-card); }
+.share-trip-preview h3 { margin-top: 0; }
+.share-trip-preview li { padding-block: var(--space-1); overflow-wrap: anywhere; }
+.share-trip-link { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
+.share-trip-link textarea { width: 100%; min-height: 72px; padding: var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-control); color: var(--ink-2); background: var(--paper); font: var(--text-sm) var(--font-body); resize: vertical; }
+.shared-trip-note { padding: var(--space-4); background: var(--sun-soft); border-radius: var(--radius-card); }
+.shared-trip-places { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); padding: 0; margin: var(--space-6) 0; list-style: none; }
+.shared-trip-places li { display: flex; align-items: flex-start; gap: var(--space-4); padding: var(--space-5); min-width: 0; }
+.shared-trip-places h2 { margin: 0; font-size: var(--display-sm); overflow-wrap: anywhere; }
+.shared-trip-places h2 a { color: var(--ink); }
+.shared-trip-places p { margin: var(--space-2) 0 0; }
+.shared-trip-number { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--brand); border-radius: 50%; color: var(--brand); font-size: var(--text-sm); }
+@media (max-width: 650px) { .shared-trip-places { grid-template-columns: 1fr; } }

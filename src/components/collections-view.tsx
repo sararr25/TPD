@@ -9,6 +9,7 @@ import { cityCover } from "@/lib/city-covers";
 import { CityMap } from "./city-map";
 import { useSavedLists } from "./save-button";
 import { useToast } from "./toast";
+import { ShareTrip } from "./share-trip";
 
 // Saved places grouped by list (docs/22 F1-F3). Guests see this device's
 // lists; signed in, they move to the account and follow you everywhere.
@@ -64,6 +65,8 @@ export function CollectionsView() {
                   {c.local && " · On this device only"}
                 </p>
               </div>
+              <div className="actions trip-head-actions">
+              <ShareTrip list={c} />
               <button
                 className="btn btn-quiet"
                 disabled={busy}
@@ -74,6 +77,7 @@ export function CollectionsView() {
               >
                 Delete list
               </button>
+              </div>
             </header>
             {c.items.length === 0 ? (
               <div className="trip-empty">

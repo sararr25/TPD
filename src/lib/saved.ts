@@ -1,4 +1,4 @@
-import type { Entity } from "./discovery";
+import { CITIES, inCity, type Entity } from "./discovery";
 import {
   loadCollections,
   saveToCollection,
@@ -139,4 +139,20 @@ export async function setNote(list: SavedList, place: Entity, token: string, not
         : l,
     ),
   );
+}
+
+// The city of a saved place, so its name can open the Place page. Read from
+// the place's signed token when there is one (the body is plain base64 JSON;
+// this only picks a link, the page re-checks everything on the server), else
+// from a list named "<City> trip". Null when neither says: no link then.
+export function savedItemCity(item: SavedItem, listName: string): string | null {
+  if (item.token) {
+    try {
+      const body = item.token.split(".")[0].replace(/-/g, "+").replace(/_/g, "/");
+      const entity = JSON.parse(atob(body)).entity;
+      const found = Object.keys(CITIES).find((c) => inCity(entity, c));
+      if (found) return found;
+    } catch {}
+  }
+  return Object.keys(CITIES).find((c) => listName === `${c} trip`) ?? null;
 }

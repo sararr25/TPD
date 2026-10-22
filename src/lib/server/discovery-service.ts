@@ -28,6 +28,7 @@ import {
   normalizeEntity,
   localityMatches,
   searchEntities,
+  entityById,
   DiscoveryError,
 } from "./qloo.ts";
 import { checkVenues } from "./osm.ts";
@@ -120,6 +121,20 @@ export async function lookup(
     ),
     checkedAt: result.checkedAt,
   };
+}
+// The Place page (/[city]/[place]): one place by Qloo id, accepted only when
+// it is a place we show in that city. Anything else is "not_found".
+export async function placeById(idValue: unknown, cityValue: unknown) {
+  if (typeof idValue !== "string" || !UUID.test(idValue))
+    throw new DiscoveryError("not_found", 404);
+  const city = swapCity(cityValue);
+  if (!city) throw new DiscoveryError("not_found", 404);
+  const { entity } = await entityById(idValue);
+  const category = entity
+    ? (["restaurant", "museum", "bar", "hotel"] as const).find((c) => explorePlace(entity, city, c))
+    : undefined;
+  if (!entity || !category) throw new DiscoveryError("not_found", 404);
+  return { ...selection(entity), category };
 }
 export async function guest(profile:unknown=0) {
   if(profile!==0&&profile!==1)throw new DiscoveryError("invalid_profile",400);

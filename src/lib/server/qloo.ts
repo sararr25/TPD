@@ -26,7 +26,7 @@ const inflight = new Map<
 let blockedUntil = 0;
 const TTL = 15 * 60 * 1000;
 export async function qloo(
-  path: "/search" | "/v2/insights" | "/v2/tags",
+  path: "/search" | "/entities" | "/v2/insights" | "/v2/tags",
   params: Record<string, string>,
 ): Promise<{ data: unknown; checkedAt: string }> {
   const base = (
@@ -153,4 +153,9 @@ export async function searchEntities(query: string, type: string) {
     take: "8",
   });
   return { entities: entities(data).filter((e) => e.type === type), checkedAt };
+}
+// One entity by its Qloo id (the Place page). Null when Qloo has no such entity.
+export async function entityById(id: string) {
+  const { data, checkedAt } = await qloo("/entities", { entity_ids: id });
+  return { entity: entities(data)[0] ?? null, checkedAt };
 }

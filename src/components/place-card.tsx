@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { chipTags, type Entity, type ExploreCategory } from "@/lib/discovery";
+import { chipTags, citySlug, type Entity, type ExploreCategory } from "@/lib/discovery";
 import type { SavedList } from "@/lib/saved";
 import { cityCover } from "@/lib/city-covers";
 import { SaveButton } from "./save-button";
@@ -72,6 +72,8 @@ export function PlaceCard({
     : chipTags(place, category === "museum" ? "museum" : "restaurant")
         .slice(0, 3)
         .map((t) => t.name);
+  // Every place (not neighbourhoods) opens its page: /lisbon/<id>.
+  const pageHref = hood ? null : `/${citySlug(city)}/${place.id.toLowerCase()}`;
   const swappable = findSimilar && (category === "restaurant" || category === "museum");
   // "Find similar" starts Swap from this place (#8): name + category + id so
   // Swap can pick the matching search result without retyping.
@@ -86,6 +88,7 @@ export function PlaceCard({
       onFocus={() => onHover(place.id)}
     >
       <div className="place-photo">
+        {pageHref && <Link className="place-photo-link" href={pageHref} tabIndex={-1} aria-hidden />}
         {pin !== null && (
           <span className="place-pin" aria-label={`Pin ${pin} on the map`}>
             {pin}
@@ -102,7 +105,7 @@ export function PlaceCard({
       </div>
       <div className="place-body">
         {eyebrow && <span className="place-role">{eyebrow}</span>}
-        <h3>{place.name}</h3>
+        <h3>{pageHref ? <Link href={pageHref}>{place.name}</Link> : place.name}</h3>
         {why && whyLabel && <span className="place-label">{whyLabel}</span>}
         {why && <p className="place-why">{why}</p>}
         {hood && place.context && <p className="place-why">{place.context}</p>}

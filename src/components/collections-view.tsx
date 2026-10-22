@@ -3,7 +3,8 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { AuthButton } from "./auth-button";
 import { authClient } from "@/lib/auth/client";
-import { removeFromList, deleteList, type SavedList } from "@/lib/saved";
+import { removeFromList, deleteList, savedItemCity, type SavedList } from "@/lib/saved";
+import { citySlug } from "@/lib/discovery";
 import { useSavedLists } from "./save-button";
 import { useToast } from "./toast";
 
@@ -72,7 +73,12 @@ export function CollectionsView() {
                 {c.items.map((item) => (
                   <li key={item.placeId}>
                     <div>
-                      <strong>{item.name}</strong>
+                      <strong>
+                        {(() => {
+                          const city = savedItemCity(item, c.name);
+                          return city ? <Link href={`/${citySlug(city)}/${item.placeId.toLowerCase()}`}>{item.name}</Link> : item.name;
+                        })()}
+                      </strong>
                       <p className="muted">{item.address}</p>
                       {item.note && <p>{item.note}</p>}
                       <p className="meta">

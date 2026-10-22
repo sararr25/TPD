@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LOCAL_NAME, type Entity } from "@/lib/discovery";
+import { cityCover } from "@/lib/city-covers";
 import { discovery, type Selection } from "@/lib/discovery-client";
 
 const CITY = "Lisbon";
@@ -47,7 +48,7 @@ export function HomeExample() {
   const first = picks?.[0]?.place.image ?? null;
   return (
     <aside className="h-visa" aria-labelledby="home-example">
-      <VisaPhoto src={first} loading={!picks && !error} />
+      <VisaPhoto src={first} fallback={cityCover(CITY, "420x")} loading={!picks && !error} />
       <span className="h-mono" id="home-example">
         For example
       </span>
@@ -98,11 +99,12 @@ export function HomeExample() {
 }
 
 // Some Qloo photos fail to load (docs/22): show a plain panel instead.
-function VisaPhoto({ src, loading }: { src: string | null; loading: boolean }) {
+function VisaPhoto({ src, fallback, loading }: { src: string | null; fallback: string | null; loading: boolean }) {
   const [broken, setBroken] = useState(false);
+  const shown = broken || !src ? fallback : src;
   return (
     <div className={loading ? "h-visa-photo skeleton" : "h-visa-photo"}>
-      {src && !broken && <img src={src} alt="" loading="lazy" onError={() => setBroken(true)} />}
+      {shown && <img key={shown} src={shown} alt="" loading="lazy" onError={() => setBroken(true)} />}
       <span className="h-stamp" aria-hidden>
         {CITY_LOCAL}
       </span>

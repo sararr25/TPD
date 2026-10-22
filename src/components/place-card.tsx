@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { chipTags, type Entity, type ExploreCategory } from "@/lib/discovery";
 import type { SavedList } from "@/lib/saved";
+import { cityCover } from "@/lib/city-covers";
 import { SaveButton } from "./save-button";
 
 const FALLBACK: Record<ExploreCategory, string> = {
@@ -47,8 +48,11 @@ export function PlaceCard({
   // Its number on the map, when it has coordinates.
   pin: number | null;
 }) {
-  // Some Qloo photos fail to load (docs/22): show the category instead.
+  // Some Qloo photos are missing or fail to load (docs/22): show the city's
+  // cover, and the category text only if the city has none either.
   const [broken, setBroken] = useState(false);
+  const [coverBroken, setCoverBroken] = useState(false);
+  const cover = coverBroken ? null : cityCover(city, "420x");
   const hood = category === "neighbourhood";
   const price = place.price ? "€".repeat(place.price) : null;
   const chips = hood
@@ -75,6 +79,8 @@ export function PlaceCard({
         {place.image && !broken ? (
           // Remote Qloo photos, already sized (420 px): a plain lazy img.
           <img src={place.image} alt="" loading="lazy" onError={() => setBroken(true)} />
+        ) : cover ? (
+          <img src={cover} alt="" loading="lazy" onError={() => setCoverBroken(true)} />
         ) : (
           <span aria-hidden>{FALLBACK[category]}</span>
         )}

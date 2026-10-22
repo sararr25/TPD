@@ -31,6 +31,7 @@ import {
   DiscoveryError,
 } from "./qloo.ts";
 import { checkVenues } from "./osm.ts";
+import { withUsablePhotos } from "./photo-check.ts";
 import { cleanSignal, feedbackParams, nudge } from "../feedback.ts";
 import { ENTITY_CARDS, MAX_ENTITIES, cleanAnswers, buildProfile, qlooParams } from "../quiz.ts";
 export type Selection = { entity: Entity; token: string };
@@ -289,8 +290,9 @@ export async function swap(
       : [...filtered.filter(hasKeep), ...filtered.filter((e) => !hasKeep(e))];
   const roles = selectRoles(nudge(pool, feedback), ref, signals, category);
   const checks = await checkVenues(roles.map((r) => r.place), category);
+  const photoed = await withUsablePhotos(roles.map((r) => r.place));
   return {
-    results: roles.map((r, i) => ({ ...r, check: checks[i], token: selection(r.place).token })),
+    results: roles.map((r, i) => ({ ...r, place: photoed[i], check: checks[i], token: selection(photoed[i]).token })),
     checkedAt,
     city,
     category,
@@ -351,31 +353,34 @@ export async function explore(
       ...HOOD_SOURCES.map((c) => explorePlaces([], city, c, null, new Set(), none)),
     ]);
     const baseline = picks.splice(HOOD_SOURCES.length);
+    const ranked = rankNeighbourhoods(
+      hoods.filter((h) => !hidden.has(h.id)),
+      picks.map((p) => p.places),
+      baseline.map((p) => p.places),
+    ).slice(0, HOOD_RESULTS);
+    const hoodPhotos = await withUsablePhotos(ranked.map((r) => r.hood));
     return {
       city,
       category,
       checkedAt: picks[0].checkedAt,
       traitsUsed: picks.some((p) => p.traitsUsed),
-      results: rankNeighbourhoods(
-        hoods.filter((h) => !hidden.has(h.id)),
-        picks.map((p) => p.places),
-        baseline.map((p) => p.places),
-      ).slice(0, HOOD_RESULTS).map(({ hood, near }) => ({
-        place: hood,
-        token: selection(hood).token,
+      results: ranked.map(({ near }, i) => ({
+        place: hoodPhotos[i],
+        token: selection(hoodPhotos[i]).token,
         near,
       })),
       notice:
         "Neighbourhoods where more of your Qloo restaurants, bars and museums are close to the centre than for a Passport-free search. Qloo itself does not rank neighbourhoods by taste.",
     };
   }
-  const { checkedAt, places, traitsUsed } = await search(category);
+  const { checkedAt, places: found, traitsUsed } = await search(category);
+  const places = await withUsablePhotos(found.slice(0, EXPLORE_RESULTS));
   return {
     city,
     category,
     checkedAt,
     traitsUsed,
-    results: places.slice(0, EXPLORE_RESULTS).map((place) => ({
+    results: places.map((place) => ({
       place,
       token: selection(place).token,
     })),

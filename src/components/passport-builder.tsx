@@ -224,13 +224,10 @@ export function PassportBuilder() {
   const traveller = buildProfile(profile);
   return (
     <>
-      <div className="grid">
-        <section>
+      <div className="grid passport-spread">
+        <section className="passport-editor">
           <div className="page-head">
-            <span className="meta">Your Passport</span>
-            <h1>
-              A few favourites, <em>a starting point.</em>
-            </h1>
+            <h1>Your Taste Passport</h1>
             <p className="lead">Choose 3–5 artists, films, books or places you love.</p>
           </div>
           <button className="btn btn-secondary" disabled={busy || !ready} onClick={() => {

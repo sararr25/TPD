@@ -1,17 +1,15 @@
 import Link from "next/link";
 export default function NotFound() {
   return (
-    <section className="paper">
-      <span className="meta">Page not found</span>
-      <h1>
-        A small
-        <br />
-        <em>detour.</em>
-      </h1>
-      <p>This page isn’t in your Passport.</p>
-      <Link className="btn btn-primary" href="/">
-        Back to the start
-      </Link>
+    <section className="route-state">
+      <span className="route-state-mark" aria-hidden>404</span>
+      <div>
+        <h1>We couldn’t find this page.</h1>
+        <p>The link may have changed. Pick a city and start exploring from there.</p>
+        <Link className="btn btn-primary" href="/explore">
+          Browse cities
+        </Link>
+      </div>
     </section>
   );
 }

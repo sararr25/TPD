@@ -1,7 +1,7 @@
 /*
  * Shell: header, main navigation, sign-in, page container and footer.
  */
-header {
+.site-header {
   position: sticky;
   top: 0;
   z-index: 30;
@@ -147,22 +147,22 @@ footer p {
 }
 
 @media (max-width: 850px) {
-  header {
+  .site-header {
     flex-wrap: wrap;
     gap: 0 var(--space-5);
     padding-top: var(--space-2);
     padding-bottom: 0;
   }
 
-  header .brand {
+  .site-header .brand {
     flex: 1;
   }
 
-  header .auth {
+  .site-header .auth {
     order: 2;
   }
 
-  header nav {
+  .site-header nav {
     order: 3;
     flex: 1 0 100%;
     flex-wrap: nowrap;
@@ -178,37 +178,37 @@ footer p {
 }
 
 @media (max-width: 520px) {
-  header nav {
+  .site-header nav {
     gap: var(--space-5);
   }
 
-  header nav a {
+  .site-header nav a {
     font-size: 15px;
   }
 
-  header .nav-full {
+  .site-header .nav-full {
     display: none;
   }
 
-  header .nav-short {
+  .site-header .nav-short {
     display: inline;
   }
 }
 
 /* Phones: logo + sign-in on top, the four main links in a bottom tab bar. */
 @media (max-width: 720px) {
-  header {
+  .site-header {
     flex-wrap: nowrap;
     gap: var(--space-4);
     padding-top: var(--space-2);
     padding-bottom: var(--space-2);
   }
 
-  header nav {
+  .site-header nav {
     display: none;
   }
 
-  header .auth {
+  .site-header .auth {
     order: 0;
   }
 

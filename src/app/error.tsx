@@ -1,16 +1,15 @@
 "use client";
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
-    <section className="paper">
-      <h1>
-        A pause in
-        <br />
-        <em>discoveries.</em>
-      </h1>
-      <p>We couldn’t load this page. You can try again.</p>
-      <button className="btn btn-primary" onClick={reset}>
-        Try again
-      </button>
+    <section className="route-state">
+      <span className="route-state-mark" aria-hidden>↻</span>
+      <div>
+        <h1>This page couldn’t load.</h1>
+        <p>Something went wrong while loading it. Try again to pick up where you left off.</p>
+        <button className="btn btn-primary" onClick={reset}>
+          Try again
+        </button>
+      </div>
     </section>
   );
 }

@@ -40,7 +40,7 @@ export default function RootLayout({
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body>
         <ToastProvider>
-          <header>
+          <header className="site-header">
             <Link className="brand" href="/">
               beesyde<span className="dot" aria-hidden="true">.</span>
             </Link>

@@ -17,7 +17,12 @@ export function HomeCities({ page = false }: { page?: boolean }) {
   return (
     <section className={page ? "h-cities page" : "h-cities"} id="cities" aria-labelledby="h-cities">
       <div className="h-cities-head">
-        {page ? <h1 id="h-cities">Cities</h1> : <h2 id="h-cities">Eleven cities so far.</h2>}
+        {page ? (
+          <div className="cities-index-title">
+            <h1 id="h-cities">Choose your next city</h1>
+            <p>Open a city to explore its places, or find a twin for one you already know.</p>
+          </div>
+        ) : <h2 id="h-cities">Eleven cities so far.</h2>}
         <div className="toggle-group" role="group" aria-label="Filter cities by region">
           {REGIONS.map((r) => (
             <button type="button" className="toggle" key={r} aria-pressed={region === r} onClick={() => setRegion(r)}>

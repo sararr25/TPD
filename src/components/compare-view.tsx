@@ -67,11 +67,8 @@ export function CompareView() {
 
   return (
     <>
-      <div className="page-head">
-        <span className="meta">Qloo vs a general AI model</span>
-        <h1>
-          Same taste, <em>two answers.</em>
-        </h1>
+      <div className="page-head compare-head">
+        <h1>Qloo vs AI</h1>
         <p className="lead">
           One example Passport asks Qloo and a free general AI model for the same thing. Qloo picks from
           real places it knows; the AI model writes names that sound right, and nobody checks them.

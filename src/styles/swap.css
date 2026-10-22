@@ -2,6 +2,33 @@
  * Swap: the "what to keep" rows (trait name + Keep / Change toggles; neither pressed means ignore).
  * Results use the shared place card (place-card.css).
  */
+.swap-intro {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-8);
+  border: 1px solid var(--line);
+  border-bottom: 1px dashed var(--ink-3);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+
+.swap-intro-stamp {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--brand);
+  border-radius: 50%;
+  outline: 1px solid var(--brand);
+  outline-offset: -6px;
+  color: var(--brand);
+  font: var(--text-xs) var(--font-mono);
+  letter-spacing: 0.08em;
+  transform: rotate(-8deg);
+}
+
 .page-head + .toggle-group,
 select + .toggle-group {
   margin: var(--space-4) 0 var(--space-6);
@@ -31,5 +58,16 @@ select + .toggle-group {
 @media (max-width: 850px) {
   .segment {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .swap-intro {
+    align-items: flex-start;
+    padding: var(--space-6);
+  }
+
+  .swap-intro-stamp {
+    display: none;
   }
 }

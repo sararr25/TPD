@@ -8,6 +8,25 @@
   gap: clamp(var(--space-5), 3vw, var(--space-10));
 }
 
+/* The Cities index is a shelf of postcards, not a second Home hero. */
+.h-cities.page .h-cities-head {
+  align-items: end;
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--line);
+}
+
+.cities-index-title h1 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--display-lg);
+  line-height: var(--leading-snug);
+}
+
+.cities-index-title p {
+  margin: 0;
+  max-width: 48ch;
+  font-size: var(--text-lg);
+}
+
 .h-mono {
   font: var(--text-xs) / 1.7 var(--font-mono);
   letter-spacing: 0.02em;
@@ -290,7 +309,7 @@
 
 .h-cities.page h1 {
   max-width: none;
-  margin: 0;
+  margin: 0 0 var(--space-3);
   font-size: var(--display-lg);
   line-height: 1.1;
 }

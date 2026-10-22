@@ -18,7 +18,7 @@ export function HomeSwapSearch() {
     router.push(`/swap?${params}`);
   }
   return (
-    <form className="home-search" onSubmit={submit} role="search" aria-label="Swap a place">
+    <form className="h-search" onSubmit={submit} role="search" aria-label="Swap a place">
       <label className="sr-only" htmlFor="home-swap-q">
         The restaurant or museum you wanted
       </label>
@@ -26,13 +26,13 @@ export function HomeSwapSearch() {
         id="home-swap-q"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={category === "museum" ? "A museum that’s full…" : "A restaurant that’s full…"}
+        placeholder={category === "museum" ? "The museum that’s full" : "The restaurant that’s full"}
         minLength={2}
         maxLength={120}
         required
       />
-      <div className="home-search-row">
-        <div className="seg" role="group" aria-label="Kind of place">
+      <div className="h-row">
+        <div className="h-kind" role="group" aria-label="Kind of place">
           {(["restaurant", "museum"] as const).map((c) => (
             <button type="button" key={c} aria-pressed={category === c} onClick={() => setCategory(c)}>
               {c === "restaurant" ? "Restaurant" : "Museum"}
@@ -47,7 +47,7 @@ export function HomeSwapSearch() {
             <option key={c}>{c}</option>
           ))}
         </select>
-        <button className="ticket" disabled={query.trim().length < 2}>
+        <button className="h-btn" disabled={query.trim().length < 2}>
           Find its twin
         </button>
       </div>

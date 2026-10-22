@@ -1,58 +1,59 @@
 import Link from "next/link";
-import { CITIES, citySlug, LOCAL_NAME } from "@/lib/discovery";
-import { HomeSwapSearch } from "@/components/home-swap-search";
+import { HomeSearch } from "@/components/home-search";
 import { HomeExample } from "@/components/home-example";
+import { HomeCities } from "@/components/home-cities";
 
-// Home (docs/24, wireframe W2): two ways in (a city, or a place that's full),
-// a live example of what you get, then every city. No forms, no gate.
+const STEPS = [
+  ["Make your Passport", "Pick three favourites: a film, a band, a bar. About a minute, no account."],
+  ["Open a city", "Eleven so far. Each one is reordered around your taste."],
+  ["Swap when it’s full", "Name the place you wanted. We find the closest match nearby."],
+];
+
+// Home (docs/24): a passport-cover hero with two ways in, a live example,
+// how it works, every city, then the Passport band.
 export default function Home() {
-  const cities = Object.keys(CITIES);
   return (
     <>
-      <div className="home-top">
-        <section className="home-entrances">
-          <h1>Places that fit your taste, in the city you’re visiting.</h1>
-          <p className="lead">Tell us a few things you love. We read the city through them.</p>
-          <h2 className="meta">Where are you going?</h2>
-          <ul className="home-cities">
-            {cities.map((c) => (
-              <li key={c}>
-                <Link className="pill" href={`/${citySlug(c)}`}>
-                  {c}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <h2 className="meta">Or: had a place in mind that’s full?</h2>
-          <HomeSwapSearch />
+      <div className="h-hero">
+        <section className="h-cover" aria-labelledby="h-title">
+          <div className="h-seal" aria-hidden />
+          <span className="h-mono">Taste Passport</span>
+          <h1 id="h-title">
+            Places that fit your taste, <em>in the city you’re visiting.</em>
+          </h1>
+          <p className="h-lead">Tell us three things you love. We read the city through them.</p>
+          <HomeSearch />
         </section>
         <HomeExample />
       </div>
 
-      <section className="home-covers" aria-labelledby="home-covers">
-        <h2 className="meta" id="home-covers">
-          {cities.length} cities
-        </h2>
-        <ul>
-          {cities.map((c) => (
-            <li key={c}>
-              <Link href={`/${citySlug(c)}`} className="home-cover">
-                <span className="city-stamp" aria-hidden>
-                  {c.slice(0, 3).toUpperCase()}
-                </span>
-                <strong>{c}</strong>
-                {LOCAL_NAME[c] && <span className="home-cover-local">{LOCAL_NAME[c]}</span>}
-                <span className="home-cover-go" aria-hidden>
-                  Explore ↗
-                </span>
-              </Link>
+      <section className="h-how" aria-labelledby="h-how">
+        <h2 id="h-how">Three favourites, and the city starts to look like you.</h2>
+        <ol className="h-steps">
+          {STEPS.map(([title, text]) => (
+            <li key={title}>
+              <h3>{title}</h3>
+              <p>{text}</p>
             </li>
           ))}
-        </ul>
-        <p className="muted">
-          Picks come from Qloo’s taste data. Opening hours, prices and bookings are not checked: confirm before you go.
-        </p>
+        </ol>
       </section>
+
+      <HomeCities />
+
+      <section className="h-band" aria-labelledby="h-band">
+        <div>
+          <h2 id="h-band">Your taste, carried to every city.</h2>
+          <p>Make it once. Every city you open is read through it, and the places you save wait for the next trip.</p>
+        </div>
+        <Link className="h-btn dark" href="/passport">
+          Make my Passport
+        </Link>
+      </section>
+
+      <p className="h-foot">
+        Picks come from Qloo’s taste data. Hours, prices and bookings aren’t checked, so confirm before you go.
+      </p>
     </>
   );
 }

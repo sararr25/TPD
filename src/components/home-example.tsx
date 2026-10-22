@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { citySlug, type Entity } from "@/lib/discovery";
+import { LOCAL_NAME, type Entity } from "@/lib/discovery";
 import { discovery, type Selection } from "@/lib/discovery-client";
 
 const CITY = "Lisbon";
+const CITY_LOCAL = LOCAL_NAME[CITY].toUpperCase();
 type Pick = { place: Entity; category: string };
 
 // Home's live example (docs/24): the sample profile, read through Lisbon.
@@ -43,12 +44,14 @@ export function HomeExample() {
     });
     return () => controller.abort();
   }, []);
+  const first = picks?.[0]?.place.image ?? null;
   return (
-    <section className="home-example paper" aria-labelledby="home-example">
-      <h2 className="meta" id="home-example">
+    <aside className="h-visa" aria-labelledby="home-example">
+      <VisaPhoto src={first} loading={!picks && !error} />
+      <span className="h-mono" id="home-example">
         For example
-      </h2>
-      <p>
+      </span>
+      <p className="h-visa-sentence">
         Someone who loves{" "}
         {who.length ? (
           who.map((n, i) => (
@@ -59,51 +62,50 @@ export function HomeExample() {
           ))
         ) : (
           <strong>Khruangbin, Nina Simone and Before Sunrise</strong>
-        )}
-        , in {CITY}:
+        )}{" "}
+        would start here in {CITY}:
       </p>
       {error ? (
-        <p className="page-status" role="alert">
+        <p className="h-error" role="alert">
           The example could not load: {error}
         </p>
       ) : (
-        <ul className="home-example-cards" aria-busy={!picks}>
+        <ul className="h-picks" aria-busy={!picks}>
           {(picks ?? [null, null, null]).map((p, i) => (
             <li key={p?.place.id ?? i}>
               {p ? (
-                <Link href={`/${citySlug(CITY)}`} className="home-mini">
-                  <MiniPhoto src={p.place.image ?? null} label={p.category} />
-                  <span className="meta">{p.category}</span>
+                <>
+                  <span className="h-mono">{p.category}</span>
                   <strong>{p.place.name}</strong>
-                </Link>
+                </>
               ) : (
-                <span className="home-mini skeleton" aria-hidden />
+                <span className="h-skeleton" aria-hidden />
               )}
             </li>
           ))}
         </ul>
       )}
-      <div className="city-banner">
-        <p>
-          <strong>Make it yours</strong>: pick 3 favourites, about a minute.
-        </p>
-        <Link className="ticket" href="/passport">
-          Start
+      <div className="h-visa-actions">
+        <Link className="h-btn" href="/passport">
+          Make my Passport
+        </Link>
+        <Link className="h-link" href="/passport?guest=1">
+          Try this profile
         </Link>
       </div>
-      <Link className="text" href="/passport?guest=1">
-        Or try this sample profile
-      </Link>
-    </section>
+    </aside>
   );
 }
 
-// Some Qloo photos fail to load (docs/22): show the category instead.
-function MiniPhoto({ src, label }: { src: string | null; label: string }) {
+// Some Qloo photos fail to load (docs/22): show a plain panel instead.
+function VisaPhoto({ src, loading }: { src: string | null; loading: boolean }) {
   const [broken, setBroken] = useState(false);
   return (
-    <span className="home-mini-photo">
-      {src && !broken ? <img src={src} alt="" loading="lazy" onError={() => setBroken(true)} /> : <span>{label}</span>}
-    </span>
+    <div className={loading ? "h-visa-photo skeleton" : "h-visa-photo"}>
+      {src && !broken && <img src={src} alt="" loading="lazy" onError={() => setBroken(true)} />}
+      <span className="h-stamp" aria-hidden>
+        {CITY_LOCAL}
+      </span>
+    </div>
   );
 }

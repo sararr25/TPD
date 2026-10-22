@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { AuthButton } from "./auth-button";
 import { authClient } from "@/lib/auth/client";
-import { removeFromList, deleteList } from "@/lib/saved";
+import { removeFromList, deleteList, type SavedList } from "@/lib/saved";
 import { useSavedLists } from "./save-button";
 import { useToast } from "./toast";
 
@@ -15,6 +15,9 @@ export function CollectionsView() {
   const toast = useToast();
   const { lists, loaded, reload } = useSavedLists(!isPending, userId);
   const [busy, setBusy] = useState(false);
+  // Deleting a list asks in the site dialog, like the Passport (#17).
+  const [pending, setPending] = useState<SavedList | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
   async function run(action: () => Promise<void>, done: string) {
     setBusy(true);
     try {
@@ -54,8 +57,8 @@ export function CollectionsView() {
                 className="text"
                 disabled={busy}
                 onClick={() => {
-                  if (confirm(`Delete the list “${c.name}” and its places?`))
-                    run(() => deleteList(c), `Deleted “${c.name}”.`);
+                  setPending(c);
+                  dialog.current?.showModal();
                 }}
               >
                 Delete list
@@ -104,6 +107,28 @@ export function CollectionsView() {
           </section>
         ))
       )}
+      <dialog ref={dialog} onClose={() => setPending(null)}>
+        <h2>Delete “{pending?.name}”?</h2>
+        <p>
+          This removes the list and its {pending?.items.length ?? 0} saved place
+          {pending?.items.length === 1 ? "" : "s"}. This cannot be undone.
+        </p>
+        <div className="actions">
+          <button
+            className="stamp"
+            onClick={() => {
+              const list = pending;
+              dialog.current?.close();
+              if (list) run(() => deleteList(list), `Deleted “${list.name}”.`);
+            }}
+          >
+            Delete list
+          </button>
+          <button className="text" onClick={() => dialog.current?.close()}>
+            Keep it
+          </button>
+        </div>
+      </dialog>
       {loaded && !userId && (
         <section className="paper">
           <h2>Keep your lists on every device.</h2>

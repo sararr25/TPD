@@ -2,10 +2,11 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 // Toasts (docs/22 1.2): feedback appears where the user is looking, at the
-// bottom of the screen, with an optional action such as Undo. One at a time;
-// a new toast replaces the current one.
-type Toast = { id: number; message: string; action?: { label: string; run: () => void }; error?: boolean };
-type Show = (message: string, options?: { action?: Toast["action"]; error?: boolean }) => void;
+// bottom of the screen, with an optional action such as Undo (and a second one
+// such as Change, #16). One at a time; a new toast replaces the current one.
+type Action = { label: string; run: () => void };
+type Toast = { id: number; message: string; action?: Action; secondary?: Action; error?: boolean };
+type Show = (message: string, options?: { action?: Action; secondary?: Action; error?: boolean }) => void;
 const ToastContext = createContext<Show | null>(null);
 
 export function useToast(): Show {
@@ -36,15 +37,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toast && (
           <div className="toast" data-error={toast.error || undefined} key={toast.id}>
             <span>{toast.message}</span>
-            {toast.action && (
-              <button
-                onClick={() => {
-                  toast.action!.run();
-                  setToast(null);
-                }}
-              >
-                {toast.action.label}
-              </button>
+            {[toast.action, toast.secondary].map(
+              (a) =>
+                a && (
+                  <button
+                    key={a.label}
+                    onClick={() => {
+                      a.run();
+                      setToast(null);
+                    }}
+                  >
+                    {a.label}
+                  </button>
+                ),
             )}
             <button className="toast-close" aria-label="Dismiss" onClick={() => setToast(null)}>
               ×

@@ -40,7 +40,7 @@ export function AuthButton() {
           </button>
         </>
       ) : (
-        <button className="stamp" onClick={signIn} disabled={busy}>
+        <button className="stamp quiet" onClick={signIn} disabled={busy}>
           {busy ? "Opening Google…" : "Sign in with Google"}
         </button>
       )}

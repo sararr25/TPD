@@ -334,13 +334,13 @@ export function PassportBuilder() {
     <>
       <div className="grid">
         <section>
-          <span className="meta">01 / Your cultural identity</span>
-          <h1>
-            A few favourites.
-            <br />
-            <em>A starting point.</em>
-          </h1>
-          <p>Choose 3–5 artists, films, books or places you love.</p>
+          <div className="page-head">
+            <span className="meta">Your Passport</span>
+            <h1>
+              A few favourites, <em>a starting point.</em>
+            </h1>
+            <p className="lead">Choose 3–5 artists, films, books or places you love.</p>
+          </div>
           <button className="stamp" disabled={busy || !ready} onClick={() => {
               setStatus("");
               setQuizOpen(true);
@@ -361,7 +361,7 @@ export function PassportBuilder() {
             </div>
           )}
           <form onSubmit={search} className="search-form">
-            <label htmlFor="kind">Look for</label>
+            <label htmlFor="kind">What kind of favourite?</label>
             <select
               disabled={busy}
               id="kind"
@@ -388,7 +388,7 @@ export function PassportBuilder() {
               placeholder="An artist, a film, a book…"
             />
             <button className="stamp" disabled={busy || !ready} type="submit">
-              Search Qloo
+              Search
             </button>
           </form>
           <p role="status" aria-live="polite">

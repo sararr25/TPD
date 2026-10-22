@@ -30,25 +30,24 @@ export function CollectionsView() {
   const anyLocal = lists.some((l) => l.local);
   return (
     <>
-      <span className="meta">Collections</span>
-      <h1>
-        Places worth keeping.
-        <br />
-        <em>Grouped by trip.</em>
-      </h1>
+      <div className="page-head">
+        <span className="meta">Saved</span>
+        <h1>
+          Places worth keeping, <em>grouped by trip.</em>
+        </h1>
+      </div>
       {!loaded ? (
         <p className="meta">Loading your lists…</p>
       ) : lists.length === 0 ? (
         <section className="paper">
-          <h2>No saved places yet.</h2>
-          <p>Open a city in Explore and press ♡ Save on a place you like. You can make one list per trip.</p>
+          <p>Nothing saved yet. Tap Save on any place to start a trip list.</p>
           <Link className="ticket" href="/explore">
-            Explore a city
+            Browse cities
           </Link>
         </section>
       ) : (
         lists.map((c) => (
-          <section className="divider" key={c.id}>
+          <section className="paper coll-list" key={c.id}>
             <div className="row">
               <h2>{c.name}</h2>
               <button

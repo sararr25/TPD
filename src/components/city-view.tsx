@@ -10,7 +10,7 @@ import {
   type Entity,
   type ExploreCategory,
 } from "@/lib/discovery";
-import { discovery, readSelections, type Selection } from "@/lib/discovery-client";
+import { discovery, readSelections, MESSAGES, type Selection } from "@/lib/discovery-client";
 import { authClient } from "@/lib/auth/client";
 import { readStoredQuiz } from "@/lib/quiz";
 import {
@@ -186,7 +186,7 @@ export function CityView({ city }: { city: string }) {
     <div className="city">
       <section className="city-cover">
         <div>
-          <span className="meta">Explore</span>
+          <span className="meta">City guide</span>
           <h1>{city}</h1>
           {LOCAL_NAME[city] && <p className="city-local">{LOCAL_NAME[city]}</p>}
         </div>
@@ -240,6 +240,13 @@ export function CityView({ city }: { city: string }) {
       <p className="page-status city-status" aria-live="polite">
         {status}
       </p>
+      {status === MESSAGES.expired_selection && (
+        <p>
+          <Link className="ticket" href="/passport">
+            Refresh my Passport
+          </Link>
+        </p>
+      )}
       <div className="city-split">
         <div className="place-grid" aria-busy={busy}>
           {busy && !data

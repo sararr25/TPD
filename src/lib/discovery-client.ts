@@ -12,7 +12,7 @@ export const MESSAGES: Record<string, string> = {
   provider_access:
     "The provider connection needs attention. Your Passport is still here.",
   expired_selection:
-    "These selections have expired. Search for and select your favourites again.",
+    "Your Passport needs a refresh. Pick your favourites again to see picks for you.",
   invalid_selection:
     "A saved selection could not be validated. Search for and select it again.",
   invalid_category: "Choose restaurants or museums.",

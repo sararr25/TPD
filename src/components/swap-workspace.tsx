@@ -75,12 +75,12 @@ export function SwapWorkspace() {
   }, [key, cityKnown]);
   return (
     <>
-      <span className="meta">Swap · {city}</span>
-      <h1>
-        Keep the feeling.
-        <br />
-        <em>Change the place.</em>
-      </h1>
+      <div className="page-head">
+        <span className="meta">Swap a place</span>
+        <h1>
+          Keep the feeling, <em>change the place.</em>
+        </h1>
+      </div>
       <label htmlFor="swap-city">City</label>
       <select id="swap-city" value={city} onChange={(e) => setCity(e.target.value)}>
         {Object.keys(CITIES).map((name) => (

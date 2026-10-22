@@ -77,6 +77,21 @@ export function addVote(fb: Feedback, vote: Vote): Feedback {
   return cleanFeedback({ ...fb, votes: [...fb.votes.filter((v) => v.id !== vote.id), vote] });
 }
 
+// Undo a learned taste: the tag stops steering results and leaves the list.
+export function dismissTag(fb: Feedback, tagId: string): Feedback {
+  return cleanFeedback({ ...fb, dismissed: [...fb.dismissed, tagId] });
+}
+
+// Tastes that are strong after a vote but were not before it (for the toast).
+export function newlyStrong(before: Feedback, after: Feedback) {
+  const was = strongSignals(before), now = strongSignals(after);
+  const known = new Set([...was.keep, ...was.avoid].map((s) => s.id));
+  return {
+    keep: now.keep.filter((s) => !known.has(s.id)),
+    avoid: now.avoid.filter((s) => !known.has(s.id)),
+  };
+}
+
 // Undo (docs/22 F7, F8): forget the vote for one place.
 export function removeVote(fb: Feedback, id: string): Feedback {
   return cleanFeedback({ ...fb, votes: fb.votes.filter((v) => v.id !== id) });
@@ -95,7 +110,10 @@ export function tagScores(fb: Feedback): Score[] {
   return [...scores.values()];
 }
 
-// Strong = at least STRONG agreeing votes and twice the opposite ones.
+// A taste is STRONG when at least STRONG (5) votes agree on a tag and they are
+// at least twice the opposite votes (a save counts as a yes, "Not for me" as a
+// no). "Learned from you" on the Passport lists exactly these; undoing one
+// marks the tag dismissed (dismissTag), which hides it and stops it steering.
 export function strongSignals(fb: Feedback) {
   const live = tagScores(fb).filter((s) => !fb.dismissed.includes(s.id));
   return {

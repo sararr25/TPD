@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LOCAL_NAME, type Entity } from "@/lib/discovery";
 import { cityCover } from "@/lib/city-covers";
+import { OpenQuizButton } from "./quiz-panel";
 import { discovery, type Selection } from "@/lib/discovery-client";
 
 const CITY = "Lisbon";
@@ -87,9 +88,7 @@ export function HomeExample() {
         </ul>
       )}
       <div className="h-visa-actions">
-        <Link className="btn btn-primary" href="/passport">
-          Make my Passport
-        </Link>
+        <OpenQuizButton />
         <Link className="btn btn-quiet" href="/passport?guest=1">
           Try this profile
         </Link>

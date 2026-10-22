@@ -197,3 +197,14 @@
     grid-row: 2;
   }
 }
+
+/* Quiz panel: the quiz as a dialog over any page */
+dialog.quiz-panel {
+  max-width: 680px;
+  max-height: calc(100dvh - var(--space-8));
+  overflow-y: auto;
+}
+
+dialog.quiz-panel .actions {
+  margin-top: var(--space-6);
+}

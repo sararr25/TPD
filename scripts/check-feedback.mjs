@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {
   cleanFeedback, parseFeedback, voteFor, addVote, strongSignals, feedbackSignal,
-  cleanSignal, feedbackParams, nudge, STRONG, removeVote,
+  cleanSignal, feedbackParams, nudge, STRONG, removeVote, dismissTag, newlyStrong,
 } from "../src/lib/feedback.ts";
 import { saveUserFeedback, readUserFeedback } from "../src/lib/server/user-feedback.ts";
 // Undo (docs/22 F7, F8): removeVote forgets one place and keeps the rest.
@@ -12,6 +12,23 @@ import { saveUserFeedback, readUserFeedback } from "../src/lib/server/user-feedb
   const left = removeVote(both, p1.id);
   assert.deepEqual(left.votes.map((v) => v.id), [p2.id]);
   assert.deepEqual(removeVote(left, "not-there").votes.length, 1);
+}
+
+// "Learned from you": a taste turns strong on the STRONG-th agreeing vote only,
+// the toast fires once, and undo (dismissTag) removes it from the strong list.
+{
+  const t = { id: "urn:tag:offerings:place:natural_wine", name: "Natural wine", type: "urn:tag:offerings:place" };
+  const pl = (n) => ({ id: `00000000-0000-4000-8000-${String(n + 500).padStart(12, "0")}`, name: "P" + n, tags: [t] });
+  let f = { votes: [], dismissed: [] };
+  for (let i = 1; i < STRONG; i++) {
+    const next = addVote(f, voteFor(pl(i), 1));
+    assert.deepEqual(newlyStrong(f, next).keep, []);
+    f = next;
+  }
+  const tipped = addVote(f, voteFor(pl(STRONG), 1));
+  assert.deepEqual(newlyStrong(f, tipped).keep.map((s) => s.id), [t.id]);
+  assert.deepEqual(newlyStrong(tipped, addVote(tipped, voteFor(pl(STRONG + 1), 1))).keep, []);
+  assert.deepEqual(strongSignals(dismissTag(tipped, t.id)).keep, []);
 }
 
 const id = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;

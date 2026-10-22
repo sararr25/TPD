@@ -5,8 +5,9 @@ import { PassportCard } from "./passport-card";
 import { PassportProfile } from "./passport-profile";
 import { SharePassport } from "./share-passport";
 import { QuizFlow } from "./quiz-flow";
+import { finishQuiz } from "@/lib/quiz-finish";
 import { QUIZ_KEY, parseQuiz, buildProfile, type Answers } from "@/lib/quiz";
-import { FEEDBACK_KEY, STRONG, strongSignals, type Feedback } from "@/lib/feedback";
+import { FEEDBACK_KEY, STRONG, dismissTag, strongSignals, type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import {
   discovery,
@@ -69,7 +70,7 @@ export function PassportBuilder() {
     };
   }, [ready, userId]);
   async function undoSignal(tagId: string, name: string) {
-    const next = { ...feedback, dismissed: [...feedback.dismissed, tagId] };
+    const next = dismissTag(feedback, tagId);
     setFeedback(next);
     try {
       await saveFeedback(next, !!userId);
@@ -199,23 +200,14 @@ export function PassportBuilder() {
       .then(() => setStatus("Saved to your account."))
       .catch((e) => setStatus((e as Error).message));
   }
-  async function finishQuiz(answers: Answers, cards: string[]) {
+  async function onQuizFinish(answers: Answers, cards: string[]) {
     setBusy(true);
     setStatus("Building your Passport…");
     try {
-      const data = await discovery<{ choices: Selection[] }>({
-        action: "quiz",
-        cards,
-      });
-      save(data.choices);
+      const choices = await finishQuiz(answers, cards, !!userId);
+      setSelected(choices);
       setProfile(answers);
-      try {
-        localStorage.setItem(QUIZ_KEY, JSON.stringify(answers));
-      } catch {}
-      if (userId)
-        writes.current = writes.current
-          .then(() => saveAccountQuiz(answers))
-          .catch((e) => setStatus((e as Error).message));
+      setStatus(userId ? "Saved to your account." : "Saved on this browser.");
       setQuizOpen(false);
     } catch (e) {
       setStatus((e as Error).message);
@@ -314,7 +306,7 @@ export function PassportBuilder() {
         <div>
           <QuizFlow
             busy={busy}
-            onFinish={finishQuiz}
+            onFinish={onQuizFinish}
             onCancel={selected.length ? () => setQuizOpen(false) : undefined}
           />
           <p role="status" aria-live="polite">
@@ -464,12 +456,12 @@ export function PassportBuilder() {
           </button>
           {feedback.votes.length > 0 && (
             <div className="divider">
-              <span className="meta">Learned from your votes</span>
+              <span className="meta">Learned from you</span>
               {(() => {
                 const strong = strongSignals(feedback);
                 const rows = [
-                  ...strong.keep.map((s) => ({ ...s, label: "More" })),
-                  ...strong.avoid.map((s) => ({ ...s, label: "Less" })),
+                  ...strong.keep.map((s) => ({ ...s, label: "You like" })),
+                  ...strong.avoid.map((s) => ({ ...s, label: "You skip" })),
                 ];
                 return rows.length ? (
                   <ul className="entity-list">
@@ -480,7 +472,7 @@ export function PassportBuilder() {
                             {r.label}: {r.name}
                           </strong>
                           <p className="muted">
-                            {r.yes} yes · {r.no} not for me
+                            {r.yes} saved or liked · {r.no} not for me
                           </p>
                         </div>
                         <button className="btn btn-quiet" disabled={busy} onClick={() => undoSignal(r.id, r.name)}>
@@ -492,7 +484,7 @@ export function PassportBuilder() {
                 ) : (
                   <p className="muted">
                     {feedback.votes.length} vote{feedback.votes.length === 1 ? "" : "s"} so far. Each one gently
-                    reorders your results; when {STRONG} agree on the same thing it changes your Passport.
+                    reorders your results; when {STRONG} agree on the same thing, it shows up here.
                   </p>
                 );
               })()}

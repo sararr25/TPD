@@ -7,6 +7,8 @@ import { cityCover } from "@/lib/city-covers";
 import { authClient } from "@/lib/auth/client";
 import { CityMap } from "./city-map";
 import { SaveButton, useSavedLists } from "./save-button";
+import { OpenQuizButton } from "./quiz-panel";
+import { usePassportVersion } from "./use-passport-version";
 
 const FALLBACK: Record<ExplorePlaceCategory, string> = { restaurant: "Eat", bar: "Drink", museum: "See", hotel: "Stay" };
 
@@ -28,6 +30,7 @@ export function PlaceView({
   // "Why it fits you" needs Qloo's explanation, which only comes with a
   // Passport-driven search, not with a lookup by id. So this page never
   // invents one: without a Passport it points to building one.
+  const passportVersion = usePassportVersion();
   const [hasPassport, setHasPassport] = useState(true);
   useEffect(() => {
     try {
@@ -35,7 +38,7 @@ export function PlaceView({
     } catch {
       setHasPassport(true);
     }
-  }, []);
+  }, [passportVersion]);
   const [broken, setBroken] = useState(false),
     [coverBroken, setCoverBroken] = useState(false);
   const cover = coverBroken ? null : cityCover(city, "1200x");
@@ -75,7 +78,7 @@ export function PlaceView({
         )}
         {!hasPassport && (
           <p className="place-why">
-            Want to know why it fits you? <Link href="/passport">Make your Passport</Link> and your picks will say.
+            Want to know why it fits you? <OpenQuizButton className="btn btn-quiet" /> and your picks will say.
           </p>
         )}
         <div className="place-page-actions">

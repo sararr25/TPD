@@ -4,7 +4,16 @@ import { authClient } from "@/lib/auth/client";
 
 // Optional Google sign-in. The Passport and Swap keep working as a guest.
 // `compact` is the header version: a small link / initial, not a button (#12).
-export function AuthButton({ compact = false }: { compact?: boolean }) {
+// `callbackURL` and `label` let the quiz panel send people to /passport.
+export function AuthButton({
+  compact = false,
+  callbackURL,
+  label = "Sign in with Google",
+}: {
+  compact?: boolean;
+  callbackURL?: string;
+  label?: string;
+}) {
   const { data, isPending } = authClient.useSession();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -15,7 +24,7 @@ export function AuthButton({ compact = false }: { compact?: boolean }) {
     setBusy(true);
     const result = await authClient.signIn.social({
       provider: "google",
-      callbackURL: window.location.href,
+      callbackURL: callbackURL ?? window.location.href,
     });
     if (result?.error) {
       setError("Google sign-in failed. Please try again.");
@@ -55,7 +64,7 @@ export function AuthButton({ compact = false }: { compact?: boolean }) {
         </>
       ) : (
         <button className="btn btn-secondary" onClick={signIn} disabled={busy}>
-          {busy ? "Opening Google…" : "Sign in with Google"}
+          {busy ? "Opening Google…" : label}
         </button>
       )}
       {error && (

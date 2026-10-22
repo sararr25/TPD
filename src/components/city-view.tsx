@@ -22,6 +22,8 @@ import {
 } from "@/lib/account";
 import { useSavedLists } from "./save-button";
 import { useFeedback } from "./use-feedback";
+import { OpenQuizButton } from "./quiz-panel";
+import { usePassportVersion } from "./use-passport-version";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
 import { PlaceCard } from "./place-card";
@@ -72,6 +74,7 @@ export function CityView({ city }: { city: string }) {
   const showError = (m: string) => toast(m, { error: true });
   const { current: feedback, vote, unvote, voted } = useFeedback(!isPending, userId, showError);
   const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
+  const passportVersion = usePassportVersion();
   const personal = passport.length >= 3;
   // Read the tab from the URL on load and on Back/Forward.
   useEffect(() => {
@@ -123,7 +126,7 @@ export function CityView({ city }: { city: string }) {
     return () => {
       active = false;
     };
-  }, [isPending, userId]);
+  }, [isPending, userId, passportVersion]);
   useEffect(() => {
     if (!ready) return;
     const controller = new AbortController();
@@ -271,9 +274,7 @@ export function CityView({ city }: { city: string }) {
             These are popular picks in {city}. <strong>Make them yours</strong>: pick 3 favourites and we re-rank
             them for your taste.
           </p>
-          <Link className="btn btn-primary" href="/passport">
-            Make it mine
-          </Link>
+          <OpenQuizButton />
         </div>
       )}
       {category === "museum" && museums !== "ok" && (

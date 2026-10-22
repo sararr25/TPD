@@ -17,6 +17,8 @@ import { authClient } from "@/lib/auth/client";
 import { readStoredQuiz } from "@/lib/quiz";
 import { feedbackSignal } from "@/lib/feedback";
 import { useFeedback } from "./use-feedback";
+import { OpenQuizButton } from "./quiz-panel";
+import { usePassportVersion } from "./use-passport-version";
 import {
   loadAccountPassport,
   loadHidden,
@@ -176,6 +178,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     // Chips or budget changed since the results on screen (docs/22 F14).
     [stale, setStale] = useState(false);
   // Fewer than 3 picks is no Passport: Swap then runs on the starting place alone.
+  const passportVersion = usePassportVersion();
   const personal = passport.length >= 3;
   const toast = useToast();
   const showError = (m: string) => toast(m, { error: true });
@@ -221,7 +224,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     return () => {
       active = false;
     };
-  }, [isPending, userId]);
+  }, [isPending, userId, passportVersion]);
   useEffect(() => {
     if (!started || !reference) return;
     const controller = new AbortController();
@@ -419,9 +422,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
             These alternatives come from your starting place alone. <strong>Make them yours</strong>: pick 3
             favourites and we re-rank them for your taste.
           </p>
-          <Link className="btn btn-primary" href="/passport">
-            Make it mine
-          </Link>
+          <OpenQuizButton />
         </div>
       )}
       <>

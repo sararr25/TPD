@@ -10,13 +10,14 @@ const EUROPE = ["Lisbon", "Porto", "Paris", "Barcelona", "Madrid"];
 const regionOf = (c: string): Exclude<Region, "All"> =>
   EUROPE.includes(c) ? "Europe" : c === "New York" ? "Americas" : "Asia";
 
-export function HomeCities() {
+// `page` is the /explore index: same grid, with a plain one-line h1 (#11).
+export function HomeCities({ page = false }: { page?: boolean }) {
   const cities = Object.keys(CITIES);
   const [region, setRegion] = useState<Region>("All");
   return (
-    <section className="h-cities" id="cities" aria-labelledby="h-cities">
+    <section className={page ? "h-cities page" : "h-cities"} id="cities" aria-labelledby="h-cities">
       <div className="h-cities-head">
-        <h2 id="h-cities">Eleven cities so far.</h2>
+        {page ? <h1 id="h-cities">Cities</h1> : <h2 id="h-cities">Eleven cities so far.</h2>}
         <div className="h-filters" role="group" aria-label="Filter cities by region">
           {REGIONS.map((r) => (
             <button type="button" key={r} aria-pressed={region === r} onClick={() => setRegion(r)}>

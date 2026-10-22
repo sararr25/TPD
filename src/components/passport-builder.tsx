@@ -201,7 +201,7 @@ export function PassportBuilder() {
   }
   async function finishQuiz(answers: Answers, cards: string[]) {
     setBusy(true);
-    setStatus("Building your Passport with Qloo…");
+    setStatus("Building your Passport…");
     try {
       const data = await discovery<{ choices: Selection[] }>({
         action: "quiz",
@@ -227,7 +227,7 @@ export function PassportBuilder() {
     e.preventDefault();
     setBusy(true);
     setMatches([]);
-    setStatus("Searching Qloo…");
+    setStatus("Searching…");
     try {
       const data = await discovery<{ choices: Selection[] }>({
         action: "search",
@@ -237,8 +237,8 @@ export function PassportBuilder() {
       setMatches(data.choices);
       setStatus(
         data.choices.length
-          ? "Select the exact entity you mean."
-          : "No matching entity found. Try another name.",
+          ? "Pick the one you mean."
+          : "No match found. Try another name.",
       );
     } catch (e) {
       setStatus((e as Error).message);
@@ -248,7 +248,7 @@ export function PassportBuilder() {
   }
   async function useGuest() {
     setBusy(true);
-    setStatus("Resolving the guest Passport with Qloo…");
+    setStatus("Loading the example Passport…");
     try {
       const data = await discovery<{ choices: Selection[] }>({
         action: "guest",
@@ -349,14 +349,14 @@ export function PassportBuilder() {
           </button>
           {showGuest && (
             <div className="paper">
-              <h3>Borrow a Passport</h3>
+              <h3>Try an example Passport</h3>
               <label htmlFor="guest-profile">Choose a starting point</label><select id="guest-profile" disabled={busy} value={guestProfile} onChange={e=>setGuestProfile(Number(e.target.value))}><option value={0}>Music & cinema</option><option value={1}>Music first</option></select><p>{guestProfile===0?"Khruangbin · Nina Simone · Before Sunrise (1995)":"Khruangbin · Nina Simone · Patti Smith"}</p>
               <button
                 disabled={busy || !ready}
                 className="stamp"
                 onClick={useGuest}
               >
-                Resolve this guest profile
+                Use this example
               </button>
             </div>
           )}
@@ -433,7 +433,7 @@ export function PassportBuilder() {
             ))}
           </div>
           <p className="meta">
-            {selected.length} of 5 selected · live Qloo entities
+            {selected.length} of 5 chosen
           </p>
           <div className="actions">
             {ready && selected.length >= 3 ? (
@@ -450,7 +450,6 @@ export function PassportBuilder() {
             {userId
               ? "Saved to your account and this browser."
               : "Saved on this browser. No account needed; sign in to keep it across devices."}{" "}
-            Old sample choices are not treated as live entities.
           </p>
           <button
             className="text"

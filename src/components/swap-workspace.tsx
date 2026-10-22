@@ -296,8 +296,8 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       setMatches(found.choices);
       setStatus(
         found.choices.length
-          ? `Confirm the ${category} and its address.`
-          : `No ${category} in ${city} with address and coordinates was resolved. Try a more precise name.`,
+          ? `Pick the ${category} you meant.`
+          : `No ${category} in ${city} with an address and map spot turned up. Try a more precise name.`,
       );
     } catch (error) {
       if (!controller.signal.aborted) setStatus((error as Error).message);
@@ -361,7 +361,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       <p className="lead">
         Full, closed or not quite right? Tell us the {category} you wanted and we find another
         one in {city} that keeps what you liked about it.
-        {museum && " Your music, film and book favourites travel with you. Admission prices and exhibitions are not checked."}
+        {museum && " Your music, film and book favourites travel with you."}
       </p>
       {museum && museums !== "ok" && (
         <p className="muted" role="note">

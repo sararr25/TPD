@@ -40,7 +40,7 @@ export function PassportCard({
             ? signals.join(" · ")
             : "A few things you love. A world of possibilities."}
         </p>
-        <span className="meta">{signals.length} / 5 signals</span>
+        <span className="meta">{signals.length} / 5 favourites</span>
       </div>
     </div>
   );

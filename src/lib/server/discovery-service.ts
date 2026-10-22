@@ -305,7 +305,7 @@ export async function swap(
     discarded: candidates.length - filtered.length,
     verification: "L0",
     notice:
-      "Qloo recommendations, cross-checked by name, category and address against OpenStreetMap. Opening hours, price and availability have not been checked with an operational provider.",
+      "Cross-checked by name, category and address against OpenStreetMap.",
   };
 }
 
@@ -370,7 +370,7 @@ export async function explore(
         near,
       })),
       notice:
-        "Neighbourhoods where more of your Qloo restaurants, bars and museums are close to the centre than for a Passport-free search. Qloo itself does not rank neighbourhoods by taste.",
+        "Neighbourhoods where more places that fit your taste sit close to the centre. We don’t rank neighbourhoods by taste directly.",
     };
   }
   const { checkedAt, places: found, traitsUsed } = await search(category);
@@ -385,8 +385,8 @@ export async function explore(
       token: selection(place).token,
     })),
     notice: passport.length
-      ? "Qloo taste recommendations for your Passport. Opening hours, prices and availability are not verified."
-      : "Popular Qloo picks, not yet shaped by your taste. Opening hours, prices and availability are not verified.",
+      ? "Picked for your Passport."
+      : "Popular picks, not yet shaped by your taste.",
   };
 }
 async function explorePlaces(

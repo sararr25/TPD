@@ -437,10 +437,10 @@ export function selectRoles(
           (taste ? ` Fits your taste for ${taste.name}.` : ""),
         different:
           role === "Best practical match"
-            ? `The closest of the options to your first choice${km !== null ? ` (${km.toFixed(1)} km as the crow flies)` : ""}. Travel time, hours and availability are not checked.`
+            ? `The closest of the options to your first choice${km !== null ? ` (${km.toFixed(1)} km as the crow flies)` : ""}.`
             : role === "Unexpected but relevant"
               ? "Less well known than the other options. That says nothing about how busy it is."
-              : `${km !== null ? `About ${km.toFixed(1)} km from your first choice as the crow flies. ` : "Distance could not be established. "}${category === "restaurant" && e.price !== null && reference.price !== null ? `Price level ${e.price} of 4, against ${reference.price} for your first choice.` : category === "museum" ? "Admission prices and exhibitions have not been checked." : "Prices could not be compared."}`,
+              : `${km !== null ? `About ${km.toFixed(1)} km from your first choice as the crow flies. ` : "Distance could not be established. "}${category === "restaurant" && e.price !== null && reference.price !== null ? `Price level ${e.price} of 4, against ${reference.price} for your first choice.` : category === "museum" ? "Admission prices could not be compared." : "Prices could not be compared."}`,
         distanceKm: km,
       },
     ];

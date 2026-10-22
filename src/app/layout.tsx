@@ -38,7 +38,7 @@ export default function RootLayout({
               </nav>
             </div>
             <p>
-              11 cities · Picks by Qloo’s taste data · Hours, prices and bookings aren’t checked, so confirm before
+              Picks by Qloo’s taste data · Hours, prices and bookings aren’t checked, so confirm before
               you go.
             </p>
           </footer>

@@ -95,7 +95,7 @@ export function assessVenue(
 ): VenueCheck {
   const base = { source: "OpenStreetMap" as const, checkedAt };
   if (entity.lat === null || entity.lon === null)
-    return { ...base, status: "not_found", category: "unknown", address: "unknown", match: null, notes: ["Qloo gave no coordinates to search around."] };
+    return { ...base, status: "not_found", category: "unknown", address: "unknown", match: null, notes: ["We had no map position for this place to check against."] };
   const near = candidates
     .filter((c) => sameName(c.name, entity.name))
     .map((c) => ({ ...c, distanceM: Math.round(metres(entity.lat!, entity.lon!, c.lat, c.lon)), url: osmUrl(c) }))
@@ -118,7 +118,7 @@ export function assessVenue(
   if (categoryResult === "fail")
     notes.push(`OpenStreetMap lists this name nearby as ${match.category}=${match.type}, not as a ${category}.`);
   if (address === "fail")
-    notes.push("The OpenStreetMap house number or postcode differs from the Qloo address; it may be another branch or an outdated record.");
+    notes.push("The OpenStreetMap house number or postcode differs from the address we have; it may be another branch or an outdated record.");
   if (address === "unknown") notes.push("OpenStreetMap has no house number or postcode to compare.");
   const kinds = new Set(near.map((c) => `${c.category}=${c.type}`));
   const ambiguous = fitting.length > 1 || (fitting.length === 0 && kinds.size > 1);

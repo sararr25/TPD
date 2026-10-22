@@ -154,7 +154,7 @@ export function PlaceCard({
             href={similarHref}
             title="Find places that keep what you like about this one"
           >
-            Find similar
+            Find its twin
           </Link>
         )}
       </div>

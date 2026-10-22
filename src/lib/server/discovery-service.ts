@@ -463,3 +463,11 @@ async function neighbourhoods(city: string): Promise<Entity[]> {
     return [{ ...e, type: "locality", context: typeof about === "string" ? about.slice(0, 300) : null }];
   });
 }
+
+// Public filter options use only vetted city localities. These are centres,
+// not administrative boundaries; the client explicitly filters within 2 km.
+export async function neighbourhoodOptions(cityValue: unknown) {
+  const city = swapCity(cityValue);
+  if (!city) throw new DiscoveryError("invalid_city", 400);
+  return { places: await neighbourhoods(city) };
+}

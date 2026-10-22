@@ -214,7 +214,7 @@
 }
 
 /* Desktop keeps the list and map together; mobile starts with the cards. */
-.city-mobile-view {
+.city-mobile-view.toggle-group {
   display: none;
 }
 
@@ -313,7 +313,7 @@
     align-items: flex-start;
   }
 
-  .city-mobile-view {
+  .city-mobile-view.toggle-group {
     display: flex;
     width: fit-content;
     margin-bottom: var(--space-4);

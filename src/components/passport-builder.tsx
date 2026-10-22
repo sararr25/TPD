@@ -5,6 +5,7 @@ import { LearnedFromYou } from "./learned-from-you";
 import { PassportProfile } from "./passport-profile";
 import { SharePassport } from "./share-passport";
 import { QuizFlow } from "./quiz-flow";
+import { EmptyState, LoadingCards } from "./empty-state";
 import { finishQuiz } from "@/lib/quiz-finish";
 import { QUIZ_KEY, parseQuiz, buildProfile, type Answers } from "@/lib/quiz";
 import { type Feedback } from "@/lib/feedback";
@@ -25,6 +26,7 @@ import {
 export function PassportBuilder() {
   const [selected, setSelected] = useState<Selection[]>([]),
     [matches, setMatches] = useState<Selection[]>([]),
+    [searchState, setSearchState] = useState<"idle" | "loading" | "done" | "empty" | "error">("idle"),
     [query, setQuery] = useState(""),
     [type, setType] = useState("artist"),
     [busy, setBusy] = useState(false),
@@ -153,7 +155,11 @@ export function PassportBuilder() {
   }
   async function search(e: React.FormEvent) {
     e.preventDefault();
+    await runSearch();
+  }
+  async function runSearch() {
     setBusy(true);
+    setSearchState("loading");
     setMatches([]);
     setStatus("Searching…");
     try {
@@ -163,12 +169,14 @@ export function PassportBuilder() {
         type,
       });
       setMatches(data.choices);
+      setSearchState(data.choices.length ? "done" : "empty");
       setStatus(
         data.choices.length
           ? "Pick the one you mean."
           : "No match found. Try another name.",
       );
     } catch (e) {
+      setSearchState("error");
       setStatus((e as Error).message);
     } finally {
       setBusy(false);
@@ -201,6 +209,7 @@ export function PassportBuilder() {
     }
     save([...selected, s]);
   }
+  if (!ready) return <LoadingCards label="Loading your Passport…" count={2} />;
   if (quizOpen)
     return (
       <div className="grid">
@@ -258,6 +267,7 @@ export function PassportBuilder() {
               onChange={(e) => {
                 setType(e.target.value);
                 setMatches([]);
+                setSearchState("idle");
               }}
             >
               <option value="artist">Artists & music</option>
@@ -273,7 +283,10 @@ export function PassportBuilder() {
               maxLength={120}
               required
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setSearchState("idle");
+              }}
               placeholder="An artist, a film, a book…"
             />
             <button className="btn btn-secondary" disabled={busy || !ready} type="submit">
@@ -283,6 +296,21 @@ export function PassportBuilder() {
           <p role="status" aria-live="polite">
             {status}
           </p>
+          {searchState === "loading" && <LoadingCards label="Looking for your favourite…" count={1} />}
+          {searchState === "empty" && (
+            <EmptyState title="No match for that name" action={
+              <button className="btn btn-secondary" onClick={() => document.getElementById("favourite")?.focus()}>Try another name</button>
+            }>
+              <p>Try the full title or a different favourite. Your choices so far are still here.</p>
+            </EmptyState>
+          )}
+          {searchState === "error" && (
+            <EmptyState title="This search couldn’t load" action={
+              <button className="btn btn-secondary" disabled={busy} onClick={() => void runSearch()}>Try again</button>
+            }>
+              <p>{status}</p>
+            </EmptyState>
+          )}
           <ul className="entity-list">
             {matches.map((s) => (
               <li key={s.entity.id}>
@@ -362,7 +390,7 @@ export function PassportBuilder() {
             <SharePassport answers={profile} />
           </div>
         ) : (
-          selected.length > 0 && (
+          selected.length > 0 ? (
             <div className="paper">
               <h3>Your picks so far</h3>
               <ul className="entity-list">
@@ -382,6 +410,12 @@ export function PassportBuilder() {
                 Take the 3-minute quiz to turn these into your full Taste Passport, the card you can share.
               </p>
             </div>
+          ) : (
+            <EmptyState title="Start with what you love" action={
+              <button className="btn btn-primary" disabled={busy} onClick={() => setQuizOpen(true)}>Make your Passport</button>
+            }>
+              <p>A 3-minute quiz helps us pick places for you. Or add your favourites with the search beside this card.</p>
+            </EmptyState>
           )
         )}
       </div>

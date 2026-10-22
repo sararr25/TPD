@@ -27,6 +27,23 @@
   transform: rotate(-9deg);
 }
 .loading-cards { width: 100%; }
+
+/* Search panels and comparison columns are narrow even on a wide screen. */
+.cmp-col .empty-state,
+.passport-editor .empty-state,
+.grid > .paper .empty-state {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--space-5);
+}
+
+.empty-state > div {
+  min-width: 0;
+}
+
+.empty-state .btn {
+  white-space: normal;
+}
 @media (max-width: 600px) {
   .empty-state { align-items: flex-start; flex-direction: column; }
   .empty-stamp { width: 72px; height: 72px; font-size: 10px; }

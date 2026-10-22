@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { CITIES, type Entity } from "@/lib/discovery";
 import { discovery, type Selection } from "@/lib/discovery-client";
+import { EmptyState, LoadingCards } from "./empty-state";
 
 type LlmPick = { name: string; why: string };
 type Side<T> = { status: "idle" | "loading" | "done" | "error"; items: readonly T[]; error: string };
@@ -103,7 +104,7 @@ export function CompareView() {
         </p>
       )}
       <div className="cmp-grid">
-        <Column title="Qloo" note="Suggestions from a place catalogue. Hours, prices and availability aren’t checked here." side={qloo}>
+        <Column title="Qloo" note="Suggestions from a place catalogue. Hours, prices and availability aren’t checked here." side={qloo} onRetry={run} busy={busy}>
           {(p: Entity) => (
             <>
               <strong>{p.name}</strong>
@@ -115,6 +116,8 @@ export function CompareView() {
           title="General AI model"
           note="Model via Pollinations.ai. Names, addresses and current details aren’t checked here."
           side={llm}
+          onRetry={run}
+          busy={busy}
         >
           {(p: LlmPick) => (
             <>
@@ -128,14 +131,22 @@ export function CompareView() {
   );
 }
 
-function Column<T>({ title, note, side, children }: { title: string; note: string; side: Side<T>; children: (item: T) => React.ReactNode }) {
+function Column<T>({ title, note, side, children, onRetry, busy }: { title: string; note: string; side: Side<T>; children: (item: T) => React.ReactNode; onRetry: () => void; busy: boolean }) {
   return (
     <section className="paper cmp-col" aria-busy={side.status === "loading"}>
       <h2>{title}</h2>
       <p className="meta">{note}</p>
-      {side.status === "idle" && <p>Press Compare to ask.</p>}
-      {side.status === "loading" && <p>Asking…</p>}
-      {side.status === "error" && <p role="alert">{side.error}</p>}
+      {side.status === "idle" && (
+        <EmptyState title="Ready to compare" action={<button className="btn btn-secondary" disabled={busy} onClick={onRetry}>Compare</button>}>
+          <p>Choose a city and kind of place above. Both sides use the same example favourites.</p>
+        </EmptyState>
+      )}
+      {side.status === "loading" && <LoadingCards label={`Asking ${title}…`} count={1} />}
+      {side.status === "error" && (
+        <EmptyState title="This answer couldn’t load" action={<button className="btn btn-secondary" disabled={busy} onClick={onRetry}>Try again</button>}>
+          <p role="alert">{side.error}</p>
+        </EmptyState>
+      )}
       {side.status === "done" &&
         (side.items.length ? (
           <ol>
@@ -144,7 +155,9 @@ function Column<T>({ title, note, side, children }: { title: string; note: strin
             ))}
           </ol>
         ) : (
-          <p>No suggestions came back. Try another city or kind of place.</p>
+          <EmptyState title="No suggestions this time" action={<button className="btn btn-secondary" disabled={busy} onClick={onRetry}>Compare again</button>}>
+            <p>Try another city or kind of place above, then compare again.</p>
+          </EmptyState>
         ))}
     </section>
   );

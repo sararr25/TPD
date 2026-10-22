@@ -116,7 +116,8 @@ export function explorePlace(e: Entity, city: string, category: ExplorePlaceCate
     e.lon !== null &&
     !!e.address &&
     // Restaurant cleaning rules apply to bars too (both are food & drink).
-    !((category === "restaurant" || category === "bar") && offCategory(e, "restaurant"))
+    !((category === "restaurant" || category === "bar") && offCategory(e, "restaurant")) &&
+    !(category === "restaurant" && barNotRestaurant(e))
   );
 }
 // Neighbourhoods are ranked by the Passport's own places: each place
@@ -278,6 +279,19 @@ export function offCategory(e: Entity, category: PlaceCategory): boolean {
   const kinds = ids.filter((id) => id.startsWith("urn:tag:genre:place:restaurant:"));
   return kinds.length > 0 && kinds.every((id) => id.endsWith(":cafeteria"));
 }
+// A bar Qloo also lists under the restaurant genre (#18, "Pensão Amor" with a
+// Sushi chip). Rule: it carries the bar category tag but no restaurant
+// sub-genre (genre:place:restaurant:<cuisine>), the only sign of a kitchen
+// in the tag data. Such a place is dropped from restaurant results and its
+// food chips are hidden; a bar with a sub-genre keeps both.
+const BAR_TAG = "urn:tag:category:place:bar";
+export function barNotRestaurant(e: Entity): boolean {
+  const ids = e.tags.map((t) => t.id);
+  return (
+    ids.includes(BAR_TAG) &&
+    !ids.some((id) => id.startsWith("urn:tag:genre:place:restaurant:") && !id.endsWith(":cafeteria"))
+  );
+}
 export function validPlace(
   e: Entity,
   city: string,
@@ -295,7 +309,8 @@ export function validPlace(
     !!e.address &&
     (!maxPrice || (e.price !== null && e.price <= maxPrice)) &&
     !e.tags.some((t) => exclude.includes(t.id)) &&
-    !offCategory(e, category)
+    !offCategory(e, category) &&
+    !(category === "restaurant" && barNotRestaurant(e))
   );
 }
 // Swap chips (docs/21 A1): what a place is, before what it pours. Qloo lists
@@ -321,7 +336,10 @@ export function chipTags(e: Entity, category: PlaceCategory = "restaurant"): Tag
     return e.tags.filter((t) => MUSEUM_CHIP.test(t.type)).slice(0, 6);
   const names = new Set<string>();
   const chips: Tag[] = [];
+  const bar = barNotRestaurant(e);
   for (const [types, cap] of CHIP_GROUPS) {
+    // Cuisine and dish chips contradict a bar with no kitchen tag (#18).
+    if (bar && types.includes("cuisine:qloo")) continue;
     let taken = 0;
     const rank = (t: Tag) => types.indexOf(t.type.replace("urn:tag:", ""));
     // Cuisines first, the one the other tags mention most leading (a

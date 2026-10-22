@@ -157,6 +157,8 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     [hidden, setHidden] = useState<Hidden[]>([]),
     // Chips or budget changed since the results on screen (docs/22 F14).
     [stale, setStale] = useState(false);
+  // Fewer than 3 picks is no Passport: Swap then runs on the starting place alone.
+  const personal = passport.length >= 3;
   const toast = useToast();
   const showError = (m: string) => toast(m, { error: true });
   // Read at request time so hiding a card does not re-run the current Swap.
@@ -214,7 +216,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         action: "swap",
         category,
         reference: reference.token,
-        passport: passport.map((s) => s.token),
+        passport: personal ? passport.map((s) => s.token) : [],
         choices,
         exclude: hiddenIds.current,
         quiz: readStoredQuiz(),
@@ -258,7 +260,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   // A linked place name (from Home) searches once, as soon as the Passport is read.
   const prefilled = useRef(false);
   useEffect(() => {
-    if (!prefill || prefilled.current || !ready || passport.length < 3) return;
+    if (!prefill || prefilled.current || !ready) return;
     prefilled.current = true;
     setQuery(prefill);
     runSearch(prefill, prefillRef);
@@ -370,18 +372,18 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
             : `Our data has only a few museums in ${city}: results will be the same for most Passports.`}
         </p>
       )}
-      {ready && passport.length < 3 ? (
-        <section className="paper">
-          <h2>First, a little about you.</h2>
+      {ready && !personal && (
+        <div className="city-banner">
           <p>
-            Choose 3–5 real favourites so your Passport can guide this search.
+            These alternatives come from your starting place alone. <strong>Make them yours</strong>: pick 3
+            favourites and we re-rank them for your taste.
           </p>
           <Link className="btn btn-primary" href="/passport">
-            Make my Passport
+            Make it mine
           </Link>
-        </section>
-      ) : (
-        <>
+        </div>
+      )}
+      <>
           <div className="grid">
             <section className="paper">
               <span className="meta">Step 1 · The place you wanted</span>
@@ -511,17 +513,18 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
               ) : (
                 <p>Find your {category} first. Then choose what you liked about it (to keep) and what you would change.</p>
               )}
-              <div className="divider">
-                <span className="meta">Your Passport</span>
-                <p className="muted">
-                  {passport.map((s) => s.entity.name).join(" · ")}
-                </p>
-                <Link href="/passport">Edit favourites</Link>
-              </div>
+              {personal && (
+                <div className="divider">
+                  <span className="meta">Your Passport</span>
+                  <p className="muted">
+                    {passport.map((s) => s.entity.name).join(" · ")}
+                  </p>
+                  <Link href="/passport">Edit favourites</Link>
+                </div>
+              )}
             </section>
           </div>
-        </>
-      )}
+      </>
       <p role="status" aria-live="polite">
         {status}
       </p>
@@ -529,10 +532,10 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         {data && (
           <>
             <div className="divider">
-              <h2>Same Passport. A different experience.</h2>
-              <p>Carry your favourites into {museum ? "restaurants" : "museums"} in {city}. Pick a starting place there to guide the next Swap.</p>
+              <h2>{personal ? "Same Passport. A different experience." : "Same feeling. A different experience."}</h2>
+              <p>Carry {personal ? "your favourites" : "this idea"} into {museum ? "restaurants" : "museums"} in {city}. Pick a starting place there to guide the next Swap.</p>
               <button className="btn btn-secondary" onClick={() => onTransfer(museum ? "restaurant" : "museum")}>
-                Try {museum ? "restaurants" : "museums"} with this Passport ↗
+                Try {museum ? "restaurants" : "museums"} {personal ? "with this Passport" : "too"} ↗
               </button>
             </div>
             <div className="place-grid">

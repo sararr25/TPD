@@ -189,9 +189,10 @@ export async function swap(
   const ref = verifySelection(referenceToken);
   if (!validPlace(ref, city, category))
     throw new DiscoveryError("invalid_reference", 400);
+  // An empty Passport swaps on the starting place alone (as explore does).
   if (
     !Array.isArray(passportTokens) ||
-    passportTokens.length < 3 ||
+    (passportTokens.length > 0 && passportTokens.length < 3) ||
     passportTokens.length > 5
   )
     throw new DiscoveryError("invalid_passport", 400);

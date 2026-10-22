@@ -172,8 +172,9 @@ assert.throws(
   () => verifySelection(""),
   (e) => e.code === "invalid_selection",
 );
+// 1-2 picks are not a Passport; an empty one is allowed (checked below).
 await assert.rejects(
-  swap(signed.token, [], [], undefined),
+  swap(signed.token, [selection(make(2, { type: "artist", tags: [] })).token], [], undefined),
   (e) => e.code === "invalid_passport",
 );
 const passport = [2, 3, 4].map((n) =>
@@ -220,6 +221,10 @@ assert.equal(result.results.length, 3);
 assert(result.results.every((r) => r.place.city === "Paris"));
 assert.equal(result.verification, "L0");
 assert(result.results.every((r) => r.check.status === "not_found" && r.check.source === "OpenStreetMap"));
+// No Passport: Swap works from the starting place alone (the reference is the only signal).
+const emptyResult = await swap(signed.token, [], [], undefined, "restaurant", [uid(96)]);
+assert.equal(emptyResult.results.length, 3);
+assert(emptyResult.results.every((r) => r.place.id !== ref.id));
 await assert.rejects(
   swap(
     signed.token,

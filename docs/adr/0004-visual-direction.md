@@ -1,6 +1,6 @@
 # 0004 — Visual direction: Oltremare, with the Atlas layout for Swap
 
-Status: accepted in part, 22 Oct 2026 (owner, `/loop-me` session for #4). Spec: #3. Typography is still open (font pairings shown to the owner as a private artifact).
+Status: accepted, 22 Oct 2026 (owner, `/loop-me` session for #4). Spec: #3.
 
 ## Decision
 
@@ -9,7 +9,12 @@ Status: accepted in part, 22 Oct 2026 (owner, `/loop-me` session for #4). Spec: 
 - **Colour:** the Oltremare base everywhere. Each city adds one accent colour taken from its cover photo (city header, its stamp).
 - **Theme:** light only for now.
 - **Motion:** rich. Page transitions, cards entering, the stamp being printed, results re-ordering, parallax on covers. It is always off with `prefers-reduced-motion`, and never blocks reading (content is visible at rest).
-- **Typography:** to be decided. Options A (Instrument Serif + Familjen Grotesk), B (Fraunces + Familjen Grotesk), C (Bricolage Grotesque + Instrument Serif italic) and D (Young Serif + Hanken Grotesk).
+- **Typography** (chosen from three rounds of font pairings):
+  - Titles: **Instrument Serif**. Upright words are thickened with a text stroke of **0.025em** in the text colour (`-webkit-text-stroke: .025em currentColor; paint-order: stroke fill`). Instrument Serif has a single weight, so this gives the titles more body. The coloured italic accent stays **unthickened** (stroke 0) and uses the brand colour.
+  - The stroke is for display sizes only (roughly 22 px and up). Never use it on small text.
+  - Text and UI: **Hanken Grotesk** (400 / 500 / 600).
+  - Mono, for dates, codes and the MRZ line only: DM Mono.
+  - Rejected: Young Serif (too wide), plain Instrument Serif (too light), Fraunces, Bricolage, Familjen Grotesk for text.
 
 ## Consequences
 

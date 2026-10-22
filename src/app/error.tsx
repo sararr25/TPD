@@ -8,7 +8,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
         <em>discoveries.</em>
       </h1>
       <p>We couldn’t load this page. You can try again.</p>
-      <button className="ticket" onClick={reset}>
+      <button className="btn btn-primary" onClick={reset}>
         Try again
       </button>
     </section>

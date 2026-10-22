@@ -99,10 +99,10 @@ export function SwapWorkspace() {
           </option>
         ))}
       </select>
-      <div className="chips" role="group" aria-label="Category">
+      <div className="toggle-group" role="group" aria-label="Category">
         {(["restaurant", "museum"] as const).map((value) => (
           <button
-            className="pill"
+            className="toggle"
             key={value}
             aria-pressed={category === value}
             onClick={() => setCategory(value)}
@@ -376,7 +376,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
           <p>
             Choose 3–5 real favourites so your Passport can guide this search.
           </p>
-          <Link className="ticket" href="/passport">
+          <Link className="btn btn-primary" href="/passport">
             Make my Passport
           </Link>
         </section>
@@ -399,7 +399,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                 />
                 <p className="meta">Stay in {city}</p>
                 <div className="actions">
-                  <button className="stamp" disabled={!ready || searching}>
+                  <button className="btn btn-secondary" disabled={!ready || searching}>
                     Find the {category}
                   </button>
                 </div>
@@ -411,7 +411,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                       <strong>{s.entity.name}</strong>
                       <p className="muted">{s.entity.address}</p>
                     </div>
-                    <button className="text" onClick={() => select(s)}>
+                    <button className="btn btn-quiet" onClick={() => select(s)}>
                       Choose
                     </button>
                   </li>
@@ -443,11 +443,12 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                       return (
                         <div className="segment" key={choice.tagId}>
                           <span>{tag.name}</span>
-                          <div role="group" aria-label={tag.name}>
+                          <div className="toggle-group segmented" role="group" aria-label={tag.name}>
                             {(["keep", "change", "ignore"] as const).map(
                               (mode) => (
                                 <button
                                   type="button"
+                                  className="toggle"
                                   key={mode}
                                   aria-pressed={choice.mode === mode}
                                   onClick={() => changeTag(choice.tagId, mode)}
@@ -491,7 +492,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                   )}
                   <div className="actions">
                     <button
-                      className="ticket"
+                      className="btn btn-primary"
                       disabled={busy}
                       onClick={() => {
                         setStarted(true);
@@ -530,7 +531,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
             <div className="divider">
               <h2>Same Passport. A different experience.</h2>
               <p>Carry your favourites into {museum ? "restaurants" : "museums"} in {city}. Pick a starting place there to guide the next Swap.</p>
-              <button className="stamp" onClick={() => onTransfer(museum ? "restaurant" : "museum")}>
+              <button className="btn btn-secondary" onClick={() => onTransfer(museum ? "restaurant" : "museum")}>
                 Try {museum ? "restaurants" : "museums"} with this Passport ↗
               </button>
             </div>

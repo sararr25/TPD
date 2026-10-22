@@ -44,7 +44,7 @@ export function CollectionsView() {
       ) : lists.length === 0 ? (
         <section className="paper">
           <p>Nothing saved yet. Tap Save on any place to start a trip list.</p>
-          <Link className="ticket" href="/explore">
+          <Link className="btn btn-primary" href="/explore">
             Browse cities
           </Link>
         </section>
@@ -54,7 +54,7 @@ export function CollectionsView() {
             <div className="row">
               <h2>{c.name}</h2>
               <button
-                className="text"
+                className="btn btn-quiet"
                 disabled={busy}
                 onClick={() => {
                   setPending(c);
@@ -92,7 +92,7 @@ export function CollectionsView() {
                       </p>
                     </div>
                     <button
-                      className="text"
+                      className="btn btn-quiet"
                       disabled={busy}
                       onClick={() =>
                         run(() => removeFromList(c, item.placeId), `Removed ${item.name} from “${c.name}”.`)
@@ -115,7 +115,7 @@ export function CollectionsView() {
         </p>
         <div className="actions">
           <button
-            className="stamp"
+            className="btn btn-secondary"
             onClick={() => {
               const list = pending;
               dialog.current?.close();
@@ -124,7 +124,7 @@ export function CollectionsView() {
           >
             Delete list
           </button>
-          <button className="text" onClick={() => dialog.current?.close()}>
+          <button className="btn btn-quiet" onClick={() => dialog.current?.close()}>
             Keep it
           </button>
         </div>

@@ -37,7 +37,7 @@ export function HomeCitySearch() {
             <option key={c} value={c} />
           ))}
         </datalist>
-        <button className="h-btn" type="submit">
+        <button className="btn btn-primary" type="submit">
           Open the city
         </button>
       </div>

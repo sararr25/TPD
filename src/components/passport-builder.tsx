@@ -321,7 +321,7 @@ export function PassportBuilder() {
             {status}
           </p>
           {!selected.length && (
-            <button className="text" disabled={busy} onClick={() => setQuizOpen(false)}>
+            <button className="btn btn-quiet" disabled={busy} onClick={() => setQuizOpen(false)}>
               I&apos;d rather search for my favourites
             </button>
           )}
@@ -341,7 +341,7 @@ export function PassportBuilder() {
             </h1>
             <p className="lead">Choose 3–5 artists, films, books or places you love.</p>
           </div>
-          <button className="stamp" disabled={busy || !ready} onClick={() => {
+          <button className="btn btn-secondary" disabled={busy || !ready} onClick={() => {
               setStatus("");
               setQuizOpen(true);
             }}>
@@ -353,7 +353,7 @@ export function PassportBuilder() {
               <label htmlFor="guest-profile">Choose a starting point</label><select id="guest-profile" disabled={busy} value={guestProfile} onChange={e=>setGuestProfile(Number(e.target.value))}><option value={0}>Music & cinema</option><option value={1}>Music first</option></select><p>{guestProfile===0?"Khruangbin · Nina Simone · Before Sunrise (1995)":"Khruangbin · Nina Simone · Patti Smith"}</p>
               <button
                 disabled={busy || !ready}
-                className="stamp"
+                className="btn btn-secondary"
                 onClick={useGuest}
               >
                 Resolve this guest profile
@@ -387,7 +387,7 @@ export function PassportBuilder() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="An artist, a film, a book…"
             />
-            <button className="stamp" disabled={busy || !ready} type="submit">
+            <button className="btn btn-secondary" disabled={busy || !ready} type="submit">
               Search
             </button>
           </form>
@@ -404,7 +404,7 @@ export function PassportBuilder() {
                   </p>
                 </div>
                 <button
-                  className="text"
+                  className="btn btn-quiet"
                   disabled={
                     busy ||
                     selected.some((x) => x.entity.id === s.entity.id) ||
@@ -421,7 +421,7 @@ export function PassportBuilder() {
             {selected.map((s) => (
               <button
                 disabled={busy}
-                className="choice"
+                className="btn btn-secondary btn-chip"
                 key={s.entity.id}
                 onClick={() =>
                   save(selected.filter((x) => x.entity.id !== s.entity.id))
@@ -437,11 +437,11 @@ export function PassportBuilder() {
           </p>
           <div className="actions">
             {ready && selected.length >= 3 ? (
-              <Link className="ticket" href="/explore">
+              <Link className="btn btn-primary" href="/explore">
                 This feels like me
               </Link>
             ) : (
-              <button disabled className="ticket">
+              <button disabled className="btn btn-primary">
                 Choose at least 3
               </button>
             )}
@@ -453,7 +453,7 @@ export function PassportBuilder() {
             Old sample choices are not treated as live entities.
           </p>
           <button
-            className="text"
+            className="btn btn-quiet"
             disabled={!ready || busy}
             onClick={() =>
               (
@@ -484,7 +484,7 @@ export function PassportBuilder() {
                             {r.yes} yes · {r.no} not for me
                           </p>
                         </div>
-                        <button className="text" disabled={busy} onClick={() => undoSignal(r.id, r.name)}>
+                        <button className="btn btn-quiet" disabled={busy} onClick={() => undoSignal(r.id, r.name)}>
                           Undo
                         </button>
                       </li>
@@ -508,7 +508,7 @@ export function PassportBuilder() {
                     <div>
                       <strong>{h.name}</strong>
                     </div>
-                    <button className="text" disabled={busy} onClick={() => showAgain(h)}>
+                    <button className="btn btn-quiet" disabled={busy} onClick={() => showAgain(h)}>
                       Show again
                     </button>
                   </li>
@@ -524,7 +524,7 @@ export function PassportBuilder() {
                 hidden places from Beesyde, and signs you out.
               </p>
               <button
-                className="text"
+                className="btn btn-quiet"
                 disabled={busy}
                 onClick={() =>
                   (document.querySelector("#delete-account") as HTMLDialogElement).showModal()
@@ -557,11 +557,11 @@ export function PassportBuilder() {
           This cannot be undone.
         </p>
         <div className="actions">
-          <button className="stamp" onClick={erase}>
+          <button className="btn btn-secondary" onClick={erase}>
             {userId ? "Delete Passport" : "Delete local data"}
           </button>
           <button
-            className="text"
+            className="btn btn-quiet"
             onClick={() =>
               (
                 document.querySelector("#erase-passport") as HTMLDialogElement
@@ -580,11 +580,11 @@ export function PassportBuilder() {
           This cannot be undone.
         </p>
         <div className="actions">
-          <button className="stamp" onClick={removeAccount}>
+          <button className="btn btn-secondary" onClick={removeAccount}>
             Delete my account
           </button>
           <button
-            className="text"
+            className="btn btn-quiet"
             onClick={() =>
               (document.querySelector("#delete-account") as HTMLDialogElement).close()
             }

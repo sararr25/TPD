@@ -32,9 +32,9 @@ export function HomeSwapSearch() {
         required
       />
       <div className="h-row">
-        <div className="h-kind" role="group" aria-label="Kind of place">
+        <div className="toggle-group segmented" role="group" aria-label="Kind of place">
           {(["restaurant", "museum"] as const).map((c) => (
-            <button type="button" key={c} aria-pressed={category === c} onClick={() => setCategory(c)}>
+            <button type="button" className="toggle" key={c} aria-pressed={category === c} onClick={() => setCategory(c)}>
               {c === "restaurant" ? "Restaurant" : "Museum"}
             </button>
           ))}
@@ -47,7 +47,7 @@ export function HomeSwapSearch() {
             <option key={c}>{c}</option>
           ))}
         </select>
-        <button className="h-btn" disabled={query.trim().length < 2}>
+        <button className="btn btn-primary" disabled={query.trim().length < 2}>
           Find its twin
         </button>
       </div>

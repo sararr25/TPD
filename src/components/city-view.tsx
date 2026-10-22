@@ -247,6 +247,8 @@ export function CityView({ city }: { city: string }) {
           </Link>
         </p>
       )}
+      {/* No places to show (error, expired Passport): skip the empty map. */}
+      {(busy || shown.length > 0) && (
       <div className="city-split">
         <div className="place-grid" aria-busy={busy}>
           {busy && !data
@@ -275,6 +277,7 @@ export function CityView({ city }: { city: string }) {
           <CityMap places={shown.map((r) => r.place)} active={active} onPick={pickFromMap} />
         </aside>
       </div>
+      )}
       {data && shown.length > 0 && (
         <p className="muted city-notice">
           {data.notice}

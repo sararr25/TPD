@@ -92,7 +92,7 @@ export function SwapWorkspace() {
       <div className="chips" role="group" aria-label="Category">
         {(["restaurant", "museum"] as const).map((value) => (
           <button
-            className="choice"
+            className="pill"
             key={value}
             aria-pressed={category === value}
             onClick={() => setCategory(value)}

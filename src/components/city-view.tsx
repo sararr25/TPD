@@ -25,6 +25,7 @@ import { useFeedback } from "./use-feedback";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
 import { PlaceCard } from "./place-card";
+import { SwapWorkspace } from "./swap-workspace";
 import { CityMap } from "./city-map";
 import { feedbackSignal } from "@/lib/feedback";
 
@@ -61,13 +62,37 @@ export function CityView({ city }: { city: string }) {
     [busy, setBusy] = useState(false),
     [status, setStatus] = useState(""),
     [hidden, setHidden] = useState<Hidden[]>([]),
-    [active, setActive] = useState<string | null>(null);
+    [active, setActive] = useState<string | null>(null),
+    // "For you" or "Swap" tab, mirrored in the URL as ?tab=swap. Swap mounts
+    // on first open and then stays mounted (hidden) so its progress survives.
+    [tab, setTab] = useState<"foryou" | "swap">("foryou"),
+    [swapOpened, setSwapOpened] = useState(false);
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
   const showError = (m: string) => toast(m, { error: true });
   const { current: feedback, vote, unvote, voted } = useFeedback(!isPending, userId, showError);
   const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
   const personal = passport.length >= 3;
+  // Read the tab from the URL on load and on Back/Forward.
+  useEffect(() => {
+    const sync = () => {
+      const next = new URLSearchParams(window.location.search).get("tab") === "swap" ? "swap" : "foryou";
+      setTab(next);
+      if (next === "swap") setSwapOpened(true);
+    };
+    sync();
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
+  }, []);
+  function chooseTab(next: "foryou" | "swap") {
+    if (next === tab) return;
+    const url = new URL(window.location.href);
+    if (next === "swap") url.searchParams.set("tab", "swap");
+    else url.searchParams.delete("tab");
+    window.history.pushState(null, "", url);
+    setTab(next);
+    if (next === "swap") setSwapOpened(true);
+  }
   // Swap opens on the city you last looked at (docs/22 F11).
   useEffect(() => rememberCity(city), [city]);
   // Same Passport source as Swap: the account copy when signed in.
@@ -207,18 +232,39 @@ export function CityView({ city }: { city: string }) {
         </span>
       </section>
       <div className="city-toolbar">
-        <div className="toggle-group segmented" role="group" aria-label="View">
-          <span className="toggle" aria-current="page">For you</span>
-          <Link className="toggle" href={`/swap?city=${encodeURIComponent(city)}`}>Swap a place</Link>
-        </div>
-        <div className="toggle-group" role="group" aria-label="Category">
-          {([...Object.keys(EXPLORE_TAGS), "neighbourhood"] as ExploreCategory[]).map((value) => (
-            <button key={value} className="toggle" aria-pressed={category === value} onClick={() => setCategory(value)}>
-              {CATEGORY_LABEL[value]}
+        <div className="toggle-group segmented" role="tablist" aria-label="View">
+          {([["foryou", "For you"], ["swap", "Swap a place"]] as const).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              id={`city-tab-${value}`}
+              aria-selected={tab === value}
+              aria-controls={`city-panel-${value}`}
+              className="toggle"
+              aria-pressed={tab === value}
+              onClick={() => chooseTab(value)}
+            >
+              {label}
             </button>
           ))}
         </div>
+        {tab === "foryou" && (
+          <div className="toggle-group" role="group" aria-label="Category">
+            {([...Object.keys(EXPLORE_TAGS), "neighbourhood"] as ExploreCategory[]).map((value) => (
+              <button key={value} className="toggle" aria-pressed={category === value} onClick={() => setCategory(value)}>
+                {CATEGORY_LABEL[value]}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
+      {swapOpened && (
+        <div role="tabpanel" id="city-panel-swap" aria-labelledby="city-tab-swap" hidden={tab !== "swap"}>
+          <SwapWorkspace fixedCity={city} embedded />
+        </div>
+      )}
+      <div role="tabpanel" id="city-panel-foryou" aria-labelledby="city-tab-foryou" hidden={tab !== "foryou"}>
       {ready && !personal && (
         <div className="city-banner">
           <p>
@@ -284,6 +330,7 @@ export function CityView({ city }: { city: string }) {
           {data.traitsUsed && " Your quiz profile shaped how well-known and how pricey these are."}
         </p>
       )}
+      </div>
     </div>
   );
 }

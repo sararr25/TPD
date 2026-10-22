@@ -55,9 +55,13 @@ const CHECK_PLAIN: Record<CheckStatus, string> = {
   not_found: "OpenStreetMap, a free public map, does not list it nearby. The map is incomplete, so this does not mean it is closed.",
   unavailable: "We could not check the map right now.",
 };
-export function SwapWorkspace() {
+// `fixedCity` + `embedded`: inside a city page the page's city is used and the
+// page title and city selector are hidden. Standalone /swap passes neither.
+export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: string; embedded?: boolean } = {}) {
   const [category, setCategory] = useState<PlaceCategory>("restaurant"),
-    [city, setCity, cityKnown] = useCity();
+    [rememberedCity, setCity, rememberedKnown] = useCity(),
+    city = fixedCity ?? rememberedCity,
+    cityKnown = fixedCity ? true : rememberedKnown;
   // Each city and category keeps its own progress (docs/22 F15): switching
   // back shows the place, chips and results you left there. Tracking starts
   // once the remembered city is known, so no stray Paris workspace is made.
@@ -85,20 +89,24 @@ export function SwapWorkspace() {
   }, [key, cityKnown]);
   return (
     <>
-      <div className="page-head">
-        <span className="meta">Swap a place</span>
-        <h1>
-          Keep the feeling, <em>change the place.</em>
-        </h1>
-      </div>
-      <label htmlFor="swap-city">City</label>
-      <select id="swap-city" value={city} onChange={(e) => setCity(e.target.value)}>
-        {Object.keys(CITIES).map((name) => (
-          <option key={name} value={name}>
-            {name}
-          </option>
-        ))}
-      </select>
+      {!embedded && (
+        <>
+          <div className="page-head">
+            <span className="meta">Swap a place</span>
+            <h1>
+              Keep the feeling, <em>change the place.</em>
+            </h1>
+          </div>
+          <label htmlFor="swap-city">City</label>
+          <select id="swap-city" value={city} onChange={(e) => setCity(e.target.value)}>
+            {Object.keys(CITIES).map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </>
+      )}
       <div className="toggle-group" role="group" aria-label="Category">
         {(["restaurant", "museum"] as const).map((value) => (
           <button

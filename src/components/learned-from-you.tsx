@@ -19,8 +19,8 @@ export function LearnedFromYou({
   if (!rows.length)
     return (
       <p className="muted">
-        {feedback.votes.length} vote{feedback.votes.length === 1 ? "" : "s"} so far. Each one gently reorders your
-        results; when {STRONG} agree on the same thing, it shows up here.
+        {feedback.votes.length} place{feedback.votes.length === 1 ? "" : "s"} you’ve saved, liked or marked Not for me so far.
+        These choices help shape your picks. A taste appears here when at least {STRONG} choices point the same way and outweigh the opposite choices.
       </p>
     );
   return (

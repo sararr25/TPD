@@ -13,7 +13,7 @@ export function HomeSearch() {
           Pick a city
         </button>
         <button type="button" className="toggle" aria-pressed={mode === "swap"} onClick={() => setMode("swap")}>
-          Swap a full place
+          Find its twin
         </button>
       </div>
       {mode === "city" ? (
@@ -21,7 +21,7 @@ export function HomeSearch() {
       ) : (
         <>
           <HomeSwapSearch />
-          <p className="h-help">We’ll look for the closest match nearby.</p>
+          <p className="h-help">Keep what you loved about it. Find another place in the same city.</p>
         </>
       )}
     </div>

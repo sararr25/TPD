@@ -6,11 +6,11 @@ export const MESSAGES: Record<string, string> = {
   rate_limited:
     "You have made a lot of searches in a short time. Wait about ten minutes and try again; your Passport is still here.",
   busy: "We’re busy right now. Try again in a moment.",
-  not_configured: "Search isn’t set up on this server yet.",
+  not_configured: "Search isn’t available right now. Please try again later.",
   provider_unavailable:
-    "Our taste service didn’t respond. Your choices are still here; try again.",
+    "We couldn’t load places right now. Your choices are still here; try again.",
   provider_access:
-    "We can’t reach our taste service right now. Your Passport is still here.",
+    "We can’t load places right now. Your Passport is still here; try again later.",
   expired_selection:
     "Your Passport needs a refresh. Pick your favourites again to see picks for you.",
   invalid_selection:
@@ -19,14 +19,14 @@ export const MESSAGES: Record<string, string> = {
   invalid_reference: "Pick a place in that city and category.",
   invalid_city: "Choose one of the listed cities.",
   invalid_feedback: "Your feedback could not be saved. Please try again.",
-  invalid_budget: "Price tiers are only available for restaurant searches.",
+  invalid_budget: "You can choose a price range for restaurants only.",
   invalid_passport: "Choose 3–5 different favourites in your Passport first.",
   location_unconfirmed:
     "We couldn’t confirm the city, so we didn’t widen your search.",
   signed_out: "Your session has ended. Sign in again to use your account.",
-  invalid_collection: "Give the collection a name (up to 60 characters) and keep the note under 280.",
-  collection_limit: "This collection, or your account, is full. Remove something first.",
-  hidden_limit: "You have hidden 100 places. Show some again on your Passport page first.",
+  invalid_collection: "Give the list a name (up to 60 characters) and keep the note under 280 characters.",
+  collection_limit: "You’ve reached a saved-list limit. Remove a place or a list before adding more.",
+  hidden_limit: "You have hidden 100 places. Open Settings & privacy in your Passport and show some again first.",
   invalid_quiz: "Your quiz answers could not be saved. Take the quiz again.",
   quiz_unresolved:
     "We couldn’t match one of your picks. Try again, or search for your favourites instead.",
@@ -48,7 +48,7 @@ export async function discovery<T>(
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") throw error;
     throw new Error(
-      "The server could not be reached. Your choices are still here.",
+      "We couldn’t connect. Your choices are still here; check your connection and try again.",
     );
   }
   const data = await response.json();

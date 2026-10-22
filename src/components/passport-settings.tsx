@@ -58,7 +58,7 @@ export function PassportSettings() {
     try {
       await unhidePlace(place.id, !!userId);
       setHidden((list) => list.filter((h) => h.id !== place.id));
-      setStatus(`${place.name} can come up in your Swaps again.`);
+      setStatus(`${place.name} can appear in your picks again.`);
     } catch (e) {
       setStatus((e as Error).message);
     }
@@ -87,7 +87,7 @@ export function PassportSettings() {
       setStatus(
         userId
           ? "Passport deleted from your account and this browser."
-          : "Local Passport and old prototype data deleted.",
+          : "Your Passport and earlier browser copies have been deleted from this device.",
       );
     } catch {
       setStatus("Could not clear browser storage. Use browser settings to remove saved data.");
@@ -140,12 +140,12 @@ export function PassportSettings() {
             <LearnedFromYou feedback={feedback} onUndo={undoSignal} busy={busy} />
           ) : (
             <p className="muted">
-              Nothing yet. Vote Yes or Not for me on places and what you like will show up here.
+              Nothing yet. Save places you like or choose Not for me. The tastes you keep choosing will show up here.
             </p>
           )}
         </div>
         <div className="divider">
-          <span className="meta">Hidden from your Swaps</span>
+          <span className="meta">Hidden from your picks</span>
           {hidden.length > 0 ? (
             <ul className="entity-list">
               {hidden.map((h) => (
@@ -160,7 +160,7 @@ export function PassportSettings() {
               ))}
             </ul>
           ) : (
-            <p className="muted">No hidden places. Places you mark Not for me in Swap can be brought back here.</p>
+            <p className="muted">No hidden places. When you choose Not for me on a place, you can bring it back here.</p>
           )}
         </div>
         <div className="divider">
@@ -182,7 +182,7 @@ export function PassportSettings() {
           <div className="divider">
             <span className="meta">Your account</span>
             <p className="muted">
-              Deleting your account removes your Passport, collections and hidden places from Beesyde, and signs you
+              Deleting your account removes your Passport, saved lists and hidden places from Beesyde, and signs you
               out.
             </p>
             <button
@@ -196,16 +196,16 @@ export function PassportSettings() {
         )}
       </section>
       <dialog id="erase-passport">
-        <h2>{userId ? "Delete your Passport?" : "Clear your local edition?"}</h2>
+        <h2>{userId ? "Delete your Passport?" : "Delete your Passport from this device?"}</h2>
         <p>
           {userId
             ? "This removes your Passport from your account and from this browser."
-            : "This removes your Passport and old prototype data from this browser."}{" "}
+            : "This removes your Passport and earlier browser copies from this device."}{" "}
           This cannot be undone.
         </p>
         <div className="actions">
           <button className="btn btn-secondary" onClick={erase}>
-            {userId ? "Delete Passport" : "Delete local data"}
+            Delete Passport
           </button>
           <button
             className="btn btn-quiet"
@@ -218,7 +218,7 @@ export function PassportSettings() {
       <dialog id="delete-account">
         <h2>Delete your account?</h2>
         <p>
-          This permanently deletes your Beesyde account with its Passport, collections and hidden places. Your Google
+          This permanently deletes your Beesyde account with its Passport, saved lists and hidden places. Your Google
           account is not affected. This cannot be undone.
         </p>
         <div className="actions">

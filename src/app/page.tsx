@@ -6,8 +6,8 @@ import { HomeSwapDemo } from "@/components/home-swap-demo";
 
 const STEPS = [
   ["Make your Passport", "A short quiz about how you travel and what you love. About 3 minutes, no account."],
-  ["Open a city", "Every city is reordered around your taste."],
-  ["Swap when it’s full", "Name the place you wanted. We find the closest match nearby."],
+  ["Open a city", "See popular places, or use your Passport for picks shaped by what you love."],
+  ["Find its twin", "Name the place you wanted. Choose what to keep and what to change."],
 ];
 
 // Home (docs/24): a passport-cover hero with two ways in, a live example,
@@ -47,7 +47,7 @@ export default function Home() {
       <section className="h-band" aria-labelledby="h-band">
         <div>
           <h2 id="h-band">Your taste, carried to every city.</h2>
-          <p>Make it once. Every city you open is read through it, and the places you save wait for the next trip.</p>
+          <p>Your Taste Passport keeps your favourites together and helps choose places in each city. Save a few for your next trip.</p>
         </div>
         <OpenQuizButton />
       </section>

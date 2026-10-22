@@ -30,6 +30,7 @@ import { PlaceCard } from "./place-card";
 import { SwapWorkspace } from "./swap-workspace";
 import { CityMap } from "./city-map";
 import { feedbackSignal } from "@/lib/feedback";
+import { COVERS, cityCover } from "@/lib/city-covers";
 
 type Payload = {
   // `near`: for neighbourhoods, the Passport's places close to its centre.
@@ -39,11 +40,11 @@ type Payload = {
   notice: string;
 };
 const CATEGORY_LABEL: Record<ExploreCategory, string> = {
-  restaurant: "Eat",
-  bar: "Drink",
-  museum: "See",
-  hotel: "Stay",
-  neighbourhood: "Areas",
+  restaurant: "Restaurants",
+  bar: "Bars",
+  museum: "Museums",
+  hotel: "Hotels",
+  neighbourhood: "Neighbourhoods",
 };
 const CATEGORY_NOUN: Record<ExploreCategory, string> = {
   restaurant: "restaurants",
@@ -65,6 +66,9 @@ export function CityView({ city }: { city: string }) {
     [status, setStatus] = useState(""),
     [hidden, setHidden] = useState<Hidden[]>([]),
     [active, setActive] = useState<string | null>(null),
+    [mobileView, setMobileView] = useState<"list" | "map">("list"),
+    [mobile, setMobile] = useState(false),
+    [brokenCover, setBrokenCover] = useState<string | null>(null),
     // "For you" or "Swap" tab, mirrored in the URL as ?tab=swap. Swap mounts
     // on first open and then stays mounted (hidden) so its progress survives.
     [tab, setTab] = useState<"foryou" | "swap">("foryou"),
@@ -76,6 +80,15 @@ export function CityView({ city }: { city: string }) {
   const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
   const passportVersion = usePassportVersion();
   const personal = passport.length >= 3;
+  // Mount the mobile map only when opened, so it starts with a measurable
+  // container rather than a zero-width hidden canvas. Desktop shows both.
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 850px)");
+    const sync = () => setMobile(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
   // Read the tab from the URL on load and on Back/Forward.
   useEffect(() => {
     const sync = () => {
@@ -202,7 +215,13 @@ export function CityView({ city }: { city: string }) {
   }
   function pickFromMap(id: string) {
     setActive(id);
-    document.getElementById(`place-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setMobileView("list");
+    requestAnimationFrame(() => {
+      document.getElementById(`place-${id}`)?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+        block: "center",
+      });
+    });
   }
   const museums = CITIES[city].museums;
   const shown = (data?.results ?? []).filter((r) => !hidden.some((h) => h.id === r.place.id));
@@ -210,29 +229,41 @@ export function CityView({ city }: { city: string }) {
   const pins = new Map(
     shown.filter((r) => r.place.lat !== null && r.place.lon !== null).map((r, i) => [r.place.id, i + 1]),
   );
+  const cover = brokenCover === city ? null : cityCover(city, "1200x");
+  const mapped = shown.filter((r) => r.place.lat !== null && r.place.lon !== null).length;
   return (
     <div className="city">
-      <section className="city-cover">
-        <div>
-          <span className="meta">City guide</span>
-          <h1>{city}</h1>
+      <section className="city-cover" aria-labelledby="city-title">
+        <div className="city-cover-copy">
+          <span className="meta">{COVERS[city]?.country ?? "City guide"}</span>
+          <h1 id="city-title">{city}</h1>
           {LOCAL_NAME[city] && <p className="city-local">{LOCAL_NAME[city]}</p>}
+          <p className="city-intro">
+            Find your next table, museum or neighbourhood.<br />
+            Start with these picks, or make them your own.
+          </p>
+          {tab === "foryou" && data && !busy && (
+            <p className="city-count" aria-live="polite">
+              {shown.length} {CATEGORY_NOUN[category]} shown · {mapped} on the map
+            </p>
+          )}
+          <details className="city-switch">
+            <summary>Change city</summary>
+            <ul>
+              {Object.keys(CITIES).map((name) => (
+                <li key={name}>
+                  <Link href={`/${citySlug(name)}`} aria-current={name === city ? "page" : undefined}>
+                    {name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </details>
         </div>
-        <details className="city-switch">
-          <summary>Change city</summary>
-          <ul>
-            {Object.keys(CITIES).map((name) => (
-              <li key={name}>
-                <Link href={`/${citySlug(name)}`} aria-current={name === city ? "page" : undefined}>
-                  {name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </details>
-        <span className="city-stamp" aria-hidden>
-          {city.slice(0, 3).toUpperCase()}
-        </span>
+        <div className="city-cover-photo" aria-hidden>
+          {cover && <img src={cover} alt="" onError={() => setBrokenCover(city)} />}
+          <span className="city-stamp">{COVERS[city]?.code ?? city.slice(0, 3).toUpperCase()}</span>
+        </div>
       </section>
       <div className="city-toolbar">
         <div className="toggle-group segmented" role="tablist" aria-label="View">
@@ -270,10 +301,10 @@ export function CityView({ city }: { city: string }) {
       <div role="tabpanel" id="city-panel-foryou" aria-labelledby="city-tab-foryou" hidden={tab !== "foryou"}>
       {ready && !personal && (
         <div className="city-banner">
-          <p>
-            These are popular picks in {city}. <strong>Make them yours</strong>: pick 3 favourites and we re-rank
-            them for your taste.
-          </p>
+          <div>
+            <h2>Let’s find your side of {city}.</h2>
+            <p>Your Taste Passport tells us what you love. Take the 3-minute quiz and we’ll shape these picks around you.</p>
+          </div>
           <OpenQuizButton />
         </div>
       )}
@@ -296,8 +327,13 @@ export function CityView({ city }: { city: string }) {
       )}
       {/* No places to show (error, expired Passport): skip the empty map. */}
       {(busy || shown.length > 0) && (
-      <div className="city-split">
-        <div className="place-grid" aria-busy={busy}>
+      <>
+      <div className="city-mobile-view toggle-group segmented" role="group" aria-label="Show places as">
+        <button className="toggle" aria-pressed={mobileView === "list"} aria-controls="city-place-list" onClick={() => setMobileView("list")}>List</button>
+        <button className="toggle" aria-pressed={mobileView === "map"} aria-controls="city-place-map" onClick={() => setMobileView("map")}>Map</button>
+      </div>
+      <div className="city-split" data-view={mobileView}>
+        <div id="city-place-list" className="place-grid" aria-busy={busy}>
           {busy && !data
             ? Array.from({ length: 6 }, (_, i) => <div className="place-card skeleton" key={i} aria-hidden />)
             : shown.map(({ place, token, near }) => (
@@ -320,10 +356,11 @@ export function CityView({ city }: { city: string }) {
                 />
               ))}
         </div>
-        <aside className="city-map-wrap">
-          <CityMap places={shown.map((r) => r.place)} active={active} onPick={pickFromMap} />
+        <aside id="city-place-map" className="city-map-wrap">
+          {(!mobile || mobileView === "map") && <CityMap places={shown.map((r) => r.place)} active={active} onPick={pickFromMap} />}
         </aside>
       </div>
+      </>
       )}
       {data && shown.length > 0 && (
         <p className="muted city-notice">

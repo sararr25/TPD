@@ -196,3 +196,10 @@
 .place-pin {
   z-index: 1;
 }
+
+/* The taste connection is the first supporting line on city picks (#27). */
+.city .place-why {
+  color: var(--brand);
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+}

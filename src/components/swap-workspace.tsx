@@ -29,6 +29,14 @@ import { PlaceCard } from "./place-card";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
 import type { CheckStatus } from "@/lib/venue-check";
+// Qloo tag names in plain sentence case ("fine_dining" -> "Fine dining").
+function traitLabel(name: string): string {
+  const text = name.replace(/[_-]+/g, " ").trim().toLowerCase();
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+function joinList(items: string[]): string {
+  return items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+}
 type Payload = {
   results: Result[];
   checkedAt: string;
@@ -160,6 +168,8 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     [busy, setBusy] = useState(false),
     [status, setStatus] = useState(""),
     [data, setData] = useState<Payload | null>(null),
+    // The choices the results on screen were found with (labels must not follow later edits).
+    [usedChoices, setUsedChoices] = useState<Choice[]>([]),
     [started, setStarted] = useState(false),
     [attempt, setAttempt] = useState(0),
     [hidden, setHidden] = useState<Hidden[]>([]),
@@ -237,6 +247,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       .then((result) => {
         if (active) {
           setData(result);
+          setUsedChoices(choices);
           setStatus(
             result.results.length
               ? `${result.results.length} alternatives in ${city}` +
@@ -366,6 +377,28 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       values.map((c) => (c.tagId === tagId ? { ...c, mode } : c)),
     );
   }
+  const traitNames = (mode: Choice["mode"]) =>
+    choices
+      .filter((c) => c.mode === mode)
+      .map((c) => traitLabel(reference?.entity.tags.find((t) => t.id === c.tagId)?.name ?? c.tagId));
+  const keepNames = traitNames("keep"),
+    changeNames = traitNames("change");
+  // What a result keeps and changes, from its own tags against the choices
+  // made for the Swap that produced it (matched by name: the same feature can
+  // carry a different tag type on each place).
+  function keptChanged(result: Result) {
+    const own = new Set(result.place.tags.map((t) => t.name.toLowerCase()));
+    const kept: string[] = [],
+      changed: string[] = [];
+    for (const c of usedChoices) {
+      const tag = reference?.entity.tags.find((t) => t.id === c.tagId);
+      if (!tag || c.mode === "ignore") continue;
+      const has = own.has(tag.name.toLowerCase());
+      if (c.mode === "keep" && has) kept.push(traitLabel(tag.name));
+      if (c.mode === "change" && !has) changed.push(traitLabel(tag.name));
+    }
+    return { kept, changed };
+  }
   return (
     <>
       <p className="lead">
@@ -442,31 +475,32 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
               {reference ? (
                 <>
                   <p>
-                    What this place is known for. Keep what you liked; Change what you want
-                    to avoid next time.
+                    <strong>Keep</strong> what you love about it and we look for the same.{" "}
+                    <strong>Change</strong> what you are tired of and we look for something different.
+                    Leave a trait alone if you do not mind.
                   </p>
                   {choices.length ? (
                     choices.map((choice) => {
                       const tag = reference.entity.tags.find(
                         (t) => t.id === choice.tagId,
                       )!;
+                      const label = traitLabel(tag.name);
                       return (
                         <div className="segment" key={choice.tagId}>
-                          <span>{tag.name}</span>
-                          <div className="toggle-group segmented" role="group" aria-label={tag.name}>
-                            {(["keep", "change", "ignore"] as const).map(
-                              (mode) => (
-                                <button
-                                  type="button"
-                                  className="toggle"
-                                  key={mode}
-                                  aria-pressed={choice.mode === mode}
-                                  onClick={() => changeTag(choice.tagId, mode)}
-                                >
-                                  {mode}
-                                </button>
-                              ),
-                            )}
+                          <span>{label}</span>
+                          <div className="toggle-group" role="group" aria-label={label}>
+                            {(["keep", "change"] as const).map((mode) => (
+                              <button
+                                type="button"
+                                className="toggle"
+                                key={mode}
+                                aria-label={`${mode === "keep" ? "Keep" : "Change"}: ${label}`}
+                                aria-pressed={choice.mode === mode}
+                                onClick={() => changeTag(choice.tagId, choice.mode === mode ? "ignore" : mode)}
+                              >
+                                {mode === "keep" ? "Keep" : "Change"}
+                              </button>
+                            ))}
                           </div>
                         </div>
                       );
@@ -499,6 +533,12 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                         are left out when you set a limit.
                       </p>
                     </>
+                  )}
+                  {choices.length > 0 && (
+                    <p className="swap-summary">
+                      <strong>Keeping:</strong> {keepNames.length ? joinList(keepNames) : "nothing in particular"}.{" "}
+                      <strong>Changing:</strong> {changeNames.length ? joinList(changeNames) : "nothing in particular"}.
+                    </p>
                   )}
                   <div className="actions">
                     <button
@@ -561,6 +601,26 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                   why={result.why}
                   details={
                     <>
+                      {(() => {
+                        const { kept, changed } = keptChanged(result);
+                        return (
+                          (kept.length > 0 || changed.length > 0) && (
+                            <>
+                              <span className="place-label">Against {reference?.entity.name}</span>
+                              {kept.length > 0 && (
+                                <p className="place-why">
+                                  <strong>Keeps:</strong> {joinList(kept)}.
+                                </p>
+                              )}
+                              {changed.length > 0 && (
+                                <p className="place-why">
+                                  <strong>Changes:</strong> {joinList(changed)}.
+                                </p>
+                              )}
+                            </>
+                          )
+                        );
+                      })()}
                       <span className="place-label">What’s different</span>
                       <p className="place-why">{result.different}</p>
                       {result.check && CHECK_BADGE[result.check.status] && (

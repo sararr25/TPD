@@ -1,5 +1,5 @@
 /*
- * Swap: the "what to keep" rows (tag name + keep / change / ignore toggle).
+ * Swap: the "what to keep" rows (trait name + Keep / Change toggles; neither pressed means ignore).
  * Results use the shared place card (place-card.css).
  */
 .page-head + .toggle-group,
@@ -17,9 +17,15 @@ select + .toggle-group {
 }
 
 .segment .toggle {
-  padding: 0 var(--space-3);
-  font-size: var(--text-sm);
-  text-transform: capitalize;
+  min-width: 88px;
+}
+
+.swap-summary {
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
 }
 
 @media (max-width: 850px) {

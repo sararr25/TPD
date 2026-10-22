@@ -55,3 +55,15 @@ Cancellazione locale tramite dialog di conferma, limitata a `tpd-design-v1`. Dat
 ### Scaffold locale
 
 Stack confermato il 20 ottobre. App in `src/app`, componenti in `src/components`; token CSS condivisi con il prototipo. Passport Next.js usa `tpd-passport-v1`, separato da `tpd-design-v1` del prototipo storico. Font caricati via CSS da Google Fonts con fallback; rendering font e QA browser ancora da verificare. Stato provider in docs/08.
+
+## Update — 22 October 2026 (English from here on)
+
+The live site now follows Home mockup A. Tokens are unchanged (`src/app/globals.css`).
+
+- **Shell:** wordmark "beesyde" + stamp-coloured full stop; sticky header on `--bg`; nav Cities · Swap a place · Saved · Your Passport, current page underlined in `--stamp`; footer repeats the links plus the Qloo note.
+- **Surfaces:** dark cover panels (`--pass`, radius 24px, white text, accent `#F27AAB` for contrast on dark); paper cards (`--paper`, 1px `--line`, radius 16px, no tilt, no heavy shadow).
+- **Buttons:** `.ticket` primary (stamp fill, white, radius 8px, weight 600); `.stamp` secondary (1px `--ink` border, radius 8px, display font); `.text` underlined link; `.pill` for toggles and filters (pressed = `--pass` fill).
+- **Type:** headings weight 600; `<em>` in headings upright in `--stamp`; mono micro-labels 12px in sentence case. Uppercase only for real codes (LIS, NYC).
+- **Page head:** `.page-head` = mono label + h1 with `<em>` second clause + optional lead in `--ink-2`. No numbered eyebrows.
+- **Rings:** circular stamp marks for city codes and the Lisbon example, animated only under `prefers-reduced-motion: no-preference`.
+- **Photos:** Qloo place photo → city cover (`src/lib/city-covers.ts`) → text label.

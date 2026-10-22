@@ -219,3 +219,11 @@ Dettaglio in `docs/superpowers/specs/2026-10-19-product-structure-design.md`. Pr
 - **Expired selections are accepted only for saving to a list** (`verifySavedSelection`), because a guest's list can be days old when it moves. The HMAC signature is still required, so only places this server returned can be saved. Every other path (Passport, Swap, Explore, hidden places) still rejects expired selections. It is a separate function rather than a flag so `.map(verifySelection)` cannot pass an index as "allow expired" (TypeScript caught that while building).
 - **Feedback is a toast** at the bottom of the screen, with Undo for like, "Not for me" and list changes. Page status lines remain for loading and result counts.
 - **Swap searches only when "Swap it" / "Update results" is pressed.** Changing chips or price marks the results as out of date instead of re-running Qloo.
+
+## Home, shell and photos (22 Oct 2026)
+
+- **Home follows mockup A ("Passport").** Two entrances, one at a time: pick a city, or swap a full place. The live example stays real Qloo data; no fake picks or fake "tap what you love" chips anywhere, because they would not save anything.
+- **Navigation labels:** Cities · Swap a place · Saved · Your Passport. "Saved" replaces "Collections" as a label only; the route stays `/collections`. The all-caps notice bar is gone; its content is in the footer.
+- **One button system:** `.ticket` = primary (stamp fill), `.stamp` = secondary (1px ink border), `.text` = text link. No uppercase labels, no ↗ arrows. Headings use an upright stamp-coloured `<em>`, never italic.
+- **Bad Qloo photos are replaced by the city cover.** Checked on the server (Qloo images have no CORS, so the browser cannot inspect them): failed, non-image or under 4 KB = unusable. OpenStreetMap was considered and rejected because it has no photos.
+- **Mockups are never committed.** They are shown in the chat or as private artifacts (user rule, 22 Oct).

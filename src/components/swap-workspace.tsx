@@ -30,6 +30,7 @@ import { useSavedLists } from "./save-button";
 import { PlaceCard } from "./place-card";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
+import { EmptyState, LoadingCards } from "./empty-state";
 import type { CheckStatus } from "@/lib/venue-check";
 // Qloo tag names in plain sentence case ("fine_dining" -> "Fine dining").
 function traitLabel(name: string): string {
@@ -168,6 +169,9 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     [choices, setChoices] = useState<Choice[]>([]),
     [budget, setBudget] = useState(""),
     [searching, setSearching] = useState(false),
+    [noMatches, setNoMatches] = useState(false),
+    [searchError, setSearchError] = useState(""),
+    [swapError, setSwapError] = useState(""),
     [busy, setBusy] = useState(false),
     [status, setStatus] = useState(""),
     [data, setData] = useState<Payload | null>(null),
@@ -231,6 +235,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     const controller = new AbortController();
     let active = true;
     setBusy(true);
+    setSwapError("");
     setStale(false);
     setStatus("Finding alternatives…");
     discovery<Payload>(
@@ -268,7 +273,10 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         }
       })
       .catch((error) => {
-        if (active && error.name !== "AbortError") setStatus(error.message);
+        if (active && error.name !== "AbortError") {
+          setSwapError(error.message);
+          setStatus(error.message);
+        }
       })
       .finally(() => {
         if (active) setBusy(false);
@@ -297,6 +305,8 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     const controller = new AbortController();
     searchController.current = controller;
     setSearching(true);
+    setNoMatches(false);
+    setSearchError("");
     setMatches([]);
     setStatus(`Looking for your ${category} in ${city}…`);
     try {
@@ -319,18 +329,25 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         return;
       }
       setMatches(found.choices);
+      setNoMatches(found.choices.length === 0);
       setStatus(
         found.choices.length
           ? `Pick the ${category} you meant.`
           : `We couldn’t find that ${category} in ${city} with an address and map location. Try its full name.`,
       );
     } catch (error) {
-      if (!controller.signal.aborted) setStatus((error as Error).message);
+      if (!controller.signal.aborted) {
+        setSearchError((error as Error).message);
+        setStatus((error as Error).message);
+      }
     } finally {
       if (!controller.signal.aborted) setSearching(false);
     }
   }
   function select(s: Selection) {
+    setNoMatches(false);
+    setSearchError("");
+    setSwapError("");
     setReference(s);
     setData(null);
     setStarted(false);
@@ -403,6 +420,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     }
     return { kept, changed };
   }
+  const visibleResults = data?.results.filter((result) => !hidden.some((h) => h.id === result.place.id)) ?? [];
   return (
     <>
       <p className="lead">
@@ -410,11 +428,16 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         one in {city} with what you liked about it.
         {museum && personal && " Your music, film and book favourites help shape the picks too."}
       </p>
-      {museum && museums !== "ok" && (
+      {museum && museums === "none" && (
+        <EmptyState title={`No museum picks in ${city} yet`} action={
+          <button className="btn btn-secondary" onClick={() => onTransfer("restaurant")}>Try restaurants</button>
+        }>
+          <p>We don’t have museums to suggest here yet. You can still look for a restaurant in this city.</p>
+        </EmptyState>
+      )}
+      {museum && museums !== "none" && museums !== "ok" && (
         <p className="muted" role="note">
-          {museums === "none"
-            ? `We don’t have museums to suggest in ${city} yet. Try restaurants or another city.`
-            : `We have only a few museums to suggest in ${city}, so different Passports may see the same places.`}
+          We have only a few museums to suggest in {city}, so different Passports may see the same places.
         </p>
       )}
       {ready && !personal && (
@@ -436,7 +459,11 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                   id={uid + "-reference"}
                   placeholder={museum ? "Museum name" : "Restaurant name"}
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setNoMatches(false);
+                    setSearchError("");
+                  }}
                   minLength={2}
                   maxLength={120}
                   required
@@ -449,6 +476,21 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                   </button>
                 </div>
               </form>
+              {searching && <LoadingCards label={`Looking for your ${category}…`} count={1} />}
+              {noMatches && !searching && (
+                <EmptyState title="We couldn’t find that place" action={
+                  <button className="btn btn-secondary" onClick={() => document.getElementById(uid + "-reference")?.focus()}>Try another name</button>
+                }>
+                  <p>Try its full name or another {category} in {city}. Your Keep and Change choices stay as they were.</p>
+                </EmptyState>
+              )}
+              {searchError && !searching && (
+                <EmptyState title="The place search couldn’t load" action={
+                  <button className="btn btn-secondary" onClick={() => void runSearch(query)}>Try again</button>
+                }>
+                  <p>{searchError}</p>
+                </EmptyState>
+              )}
               <ul className="entity-list">
                 {matches.map((s) => (
                   <li key={s.entity.id}>
@@ -560,7 +602,11 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
                   )}
                 </>
               ) : (
-                <p>Find your {category} first. Then choose what you liked about it (to keep) and what you would change.</p>
+                <EmptyState title="Start with a place you know" action={
+                  <button className="btn btn-secondary" onClick={() => document.getElementById(uid + "-reference")?.focus()}>Search for a place</button>
+                }>
+                  <p>Find the {category} you wanted first. Then choose what its twins should keep or change.</p>
+                </EmptyState>
               )}
               {personal && (
                 <div className="divider">
@@ -578,7 +624,29 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         {status}
       </p>
       <section aria-label="Alternatives" aria-busy={busy}>
-        {data && (
+        {busy && <LoadingCards label="Finding twins for your starting place…" />}
+        {swapError && !busy && (
+          <EmptyState title="Your twins couldn’t load" action={
+            <button className="btn btn-secondary" onClick={() => setAttempt((n) => n + 1)}>Try again</button>
+          }>
+            <p>{swapError}</p>
+            <p>Your starting place and choices are still here.</p>
+          </EmptyState>
+        )}
+        {data && !busy && !swapError && visibleResults.length === 0 && (
+          <EmptyState title={data.results.length ? "You’ve hidden these twins" : "No twins for these choices"} action={
+            data.results.length ? (
+              <Link className="btn btn-secondary" href="/passport/settings">Review hidden places</Link>
+            ) : (
+              <button className="btn btn-secondary" onClick={() => document.getElementById(uid + "-reference")?.focus()}>Try another starting place</button>
+            )
+          }>
+            <p>{data.results.length
+              ? "Your hidden places stay hidden. Bring one back in Settings & privacy or choose a new starting place."
+              : `${museum ? "Try a different starting museum" : "Try a wider price range or a different starting place"}. Your Passport and hidden places haven’t changed.`}</p>
+          </EmptyState>
+        )}
+        {data && !busy && !swapError && visibleResults.length > 0 && (
           <>
             <div className="divider">
               <h2>Try {museum ? "restaurants" : "museums"} in {city}</h2>
@@ -588,9 +656,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
               </button>
             </div>
             <div className="place-grid">
-              {data.results
-                .filter((result) => !hidden.some((h) => h.id === result.place.id))
-                .map((result) => (
+              {visibleResults.map((result) => (
                 <PlaceCard
                   key={result.place.id}
                   place={result.place}

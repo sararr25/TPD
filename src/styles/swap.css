@@ -1,0 +1,29 @@
+/*
+ * Swap: the "what to keep" rows (tag name + keep / change / ignore toggle).
+ * Results use the shared place card (place-card.css).
+ */
+.page-head + .toggle-group,
+select + .toggle-group {
+  margin: var(--space-4) 0 var(--space-6);
+}
+
+.segment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.segment .toggle {
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+  text-transform: capitalize;
+}
+
+@media (max-width: 850px) {
+  .segment {
+    flex-wrap: wrap;
+  }
+}

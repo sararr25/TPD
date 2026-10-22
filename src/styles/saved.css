@@ -1,0 +1,84 @@
+/*
+ * Saved: the save button's sheet (lists, new list, note) and the
+ * /collections page.
+ */
+.save {
+  position: relative;
+}
+
+.save-sheet {
+  position: absolute;
+  bottom: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 20;
+  display: grid;
+  gap: var(--space-3);
+  width: min(320px, calc(100vw - var(--space-8)));
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  box-shadow: var(--shadow-lg);
+  font-size: 15px;
+}
+
+.save-sheet p {
+  margin: 0;
+}
+
+.save-sheet label {
+  margin: 0 0 var(--space-1);
+}
+
+.save-sheet ul {
+  display: grid;
+  gap: var(--space-1);
+  max-height: 200px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: auto;
+}
+
+.save-sheet li label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target);
+  margin: 0;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.save-sheet li label:hover {
+  background: var(--bg);
+}
+
+.save-sheet li input {
+  width: auto;
+  min-height: 0;
+  accent-color: var(--brand);
+}
+
+.save-sheet li span:first-of-type {
+  flex: 1;
+}
+
+.save-sheet details input {
+  margin-top: var(--space-2);
+}
+
+.save-new {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.save-new .btn {
+  flex: none;
+}
+
+/* /collections */
+.coll-list {
+  margin-top: var(--space-4);
+}

@@ -1,0 +1,53 @@
+/*
+ * Toast (docs/22 1.2): one at a time, bottom centre, with optional actions.
+ * The toast is an `.on-dark` surface, so its buttons use the white variants.
+ */
+.toast-region {
+  position: fixed;
+  right: 0;
+  bottom: var(--space-6);
+  left: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--space-4);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 560px;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  color: var(--on-brand);
+  font-size: 15px;
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+  animation: toast-in var(--dur-base) var(--ease-out);
+}
+
+.toast[data-error] {
+  box-shadow:
+    inset 4px 0 var(--stamp),
+    var(--shadow-lg);
+}
+
+.toast .btn {
+  font-size: var(--text-sm);
+}
+
+.toast .toast-close {
+  border-color: transparent;
+  font-size: 22px;
+  line-height: 1;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

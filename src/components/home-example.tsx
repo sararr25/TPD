@@ -65,7 +65,7 @@ export function HomeExample() {
         ) : (
           <strong>Khruangbin, Nina Simone and Before Sunrise</strong>
         )}{" "}
-        would start here in {CITY}:
+        might start with these picks in {CITY}:
       </p>
       {error ? (
         <div>
@@ -94,7 +94,7 @@ export function HomeExample() {
       <div className="h-visa-actions">
         <OpenQuizButton />
         <Link className="btn btn-quiet" href="/passport?guest=1">
-          Try this profile
+          Try this Passport
         </Link>
       </div>
     </aside>

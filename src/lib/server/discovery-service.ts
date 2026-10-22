@@ -321,7 +321,7 @@ export async function swap(
     discarded: candidates.length - filtered.length,
     verification: "L0",
     notice:
-      "Cross-checked by name, category and address against OpenStreetMap.",
+      "We compare names, kinds of place and addresses with OpenStreetMap when the public map is available.",
   };
 }
 
@@ -386,7 +386,7 @@ export async function explore(
         near,
       })),
       notice:
-        "Neighbourhoods where more places that fit your taste sit close to the centre. We don’t rank neighbourhoods by taste directly.",
+        "These areas have places from your picks near their centre. The areas themselves aren’t matched to your taste.",
     };
   }
   const { checkedAt, places: found, traitsUsed } = await search(category);

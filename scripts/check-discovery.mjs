@@ -106,7 +106,7 @@ const [art] = selectRoles(
   [pizzeria, film],
   "museum",
 );
-assert.equal(art.why, "A close match to Fictional Museum for your taste. Fits your taste for Fictional Film.");
+assert.equal(art.why, "Suggested from Fictional Museum; no shared details are listed. Your favourite Fictional Film also helped shape this pick.");
 // Swap anchor (docs/21 A3): the cuisine the place's dishes mention most,
 // unless the user kept or changed a cuisine.
 const fourPs = make(9, {

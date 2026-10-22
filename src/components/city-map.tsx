@@ -76,7 +76,7 @@ export function CityMap({
   );
   return (
     <div className="city-map" ref={box} role="region" aria-label="Map of these places">
-      {failed && <p className="map-error">The map could not load ({failed}). The places are still listed on the left.</p>}
+      {failed && <p className="map-error">The map couldn’t load. You can still browse the place cards and open their directions.</p>}
     </div>
   );
 }

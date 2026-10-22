@@ -70,8 +70,8 @@ export function CompareView() {
       <div className="page-head compare-head">
         <h1>Qloo vs AI</h1>
         <p className="lead">
-          One example Passport asks Qloo and a free general AI model for the same thing. Qloo picks from
-          real places it knows; the AI model writes names that sound right, and nobody checks them.
+          The same favourites, city and kind of place, answered two ways. Qloo picks from a catalogue of
+          places; a general AI model writes its suggestions. This live example doesn’t measure which is better.
         </p>
       </div>
       <section className="paper cmp-form">
@@ -103,7 +103,7 @@ export function CompareView() {
         </p>
       )}
       <div className="cmp-grid">
-        <Column title="Qloo" note="Places from Qloo’s data, each with an address and a place ID." side={qloo}>
+        <Column title="Qloo" note="Suggestions from a place catalogue. Hours, prices and availability aren’t checked here." side={qloo}>
           {(p: Entity) => (
             <>
               <strong>{p.name}</strong>
@@ -113,7 +113,7 @@ export function CompareView() {
         </Column>
         <Column
           title="General AI model"
-          note="Free model via Pollinations.ai. Names are not checked and may not exist."
+          note="Model via Pollinations.ai. Names, addresses and current details aren’t checked here."
           side={llm}
         >
           {(p: LlmPick) => (
@@ -144,7 +144,7 @@ function Column<T>({ title, note, side, children }: { title: string; note: strin
             ))}
           </ol>
         ) : (
-          <p>No places for this city and category.</p>
+          <p>No suggestions came back. Try another city or kind of place.</p>
         ))}
     </section>
   );

@@ -3,6 +3,8 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Entity } from "@/lib/discovery";
 import { addToList, deleteList, loadLists, moveLocalLists, removeFromList, setNote, type SavedList } from "@/lib/saved";
 import { useToast } from "./toast";
+import { authClient } from "@/lib/auth/client";
+import { recordStamp } from "@/lib/stamps-client";
 
 // Lists for a results page (docs/22 F1-F3). Signed in, this browser's lists
 // move to the account first; anything that cannot move is reported.
@@ -57,6 +59,11 @@ export function SaveButton({
 }) {
   const id = useId();
   const toast = useToast();
+  const { data: session } = authClient.useSession();
+  function stampSaved() {
+    recordStamp({ kind: "place", city, placeId: place.id, name: place.name, createdAt: new Date().toISOString() }, signedIn ? session?.user?.id : undefined)
+      .catch(e => toast(`The place is saved. ${(e as Error).message}`, { error: true }));
+  }
   const [open, setOpen] = useState(false),
     [busy, setBusy] = useState(false),
     [note, setNote_] = useState(""),
@@ -88,6 +95,7 @@ export function SaveButton({
     setBusy(true);
     try {
       await addToList(name, place, token, "", signedIn);
+      stampSaved();
       await onChange();
       onSaved?.();
       toast(`Saved to ${name}`, {
@@ -122,6 +130,7 @@ export function SaveButton({
     setBusy(true);
     try {
       await action();
+      if (added) stampSaved();
       await onChange();
       if (added) onSaved?.();
       toast(message, undo && {

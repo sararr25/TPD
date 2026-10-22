@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { LearnedFromYou } from "./learned-from-you";
 import { PassportProfile } from "./passport-profile";
+import { PassportStamps } from "./passport-stamps";
 import { SharePassport } from "./share-passport";
 import { QuizFlow } from "./quiz-flow";
 import { EmptyState, LoadingCards } from "./empty-state";
@@ -212,6 +213,7 @@ export function PassportBuilder() {
   if (!ready) return <LoadingCards label="Loading your Passport…" count={2} />;
   if (quizOpen)
     return (
+      <>
       <div className="grid">
         <div>
           <QuizFlow
@@ -229,6 +231,8 @@ export function PassportBuilder() {
           )}
         </div>
       </div>
+      <PassportStamps />
+      </>
     );
   const traveller = buildProfile(profile);
   return (
@@ -419,6 +423,7 @@ export function PassportBuilder() {
           )
         )}
       </div>
+      <PassportStamps />
     </>
   );
 }

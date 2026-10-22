@@ -1,6 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
-import { CITIES } from "@/lib/discovery";
+import { useEffect, useRef, useState } from "react";
+import { CITIES, cityFromSlug } from "@/lib/discovery";
+import { authClient } from "@/lib/auth/client";
+import { loadStamps, recordStamp } from "@/lib/stamps-client";
+import { useToast } from "./toast";
 
 const CITY_KEY = "beesyde-city-v1";
 
@@ -9,6 +12,10 @@ const CITY_KEY = "beesyde-city-v1";
 // convenience: if storage is blocked the chosen city still works this visit.
 // `resolved` turns true once the remembered or linked city is known.
 export function useCity(): [string, (city: string) => void, boolean] {
+  const toast = useToast();
+  const { data: session, isPending } = authClient.useSession();
+  const userId = session?.user?.id;
+  const recorded = useRef<string | null>(null);
   const [city, setCity] = useState("Paris"),
     [resolved, setResolved] = useState(false);
   useEffect(() => {
@@ -22,6 +29,24 @@ export function useCity(): [string, (city: string) => void, boolean] {
     setResolved(true);
     // Runs once on mount; `choose` only sets state and storage.
   }, []);
+  // Sign-in adopts any pending browser stamps. The queued API binds writes
+  // to this user so an account switch cannot receive another user's history.
+  useEffect(() => {
+    if (isPending || !userId) return;
+    loadStamps(userId).catch(e => toast((e as Error).message, { error: true }));
+  }, [isPending, userId, toast]);
+  // A stored/default city used by the Home search is not an opened guide.
+  // Record only the city in the actual URL, including a direct Place link.
+  useEffect(() => {
+    if (isPending) return;
+    const opened = cityFromSlug(window.location.pathname.split("/")[1] || "");
+    if (!opened) return;
+    const key = `${userId ?? "guest"}:${opened}`;
+    if (recorded.current === key) return;
+    recorded.current = key;
+    recordStamp({ kind: "city", city: opened, createdAt: new Date().toISOString() }, userId)
+      .catch(e => toast((e as Error).message, { error: true }));
+  }, [city, isPending, userId, toast]);
   function choose(next: string) {
     setCity(next);
     try {

@@ -101,11 +101,12 @@ export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: str
     <>
       {!embedded && (
         <>
-          <div className="page-head">
-            <span className="meta">Swap a place</span>
-            <h1>
-              Keep the feeling, <em>change the place.</em>
-            </h1>
+          <div className="page-head swap-intro">
+            <span className="swap-intro-stamp" aria-hidden>SWAP</span>
+            <div>
+              <h1>Find its twin</h1>
+              <p className="lead">Choose the city and the place you wanted. Keep what you loved, change what didn’t work.</p>
+            </div>
           </div>
           <label htmlFor="swap-city">City</label>
           <select id="swap-city" value={city} onChange={(e) => setCity(e.target.value)}>

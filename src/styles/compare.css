@@ -1,4 +1,13 @@
 /* Qloo vs LLM page */
+.compare-head {
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--line);
+}
+
+.compare-head .lead {
+  max-width: 68ch;
+}
+
 .cmp-form {
   display: flex;
   flex-wrap: wrap;

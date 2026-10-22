@@ -271,6 +271,9 @@ export function validRestaurant(
 const OFF_CATEGORY = [
   "hotel", "library", "toy_store", "hobby_store", "clothing_store",
   "wedding_service", "educational_institution",
+  // Shops Qloo files under the restaurant genre (#18: Carrefour Market and
+  // Franprix in Paris carry genre:place:restaurant next to genre:place:supermarket).
+  "supermarket", "grocery_store", "convenience_store", "department_store",
 ];
 export function offCategory(e: Entity, category: PlaceCategory): boolean {
   if (category !== "restaurant") return false;
@@ -280,17 +283,24 @@ export function offCategory(e: Entity, category: PlaceCategory): boolean {
   return kinds.length > 0 && kinds.every((id) => id.endsWith(":cafeteria"));
 }
 // A bar Qloo also lists under the restaurant genre (#18, "Pensão Amor" with a
-// Sushi chip). Rule: it carries the bar category tag but no restaurant
-// sub-genre (genre:place:restaurant:<cuisine>), the only sign of a kitchen
-// in the tag data. Such a place is dropped from restaurant results and its
-// food chips are hidden; a bar with a sub-genre keeps both.
-const BAR_TAG = "urn:tag:category:place:bar";
+// Sushi chip; "Rua nova do Carvalho", a bar on Pink Street). Checked live,
+// these carry a bar category tag (category:place:bar, :cocktail_bar…) and
+// nothing that says "restaurant": no restaurant category (category:place:
+// restaurant, :french_restaurant…) and no restaurant sub-genre naming a
+// kitchen. The bars list sub-genres too (restaurant:bar, restaurant:
+// cocktail_bar), so those count as bar. Real restaurants with a bar keep a
+// restaurant category (Palácio Chiado, Carmo, SEEN by Olivier) and stay. A
+// dropped place also loses its food chips.
+const BAR_CATEGORY = /^urn:tag:category:place:(bar|[a-z_]+_bar|pub)$/;
+const RESTAURANT_CATEGORY = /^urn:tag:category:place:([a-z_]+_)?restaurant$/;
+const BAR_KINDS = ["bar", "cocktail_bar", "wine_bar", "live_music_bar", "pub", "beer_bar"];
 export function barNotRestaurant(e: Entity): boolean {
   const ids = e.tags.map((t) => t.id);
-  return (
-    ids.includes(BAR_TAG) &&
-    !ids.some((id) => id.startsWith("urn:tag:genre:place:restaurant:") && !id.endsWith(":cafeteria"))
-  );
+  const kitchen = ids.some((id) => {
+    const kind = id.startsWith("urn:tag:genre:place:restaurant:") ? id.split(":").pop()! : "";
+    return !!kind && kind !== "cafeteria" && !BAR_KINDS.includes(kind);
+  });
+  return ids.some((id) => BAR_CATEGORY.test(id)) && !ids.some((id) => RESTAURANT_CATEGORY.test(id)) && !kitchen;
 }
 export function validPlace(
   e: Entity,

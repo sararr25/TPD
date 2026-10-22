@@ -70,4 +70,24 @@ assert(explorePlace(both, "Lisbon", "restaurant"));
 assert.deepEqual(chipTags(both).map((c) => c.name), ["Sushi"]);
 // A plain restaurant is untouched.
 assert(!barNotRestaurant(place([restaurant, sushiChip])));
+// Live shapes (#18): the bars list bar-kind sub-genres, which are no kitchen.
+const subgenre = (k) => t("genre", `place:restaurant:${k}`, k);
+const rua = place([restaurant, subgenre("bar"), bar]); // Rua nova do Carvalho
+assert(barNotRestaurant(rua));
+assert(!validPlace(rua, "Lisbon", "restaurant"));
+assert(!explorePlace(rua, "Lisbon", "restaurant"));
+const pensaoLive = place([restaurant, subgenre("cocktail_bar"), t("category", "place:cocktail_bar", "Cocktail bar"), sushiChip]);
+assert(barNotRestaurant(pensaoLive));
+assert.deepEqual(chipTags(pensaoLive).map((c) => c.name), []); // no Sushi chip
+// A restaurant with a bar keeps its restaurant category (Palacio Chiado, Carmo).
+const restaurantBar = place([restaurant, subgenre("cocktail_bar"), bar, t("category", "place:restaurant", "Restaurant")]);
+assert(!barNotRestaurant(restaurantBar));
+assert(explorePlace(restaurantBar, "Lisbon", "restaurant"));
+// Supermarkets and convenience stores filed under restaurant (Carrefour Market, Franprix).
+const shop = (kind) => place([restaurant, subgenre("fast_food"), t("genre", `place:${kind}`, kind)]);
+for (const kind of ["supermarket", "grocery_store", "convenience_store", "department_store"]) {
+  const s = shop(kind);
+  assert(!validPlace(s, "Lisbon", "restaurant"), kind);
+  assert(!explorePlace(s, "Lisbon", "restaurant"), kind);
+}
 console.log("PASS: logo-like photos and bar-as-restaurant picks are filtered.");

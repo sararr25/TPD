@@ -5,6 +5,7 @@ import { LearnedFromYou } from "./learned-from-you";
 import { dismissTag, FEEDBACK_KEY, type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import { QUIZ_KEY } from "@/lib/quiz";
+import { clearLocalStamps, deleteStamps } from "@/lib/stamps-client";
 import { authClient } from "@/lib/auth/client";
 import {
   deleteAccount,
@@ -71,6 +72,7 @@ export function PassportSettings() {
         await deleteAccountPassport();
         await deleteAccountQuiz();
         await deleteAccountFeedback();
+        await deleteStamps(userId);
       } catch (e) {
         setStatus((e as Error).message);
         setBusy(false);
@@ -79,6 +81,7 @@ export function PassportSettings() {
       setBusy(false);
     }
     try {
+      if (!userId) await deleteStamps();
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem("tpd-passport-v1");
       localStorage.removeItem("tpd-design-v1");
@@ -106,6 +109,10 @@ export function PassportSettings() {
       return;
     }
     try {
+      // The server cascade already removed the account's stamps. Clear the
+      // browser's pending copy without another authenticated request.
+      clearLocalStamps(userId);
+      clearLocalStamps();
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem(HIDDEN_KEY);
       localStorage.removeItem(QUIZ_KEY);
@@ -199,8 +206,8 @@ export function PassportSettings() {
         <h2>{userId ? "Delete your Passport?" : "Clear your local edition?"}</h2>
         <p>
           {userId
-            ? "This removes your Passport from your account and from this browser."
-            : "This removes your Passport and old prototype data from this browser."}{" "}
+            ? "This removes your Passport, learned tastes and stamps from your account and this browser."
+            : "This removes your Passport, learned tastes, stamps and old prototype data from this browser."}{" "}
           This cannot be undone.
         </p>
         <div className="actions">

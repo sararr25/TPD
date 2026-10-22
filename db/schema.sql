@@ -80,3 +80,19 @@ CREATE TABLE IF NOT EXISTS user_feedback (
   feedback jsonb NOT NULL,
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- #32: Passport activity stamps (opened city guide / saved place), not a
+-- travel log. Never stores signed selections or notes. All account history
+-- is removed with the Neon Auth user. Existing installs need db:migrate.
+CREATE TABLE IF NOT EXISTS user_stamp (
+  user_id uuid NOT NULL REFERENCES neon_auth."user" (id) ON DELETE CASCADE,
+  stamp_key text NOT NULL,
+  kind text NOT NULL CHECK (kind IN ('city', 'place')),
+  city text NOT NULL,
+  place_id uuid,
+  name text,
+  created_at timestamptz NOT NULL,
+  PRIMARY KEY (user_id, stamp_key),
+  CHECK ((kind = 'city' AND place_id IS NULL AND name IS NULL) OR
+         (kind = 'place' AND place_id IS NOT NULL AND name IS NOT NULL))
+);

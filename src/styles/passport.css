@@ -219,3 +219,56 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* #32: activity stamps — a guide opened or a place saved, never a visit. */
+.passport-activity {
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+.passport-activity h2 { margin: 0; }
+.activity-stamps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: var(--space-4);
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.activity-stamp {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-control);
+  animation: activity-stamp-in var(--dur-slow) var(--ease-stamp);
+}
+.activity-stamp > div { min-width: 0; }
+.activity-stamp h3 { margin: var(--space-1) 0; font-size: var(--display-sm); overflow-wrap: anywhere; }
+.activity-stamp p { margin: 0; font-size: var(--text-sm); }
+.activity-stamp-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border: 2px solid var(--brand);
+  border-radius: 50%;
+  outline: 1px solid var(--brand);
+  outline-offset: -6px;
+  color: var(--brand);
+  font: var(--text-sm) var(--font-mono);
+  transform: rotate(-8deg);
+}
+.activity-stamp[data-kind="place"] .activity-stamp-mark { font-size: 30px; }
+.passport-stamps-empty { display: grid; justify-items: start; gap: var(--space-2); margin-top: var(--space-5); }
+@keyframes activity-stamp-in {
+  from { transform: scale(1.08) rotate(-2deg); }
+  to { transform: scale(1) rotate(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .activity-stamp { animation: none; }
+}

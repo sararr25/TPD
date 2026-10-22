@@ -1,0 +1,104 @@
+/*
+ * Toggles: one component for every on/off choice in a group.
+ *
+ *   <div class="toggle-group" role="group" aria-label="…">
+ *     <button class="toggle" aria-pressed="true">…</button>
+ *   </div>
+ *
+ * The state lives in aria-pressed (buttons) or aria-current="page" (links),
+ * so the look always matches what assistive tech announces.
+ *
+ *   .toggle-group             wrapping row of pill chips
+ *   .toggle-group.segmented   one joined control (2–3 short options)
+ *   .toggle-group.on-dark     chips on a brand / dark surface
+ */
+.toggle-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--target);
+  padding: 0 var(--space-4);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--ink);
+  font: var(--weight-medium) 15px / 1.2 var(--font-body);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+
+.toggle:hover:not(:disabled) {
+  border-color: var(--ink-2);
+}
+
+.toggle[aria-pressed="true"],
+.toggle[aria-current="page"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Segmented: one joined control */
+.toggle-group.segmented {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 0;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.segmented .toggle {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.segmented .toggle + .toggle {
+  border-left: 1.5px solid var(--line);
+}
+
+.segmented .toggle:hover:not(:disabled):not([aria-pressed="true"]):not([aria-current="page"]) {
+  background: var(--bg);
+}
+
+.segmented .toggle[aria-pressed="true"],
+.segmented .toggle[aria-current="page"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* On a brand / dark surface */
+.on-dark .toggle {
+  background: transparent;
+  border-color: var(--on-brand-line);
+  color: var(--on-brand);
+}
+
+.on-dark .toggle:hover:not(:disabled) {
+  border-color: var(--on-brand);
+}
+
+.on-dark .toggle[aria-pressed="true"] {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--brand);
+}

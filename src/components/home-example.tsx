@@ -87,10 +87,10 @@ export function HomeExample() {
         </ul>
       )}
       <div className="h-visa-actions">
-        <Link className="h-btn" href="/passport">
+        <Link className="btn btn-primary" href="/passport">
           Make my Passport
         </Link>
-        <Link className="h-link" href="/passport?guest=1">
+        <Link className="btn btn-quiet" href="/passport?guest=1">
           Try this profile
         </Link>
       </div>

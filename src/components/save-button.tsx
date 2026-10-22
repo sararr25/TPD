@@ -167,7 +167,7 @@ export function SaveButton({
   return (
     <div className="save" ref={sheet}>
       <button
-        className="icon-button"
+        className="btn btn-icon"
         aria-expanded={open}
         aria-controls={id}
         data-on={saved.length > 0 || undefined}
@@ -214,7 +214,7 @@ export function SaveButton({
                 required
                 disabled={busy}
               />
-              <button className="stamp" disabled={busy || !newName.trim()}>
+              <button className="btn btn-secondary" disabled={busy || !newName.trim()}>
                 Create
               </button>
             </div>
@@ -231,7 +231,7 @@ export function SaveButton({
             />
             <div className="save-new">
               <p className="muted">Kept with the place; add or change it any time.</p>
-              <button className="stamp" type="button" onClick={saveNote} disabled={busy || !saved.length}>
+              <button className="btn btn-secondary" type="button" onClick={saveNote} disabled={busy || !saved.length}>
                 Save note
               </button>
             </div>

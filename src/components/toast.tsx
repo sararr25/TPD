@@ -35,12 +35,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <div className="toast-region" role="status" aria-live="polite">
         {toast && (
-          <div className="toast" data-error={toast.error || undefined} key={toast.id}>
+          <div className="toast on-dark" data-error={toast.error || undefined} key={toast.id}>
             <span>{toast.message}</span>
             {[toast.action, toast.secondary].map(
               (a) =>
                 a && (
                   <button
+                    className="btn btn-secondary"
                     key={a.label}
                     onClick={() => {
                       a.run();
@@ -51,7 +52,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   </button>
                 ),
             )}
-            <button className="toast-close" aria-label="Dismiss" onClick={() => setToast(null)}>
+            <button className="btn btn-icon toast-close" aria-label="Dismiss" onClick={() => setToast(null)}>
               ×
             </button>
           </div>

@@ -38,23 +38,23 @@ export function AuthButton({ compact = false }: { compact?: boolean }) {
           <span className="auth-avatar" title={user.name || user.email} aria-label={`Signed in as ${user.name || user.email}`}>
             {(user.name || user.email || "?").trim().charAt(0).toUpperCase()}
           </span>
-          <button className="text" onClick={signOut} disabled={busy}>
+          <button className="btn btn-quiet" onClick={signOut} disabled={busy}>
             Sign out
           </button>
         </>
       ) : compact ? (
-        <button className="text" onClick={signIn} disabled={busy}>
+        <button className="btn btn-quiet" onClick={signIn} disabled={busy}>
           {busy ? "Opening…" : "Sign in"}
         </button>
       ) : user ? (
         <>
           <span className="meta">Signed in as {user.name || user.email}</span>
-          <button className="text" onClick={signOut} disabled={busy}>
+          <button className="btn btn-quiet" onClick={signOut} disabled={busy}>
             Sign out
           </button>
         </>
       ) : (
-        <button className="stamp quiet" onClick={signIn} disabled={busy}>
+        <button className="btn btn-secondary" onClick={signIn} disabled={busy}>
           {busy ? "Opening Google…" : "Sign in with Google"}
         </button>
       )}

@@ -130,14 +130,14 @@ export function PlaceCard({
               onSaved={onSaved}
               iconOnly
             />
-            <button className="icon-button" aria-label={`Not for me: hide ${place.name}`} title="Not for me" onClick={onHide}>
+            <button className="btn btn-icon" aria-label={`Not for me: hide ${place.name}`} title="Not for me" onClick={onHide}>
               <span aria-hidden>✕</span>
             </button>
           </>
         )}
         {directions && place.lat !== null && place.lon !== null && (
           <a
-            className="icon-button"
+            className="btn btn-icon"
             aria-label={`Directions to ${place.name}`}
             title="Directions"
             href={`https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lon}`}
@@ -150,7 +150,7 @@ export function PlaceCard({
         <span className="grow" />
         {swappable && (
           <Link
-            className="pill-link"
+            className="btn btn-secondary btn-chip"
             href={similarHref}
             title="Find places that keep what you like about this one"
           >

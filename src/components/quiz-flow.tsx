@@ -49,7 +49,7 @@ export function QuizFlow({
           {topUp ? "Almost there" : `Question ${step + 1} / ${total}`}
         </span>
         {onCancel && (
-          <button className="text" disabled={busy} onClick={onCancel}>
+          <button className="btn btn-quiet" disabled={busy} onClick={onCancel}>
             Close quiz
           </button>
         )}
@@ -106,11 +106,11 @@ function QuestionScreen({
   const nav = (
     <div className="actions">
       {onBack && (
-        <button className="text" disabled={busy} onClick={onBack}>
+        <button className="btn btn-quiet" disabled={busy} onClick={onBack}>
           ← Back
         </button>
       )}
-      <button className="text" disabled={busy} onClick={() => onLeave(undefined)}>
+      <button className="btn btn-quiet" disabled={busy} onClick={() => onLeave(undefined)}>
         Skip
       </button>
     </div>
@@ -139,7 +139,7 @@ function QuestionScreen({
           </span>
         </div>
         <div className="actions">
-          <button className="ticket" disabled={busy} onClick={() => onLeave(v)}>
+          <button className="btn btn-primary" disabled={busy} onClick={() => onLeave(v)}>
             Next
           </button>
         </div>
@@ -168,7 +168,7 @@ function QuestionScreen({
         </div>
         <div className="actions quiz-both">
           <button
-            className="stamp"
+            className="toggle"
             disabled={busy}
             aria-pressed={value === BOTH}
             onClick={() => onLeave(BOTH)}
@@ -209,7 +209,7 @@ function QuestionScreen({
           })}
         </div>
         <div className="actions">
-          <button className="ticket" disabled={busy || !picked.length} onClick={() => onLeave(picked)}>
+          <button className="btn btn-primary" disabled={busy || !picked.length} onClick={() => onLeave(picked)}>
             {picked.length} / {q.max} · Next
           </button>
         </div>
@@ -287,10 +287,10 @@ function SwipeDeck({
         {card.note && <p className="muted">{card.note}</p>}
       </div>
       <div className="actions swipe-buttons">
-        <button className="stamp" disabled={busy} onClick={() => decide(false)}>
+        <button className="btn btn-secondary" disabled={busy} onClick={() => decide(false)}>
           ← No
         </button>
-        <button className="stamp" disabled={busy} onClick={() => decide(true)}>
+        <button className="btn btn-secondary" disabled={busy} onClick={() => decide(true)}>
           Yes →
         </button>
       </div>
@@ -336,7 +336,7 @@ function TopUp({
         })}
       </div>
       <div className="actions">
-        <button className="ticket" disabled={busy || extra.length < need} onClick={onDone}>
+        <button className="btn btn-primary" disabled={busy || extra.length < need} onClick={onDone}>
           {busy ? "Building your Passport…" : "Build my Passport"}
         </button>
       </div>

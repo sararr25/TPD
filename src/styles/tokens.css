@@ -1,40 +1,41 @@
 /*
- * Design tokens: Oltremare (docs/adr/0004-visual-direction.md).
+ * Design tokens: Berry and lemon on cool stone (docs/adr/0004-visual-direction.md,
+ * palette amended 22 Oct 2026). Fonts and layout unchanged from Oltremare.
  * The only source of colour, type, radius, spacing, shadow and motion.
  * Light theme only. Component CSS reads these; it never hard-codes values.
  *
  * Contrast (WCAG 2.x, text uses):
- *   ink    #1B1640 on bg 16.0  · on paper 17.0
- *   ink-2  #4F4A72 on bg  7.5  · on paper  8.2
- *   ink-3  #6B6690 on paper 5.4 (placeholders, small print)
- *   brand  #3B2BFF on bg  6.4  · on paper  7.1 · white on brand 7.1
- *   stamp-ink #C2321C on bg 5.1 (text in stamp red: errors, warnings)
- *   stamp  #E8462E is 3.9 on paper: stamps, borders and large display text only
- *   sun    #FFC23D: ink on sun 10.6; sun on brand 4.4 (display sizes only)
- *   on-brand-2 #E4E1FF on brand 5.5
+ *   ink    #1E1630 on bg 14.3  · on paper 16.3
+ *   ink-2  #565064 on bg  6.3  · on paper  7.3
+ *   ink-3  #686378 on bg  4.7  · on paper  5.4 (placeholders, small print)
+ *   brand  #7E2B8F on bg  6.6  · on paper  7.5 · white on brand 8.0
+ *   stamp-ink #C2321C on bg 4.6 (text in stamp red: errors, warnings)
+ *   stamp  #E8462E is 3.7 on paper: stamps, borders and large display text only
+ *   sun    #FFE14D: ink on sun 13.3; sun on brand 6.1
+ *   on-brand-2 #F1DDF5 on brand 6.2
  */
 :root {
   color-scheme: light;
 
   /* Colour */
-  --bg: #f5f3f9;
-  --paper: #ffffff;
-  --ink: #1b1640;
-  --ink-2: #4f4a72;
-  --ink-3: #6b6690;
-  --line: #ddd9ea;
-  --line-strong: #c9c4dc;
+  --bg: #e8e9eb;
+  --paper: #f8f8f9;
+  --ink: #1e1630;
+  --ink-2: #565064;
+  --ink-3: #686378;
+  --line: #d4d6da;
+  --line-strong: #c2c5cb;
 
-  --brand: #3b2bff;
-  --brand-strong: #2a1cd6; /* hover / pressed on brand */
-  --brand-soft: #eceaff; /* tint behind selected things */
+  --brand: #7e2b8f;
+  --brand-strong: #66207a; /* hover / pressed on brand */
+  --brand-soft: #f3e6f6; /* tint behind selected things */
   --on-brand: #ffffff;
-  --on-brand-2: #e4e1ff; /* secondary text on brand */
+  --on-brand-2: #f1ddf5; /* secondary text on brand */
   --on-brand-line: rgb(255 255 255 / 0.45);
 
   --stamp: #e8462e;
   --stamp-ink: #c2321c;
-  --sun: #ffc23d;
+  --sun: #ffe14d;
 
   /* The passport cover is the brand colour. */
   --pass: var(--brand);
@@ -45,7 +46,7 @@
   --city-accent: var(--brand);
   --on-city-accent: var(--on-brand);
 
-  --scrim: rgb(27 22 64 / 0.45);
+  --scrim: rgb(30 22 48 / 0.45);
 
   /* Type: families come from next/font (src/app/layout.tsx). */
   --font-display: var(--font-instrument-serif), "Instrument Serif", Georgia, serif;

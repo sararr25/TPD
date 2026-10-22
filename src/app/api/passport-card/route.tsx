@@ -5,17 +5,17 @@ import { QUIZ_ICONS } from "@/lib/quiz-icons";
 // Share card (E07): a 1080×1350 PNG of the Passport data page. The URL
 // carries only quiz answers (`a`, base64url JSON); the profile is rebuilt
 // here, so no name, favourite or free text from the visitor reaches the image.
-// Oltremare palette (docs/adr/0004, mirrors src/styles/tokens.css): the
+// Berry and lemon palette (docs/adr/0004, mirrors src/styles/tokens.css): the
 // image is rendered outside the page, so CSS variables can't reach it.
 const C = {
-  bg: "#F5F3F9",
-  paper: "#FFFFFF",
-  ink: "#1B1640",
-  ink2: "#4F4A72",
-  line: "#DDD9EA",
-  pass: "#3B2BFF",
-  onPass2: "#E4E1FF",
-  brand: "#3B2BFF",
+  bg: "#E8E9EB",
+  paper: "#F8F8F9",
+  ink: "#1E1630",
+  ink2: "#565064",
+  line: "#D4D6DA",
+  pass: "#7E2B8F",
+  onPass2: "#F1DDF5",
+  brand: "#7E2B8F",
   stamp: "#E8462E",
 };
 

@@ -22,3 +22,11 @@ await setNote(lists[0], place, "tok", "");
 assert.equal(readLocalLists(store.get(LISTS_KEY))[0].items[0].note, null);
 await assert.rejects(setNote(lists[0], place, "tok", "x".repeat(281)));
 console.log("saved ok");
+
+// Browser records and token previews are untrusted. Broken metadata must
+// leave a usable legacy link/fallback rather than crash the Saved page.
+const { savedItemCity } = await import("../src/lib/saved.ts");
+const malformed = { ...lists[0].items[0], address: {}, token: btoa(JSON.stringify({ entity: { id: "p1", city: {}, country: "PT" } })) + ".signature" };
+assert.equal(savedItemCity(malformed, "Lisbon trip"), "Lisbon");
+assert.equal(savedItemCity(malformed, "Weekend"), null);
+console.log("PASS: malformed city and address metadata keep Saved usable.");

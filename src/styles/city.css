@@ -38,6 +38,7 @@
 
 .city-intro {
   margin: var(--space-5) 0 var(--space-3);
+  color: var(--on-brand-2);
   font-size: var(--text-lg);
   line-height: var(--leading-body);
 }
@@ -79,12 +80,12 @@
   place-items: center;
   width: 88px;
   height: 88px;
-  border: 2px solid var(--sun);
+  border: 2px solid var(--city-mark);
   border-radius: 50%;
-  outline: 1px solid var(--sun);
+  outline: 1px solid var(--city-mark);
   outline-offset: -6px;
-  background: var(--pass);
-  color: var(--sun);
+  background: var(--paper);
+  color: var(--city-mark);
   font: var(--text-sm) var(--font-mono);
   letter-spacing: 0.08em;
   transform: rotate(-12deg);

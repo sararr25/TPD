@@ -402,9 +402,9 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border: 1.5px solid var(--stamp);
+  border: 1.5px solid var(--city-mark);
   border-radius: 50%;
-  color: var(--stamp-ink);
+  color: var(--city-mark);
   font: var(--weight-medium) 11px var(--font-mono);
 }
 

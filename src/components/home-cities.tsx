@@ -48,7 +48,7 @@ function CityCard({ city, big }: { city: string; big: boolean }) {
   const code = cover?.code ?? city.slice(0, 3).toUpperCase();
   const photo = broken ? null : cityCover(city, big ? "1200x" : "420x");
   return (
-    <Link href={`/${citySlug(city)}`} className="h-city">
+    <Link href={`/${citySlug(city)}`} className="h-city" data-city={citySlug(city)}>
       <div className={photo ? "h-city-photo" : "h-city-photo none"}>
         {photo ? (
           <img

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { citySlug } from "@/lib/discovery";
 import { decodeSharedTrip, type SharedTrip } from "@/lib/shared-trip";
+import { EmptyState, LoadingCards } from "./empty-state";
 
 // The fragment is read locally. It is not sent in page requests or referrers;
 // no analytics or server-side persistence is introduced for shared snapshots.
@@ -25,19 +26,17 @@ export function SharedTripView() {
     window.addEventListener("hashchange", read);
     return () => window.removeEventListener("hashchange", read);
   }, []);
-  if (!ready) return <section className="paper" aria-busy="true"><p role="status">Opening this trip…</p></section>;
+  if (!ready) return <LoadingCards label="Opening this trip…" />;
   if (!trip) return (
-    <section className="paper">
-      <h1>This trip link could not be opened.</h1>
+    <><h1>Shared trip</h1><EmptyState title="This trip link could not be opened." action={<Link className="btn btn-primary" href="/explore">Browse cities</Link>}>
       <p role="alert">{error}</p>
-      <Link className="btn btn-primary" href="/explore">Browse cities</Link>
-    </section>
+    </EmptyState></>
   );
   return (
     <section className="shared-trip">
       <header className="trip-page-head">
         <span className="trip-mark" aria-hidden>↗</span>
-        <div><h1>{trip.name}</h1><p>{trip.places.length} places · Shared snapshot</p></div>
+        <div><h1>{trip.name}</h1><p>{trip.places.length} place{trip.places.length === 1 ? "" : "s"} · Shared snapshot</p></div>
       </header>
       <p className="shared-trip-note">A read-only trip someone shared with you. Open a place for its current details; the list may have changed since this snapshot was made.</p>
       <ol className="shared-trip-places">

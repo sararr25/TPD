@@ -44,10 +44,11 @@
   --pass: #6b4a73;
   --on-pass: var(--on-brand);
 
-  /* Per-city accent (ADR 0004: one colour from the cover photo).
-     Not wired per city yet: every city uses the brand colour. */
+  /* Large city surfaces keep muted berry; city-specific ink is below. */
   --city-accent: var(--pass);
   --on-city-accent: var(--on-brand);
+  /* City ink is limited to small marks on paper; large areas stay berry. */
+  --city-mark: var(--brand);
 
   --scrim: rgb(30 22 48 / 0.45);
 
@@ -139,3 +140,17 @@
     --dur-slower: 0ms;
   }
 }
+
+/* Small city accents, owner-confirmed 23 Oct 2026. These never replace the
+   muted berry covers. All text marks are on paper, at least 4.5:1. */
+[data-city="lisbon"] { --city-mark: #8f4929; }
+[data-city="porto"] { --city-mark: #8b4248; }
+[data-city="paris"] { --city-mark: #465c78; }
+[data-city="barcelona"] { --city-mark: #79600b; }
+[data-city="madrid"] { --city-mark: #8e3b32; }
+[data-city="tokyo"] { --city-mark: #704e70; }
+[data-city="new-york"] { --city-mark: #425d70; }
+[data-city="osaka"] { --city-mark: #8f4c37; }
+[data-city="ho-chi-minh-city"] { --city-mark: #526844; }
+[data-city="hanoi"] { --city-mark: #3c6866; }
+/* Phu Quoc has no cover photo: retain the brand ink fallback. */

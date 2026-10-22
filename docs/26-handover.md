@@ -1,5 +1,7 @@
 # Handover — 22 October 2026 (UI/UX reset, updated end of day)
 
+Continuation: `docs/27-handover.md` (tickets #26–#34, 23 October 2026).
+
 Continues `docs/25-handover.md`. The morning session reviewed the whole UI, UX and copy, turned the findings into a spec and tickets, decided the structural and visual questions with the owner, and shipped the first fixes and the visual foundation (PR #35). The afternoon session merged PR #35, replaced the palette, added the Qloo vs AI page and closed 11 more tickets.
 
 ## Where things are

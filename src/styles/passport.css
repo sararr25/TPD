@@ -255,11 +255,11 @@
   flex: 0 0 64px;
   width: 64px;
   height: 64px;
-  border: 2px solid var(--brand);
+  border: 2px solid var(--city-mark);
   border-radius: 50%;
-  outline: 1px solid var(--brand);
+  outline: 1px solid var(--city-mark);
   outline-offset: -6px;
-  color: var(--brand);
+  color: var(--city-mark);
   font: var(--text-sm) var(--font-mono);
   transform: rotate(-8deg);
 }

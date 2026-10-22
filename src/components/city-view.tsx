@@ -264,7 +264,7 @@ export function CityView({ city }: { city: string }) {
   const cover = brokenCover === city ? null : cityCover(city, "1200x");
   const mapped = shown.filter((r) => r.place.lat !== null && r.place.lon !== null).length;
   return (
-    <div className="city">
+    <div className="city" data-city={citySlug(city)}>
       <section className="city-cover" aria-labelledby="city-title">
         <div className="city-cover-copy">
           <span className="meta">{COVERS[city]?.country ?? "City guide"}</span>

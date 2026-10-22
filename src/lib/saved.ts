@@ -160,11 +160,11 @@ function savedEntity(item: SavedItem): Partial<Entity> | null {
 // (a street called Paris must not turn a Lisbon place into a Paris place).
 export function savedItemCity(item: SavedItem, listName: string): string | null {
   const entity = savedEntity(item);
-  if (entity) {
+  if (entity && typeof entity.city === "string" && typeof entity.country === "string") {
     const found = Object.keys(CITIES).find((c) => inCity(entity as Entity, c));
     if (found) return found;
   }
-  const parts = (item.address ?? "").split(/[,;\n]/).map((part) =>
+  const parts = (typeof item.address === "string" ? item.address : "").split(/[,;\n]/).map((part) =>
     part.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase()
       .replace(/^\d[\d\s-]*\s+/, ""),
   );

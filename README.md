@@ -50,7 +50,8 @@ Import the repository using the Next.js preset and npm lockfile. Configure Qloo 
 ## Project state
 
 - `DECISIONS.md`: product decisions.
-- `docs/05-design-handover.md`: handover.
+- `docs/27-handover.md`: current handover (tickets #26–#34, 23 October 2026).
+- `docs/05-design-handover.md`: historical design handover.
 - `docs/07-ticket-board.md`: implementation board.
 - `docs/08-qloo-verification.md`: access checks and remaining evidence.
 - `docs/09-restaurant-swap-implementation.md`: live pilot, cache and validation limits.

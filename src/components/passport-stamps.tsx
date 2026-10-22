@@ -12,10 +12,15 @@ import { authClient } from "@/lib/auth/client";
 export function PassportStamps() {
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
-  const [stamps, setStamps] = useState<Stamp[]>([]), [error, setError] = useState("");
+  const [storedStamps, setStamps] = useState<Stamp[]>([]), [error, setError] = useState("");
+  const [owner, setOwner] = useState<string | undefined>(userId);
+  const stamps = !isPending && owner === userId ? storedStamps : [];
   useEffect(() => {
     if (isPending) return;
     let active = true;
+    setStamps([]);
+    setError("");
+    setOwner(userId);
     const load = () => {
       loadStamps(userId).then(list => {
         if (active) { setStamps(list); setError(""); }
@@ -34,7 +39,7 @@ export function PassportStamps() {
         <span className="meta">{stamps.length} collected</span>
       </div>
       <p className="muted">City guides you’ve opened and places you’ve saved. {stamps.length === STAMP_LIMIT && `Your latest ${STAMP_LIMIT} stamps.`}</p>
-      {error && <p role="status">{error}</p>}
+      {error && !isPending && owner === userId && <p role="status">{error}</p>}
       {isPending ? <p className="meta" role="status">Opening your stamp pages…</p> : !stamps.length ? (
         <div className="passport-stamps-empty">
           <span className="activity-stamp-mark" aria-hidden>+1</span>
@@ -44,7 +49,7 @@ export function PassportStamps() {
       ) : (
         <ul className="activity-stamps" aria-label="Collected city and place stamps">
           {stamps.map(stamp => (
-            <li key={stampKey(stamp)} className="activity-stamp" data-kind={stamp.kind}>
+            <li key={stampKey(stamp)} className="activity-stamp" data-kind={stamp.kind} data-city={citySlug(stamp.city)}>
               <span className="activity-stamp-mark" aria-hidden>{stamp.kind === "city" ? COVERS[stamp.city]?.code ?? stamp.city.slice(0,3).toUpperCase() : "♡"}</span>
               <div>
                 <span className="meta">{stamp.kind === "city" ? "Opened city guide" : "Saved place"}</span>

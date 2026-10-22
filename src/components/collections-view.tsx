@@ -9,6 +9,7 @@ import { cityCover } from "@/lib/city-covers";
 import { CityMap } from "./city-map";
 import { useSavedLists } from "./save-button";
 import { useToast } from "./toast";
+import { EmptyState, LoadingCards } from "./empty-state";
 import { ShareTrip } from "./share-trip";
 
 // Saved places grouped by list (docs/22 F1-F3). Guests see this device's
@@ -46,14 +47,11 @@ export function CollectionsView() {
         </div>
       </header>
       {!loaded ? (
-        <p className="meta">Loading your lists…</p>
+        <LoadingCards label="Opening your trips…" />
       ) : lists.length === 0 ? (
-        <section className="paper">
-          <p>Nothing saved yet. Tap Save on any place to start a trip list.</p>
-          <Link className="btn btn-primary" href="/explore">
-            Browse cities
-          </Link>
-        </section>
+        <EmptyState title="Your next trip starts with one place." action={<Link className="btn btn-primary" href="/explore">Browse cities</Link>}>
+          <p>Tap the heart on a place you like. We’ll keep it here in a trip list.</p>
+        </EmptyState>
       ) : (
         lists.map((c) => (
           <section className="trip" key={c.id} aria-labelledby={`trip-${c.id}`}>
@@ -80,10 +78,9 @@ export function CollectionsView() {
               </div>
             </header>
             {c.items.length === 0 ? (
-              <div className="trip-empty">
-                <p>This trip is waiting for its first place.</p>
-                <Link className="btn btn-secondary" href="/explore">Browse cities</Link>
-              </div>
+              <EmptyState title="Room for your next find." action={<Link className="btn btn-secondary" href="/explore">Find a place</Link>}>
+                <p>This trip has no saved places yet.</p>
+              </EmptyState>
             ) : (
               <div className="trip-layout">
                 <div className="trip-cards">

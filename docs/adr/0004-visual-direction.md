@@ -24,3 +24,11 @@ Status: accepted, 22 Oct 2026 (owner, `/loop-me` session for #4). Spec: #3.
 ## Amendment — 22 Oct 2026: palette
 
 The owner replaced the Oltremare colours (lavender background and ultramarine felt cold and too blue). New palette, "Berry and lemon on cool stone": cool stone background #E8E9EB, near-white paper #F8F8F9, ink #1E1630, berry violet #7E2B8F as the brand colour, lemon #FFE14D as the sun colour; the red stamp stays. Fonts, layout and motion are unchanged. Values and contrast in `src/styles/tokens.css`.
+
+## Amendment — 23 Oct 2026: city accents
+
+The owner confirmed small accents per city, keeping berry on large surfaces.
+City ring marks in the guide, city cards and Passport activity stamps use
+curated city inks on paper; covers continue to use muted `--pass`. Accent
+values live only in `src/styles/tokens.css` and have 5.67:1 or greater text
+contrast on paper. Phu Quoc has no cover photo and keeps the brand fallback.

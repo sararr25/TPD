@@ -30,6 +30,7 @@ import { PlaceCard } from "./place-card";
 import { SwapWorkspace } from "./swap-workspace";
 import { CityMap } from "./city-map";
 import { feedbackSignal } from "@/lib/feedback";
+import { EmptyState } from "./empty-state";
 import { COVERS, cityCover } from "@/lib/city-covers";
 
 type Payload = {
@@ -69,6 +70,7 @@ export function CityView({ city }: { city: string }) {
     [mobileView, setMobileView] = useState<"list" | "map">("list"),
     [mobile, setMobile] = useState(false),
     [brokenCover, setBrokenCover] = useState<string | null>(null),
+    [prices, setPrices] = useState<Partial<Record<ExploreCategory, string>>>({}),
     // "For you" or "Swap" tab, mirrored in the URL as ?tab=swap. Swap mounts
     // on first open and then stays mounted (hidden) so its progress survives.
     [tab, setTab] = useState<"foryou" | "swap">("foryou"),
@@ -224,7 +226,11 @@ export function CityView({ city }: { city: string }) {
     });
   }
   const museums = CITIES[city].museums;
-  const shown = (data?.results ?? []).filter((r) => !hidden.some((h) => h.id === r.place.id));
+  const price = prices[category] ?? "";
+  const priceApplies = category === "restaurant" || category === "bar" || category === "hotel";
+  const available = (data?.results ?? []).filter((r) => !hidden.some((h) => h.id === r.place.id));
+  const shown = available.filter(({ place }) => !priceApplies || !price ||
+    (place.price !== null && place.price <= Number(price)));
   // Same numbering as the map's pins (only places with coordinates get one).
   const pins = new Map(
     shown.filter((r) => r.place.lat !== null && r.place.lon !== null).map((r, i) => [r.place.id, i + 1]),
@@ -299,6 +305,17 @@ export function CityView({ city }: { city: string }) {
         </div>
       )}
       <div role="tabpanel" id="city-panel-foryou" aria-labelledby="city-tab-foryou" hidden={tab !== "foryou"}>
+      {priceApplies && (
+        <div className="city-filters">
+          <label htmlFor="city-price">Price up to
+            <select id="city-price" value={price} onChange={(e) => setPrices((p) => ({ ...p, [category]: e.target.value }))}>
+              <option value="">Any price</option>
+              {[1, 2, 3, 4].map((n) => <option key={n} value={n}>{"€".repeat(n)}</option>)}
+            </select>
+          </label>
+          <p className="muted">Indicative price tiers, not menu prices.{price && " Places without a price tier are left out."}</p>
+        </div>
+      )}
       {ready && !personal && (
         <div className="city-banner">
           <div>
@@ -315,15 +332,19 @@ export function CityView({ city }: { city: string }) {
             : `Our data has only a few museums in ${city}: most Passports will see the same ones.`}
         </p>
       )}
-      <p className="page-status city-status" aria-live="polite">
-        {status}
-      </p>
-      {status === MESSAGES.expired_selection && (
-        <p>
-          <Link className="btn btn-primary" href="/passport">
-            Refresh my Passport
-          </Link>
-        </p>
+      {(busy || !status) && <p className="page-status city-status" aria-live="polite">{status}</p>}
+      {!busy && status && (
+        <EmptyState title={data ? "Let’s try another way." : "These picks couldn’t load."} action={
+          status === MESSAGES.expired_selection ? <OpenQuizButton /> :
+          category !== "restaurant" ? <button className="btn btn-primary" onClick={() => setCategory("restaurant")}>See restaurants</button> :
+          <Link className="btn btn-primary" href="/explore">Choose another city</Link>
+        }><p role="status">{status}</p></EmptyState>
+      )}
+      {!busy && data && !status && shown.length === 0 && (
+        <EmptyState title="No places match this view." action={
+          price ? <button className="btn btn-primary" onClick={() => setPrices((p) => ({ ...p, [category]: "" }))}>Clear price filter</button> :
+          <Link className="btn btn-primary" href="/explore">Choose another city</Link>
+        }><p>Try a wider price range or another category. Your saved places are still here.</p></EmptyState>
       )}
       {/* No places to show (error, expired Passport): skip the empty map. */}
       {(busy || shown.length > 0) && (

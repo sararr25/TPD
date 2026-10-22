@@ -68,11 +68,15 @@ export function HomeExample() {
         would start here in {CITY}:
       </p>
       {error ? (
+        <div>
         <p className="h-error" role="alert">
           The example could not load: {error}
         </p>
+        <Link className="btn btn-quiet" href="/lisbon">Explore Lisbon →</Link>
+        </div>
       ) : (
         <ul className="h-picks" aria-busy={!picks}>
+          {picks?.length === 0 && <li><span>No picks for this example today.</span><Link href="/lisbon">Explore Lisbon →</Link></li>}
           {(picks ?? [null, null, null]).map((p, i) => (
             <li key={p?.place.id ?? i}>
               {p ? (

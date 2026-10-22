@@ -57,18 +57,20 @@ export function SwapWorkspace() {
   const [visited, setVisited] = useState<string[]>([]);
   // Home's search box links here with ?q= (and ?category=museum): that
   // place name pre-fills, and searches, the first workspace (docs/24).
-  const [prefill, setPrefill] = useState<{ key: string; query: string } | null>(null),
-    [linked, setLinked] = useState<{ query: string; category: PlaceCategory } | null>(null);
+  // ?ref= (from a card's "Find similar", #8) is that place's id: the search
+  // result with the same id is chosen as the starting point automatically.
+  const [prefill, setPrefill] = useState<{ key: string; query: string; ref: string } | null>(null),
+    [linked, setLinked] = useState<{ query: string; category: PlaceCategory; ref: string } | null>(null);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const query = params.get("q")?.trim().slice(0, 120);
     if (!query) return;
     const cat: PlaceCategory = params.get("category") === "museum" ? "museum" : "restaurant";
     setCategory(cat);
-    setLinked({ query, category: cat });
+    setLinked({ query, category: cat, ref: params.get("ref")?.trim().slice(0, 200) ?? "" });
   }, []);
   useEffect(() => {
-    if (cityKnown && linked && !prefill) setPrefill({ key: `${city}|${linked.category}`, query: linked.query });
+    if (cityKnown && linked && !prefill) setPrefill({ key: `${city}|${linked.category}`, query: linked.query, ref: linked.ref });
   }, [cityKnown, linked, prefill, city]);
   useEffect(() => {
     if (cityKnown) setVisited((list) => (list.includes(key) ? list : [...list, key]));
@@ -110,6 +112,7 @@ export function SwapWorkspace() {
               category={cat}
               onTransfer={setCategory}
               prefill={prefill?.key === k ? prefill.query : ""}
+              prefillRef={prefill?.key === k ? prefill.ref : ""}
             />
           </div>
         );
@@ -117,11 +120,13 @@ export function SwapWorkspace() {
     </>
   );
 }
-function CategoryWorkspace({ city, category, onTransfer, prefill }: {
+function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: {
   city: string;
   category: PlaceCategory;
   onTransfer: (category: PlaceCategory) => void;
   prefill: string;
+  // Id of the linked place: when a search result has it, it is chosen (#8).
+  prefillRef: string;
 }) {
   const uid = useId();
   const museum = category === "museum";
@@ -248,13 +253,13 @@ function CategoryWorkspace({ city, category, onTransfer, prefill }: {
     if (!prefill || prefilled.current || !ready || passport.length < 3) return;
     prefilled.current = true;
     setQuery(prefill);
-    runSearch(prefill);
-  }, [prefill, ready, passport]);
+    runSearch(prefill, prefillRef);
+  }, [prefill, prefillRef, ready, passport]);
   async function search(e: React.FormEvent) {
     e.preventDefault();
     await runSearch(query);
   }
-  async function runSearch(query: string) {
+  async function runSearch(query: string, refId = "") {
     searchController.current?.abort();
     const controller = new AbortController();
     searchController.current = controller;
@@ -271,6 +276,15 @@ function CategoryWorkspace({ city, category, onTransfer, prefill }: {
         city,
       }, controller.signal);
       if (controller.signal.aborted) return;
+      // The linked place is in the results: start from it, no second click.
+      const sameName = found.choices.filter((s) => s.entity.name.toLowerCase() === query.toLowerCase());
+      const linkedMatch = refId
+        ? (found.choices.find((s) => s.entity.id === refId) ?? (sameName.length === 1 ? sameName[0] : undefined))
+        : undefined;
+      if (linkedMatch) {
+        select(linkedMatch);
+        return;
+      }
       setMatches(found.choices);
       setStatus(
         found.choices.length

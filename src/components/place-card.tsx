@@ -61,6 +61,9 @@ export function PlaceCard({
         .slice(0, 3)
         .map((t) => t.name);
   const swappable = category === "restaurant" || category === "museum";
+  // "Find similar" starts Swap from this place (#8): name + category + id so
+  // Swap can pick the matching search result without retyping.
+  const similarHref = `/swap?${new URLSearchParams({ city, q: place.name, category, ref: place.id })}`;
   return (
     <article
       className="place-card"
@@ -117,7 +120,7 @@ export function PlaceCard({
         {swappable && (
           <Link
             className="pill-link"
-            href={`/swap?city=${encodeURIComponent(city)}`}
+            href={similarHref}
             title="Find places that keep what you like about this one"
           >
             Find similar

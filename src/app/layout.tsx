@@ -55,6 +55,7 @@ export default function RootLayout({
                     {label}
                   </Link>
                 ))}
+                <Link href="/compare">Qloo vs AI</Link>
               </nav>
             </div>
             <p>

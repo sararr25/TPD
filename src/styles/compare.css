@@ -1,0 +1,53 @@
+/* Qloo vs LLM page */
+.cmp-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.cmp-form label {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cmp-who {
+  margin: var(--space-4) 0 0;
+}
+
+.cmp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.cmp-grid > .paper + .paper {
+  margin-top: 0;
+}
+
+.cmp-col h2 {
+  margin: 0 0 var(--space-2);
+}
+
+.cmp-col ol {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-4) 0 0;
+  padding-left: 1.2em;
+}
+
+.cmp-col li {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.cmp-col li span {
+  color: var(--ink-2);
+}
+
+@media (max-width: 720px) {
+  .cmp-grid {
+    grid-template-columns: 1fr;
+  }
+}

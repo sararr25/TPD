@@ -1,0 +1,13 @@
+.home-swap-demo {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-12);
+  padding: clamp(var(--space-5), 4vw, var(--space-10));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--paper);
+}
+.home-swap-intro { max-width: 64ch; }
+.home-swap-intro h2 { margin: var(--space-3) 0; font-size: var(--display-md); }
+.home-swap-demo .place-card { background: var(--bg); }
+.home-swap-demo .place-body { padding: var(--space-5); }

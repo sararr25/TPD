@@ -2,6 +2,7 @@ import { HomeSearch } from "@/components/home-search";
 import { HomeExample } from "@/components/home-example";
 import { HomeCities } from "@/components/home-cities";
 import { OpenQuizButton } from "@/components/quiz-panel";
+import { HomeSwapDemo } from "@/components/home-swap-demo";
 
 const STEPS = [
   ["Make your Passport", "A short quiz about how you travel and what you love. About 3 minutes, no account."],
@@ -19,16 +20,18 @@ export default function Home() {
           <div className="h-seal" aria-hidden />
           <span className="h-mono">Taste Passport</span>
           <h1 id="h-title">
-            Places that fit your taste, <em>in the city you’re visiting.</em>
+            Find places you’ll love, <em>or a twin for the one that’s full.</em>
           </h1>
-          <p className="h-lead">Tell us three things you love. We read the city through them.</p>
+          <p className="h-lead">Pick a city to explore, or start from a place you wanted. A 3-minute quiz makes the picks personal.</p>
           <HomeSearch />
         </section>
         <HomeExample />
       </div>
 
+      <HomeSwapDemo />
+
       <section className="h-how" aria-labelledby="h-how">
-        <h2 id="h-how">Three favourites, and the city starts to look like you.</h2>
+        <h2 id="h-how">A city guide shaped by what you love.</h2>
         <ol className="h-steps">
           {STEPS.map(([title, text]) => (
             <li key={title}>

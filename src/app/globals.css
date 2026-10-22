@@ -18,6 +18,7 @@
 /* Shell and pages */
 @import "../styles/shell.css";
 @import "../styles/home.css";
+@import "../styles/home-swap-demo.css";
 @import "../styles/city.css";
 @import "../styles/swap.css";
 @import "../styles/passport.css";

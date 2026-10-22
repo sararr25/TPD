@@ -14,7 +14,7 @@ export function CityMap({
   active,
   onPick,
 }: {
-  places: Entity[];
+  places: Pick<Entity, "id" | "name" | "lat" | "lon">[];
   active: string | null;
   onPick: (id: string) => void;
 }) {

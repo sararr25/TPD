@@ -6,11 +6,11 @@ Verified against GitHub before this continuation:
 
 | Issue | Status | Remaining acceptance |
 |---|---|---|
-| [#26](https://github.com/sararr25/TPD/issues/26) | Implemented; accessibility checks pass; owner approved visuals | Publish reviewed corrections and record release receipt |
+| [#26](https://github.com/sararr25/TPD/issues/26) | Closed; owner approved visuals; verified corrections released | Complete, receipt in handover 28 |
 | [#32](https://github.com/sararr25/TPD/issues/32) | Implemented; synthetic persistence/isolation checks pass | Real Google session and second-device/browser persistence |
 | [#3](https://github.com/sararr25/TPD/issues/3) | Parent spec | Final acceptance of #26 and #32 |
 
-All other child tickets #4–#34 are closed. Old PR #1 is still open and is a separate historical proposal, not a current implementation ticket. Its status is recorded in handover 28; it is not merged or closed by this audit.
+All child tickets #4–#34 except #32 are now closed. Old PR #1 is still open and is a separate historical proposal, not a current implementation ticket. Its status is recorded in handover 28; it is not merged or closed by this audit.
 
 Name **Beesyde**, **Neon Auth + Google**, shared **Neon** storage, **Qloo + OpenStreetMap** and the Vercel release are already in place. No new provider activation, naming or auth selection is needed. Details and acceptance boundaries live in the handover, not the old register.
 

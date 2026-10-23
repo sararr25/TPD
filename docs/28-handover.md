@@ -27,7 +27,8 @@ OSM implementation, typography, discovery or application structure.
 
 The root checkout was moved to the real release branch and fast-forwarded
 from `2412010` to the verified remote `2f215a3` without merging the obsolete
-branch. This continuation is isolated on `codex/beesyde-final-acceptance`.
+branch. This continuation was isolated on `codex/beesyde-final-acceptance`; after
+verification the root checkout returned to the synchronized release branch.
 Dependencies were installed from the existing npm lockfile; no new database,
 auth provider, service or database migration was added.
 
@@ -81,8 +82,8 @@ not committed or uploaded to a public PR. Temporary test/build logs:
 - **#26:** owner's visual acceptance of the supplied actual screenshots;
   private screenshots intentionally replace public attachment to respect
   the owner's private-artifact rule. **Owner explicitly approved visual
-  acceptance in chat on 23 October.** #26 can close once the reviewed fixes
-  are on the release branch.
+  acceptance in chat on 23 October.** The reviewed fixes were published
+  and **#26 was closed as completed** with a release/evidence receipt.
 - **#32:** actual same-account persistence in two genuine Google sessions.
   Auto-review rejected initiating production Google sign-in without
   explicit authorization. **Owner explicitly authorized starting Google sign-in** on 23 October.
@@ -100,7 +101,19 @@ sign into the same account before opening guides and verify those stamps
 already exist; add one guide there and verify it appears after reloading
 the first session. Never copy auth cookies or fabricate an account/session.
 
-Release receipt and final review results are recorded below when available.
+## Release receipt
+
+- Accessibility implementation: `d7af988`.
+- Approved/reviewed release: `6d0cbb6a56dc2ab465db60c03e4fce52601d91b7`.
+- Production deployment `dpl_2d3z57oVa9kP4thLmPUmpQ1JiKGz`: READY and
+  assigned to `beesyde.vercel.app`; its Git SHA matches the release.
+- Public Home smoke confirms the deployed light-panel focus correction.
+- Root checkout returned to `claude/blissful-gauss-dymbeo`, matching origin,
+  with no pending tracked changes at release verification.
+- #26 closed after explicit owner approval. #32 and parent #3 remain open
+  only for the genuine authenticated-session acceptance described above.
+
+The following documentation-only receipt does not change the tested app.
 
 ## Review receipt
 

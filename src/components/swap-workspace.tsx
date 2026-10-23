@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   LIVE_PASSPORT_KEY,
   CITIES,
+  hasTrait,
   type Choice,
   type Result,
   type PlaceCategory,
@@ -411,13 +412,12 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   // made for the Swap that produced it (matched by name: the same feature can
   // carry a different tag type on each place).
   function keptChanged(result: Result) {
-    const own = new Set(result.place.tags.map((t) => t.name.toLowerCase()));
     const kept: string[] = [],
       changed: string[] = [];
     for (const c of usedChoices) {
       const tag = reference?.entity.tags.find((t) => t.id === c.tagId);
       if (!tag || c.mode === "ignore") continue;
-      const has = own.has(tag.name.toLowerCase());
+      const has = hasTrait(result.place, tag);
       if (c.mode === "keep" && has) kept.push(traitLabel(tag.name));
       if (c.mode === "change" && !has) changed.push(traitLabel(tag.name));
     }

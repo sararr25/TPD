@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { type Choice, type Result, chipTags } from "@/lib/discovery";
+import { type Choice, type Result, chipTags, hasTrait } from "@/lib/discovery";
 import { discovery, type Selection } from "@/lib/discovery-client";
 
 const REFERENCE = "96296410-62EB-408E-96C6-FD60AAAF9216";
@@ -55,7 +55,7 @@ export function HomeSwapDemo() {
 
   function traits(result: Result, mode: "keep" | "change") {
     return demo!.choices.filter((c) => c.mode === mode &&
-      result.place.tags.some((t) => t.id === c.tagId) === (mode === "keep"))
+      hasTrait(result.place, demo!.reference.entity.tags.find(t => t.id === c.tagId)!) === (mode === "keep"))
       .map((c) => label(demo!.reference.entity.tags.find((t) => t.id === c.tagId)!.name));
   }
 

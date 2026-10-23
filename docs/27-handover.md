@@ -64,11 +64,8 @@ Local logs are `/tmp/tpd-continuation-final-tests.log` and
   and the real schema check do not replace these owner paths.
 - Final production acceptance on a real phone remains the owner's step from
   handover 26. Local development browser QA is not production acceptance.
-- A selected Change trait is currently excluded by its Qloo tag ID. During QA,
-  a result's generated description still mentioned “casual” through overlapping
-  metadata despite Change Casual. No semantic alias normalization was added in
-  this UI increment; investigate with a focused discovery regression before
-  claiming all textual traits are excluded semantically.
+- The overlapping Change-tag issue found during UI QA is resolved by the
+  follow-up below. This matches visible labels, not inferred semantic synonyms.
 - Keep remains a preference, not a guaranteed filter. The Home example says so
   and reports when seafood is not listed for an alternative.
 - Existing rough edges from handover 26 (quiz sign-in callback, one-toast
@@ -92,3 +89,30 @@ Swap/service seam. Read AGENTS and the bundled Next docs before changes.
   #26 and #32 remain open as `ready-for-human`: private screenshot/visual
   acceptance and real signed-in/cross-device acceptance respectively. Parent #3
   stays open. No closed tickets from the earlier session were reopened.
+
+
+## Follow-up — Change trait aliases, 23 October 2026
+
+Owner selected tests at the public Swap service plus a live Lisbon check.
+
+- A failing service regression reproduced Change Casual accepting another
+  Qloo ID with the label Casual. After the fix it passes.
+- One shared `hasTrait` rule now drives explicit Change exclusions, Keep
+  ranking/counts, shared-trait explanations and both Swap/Home result labels.
+  It matches an exact ID or equal labels after Unicode/case, whitespace and
+  underscore/hyphen normalization. It does not invent synonyms or use substring
+  matching: Casual dining remains distinct from Casual.
+- Filtering runs on every cuisine/quiz fallback. No fallback relaxes Change.
+- Regression coverage includes alternate IDs, padded/separator labels, Keep
+  counts/explanations, distinct longer names and empty fallback results.
+- Full tests passed; final targeted discovery checks, typecheck and build passed.
+- Live local API check: exact Time Out Market reference in Lisbon, Change
+  Casual, empty Passport; 3 results from 11 locally eligible candidates, zero
+  same-label conflicts. Results remain L0; no hours/booking facts are inferred.
+- Reproduce with the local app at 127.0.0.1:3100 and
+  `node --experimental-strip-types scripts/verify-change-aliases.mjs`. This uses
+  Qloo quota and makes two sequential app requests, without automatic retries.
+  Raw receipts/tokens stay in ignored `.private/qloo/change-alias-check.json`.
+- Standards/spec review findings (separator-boundary whitespace and an overly
+  broad text assertion in the live check) were corrected. Existing #26/#32
+  human acceptance boundaries remain unchanged.

@@ -196,6 +196,14 @@ export type Entity = {
   image?: string | null;
 };
 export type Choice = { tagId: string; mode: "keep" | "change" | "ignore" };
+const traitName = (name: string) => name.normalize("NFKC").toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+// Qloo can file one visible trait under several tag IDs/types. Use the same
+// exact-label rule for filtering, Keep preference and the labels we display.
+// This deliberately does not infer synonyms ("casual dining" is not "casual").
+export function hasTrait(place: Pick<Entity, "tags">, trait: Tag): boolean {
+  const name = traitName(trait.name);
+  return place.tags.some(t => t.id === trait.id || (!!name && traitName(t.name) === name));
+}
 export type Result = {
   role: string;
   place: Entity;
@@ -395,9 +403,8 @@ export function anchorCuisines(
 // What a result shares with the place the user started from, by chip name
 // (the same feature can carry a different tag type on each place).
 export function sharedChips(e: Entity, reference: Entity, category: PlaceCategory): string[] {
-  const own = new Set(e.tags.map((t) => t.name.toLowerCase()));
   return chipTags(reference, category)
-    .filter((t) => own.has(t.name.toLowerCase()))
+    .filter((t) => hasTrait(e, t))
     .map((t) => t.name)
     .slice(0, 3);
 }

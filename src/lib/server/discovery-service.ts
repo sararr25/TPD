@@ -4,6 +4,7 @@ import {
   UUID,
   selectRoles,
   chipTags,
+  hasTrait,
   anchorCuisines,
   validPlace,
   placeCategory,
@@ -239,6 +240,8 @@ export async function swap(
     throw new DiscoveryError("invalid_budget", 400);
   const keep = choices.filter((c) => c.mode === "keep").map((c) => c.tagId),
     change = choices.filter((c) => c.mode === "change").map((c) => c.tagId);
+  const changedTraits = ref.tags.filter(t => change.includes(t.id));
+  const keptTraits = ref.tags.filter(t => keep.includes(t.id));
   const signals = [ref, ...passport];
   const params: Record<string, string> = {
     "filter.type": "urn:entity:place",
@@ -272,7 +275,8 @@ export async function swap(
     const filtered = candidates.filter(
       (e) =>
         !hidden.has(e.id) &&
-        validPlace(e, city, category, maxPrice as number | undefined, change),
+        validPlace(e, city, category, maxPrice as number | undefined, change) &&
+        !changedTraits.some(t => hasTrait(e, t)),
     );
     return { checkedAt, candidates, filtered };
   };
@@ -297,7 +301,7 @@ export async function swap(
   const anchorUsed = !!cuisine && "filter.tags" in used;
   // Keep: with 3+ candidates that have a kept feature, only those compete for
   // the three roles; with fewer, they come first and the rest fill in.
-  const hasKeep = (e: Entity) => e.tags.some((t) => keep.includes(t.id));
+  const hasKeep = (e: Entity) => keptTraits.some(t => hasTrait(e, t));
   const keepMatched = keep.length ? filtered.filter(hasKeep).length : null;
   const pool = !keep.length
     ? filtered

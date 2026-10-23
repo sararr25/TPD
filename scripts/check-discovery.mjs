@@ -392,3 +392,55 @@ console.log("PASS: museum Keep filters Qloo's answer locally (all roles when 3+ 
   );
   console.log("PASS: neighbourhoods keep only localities under the city proper and rank by the Passport's nearby places.");
 }
+
+// Change is expressed as a visible trait, not a provider-specific tag ID.
+// Qloo can return the same label under another taxonomy despite its filter.
+{
+  const casual = t("ambience:qloo", "casual", "Casual");
+  const starting = make(400, { tags: [tag, casual] });
+  const alias = make(401, { tags: [tag, t("ambience:place", "casual", "Casual")] });
+  const alternatives = [402, 403, 404].map(n => make(n, { tags: [tag, t("ambience:place", "casual_dining", "Casual dining")] }));
+  const paddedAlias = make(405, { tags: [tag, t("ambience:place", "casual_other", " __CASUAL__ ")] });
+  globalThis.fetch = async url => {
+    if (url.hostname === "nominatim.openstreetmap.org") return Response.json([]);
+    return Response.json({ results: { entities: [alias, paddedAlias, ...alternatives].map(raw) }, query: { localities: { filter: [{ name: "Paris" }] } } });
+  };
+  const changed = await swap(selection(starting).token, [], [{ tagId: casual.id, mode: "change" }], undefined);
+  assert(!changed.results.some(r => r.place.id === alias.id), "Change Casual must exclude the same visible trait under another tag ID");
+  assert.equal(changed.results.length, 3);
+  assert.equal(changed.candidateCount, 3);
+  assert(!changed.results.some(r => r.place.id === paddedAlias.id));
+  assert(changed.results.some(r => r.place.id === alternatives[0].id), "Do not invent synonym or substring equivalence for Casual dining");
+  console.log("PASS: Swap Change excludes a same-label trait across Qloo tag IDs.");
+}
+
+// Keep uses the same visible-trait rule as Change and the card explanation.
+{
+  const keptTrait = t("ambience:qloo", "quiet", "Quiet");
+  const starting = make(420, { tags: [tag, keptTrait] });
+  const aliases = [421, 422, 423].map(n => make(n, { tags: [tag, t("ambience:place", "quiet", " QUIET ")] }));
+  const unrelated = make(424, { tags: [tag] });
+  globalThis.fetch = async url => {
+    if (url.hostname === "nominatim.openstreetmap.org") return Response.json([]);
+    return Response.json({ results: { entities: [unrelated, ...aliases].map(raw) }, query: { localities: { filter: [{ name: "Paris" }] } } });
+  };
+  const kept = await swap(selection(starting).token, [], [{ tagId: keptTrait.id, mode: "keep" }], undefined);
+  assert.equal(kept.keepMatched, 3);
+  assert.equal(kept.results.length, 3);
+  assert(!kept.results.some(r => r.place.id === unrelated.id));
+  assert(kept.results.every(r => r.why.includes("quiet")));
+  console.log("PASS: Keep ranking, match count and explanations agree across same-label tag IDs.");
+}
+
+// Relaxing the cuisine must never relax an explicit Change choice.
+{
+  const casual = t("ambience:qloo", "casual", "Casual");
+  const starting = make(430, { tags: [tag, casual, t("cuisine:qloo", "pizza", "Pizza")] });
+  const alias = make(431, { tags: [tag, t("ambience:place", "casual", "Casual")] });
+  globalThis.fetch = async url => Response.json({ results: { entities: [alias].map(raw) }, query: { localities: { filter: [{ name: "Paris" }] } } });
+  const empty = await swap(selection(starting).token, [], [{ tagId: casual.id, mode: "change" }], undefined);
+  assert.deepEqual(empty.results, []);
+  assert.equal(empty.candidateCount, 0);
+  assert.equal(empty.anchorDropped, true);
+  console.log("PASS: cuisine fallback cannot reintroduce a changed trait under another ID.");
+}

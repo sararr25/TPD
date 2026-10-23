@@ -172,3 +172,20 @@ are closed; historical PR #1 remains open separately. The preceding
 “remaining” sections are chronological receipts, superseded by this result.
 The final source comparison and its limits are in
 [the concise report](29-ab-comparison-report.md).
+
+
+## Follow-up — site evaluation, 23 October 2026
+
+A new UI/UX/functionality assessment is in [docs/30](30-site-evaluation.md),
+with the [evaluation plan](31-evaluation-plan.md) and generated
+[ECC commands](32-evaluation-commands.md). Source baseline: `fa7359a`;
+GitHub default branch and remote HEAD were verified live, with all #3–#34 closed.
+The assessment proposes further improvements; it does not reopen old tickets
+or supersede the accepted brand, providers and quiz decisions.
+
+Current browser sampling includes Home desktop, Lisbon desktop/390×844,
+Place mobile, a real restaurant Swap yielding three alternatives, Saved,
+Passport, Compare and Cities. It is not exhaustive real-phone/assistive QA.
+Existing tests and typecheck passed. Only documentation changed; no new build,
+app deployment, schema, analytics, user experiment or implementation occurred.
+Account observations are anonymized; no private screenshots or data are committed.

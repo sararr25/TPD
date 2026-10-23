@@ -158,3 +158,7 @@ Terza condizione raccolta come ricerca web con estrazione assistita dichiarata, 
 ## Valutazione umana rimandata — 20 ottobre 2026
 
 Su richiesta dell’utente, saltiamo per ora la scheda anonima A/B/C: l’utente non conosce i luoghi e usa il prodotto proprio per scoprirli. Nessuna compilazione, reclutamento o raccolta voti richiesta nel lavoro corrente. Strumenti e dati tecnici restano disponibili, ma E04 non blocca lo sviluppo e non viene dichiarato concluso o vincente. La priorità passa all’affidabilità dei suggerimenti: identità, attività e indirizzi (E09), con limiti operativi espliciti. Un eventuale studio con valutatori adatti richiederà una decisione futura.
+
+## Scope demo e affidabilità — 23 ottobre 2026
+
+L’utente conferma che Google Places è escluso dalla demo: procedere con Qloo o risorse gratuite. Questo vincolo prevale sulla fonte Places prevista in 5.1–5.2 per la demo corrente. E09 verifica la coerenza tra raccomandazione e ricerca Qloo su nome, indirizzo, posizione e categoria, con conflitti espliciti e senza blacklist. Un risultato coerente resta L0: nessuna verifica indipendente di esistenza, apertura attuale, orari o disponibilità. I requisiti operativi più ampi restano roadmap.

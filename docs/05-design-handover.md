@@ -98,3 +98,7 @@ Ricerca web con estrazione assistita raccolta su 16 casi, con query/fonti/ordine
 ## Valutazione umana rimandata — 20 ottobre 2026
 
 Su richiesta dell’utente, saltiamo per ora la scheda anonima A/B/C: l’utente non conosce i luoghi e usa il prodotto proprio per scoprirli. Nessuna compilazione, reclutamento o raccolta voti richiesta nel lavoro corrente. Strumenti e dati tecnici restano disponibili, ma E04 non blocca lo sviluppo e non viene dichiarato concluso o vincente. La priorità passa all’affidabilità dei suggerimenti: identità, attività e indirizzi (E09), con limiti operativi espliciti. Un eventuale studio con valutatori adatti richiederà una decisione futura.
+
+## Continuazione — 23 ottobre 2026
+
+E09 ripreso con scope aggiornato dall’utente: demo senza Google Places, solo Qloo o fonti gratuite. Aggiunto controllo su richiesta di coerenza tra /search Qloo e risultato /v2/insights; nome esatto normalizzato, sede disambiguata per indirizzo, conflitti/unknown conservati. Il risultato resta L0; nessun orario o disponibilità confermati. Dettagli e stato delle prove in docs/14. Tutti i ticket non sono conclusi; l’A/B testing richiesto condizionalmente al loro completamento non viene dichiarato eseguito.

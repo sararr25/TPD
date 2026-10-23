@@ -1,0 +1,45 @@
+import assert from "node:assert/strict";
+import { comparePlace } from "../src/lib/place-verification.ts";
+import { selection, verifyPlace } from "../src/lib/server/discovery-service.ts";
+const tag = { id: "urn:tag:genre:place:restaurant", name: "Restaurant", type: "urn:tag:genre:place" };
+const place = { id: "00000000-0000-4000-8000-000000000001", name: "Fictional Café", type: "place", address: "12 Rue Imaginaire, 75010 Paris, France", city: "Paris", country: "FR", lat: 48.87, lon: 2.36, tags: [tag], closed: false, evidence: [], price: 2, popularity: 0.2 };
+const at = "2026-10-23T10:00:00.000Z";
+const compare = candidates => comparePlace(place, "restaurant", candidates, at);
+assert.equal(compare([{ ...place, name: "Fictional Cafe" }]).status, "consistent");
+assert.equal(compare([]).status, "unknown");
+assert.equal(compare([{ ...place, name: "Other café" }]).status, "unknown");
+const otherAddress = { ...place, id: "00000000-0000-4000-8000-000000000002", address: "8 Rue Imaginaire, 75006 Paris" };
+const conflict = compare([otherAddress]);
+assert.equal(conflict.status, "conflict");
+assert.equal(conflict.checks.category, "unknown"); // Never attribute the other branch's category.
+assert.equal(compare([place, otherAddress]).status, "consistent");
+assert.equal(compare([{ ...place, address: null }, { ...otherAddress, address: null }]).status, "unknown");
+assert.equal(compare([{ ...place, closed: true }]).status, "conflict");
+assert.equal(compare([{ ...place, tags: [{ ...tag, id: "urn:tag:genre:place:shop" }] }]).status, "conflict");
+assert.equal(compare([{ ...place, tags: [] }]).status, "unknown");
+assert.equal(compare([{ ...place, lat: null }]).status, "unknown");
+assert.equal(compare([{ ...place, lat: 48.89 }]).status, "conflict");
+assert.equal(compare([{ ...place, country: "US" }]).status, "conflict");
+assert.equal(compare([{ ...place, address: "12 Rue Autre, 75010 Paris" }]).status, "unknown");
+process.env.QLOO_API_KEY = "synthetic-only";
+process.env.QLOO_API_URL = "https://hackathon.api.qloo.com";
+let calls = 0;
+globalThis.fetch = async (url, options) => {
+  calls++;
+  assert.equal(url.origin, "https://hackathon.api.qloo.com");
+  assert.equal(url.pathname, "/search");
+  assert.equal(url.searchParams.get("query"), `${place.name} Paris`);
+  assert.equal(options.redirect, "error");
+  assert.equal(options.cache, "no-store");
+  return Response.json({ results: [{ entity_id: place.id, name: place.name, subtype: "urn:entity:place", location: { lat: place.lat, lon: place.lon }, properties: { address: place.address, geocode: { city: "Paris", country_code: "FR" } }, tags: [tag] }] });
+};
+const token = selection(place).token;
+await assert.rejects(verifyPlace(token + "bad", "restaurant"));
+await assert.rejects(verifyPlace(token, "museum"));
+assert.equal(calls, 0);
+const checked = await verifyPlace(token, "restaurant");
+assert.equal(checked.status, "consistent");
+assert.match(checked.reason, /same source, not independent/);
+assert.equal((await verifyPlace(token, "restaurant")).status, "consistent");
+assert.equal(calls, 1); // Reuses the existing private Qloo cache, no repeated quota cost.
+console.log("PASS: signed Qloo cross-check, address/branch conflicts, ambiguity, closure flags, missing data, category/location mismatches, no independent-verification claim and cached recheck; synthetic data only.");

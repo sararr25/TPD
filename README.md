@@ -58,6 +58,7 @@ Import the repository using the Next.js preset and npm lockfile. Configure Qloo 
 - `docs/11-qloo-benchmark.md`: private 16-case benchmark, baseline imports and blind evaluation.
 - `docs/12-cli-baseline.md`: supported CLI alternative to blocked ChatGPT web, isolation and provenance.
 - `docs/13-search-verification-review.md`: assisted web-search baseline, common metadata audit and private human review.
+- `docs/14-qloo-consistency-report.md`: demo-only Qloo identity/address cross-check, current ticket status and limits.
 
 Implementation follows the [Next.js installation guide](https://nextjs.org/docs/app/getting-started/installation). Qloo usage follows the [hackathon developer guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide) and [parameter reference](https://github.com/qloo/docs-public/blob/main/reference/insights-api-deep-dive.md).
 
@@ -70,3 +71,7 @@ With the local app running on `127.0.0.1:3000`, `npm run benchmark -- collect RU
 `npm run benchmark:cli -- RUN_ID` collects the LLM condition using the installed Codex CLI and its existing ChatGPT sign-in. Each case runs in a fresh process without tools or Qloo. The source is explicitly labelled Codex CLI / gpt-6-sol, not ChatGPT web; see docs/12 for controls and limits. No API key is created or passed to the model subprocess.
 
 All three 16-case conditions are collected. The third is explicitly labelled assisted web-search extraction; the common audit uses Qloo metadata and is not independent ground truth. `npm run benchmark:verify -- RUN_ID` checks all conditions with identical lookup rules, consuming quota only for missing checkpoints. `npm run benchmark:review -- RUN_ID` serves the anonymous study at `127.0.0.1:3212/study` after a blind packet is generated; it exposes no source key or directory. `collectionComplete` means collection only: independent fact checks and human votes remain open.
+
+## Demo identity cross-check
+
+Each result has an on-demand name/address cross-check against Qloo search. It accepts a signed selection, preserves ambiguous or missing information, and flags conflicting addresses, positions or categories. Directions are hidden after a conflict is detected. This uses the same Qloo source and private per-process cache: it remains L0, with no independent existence, current operation, hours or availability verification. Google Places is excluded from the current demo scope by owner decision. No extra credential is needed.

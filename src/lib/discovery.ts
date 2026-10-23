@@ -21,6 +21,7 @@ export type Entity = {
 };
 export type Choice = { tagId: string; mode: "keep" | "change" | "ignore" };
 export type Result = {
+  verificationToken?: string;
   role: string;
   place: Entity;
   why: string;

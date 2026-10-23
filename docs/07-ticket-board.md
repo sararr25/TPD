@@ -1,6 +1,6 @@
 # TPD — Ticket board
 
-Aggiornato: 20 ottobre 2026. Fonte: DECISIONS.md sezioni 7–8, docs/02 sezione 7 e docs/05. La ricerca GitHub di oggi non ha restituito issue: questo registro rende espliciti i passi già documentati, senza creare issue remote.
+Aggiornato: 23 ottobre 2026. Fonte: DECISIONS.md sezioni 7–8, docs/02 sezione 7 e docs/05. La ricerca GitHub di oggi non ha restituito issue: questo registro rende espliciti i passi già documentati, senza creare issue remote.
 
 `Prototipo` non significa implementazione live. `Da verificare` richiede evidenza browser o provider.
 
@@ -23,7 +23,7 @@ Aggiornato: 20 ottobre 2026. Fonte: DECISIONS.md sezioni 7–8, docs/02 sezione 
 | E06 | Login, collezioni e feedback | Dipende da E03 / scelta login | Account reale, persistenza privata, cancellazione, feedback verificato |
 | E07 | Scheda Passport condivisibile | Dipende da E06 | Esportazione e condivisione deliberate, nessun dato privato involontario |
 | E08 | Categorie aggiuntive | Condizionato ai dati | Quartieri → hotel → attività solo dopo evidenza di copertura |
-| E09 | Identità, attività e indirizzi: conflitti con fonte operativa | Aperto prima del deploy, docs/13 | Fonte esterna, disambiguazione omonimi/sedi, conflitti espliciti; nessuna blacklist ad hoc |
+| E09 | Identità e indirizzi: coerenza Qloo per la demo | Completato e verificato nel perimetro demo Qloo, docs/14 | Demo senza Google Places per decisione utente; confronto ricerca/raccomandazione, omonimi e conflitti espliciti, L0. Verifica operativa indipendente esclusa dallo scope demo |
 | R01 | README, licenza, deploy e submission inglese | Dipende dai flussi reali | Demo pubblica provata, fonti/limiti, regole ufficiali ricontrollate |
 
 ## Incremento D03
@@ -34,4 +34,8 @@ Verifica ripetibile dalla root: `node scripts/check-prototype.cjs`. Lo script us
 
 ## Prossimo passo
 
-E05 completato localmente sul pilot musei Parigi: stessi segnali Passport, nuova reference, Keep/Change, tre ruoli L0, test live e browser (docs/10). E04: 16 casi TPD e 16 casi LLM CLI raccolti; import e valutazione cieca predisposti. Dopo il blocco ChatGPT web, alternativa da terminale richiesta dall’utente e verificata: Codex CLI/gpt-6-sol, senza strumenti né Qloo (docs/12). Ora anche ricerca web assistita 16/16 raccolta; audit comune su 144 occorrenze completato con metadati Qloo (non indipendente). Valutazione umana A/B/C rimandata su richiesta utente: conoscere i luoghi non è un requisito da imporre a chi usa il prodotto per scoprirli. Nessuna compilazione o reclutamento richiesti ora; E04 non blocca il prossimo incremento. I dati tecnici restano conservati senza dichiarare superiorità. Prossimo: E09, verifica di identità/attività/indirizzi, poi cache/rate limiting condivisi prima del deploy. I03 resta aperto sulle altre destinazioni. E02/E03 locali descritti in docs/09. Metodo login e naming ancora aperti.
+E05 completato localmente sul pilot musei Parigi: stessi segnali Passport, nuova reference, Keep/Change, tre ruoli L0, test live e browser (docs/10). E04: 16 casi TPD e 16 casi LLM CLI raccolti; import e valutazione cieca predisposti. Dopo il blocco ChatGPT web, alternativa da terminale richiesta dall’utente e verificata: Codex CLI/gpt-6-sol, senza strumenti né Qloo (docs/12). Ora anche ricerca web assistita 16/16 raccolta; audit comune su 144 occorrenze completato con metadati Qloo (non indipendente). Valutazione umana A/B/C rimandata su richiesta utente: conoscere i luoghi non è un requisito da imporre a chi usa il prodotto per scoprirli. Nessuna compilazione o reclutamento richiesti ora; E04 non blocca il prossimo incremento. I dati tecnici restano conservati senza dichiarare superiorità. E09 aggiornato il 23 ottobre al perimetro demo Qloo (docs/14). Prossimo: cache/rate limiting condivisi prima del deploy. I03 resta aperto sulle altre destinazioni. E02/E03 locali descritti in docs/09. Metodo login e naming ancora aperti.
+
+## Incremento — 23 ottobre 2026
+
+Decisione utente: niente Google Places per la demo; usare Qloo o risorse gratuite. E09 viene quindi circoscritto al controllo interno di coerenza Qloo, senza equipararlo alla verifica operativa indipendente. I conflitti non correggono o riordinano i risultati del benchmark. Il prossimo blocco tecnico prima del deploy rimane cache/rate limiting condivisi; login, nome, licenza e accessi esterni restano dipendenze aperte. Non sono finiti tutti i ticket: nessun nuovo A/B test avviato e nessun vincitore dichiarato.

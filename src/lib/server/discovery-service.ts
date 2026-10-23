@@ -1,5 +1,6 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { comparePlace } from "../place-verification.ts";
 import {
   UUID,
   selectRoles,
@@ -17,6 +18,14 @@ import {
   DiscoveryError,
 } from "./qloo.ts";
 export type Selection = { entity: Entity; token: string };
+export async function verifyPlace(token: unknown, categoryValue: unknown) {
+  const category = placeCategory(categoryValue);
+  const entity = verifySelection(token);
+  if (!category || !validPlace(entity, "Paris", category))
+    throw new DiscoveryError("invalid_reference", 400);
+  const found = await searchEntities(`${entity.name} Paris`, "place");
+  return comparePlace(entity, category, found.entities, found.checkedAt);
+}
 const CHIP_TYPE =
   /^urn:tag:(ambience:qloo|cuisine:place|offerings:place|beverage_offering:qloo)$/;
 export function chipTags(e: Entity, category: PlaceCategory = "restaurant") {
@@ -184,7 +193,9 @@ export async function swap(
     validPlace(e, "Paris", category, maxPrice as number | undefined, change),
   );
   return {
-    results: selectRoles(filtered, ref, signals, category),
+    results: selectRoles(filtered, ref, signals, category).map(result => ({
+      ...result, verificationToken: selection(result.place).token,
+    })),
     checkedAt,
     city: "Paris",
     category,

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import type { PlaceVerification } from "@/lib/place-verification";
 import {
   LIVE_PASSPORT_KEY,
   type Choice,
@@ -370,17 +371,7 @@ function CategoryWorkspace({ category, onTransfer }: {
                         {new Date(data.checkedAt).toLocaleString()}
                       </p>
                     </details>
-                    {result.place.lat !== null && result.place.lon !== null && (
-                      <div className="actions">
-                        <a
-                          href={`https://www.google.com/maps/dir/?api=1&destination=${result.place.lat},${result.place.lon}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Open directions ↗
-                        </a>
-                      </div>
-                    )}
+                    <PlaceCheck key={result.verificationToken} result={result} category={category} />
                   </div>
                   <div className="stub">
                     L0 · Qloo taste recommendation
@@ -394,5 +385,52 @@ function CategoryWorkspace({ category, onTransfer }: {
         )}
       </section>
     </>
+  );
+}
+
+function PlaceCheck({ result, category }: { result: Result; category: PlaceCategory }) {
+  const [check, setCheck] = useState<PlaceVerification | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const controller = useRef<AbortController | null>(null);
+  useEffect(() => () => controller.current?.abort(), []);
+  async function verify() {
+    controller.current?.abort();
+    const request = new AbortController();
+    controller.current = request;
+    setBusy(true);
+    setError("");
+    try {
+      const value = await discovery<PlaceVerification>({ action: "verify", selection: result.verificationToken, category }, request.signal);
+      if (!request.signal.aborted) setCheck(value);
+    } catch (e) {
+      if (!request.signal.aborted) setError((e as Error).message);
+    } finally {
+      if (!request.signal.aborted) setBusy(false);
+    }
+  }
+  return (
+    <div className="divider">
+      <button className="text" disabled={busy || !result.verificationToken} onClick={verify}>
+        {busy ? "Checking Qloo records…" : "Cross-check name and address"}
+      </button>
+      <p className="muted">Compares Qloo search with this recommendation. No independent source, live hours or availability check.</p>
+      <div role="status" aria-live="polite">
+        {error && <p>{error}</p>}
+        {check && <>
+          <p><strong>{check.status === "consistent" ? "Qloo records agree · L0" : check.status === "conflict" ? "Conflicting records · confirm the venue" : "Details remain unconfirmed"}</strong></p>
+          <p>{check.reason}</p>
+          <ul>
+            {Object.entries(check.checks).map(([name, value]) => <li key={name}>{({ name: "Name", address: "Address", location: "Paris location", category: "Category", notFlaggedClosed: "No Qloo closed flag (does not confirm opening)" } as Record<string, string>)[name]}: {value === "pass" ? "agrees" : value}</li>)}
+          </ul>
+          {check.checkedAt && <p className="meta">Qloo search response: {new Date(check.checkedAt).toLocaleString()}</p>}
+        </>}
+      </div>
+      {check?.status !== "conflict" && result.place.lat !== null && result.place.lon !== null && (
+        <div className="actions">
+          <a href={`https://www.google.com/maps/dir/?api=1&destination=${result.place.lat},${result.place.lon}`} target="_blank" rel="noreferrer">Open directions ↗</a>
+        </div>
+      )}
+    </div>
   );
 }

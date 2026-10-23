@@ -1,5 +1,5 @@
 import { DiscoveryError } from "@/lib/server/qloo";
-import { lookup, guest, swap } from "@/lib/server/discovery-service";
+import { lookup, guest, swap, verifyPlace } from "@/lib/server/discovery-service";
 export const runtime = "nodejs";
 const headers = {
   "Cache-Control": "private, no-store",
@@ -37,7 +37,8 @@ export async function POST(request: Request) {
     if (!body || typeof body !== "object")
       throw new DiscoveryError("invalid_request", 400);
     let result;
-    if (body.action === "guest") result = await guest(body.profile);
+    if (body.action === "verify") result = await verifyPlace(body.selection, body.category);
+    else if (body.action === "guest") result = await guest(body.profile);
     else if (body.action === "search") {
       if (
         typeof body.query !== "string" ||

@@ -19,7 +19,7 @@ Node.js 22.19+ and npm are required. Stack: Next.js App Router, TypeScript, Reac
 
 ```sh
 npm ci
-cp .env.example .env.local
+cp -n .env.example .env.local
 # Configure the existing server-only Qloo, Neon database and Neon Auth settings.
 # Do not overwrite a configured .env.local or copy credentials into chat.
 npm run dev

@@ -80,11 +80,14 @@ not committed or uploaded to a public PR. Temporary test/build logs:
 
 - **#26:** owner's visual acceptance of the supplied actual screenshots;
   private screenshots intentionally replace public attachment to respect
-  the owner's private-artifact rule. Approval was requested in chat.
+  the owner's private-artifact rule. **Owner explicitly approved visual
+  acceptance in chat on 23 October.** #26 can close once the reviewed fixes
+  are on the release branch.
 - **#32:** actual same-account persistence in two genuine Google sessions.
   Auto-review rejected initiating production Google sign-in without
-  explicit authorization. Authorization was requested; no login was
-  bypassed, session fabricated, user created or account deleted.
+  explicit authorization. **Owner explicitly authorized starting Google sign-in** on 23 October.
+  The normal sign-in was initiated after approval; no login was bypassed,
+  session fabricated, user created or account deleted.
 - **#3:** close only once its remaining children satisfy acceptance.
 - No new statistical A/B experiment has been run. The user's request to
   run one was conditional on finishing tickets. Existing three-condition
@@ -98,3 +101,13 @@ already exist; add one guide there and verify it appears after reloading
 the first session. Never copy auth cookies or fabricate an account/session.
 
 Release receipt and final review results are recorded below when available.
+
+## Review receipt
+
+The two independent initial source audits identified the three #26 fixes and
+found no confirmed #32 storage/isolation blocker. The planned second parallel
+Standards/Spec review could not run because both subagents hit their usage
+limit. The primary agent then reviewed the small CSS/documentation diff
+against the verified `2f215a3` baseline: no remaining actionable Standards
+finding; Spec remains partial only for genuine authenticated #32 acceptance.
+This manual pass is not represented as a completed second independent review.

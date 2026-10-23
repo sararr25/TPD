@@ -6,7 +6,7 @@ Verified against GitHub before this continuation:
 
 | Issue | Status | Remaining acceptance |
 |---|---|---|
-| [#26](https://github.com/sararr25/TPD/issues/26) | Implemented; final accessibility corrections in this continuation | Desktop/mobile evidence and owner visual acceptance |
+| [#26](https://github.com/sararr25/TPD/issues/26) | Implemented; accessibility checks pass; owner approved visuals | Publish reviewed corrections and record release receipt |
 | [#32](https://github.com/sararr25/TPD/issues/32) | Implemented; synthetic persistence/isolation checks pass | Real Google session and second-device/browser persistence |
 | [#3](https://github.com/sararr25/TPD/issues/3) | Parent spec | Final acceptance of #26 and #32 |
 

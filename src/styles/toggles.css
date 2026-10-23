@@ -63,13 +63,27 @@
   border: 1.5px solid var(--line);
   border-radius: var(--radius-control);
   background: var(--paper);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .segmented .toggle {
   border: 0;
   border-radius: 0;
   background: transparent;
+}
+
+.segmented .toggle:first-child {
+  border-radius: calc(var(--radius-control) - 1.5px) 0 0 calc(var(--radius-control) - 1.5px);
+}
+
+.segmented .toggle:last-child {
+  border-radius: 0 calc(var(--radius-control) - 1.5px) calc(var(--radius-control) - 1.5px) 0;
+}
+
+/* Keep keyboard focus above adjacent segments instead of clipping the ring. */
+.segmented .toggle:focus-visible {
+  position: relative;
+  z-index: 1;
 }
 
 .segmented .toggle + .toggle {

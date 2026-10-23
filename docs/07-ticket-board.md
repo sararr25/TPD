@@ -1,4 +1,25 @@
-# TPD — Ticket board
+# Beesyde — Current ticket status
+
+Updated 23 October 2026. **Canonical tracker: GitHub Issues in `sararr25/TPD`, including issue comments.** Current handover: [28](28-handover.md), following [27](27-handover.md). Do not use the historical D/E/I register below as the active backlog.
+
+Verified against GitHub before this continuation:
+
+| Issue | Status | Remaining acceptance |
+|---|---|---|
+| [#26](https://github.com/sararr25/TPD/issues/26) | Implemented; final accessibility corrections in this continuation | Desktop/mobile evidence and owner visual acceptance |
+| [#32](https://github.com/sararr25/TPD/issues/32) | Implemented; synthetic persistence/isolation checks pass | Real Google session and second-device/browser persistence |
+| [#3](https://github.com/sararr25/TPD/issues/3) | Parent spec | Final acceptance of #26 and #32 |
+
+All other child tickets #4–#34 are closed. Old PR #1 is still open and is a separate historical proposal, not a current implementation ticket. Its status is recorded in handover 28; it is not merged or closed by this audit.
+
+Name **Beesyde**, **Neon Auth + Google**, shared **Neon** storage, **Qloo + OpenStreetMap** and the Vercel release are already in place. No new provider activation, naming or auth selection is needed. Details and acceptance boundaries live in the handover, not the old register.
+
+---
+
+## Archived register — 20 October 2026
+
+The following was the original pilot board, retained for provenance. Its “open”, “not deployed” and “to decide” statements are historical snapshots and are superseded by the current GitHub tracker and handovers 14–28.
+
 
 Aggiornato: 20 ottobre 2026. Fonte: DECISIONS.md sezioni 7–8, docs/02 sezione 7 e docs/05. La ricerca GitHub di oggi non ha restituito issue: questo registro rende espliciti i passi già documentati, senza creare issue remote.
 

@@ -50,6 +50,13 @@ a {
   outline-color: var(--sun);
 }
 
+/* These light panels are nested inside dark covers. Their focus ring needs
+   paper contrast rather than inheriting the cover's yellow ring. */
+.h-search :focus-visible,
+.city-switch ul :focus-visible {
+  outline-color: var(--brand);
+}
+
 /* Type */
 p {
   margin: var(--space-3) 0;

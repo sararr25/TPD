@@ -273,7 +273,7 @@
 
 .map-pin[data-active] {
   z-index: 2;
-  background: var(--stamp);
+  background: var(--stamp-ink);
   transform: scale(1.3);
 }
 

@@ -8,6 +8,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Current project entry point
+
+Before continuing tickets, read `README.md` → `docs/28-handover.md` → its linked prior handover, then `GLOSSARY.md` and relevant `docs/adr/`. Verify the GitHub default branch, current issues **and comments**. The release is `claude/blissful-gauss-dymbeo`; old `claude/pensive-lovelace-k81d2t` and the archived D/E/I board are not the current product/backlog. Do not reopen decided naming, Neon/Google auth or provider choices from historical documents.
+
 ## Agent skills
 
 ### Issue tracker

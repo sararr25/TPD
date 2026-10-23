@@ -76,7 +76,7 @@
 }
 
 .place-card[data-active] .place-pin {
-  background: var(--stamp);
+  background: var(--stamp-ink);
 }
 
 /* Body */

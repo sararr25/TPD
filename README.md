@@ -62,11 +62,12 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 ## Project state
 
 - `DECISIONS.md`: product decisions.
-- `docs/28-handover.md`: current continuation and alignment audit, 23 October 2026.
+- `docs/28-handover.md`: current continuation, approved scope and implementation next steps, 24 October 2026.
 - `docs/29-ab-comparison-report.md`: final ticket closure and three-scenario source comparison; no statistical user-test claim.
 - `docs/30-site-evaluation.md`: UI, UX and functionality assessment, with live/source evidence and limits.
 - `docs/31-evaluation-plan.md`: eight-step evaluation protocol and improvement priorities.
 - `docs/32-evaluation-commands.md`: generated ECC planning commands; not executed.
+- `docs/33-approved-scope-and-demo-direction.md`: accepted navigation/Passport improvements, GSAP Home storyboard and Lisbon catalogue pilot.
 - `docs/27-handover.md`: implemented tickets #26–#34 and Change-tag follow-up.
 - `docs/05-design-handover.md`: historical design handover.
 - `docs/07-ticket-board.md`: current tracker pointers and clearly archived legacy board.

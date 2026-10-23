@@ -1,4 +1,132 @@
-# Handover — 23 October 2026: alignment and final acceptance
+# Handover — 24 October 2026: approved implementation next steps
+
+## Current continuation — read this first
+
+The owner approved the six improvement points and then accepted the detailed
+proposal: [approved scope and demo direction](33-approved-scope-and-demo-direction.md).
+The request in this turn is to record the implementation handover, **not to
+start changing the application**. All implementation steps below are pending.
+
+Read: README → this section → [detailed proposal](33-approved-scope-and-demo-direction.md)
+→ [assessment](30-site-evaluation.md), then GLOSSARY and ADR 0001–0004.
+The older sections below remain chronological release evidence. Their earlier
+“remaining acceptance” lists are superseded by their final acceptance receipts.
+
+### Verified starting point — 24 October
+
+- Local branch and GitHub default: `claude/blissful-gauss-dymbeo`.
+- Local/remote source baseline before these documentation changes: `1022c80b445bb8b37ab3dddcdfdea26654431940`.
+- GitHub open issues: zero at this check; prior #3–#34 remain closed. New work
+  must not silently reopen or present those tickets as unfinished.
+- Approved analysis and evaluation documents: docs/30–32. Docs/32 contains
+  generated planning commands, never executed; it is not an implementation log.
+- Current application changes: none. No new schema, bucket, catalogue import,
+  GSAP dependency, build, deployment or user experiment has been performed.
+- Previous `npm test` and typecheck passed during the assessment on `fa7359a`;
+  `1022c80` adds documentation only. This is not fresh implementation validation.
+- Current live deployment SHA was not reverified in this documentation turn.
+
+### Owner decisions and authorization
+
+Already approved: preserve City/Place navigation context; correct active
+navigation; compact mobile covers/titles/actions; identify fallback images;
+study and resolve Passport state issues; verify the resulting experience.
+
+The owner also accepted:
+
+- Home with a more personal editorial composition and a short GSAP/ScrollTrigger
+  presentation: **Your taste → Your city → Your next place**. Keep place cards
+  for exploration, and retain the approved fonts, berry/lemon palette and equal
+  City/Swap entrances. Show a private preview before replacing the public Home.
+- A curated catalogue pilot in **Lisbon**, aiming for **30–50 real places** with
+  varied categories, neighbourhoods and prices where data permits. Extend to the
+  eleven cities after pilot acceptance. These are targets, not collected counts.
+- Metadata in Neon; decide image handling after checking actual project
+  capabilities and provider conditions. No new provider choice is implied.
+
+**Still requires a concrete proposal and approval:** applying production schema
+changes or provisioning storage. Present exact tables/columns/indexes, any
+bucket/access rules, migration scope, quota/cost and update strategy first.
+The catalogue concept's approval does not authorize an unspecified migration,
+public raw-data dump, new service or bulk import of unbounded size.
+Do not ask again about the six approved points or the accepted storyboard/pilot.
+
+### Implementation sequence
+
+| Step | Work and dependencies | Completion criteria | Status |
+|---|---|---|---|
+| 1 | Refresh checkout, live issues/comments and deploy baseline; read installed Next docs relevant to navigation and components | Record SHA, clean/dirty state, source/deploy distinction and existing checks; do not merge obsolete branch | Pending |
+| 2 | Diagnose Passport before choosing the logic change | Deterministic failing repro at UI/API seam using non-personal fixtures; minimise it; rank and probe hypotheses; state confirmed cause or remaining uncertainty | Pending |
+| 3 | Implement approved navigation/reading improvements (package A), independently of catalogue | Category, per-category filters, tab, List/Map and reading position survive Place/return; distinguish browser Back/Forward and internal link; nested route and city Swap nav correct | Pending |
+| 4 | Implement Passport solution from step 2 (package B) | Shared states across Passport/City/Place/Home; profile with fewer than 3 favourites explained; account loading does not incorrectly start quiz; partial saves recover without losing choices; example preview isolated from personal profile | Pending |
+| 5 | Build private Home preview (package C), using the state contract from step 4 | Three short scenes, immediate City/Swap access, skip link, responsive and reduced-motion/static version, cleanup on navigation; authentic images and declared examples | Pending |
+| 6 | Prepare Lisbon catalogue pilot (package D): inspect existing private cache projections and coverage, define deduplication/photo-quality rules and proposed schema | Pilot inventory and coverage/quality report; explain gaps and required requests; exact migration/storage proposal ready for approval before writes | Pending |
+| 7 | After specific database/storage approval, apply only the approved scope; complete pilot, then extend when accepted | Verified count and provenance, no duplicates/off-category fillers; photo fallback explicit; personal taste ranking preserved; no silent frozen-result substitution | Pending — production writes require approval |
+| 8 | Integrated verification and release of the reviewed work | Tests, typecheck, build, diff checks, browser evidence and release receipt; production SHA/READY/alias verified after publication; real-device/Google limits explicit | Pending |
+
+Steps 3 and the private Home composition can progress while diagnosis/pilot
+research runs; do not expose an unproven Passport state or unapproved catalogue
+as a finished public feature. The animation must not wait for live provider
+responses before allowing the person to use the product.
+
+### Passport reproduction and acceptance matrix
+
+Exercise: new guest; quiz present with 0 favourites; 1–2 favourites; 3–5
+favourites; account load delayed; account load fails; failure between the two
+quiz/account saves; account switch; expired selections; example opened over an
+existing personal Passport. Use fixture data or an explicitly scoped test account.
+
+Expected states: loading, new, profile needing favourites, ready, saving/partially
+saved, and declared example. Stamps represent activity, not readiness. Do not
+recover missing favourites by guessing them or overwriting the owner's account.
+
+Source findings are in docs/33: quiz, favourites and stamps are separate resources;
+`finishQuiz` uses sequential writes. These are investigation leads, **not a
+confirmed diagnosis of data loss**. Follow `diagnosing-bugs`: repro before fix,
+regression at the correct seam, original scenario checked after the fix.
+
+### Files and skills to start from
+
+- Navigation/context: `src/components/city-view.tsx`, `place-view.tsx`,
+  `place-card.tsx`, `main-nav.tsx`, `tab-bar.tsx`, `use-city.ts`, `src/app/swap/page.tsx`.
+- Mobile/images: `src/styles/city.css`, `place.css`, `place-card.css`,
+  `src/lib/city-covers.ts`, `src/components/collections-view.tsx`.
+- Passport: `passport-builder.tsx`, `quiz-panel.tsx`, `quiz-flow.tsx`,
+  `src/lib/quiz-finish.ts`, `account.ts`, `src/lib/server/user-passport.ts`,
+  `user-quiz.ts`, corresponding API routes and existing check scripts.
+- Home: `src/app/page.tsx`, `src/components/home-example.tsx`,
+  `home-swap-demo.tsx`, `src/styles/home.css` and approved design tokens.
+- Catalogue: `src/lib/server/store.ts` (`provider_cache` remains temporary),
+  `qloo.ts`, `discovery-service.ts`, `photo-check.ts`, coverage scripts and docs/18.
+- Skills: `diagnosing-bugs` for Passport; `gsap-core`, `gsap-scrolltrigger`,
+  `gsap-react`, `gsap-performance` for Home; `code-review` before publication.
+- Before writing Next.js code, read the relevant installed guides under
+  `node_modules/next/dist/docs/`; do not assume older router conventions.
+
+### Verification and delivery boundaries
+
+- Browser matrix: 320/390/768/1440 px; no horizontal clipping; long names,
+  missing/broken photos and missing coordinates included. Compare desktop and
+  mobile before/after, preserving approved brand and content.
+- Keyboard: active navigation, tabs, dialogs, focus after transitions and
+  return-to-list. Reduced motion and readable static Home required.
+- Functional: filters and map agree; Change remains exclusion, Keep preference;
+  guest/account state and partial errors are explicit; sharing excludes notes.
+- Run focused regressions first, then `npm test`, `npm run typecheck`,
+  `npm run build` and `git diff --check`. A local build does not prove production.
+- Provider checks consume quota: use a bounded pilot/request budget, no automatic
+  retry loops or unbounded all-city harvest. Never publish raw Qloo responses.
+- Keep screenshots/mockups private. Commit implementation and documentation
+  together; push finished verified work to the release branch according to
+  project convention, then verify any deployment before claiming it live.
+- Update this table and docs/33 as work progresses, with evidence and unresolved
+  acceptance. Mark real phone, genuine Google sessions and cross-device tests
+  separately from synthetic or browser-emulated checks.
+
+---
+
+# Previous release receipt — 23 October 2026
+
 
 Continues [handover 27](27-handover.md). Start here, not from the archived
 D/E/I board or handover 05. Current product: **Beesyde**.

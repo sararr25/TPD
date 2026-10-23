@@ -124,3 +124,31 @@ limit. The primary agent then reviewed the small CSS/documentation diff
 against the verified `2f215a3` baseline: no remaining actionable Standards
 finding; Spec remains partial only for genuine authenticated #32 acceptance.
 This manual pass is not represented as a completed second independent review.
+
+## Follow-up — Google browser error and genuine account check
+
+The owner reported Google saying the browser/app was not secure and “try
+again” in the automated test browser. That tab was closed, so the exact
+Google failure could not be replayed. The app's session endpoint returned
+HTTP 200 with no session in that browser; this alone does not prove the
+whole sign-in works.
+
+The owner's normal Chrome profile was then inspected through the supported
+browser extension. Beesyde was already genuinely signed in. On the live
+production app, opening a guide and saving a place increased account stamps
+from one to three. Navigating to Passport and a complete reload both showed
+all three, with account-loaded status. No cookie or token was copied, no
+session/account was fabricated, and Google security was not weakened.
+
+This verifies actual signed-in guide/saved-place persistence in one browser.
+It is consistent with Google's documented rejection of automated or embedded
+browsers, rather than evidence that Beesyde's OAuth is broken:
+https://support.google.com/accounts/answer/7675428
+
+The remaining #32 step is the same account in an independent normal browser
+or phone. The owner was asked to check the existing three stamps there,
+then visit a different guide so the first browser can confirm sync back.
+No cross-device success is claimed before that result. A full-page private
+actual-account screenshot is stored as
+`.private/qa/2026-10-23-final-acceptance/signed-in-stamps.png`; it contains
+private profile/activity and must not be attached to a public issue/PR.

@@ -7,7 +7,7 @@ Verified against GitHub before this continuation:
 | Issue | Status | Remaining acceptance |
 |---|---|---|
 | [#26](https://github.com/sararr25/TPD/issues/26) | Closed; owner approved visuals; verified corrections released | Complete, receipt in handover 28 |
-| [#32](https://github.com/sararr25/TPD/issues/32) | Implemented; synthetic persistence/isolation checks pass | Real Google session and second-device/browser persistence |
+| [#32](https://github.com/sararr25/TPD/issues/32) | Implemented; genuine signed-in persistence after reload verified | Same account in independent browser/device, then return sync |
 | [#3](https://github.com/sararr25/TPD/issues/3) | Parent spec | Final acceptance of #26 and #32 |
 
 All child tickets #4–#34 except #32 are now closed. Old PR #1 is still open and is a separate historical proposal, not a current implementation ticket. Its status is recorded in handover 28; it is not merged or closed by this audit.

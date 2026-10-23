@@ -63,6 +63,7 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 
 - `DECISIONS.md`: product decisions.
 - `docs/28-handover.md`: current continuation and alignment audit, 23 October 2026.
+- `docs/29-ab-comparison-report.md`: final ticket closure and three-scenario source comparison; no statistical user-test claim.
 - `docs/27-handover.md`: implemented tickets #26–#34 and Change-tag follow-up.
 - `docs/05-design-handover.md`: historical design handover.
 - `docs/07-ticket-board.md`: current tracker pointers and clearly archived legacy board.

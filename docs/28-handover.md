@@ -152,3 +152,23 @@ No cross-device success is claimed before that result. A full-page private
 actual-account screenshot is stored as
 `.private/qa/2026-10-23-final-acceptance/signed-in-stamps.png`; it contains
 private profile/activity and must not be attached to a public issue/PR.
+
+## Final acceptance — independent device and Paris
+
+The owner confirmed the three existing stamps were visible in the same
+account on the other device/browser. The owner then requested agent control
+to perform the Paris step. In normal Chrome on production, opening Paris
+added a fourth stamp. Passport still showed all four after a full reload
+and after “Loaded your Passport from your account.” appeared.
+
+This satisfies #32's guide/save visibility and guest/account persistence
+criteria, with independent-device visibility confirmed by the owner.
+Creation from the second device and reverse-direction sync were not tested;
+they are not claimed. No further owner action is required for this ticket.
+Private screenshot: `.private/qa/2026-10-23-final-acceptance/paris-four-stamps.png`.
+
+GitHub #32 and parent #3 were closed as completed. All child tickets #4–#34
+are closed; historical PR #1 remains open separately. The preceding
+“remaining” sections are chronological receipts, superseded by this result.
+The final source comparison and its limits are in
+[the concise report](29-ab-comparison-report.md).

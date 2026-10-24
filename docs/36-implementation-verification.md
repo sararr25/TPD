@@ -103,3 +103,19 @@ acceptance. Step 8 local verification complete; release receipt added after depl
 
 References: [GSAP React](https://gsap.com/resources/React/),
 [ScrollTrigger](https://gsap.com/docs/v3/Plugins/ScrollTrigger/).
+
+## Local production receipt and publication blocker
+
+Implementation commit: `ee06305` (`fix: preserve city context and recover Passport saves`).
+Full test suite, typecheck, production build and 20 browser checks passed. A local
+production server additionally returned 200 for `/`, `/lisbon`, `/passport` and
+404 for `/preview/home`, `/preview/checks`, confirming the preview gates at runtime.
+
+The attempted push to `https://github.com/sararr25/TPD.git`, branch
+`claude/blissful-gauss-dymbeo`, was rejected by automatic approval review because
+it requires explicit authorization for exporting this repository payload to that
+remote. No workaround was attempted and no new deployment was triggered.
+The verified public deployment remains the baseline `55d757b` receipt above.
+Next action: obtain explicit push authorization, then verify remote commit,
+Vercel READY state, alias and public HTTP responses. The Home review and catalogue
+production-schema approval remain separate pending decisions.

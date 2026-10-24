@@ -1,8 +1,9 @@
 "use client";
+import { useCityContext, useCityPosition } from "./use-city-context";
+import { usePassportState, PassportPrompt } from "./passport-state";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  LIVE_PASSPORT_KEY,
   CITIES,
   EXPLORE_TAGS,
   citySlug,
@@ -11,11 +12,9 @@ import {
   type Entity,
   type ExploreCategory,
 } from "@/lib/discovery";
-import { discovery, readSelections, MESSAGES, type Selection } from "@/lib/discovery-client";
+import { discovery, MESSAGES, type Selection } from "@/lib/discovery-client";
 import { authClient } from "@/lib/auth/client";
-import { readStoredQuiz } from "@/lib/quiz";
 import {
-  loadAccountPassport,
   loadHidden,
   hidePlace,
   unhidePlace,
@@ -24,7 +23,6 @@ import {
 import { useSavedLists } from "./save-button";
 import { useFeedback } from "./use-feedback";
 import { OpenQuizButton } from "./quiz-panel";
-import { usePassportVersion } from "./use-passport-version";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
 import { PlaceCard } from "./place-card";
@@ -59,38 +57,40 @@ const CATEGORY_NOUN: Record<ExploreCategory, string> = {
 // a Passport, as a card grid beside a map. A Passport only re-ranks them.
 export function CityView({ city }: { city: string }) {
   const toast = useToast();
+  const context = useCityContext();
+  const passportState = usePassportState();
+  const [hiddenOwner, setHiddenOwner] = useState<string | null>(null);
+  const { category, prices, areas, tab, view: mobileView } = context;
+  const setCategory = (value: ExploreCategory) => context.update({ category: value });
+  const setMobileView = (view: "list" | "map") => context.update({ view });
+  const setPrices = (fn: (p: Partial<Record<ExploreCategory, string>>) => Partial<Record<ExploreCategory, string>>) => context.update(Object.fromEntries(Object.entries(fn(prices)).map(([k,v]) => [`price-${k}`, v || ""])));
+  const setAreas = (fn: (p: Partial<Record<ExploreCategory, string>>) => Partial<Record<ExploreCategory, string>>) => context.update(Object.fromEntries(Object.entries(fn(areas)).map(([k,v]) => [`area-${k}`, v || ""])));
+
   const [passport, setPassport] = useState<Selection[]>([]),
     [ready, setReady] = useState(false),
     [, rememberCity] = useCity(),
-    [category, setCategory] = useState<ExploreCategory>("restaurant"),
     [data, setData] = useState<Payload | null>(null),
     [busy, setBusy] = useState(false),
     [status, setStatus] = useState(""),
     [hidden, setHidden] = useState<Hidden[]>([]),
     [active, setActive] = useState<string | null>(null),
-    [mobileView, setMobileView] = useState<"list" | "map">("list"),
     [mobile, setMobile] = useState(false),
     [brokenCover, setBrokenCover] = useState<string | null>(null),
-    [prices, setPrices] = useState<Partial<Record<ExploreCategory, string>>>({}),
-    [areas, setAreas] = useState<Partial<Record<ExploreCategory, string>>>({}),
     [neighbourhoods, setNeighbourhoods] = useState<Entity[]>([]),
     [areasBusy, setAreasBusy] = useState(false),
     [areasError, setAreasError] = useState(""),
     [areasAttempt, setAreasAttempt] = useState(0),
     // "For you" or "Swap" tab, mirrored in the URL as ?tab=swap. Swap mounts
     // on first open and then stays mounted (hidden) so its progress survives.
-    [tab, setTab] = useState<"foryou" | "swap">("foryou"),
     [swapOpened, setSwapOpened] = useState(false);
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
   const showError = (m: string) => toast(m, { error: true });
   const { current: feedback, vote, unvote, voted } = useFeedback(!isPending, userId, showError);
   const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
-  const passportVersion = usePassportVersion();
-  const personal = passport.length >= 3;
+  const personal = passportState.state === "ready";
   useEffect(() => {
     const controller = new AbortController();
-    setAreas({});
     setNeighbourhoods([]);
     setAreasBusy(true);
     setAreasError("");
@@ -109,59 +109,25 @@ export function CityView({ city }: { city: string }) {
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
   }, []);
-  // Read the tab from the URL on load and on Back/Forward.
-  useEffect(() => {
-    const sync = () => {
-      const next = new URLSearchParams(window.location.search).get("tab") === "swap" ? "swap" : "foryou";
-      setTab(next);
-      if (next === "swap") setSwapOpened(true);
-    };
-    sync();
-    window.addEventListener("popstate", sync);
-    return () => window.removeEventListener("popstate", sync);
-  }, []);
-  function chooseTab(next: "foryou" | "swap") {
-    if (next === tab) return;
-    const url = new URL(window.location.href);
-    if (next === "swap") url.searchParams.set("tab", "swap");
-    else url.searchParams.delete("tab");
-    window.history.pushState(null, "", url);
-    setTab(next);
-    if (next === "swap") setSwapOpened(true);
-  }
+  useEffect(() => { if (tab === "swap") setSwapOpened(true); }, [tab]);
+  function chooseTab(next: "foryou" | "swap") { context.update({ tab: next === "swap" ? "swap" : "" }); }
+  useCityPosition(!!data && !busy, context.query);
   // Swap opens on the city you last looked at (docs/22 F11).
   useEffect(() => rememberCity(city), [city]);
-  // Same Passport source as Swap: the account copy when signed in.
+  useEffect(() => { setData(null); setStatus(""); }, [userId]);
+  useEffect(() => {
+    setPassport(passportState.selections);
+    setReady(passportState.loaded && !passportState.error && !["saving", "partial", "expired"].includes(passportState.state));
+  }, [passportState.selections, passportState.loaded, passportState.error, passportState.state]);
   useEffect(() => {
     if (isPending) return;
-    try {
-      setPassport(readSelections(localStorage.getItem(LIVE_PASSPORT_KEY)));
-    } catch {
-      setStatus("Your browser Passport could not be read. Reopen the Passport and choose your favourites.");
-    }
     let active = true;
-    const loads: Promise<unknown>[] = [
-      loadHidden(!!userId).then((list) => active && setHidden(list)),
-    ];
-    if (userId)
-      loads.push(
-        loadAccountPassport().then((account) => {
-          if (!active || !account) return;
-          setPassport(account);
-          try {
-            localStorage.setItem(LIVE_PASSPORT_KEY, JSON.stringify(account));
-          } catch {}
-        }),
-      );
-    Promise.all(loads)
-      .catch((e) => active && setStatus((e as Error).message))
-      .finally(() => active && setReady(true));
-    return () => {
-      active = false;
-    };
-  }, [isPending, userId, passportVersion]);
+    setHiddenOwner(null); setHidden([]);
+    loadHidden(!!userId).then(list => { if (active) { setHidden(list); setHiddenOwner(userId || "guest"); } }).catch(e => active && setStatus(e.message));
+    return () => { active = false; };
+  }, [userId, isPending]);
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || hiddenOwner !== (userId || "guest")) return;
     const controller = new AbortController();
     let active = true;
     setBusy(true);
@@ -174,7 +140,7 @@ export function CityView({ city }: { city: string }) {
         category,
         // Without a Passport (fewer than 3 picks) Qloo's popular picks show.
         passport: personal ? passport.map((s) => s.token) : [],
-        quiz: readStoredQuiz(),
+        quiz: passportState.quiz,
         exclude: hidden.map((h) => h.id),
         feedback: feedbackSignal(feedback.current),
       },
@@ -198,7 +164,7 @@ export function CityView({ city }: { city: string }) {
       controller.abort();
     };
     // Hidden places are sent with the next search, not re-run on every hide.
-  }, [ready, passport, city, category]);
+  }, [ready, passport, city, category, hiddenOwner, userId]);
   // Saving a place is also "more like this" (docs/24: ♡ replaces 👍).
   function saved(place: Entity) {
     if (category === "neighbourhood" || voted(place.id) === 1) return;
@@ -351,13 +317,13 @@ export function CityView({ city }: { city: string }) {
           {!areasError && !areasBusy && !neighbourhoods.length && <p className="muted">No neighbourhood centres are listed for this city yet.</p>}
         </div>
       )}
-      {ready && !personal && (
+      {!personal && (
         <div className="city-banner">
           <div>
             <h2>Let’s find your side of {city}.</h2>
-            <p>Your Taste Passport tells us what you love. Take the 3-minute quiz and we’ll shape these picks around you.</p>
+            <p>Your favourites help us shape these picks around you.</p>
           </div>
-          <OpenQuizButton />
+          <PassportPrompt />
         </div>
       )}
       {category === "museum" && museums !== "ok" && (

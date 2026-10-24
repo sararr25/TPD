@@ -1,6 +1,18 @@
 # Handover — 24 October 2026: approved implementation next steps
 
-## Current continuation — read this first
+## Implementation update — 24 October 2026
+
+The owner subsequently authorized implementation and iterative testing. The
+previous documentation-only instruction below is historical and superseded.
+Read [implementation and verification](36-implementation-verification.md),
+[planning command routing](34-implementation-routing.md), and the
+[Lisbon inventory / exact schema proposal](35-lisbon-catalogue-proposal.md).
+Navigation, shared Passport recovery, responsive fixes and a development-only
+Home preview are implemented. Public Home replacement and catalogue production
+writes remain subject to their existing concrete review/approval boundaries.
+No production schema or storage provision has been applied.
+
+## Prior planning handover — read with the implementation update above
 
 The owner approved the six improvement points and then accepted the detailed
 proposal: [approved scope and demo direction](33-approved-scope-and-demo-direction.md).

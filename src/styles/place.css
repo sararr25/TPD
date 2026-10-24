@@ -105,3 +105,12 @@
     grid-row: 3;
   }
 }
+
+.place-hero, .place-photo { position: relative; }
+.photo-caption { position: absolute; bottom: 8px; left: 8px; right: 8px; width: fit-content; max-width: calc(100% - 16px); padding: 4px 8px; background: var(--paper); color: var(--ink); border-radius: 6px; font: 12px var(--font-body); pointer-events: none; }
+@media (max-width: 600px) {
+  .place-main { padding: 16px; }
+  .place-main h1 { font-size: clamp(28px, 8vw, 38px); text-wrap: pretty; }
+  .place-page-actions { margin-top: 0; padding-top: 12px; }
+  .place-hero { max-height: 180px; aspect-ratio: 2 / 1; }
+}

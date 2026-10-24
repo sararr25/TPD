@@ -82,3 +82,12 @@ export function readSelections(raw: string | null): Selection[] {
     return [];
   }
 }
+
+// UX hint only: server signature verification remains authoritative.
+export function selectionExpired(s: Selection, now = Date.now()): boolean {
+  try {
+    const body = s.token.split(".")[0].replace(/-/g, "+").replace(/_/g, "/");
+    const expires = JSON.parse(atob(body)).expires;
+    return typeof expires === "number" && expires < now;
+  } catch { return false; }
+}

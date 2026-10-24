@@ -247,3 +247,7 @@ footer p {
     padding-bottom: calc(56px + var(--space-8) + env(safe-area-inset-bottom));
   }
 }
+
+/* Keep every footer destination reachable on narrow phones. */
+.foot-top nav { flex-wrap: wrap; }
+.foot-top nav { flex: 0 1 auto; max-width: 100%; }

@@ -26,6 +26,9 @@ export async function accountRoute(
     const { data: session } = await auth.getSession();
     if (!session?.user?.id)
       return Response.json({ error: "signed_out" }, { status: 401, headers });
+    const intendedOwner = request.headers.get("x-beesyde-user");
+    if (intendedOwner && intendedOwner !== session.user.id)
+      return Response.json({ error: "signed_out" }, { status: 401, headers });
     const result = await run(session.user.id);
     return result instanceof Response ? result : Response.json(result, { headers });
   } catch (error) {

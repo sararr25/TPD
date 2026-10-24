@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LearnedFromYou } from "./learned-from-you";
 import { PassportProfile } from "./passport-profile";
@@ -7,39 +7,48 @@ import { PassportStamps } from "./passport-stamps";
 import { SharePassport } from "./share-passport";
 import { QuizFlow } from "./quiz-flow";
 import { EmptyState, LoadingCards } from "./empty-state";
-import { finishQuiz } from "@/lib/quiz-finish";
-import { QUIZ_KEY, parseQuiz, buildProfile, type Answers } from "@/lib/quiz";
+import { usePassportState, PassportPrompt } from "./passport-state";
+import {
+  PASSPORT_CHANGED,
+  finishQuiz,
+  stagePassport,
+  retryPassportSave,
+} from "@/lib/quiz-finish";
+import { buildProfile, type Answers } from "@/lib/quiz";
 import { type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
-import {
-  discovery,
-  readSelections,
-  type Selection,
-} from "@/lib/discovery-client";
+import { discovery, type Selection } from "@/lib/discovery-client";
 import { authClient } from "@/lib/auth/client";
-import {
-  loadAccountPassport,
-  saveAccountPassport,
-  loadAccountQuiz,
-  saveAccountQuiz,
-  loadFeedback,
-} from "@/lib/account";
+import { loadFeedback } from "@/lib/account";
 export function PassportBuilder() {
   const [selected, setSelected] = useState<Selection[]>([]),
     [matches, setMatches] = useState<Selection[]>([]),
-    [searchState, setSearchState] = useState<"idle" | "loading" | "done" | "empty" | "error">("idle"),
+    [searchState, setSearchState] = useState<
+      "idle" | "loading" | "done" | "empty" | "error"
+    >("idle"),
     [query, setQuery] = useState(""),
     [type, setType] = useState("artist"),
-    [busy, setBusy] = useState(false),
+    [localBusy, setBusy] = useState(false),
     [status, setStatus] = useState(""),
     [ready, setReady] = useState(false),
     [showGuest, setShowGuest] = useState(false),
-    [guestProfile,setGuestProfile]=useState(0),
+    [guestProfile, setGuestProfile] = useState(0),
     [quizOpen, setQuizOpen] = useState(false),
     [profile, setProfile] = useState<Answers>({}),
     [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] });
+  const passportState = usePassportState();
+  const busy = localBusy || passportState.state === "saving";
+  const [example, setExample] = useState<Selection[]>([]);
+  const [examplePicks, setExamplePicks] = useState<
+    { place: import("@/lib/discovery").Entity }[] | null
+  >(null);
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
+  useEffect(() => {
+    setQuizOpen(false);
+    setExample([]);
+    setStatus("");
+  }, [userId]);
   // Strong signals learned from "Yes" / "Not for me" votes (D3).
   useEffect(() => {
     if (!ready) return;
@@ -51,72 +60,19 @@ export function PassportBuilder() {
       active = false;
     };
   }, [ready, userId]);
-  // Account writes run one after another so the last edit is the one kept.
-  const writes = useRef<Promise<unknown>>(Promise.resolve());
   useEffect(() => {
-    try {
-      const local = readSelections(localStorage.getItem(LIVE_PASSPORT_KEY));
-      setSelected(local);
-      setProfile(parseQuiz(localStorage.getItem(QUIZ_KEY)));
-      // No Passport yet: the quiz is the way in.
-      setQuizOpen(!local.length);
-    } catch {
-      setStatus(
-        "Browser storage is unavailable. Keep this page open to retain your choices.",
-      );
-    }
     setShowGuest(new URLSearchParams(location.search).has("guest"));
-    setReady(true);
   }, []);
-  // Signed in: the account copy wins; an empty account adopts this browser's Passport.
   useEffect(() => {
-    if (!ready || !userId) return;
-    let active = true;
-    setBusy(true);
-    setStatus("Loading your Passport from your account…");
-    (async () => {
-      // Quiz answers: the account copy wins; an empty account adopts this browser's.
-      const accountQuiz = await loadAccountQuiz();
-      if (!active) return;
-      if (accountQuiz) {
-        setProfile(accountQuiz);
-        try {
-          localStorage.setItem(QUIZ_KEY, JSON.stringify(accountQuiz));
-        } catch {}
-      } else {
-        let localQuiz: Answers = {};
-        try {
-          localQuiz = parseQuiz(localStorage.getItem(QUIZ_KEY));
-        } catch {}
-        if (Object.keys(localQuiz).length) await saveAccountQuiz(localQuiz);
-        if (!active) return;
-      }
-      const account = await loadAccountPassport();
-      if (!active) return;
-      if (account) {
-        setSelected(account);
-        storeLocally(account);
-        setQuizOpen(false);
-        setStatus("Loaded your Passport from your account.");
-        return;
-      }
-      let local: Selection[] = [];
-      try {
-        local = readSelections(localStorage.getItem(LIVE_PASSPORT_KEY));
-      } catch {}
-      if (!local.length) return setStatus("");
-      await saveAccountPassport(local);
-      if (active) setStatus("This browser's Passport is now saved to your account.");
-    })()
-      .catch((e) => active && setStatus((e as Error).message))
-      .finally(() => active && setBusy(false));
-    return () => {
-      active = false;
-    };
-  }, [ready, userId]);
+    setReady(passportState.loaded);
+    setSelected(passportState.selections);
+    setProfile(passportState.quiz);
+  }, [passportState.loaded, passportState.selections, passportState.quiz]);
   function storeLocally(next: Selection[]) {
     try {
       localStorage.setItem(LIVE_PASSPORT_KEY, JSON.stringify(next));
+      if (userId) localStorage.setItem("beesyde-passport-owner", userId);
+      else localStorage.removeItem("beesyde-passport-owner");
       return true;
     } catch {
       return false;
@@ -131,19 +87,31 @@ export function PassportBuilder() {
           ? "Saved on this browser."
           : "Browser storage could not save these choices. Keep this page open.",
       );
+      window.dispatchEvent(new Event(PASSPORT_CHANGED));
       return;
     }
+    setBusy(true);
     setStatus("Saving to your account…");
-    writes.current = writes.current
-      .then(() => saveAccountPassport(next))
+    try {
+      stagePassport(userId, next, profile);
+    } catch {
+      setStatus(
+        "Browser storage could not keep your pending choices. Try again.",
+      );
+      setBusy(false);
+      return;
+    }
+    void retryPassportSave(userId)
       .then(() => setStatus("Saved to your account."))
-      .catch((e) => setStatus((e as Error).message));
+      .catch((e) => setStatus((e as Error).message))
+      .finally(() => setBusy(false));
   }
+
   async function onQuizFinish(answers: Answers, cards: string[]) {
     setBusy(true);
     setStatus("Building your Passport…");
     try {
-      const choices = await finishQuiz(answers, cards, !!userId);
+      const choices = await finishQuiz(answers, cards, userId || false);
       setSelected(choices);
       setProfile(answers);
       setStatus(userId ? "Saved to your account." : "Saved on this browser.");
@@ -189,9 +157,11 @@ export function PassportBuilder() {
     try {
       const data = await discovery<{ choices: Selection[] }>({
         action: "guest",
-        profile:guestProfile,
+        profile: guestProfile,
       });
-      save(data.choices);
+      setExample(data.choices);
+      setExamplePicks(null);
+      setStatus("Example preview only. Your Passport is unchanged.");
       setMatches([]);
     } catch (e) {
       setStatus((e as Error).message);
@@ -210,28 +180,46 @@ export function PassportBuilder() {
     }
     save([...selected, s]);
   }
-  if (!ready) return <LoadingCards label="Loading your Passport…" count={2} />;
+  if (passportState.state === "error")
+    return (
+      <EmptyState
+        title="Your Passport couldn’t load"
+        action={
+          <button className="btn btn-primary" onClick={passportState.retry}>
+            Try again
+          </button>
+        }
+      >
+        <p>{passportState.error}</p>
+      </EmptyState>
+    );
+  if (!ready || passportState.state === "loading")
+    return <LoadingCards label="Loading your Passport…" count={2} />;
   if (quizOpen)
     return (
       <>
-      <div className="grid">
-        <div>
-          <QuizFlow
-            busy={busy}
-            onFinish={onQuizFinish}
-            onCancel={selected.length ? () => setQuizOpen(false) : undefined}
-          />
-          <p role="status" aria-live="polite">
-            {status}
-          </p>
-          {!selected.length && (
-            <button className="btn btn-quiet" disabled={busy} onClick={() => setQuizOpen(false)}>
-              I&apos;d rather search for my favourites
-            </button>
-          )}
+        <div className="grid">
+          <div>
+            <QuizFlow
+              busy={busy}
+              onFinish={onQuizFinish}
+              onCancel={selected.length ? () => setQuizOpen(false) : undefined}
+            />
+            <p role="status" aria-live="polite">
+              {status}
+            </p>
+            {!selected.length && (
+              <button
+                className="btn btn-quiet"
+                disabled={busy}
+                onClick={() => setQuizOpen(false)}
+              >
+                I&apos;d rather search for my favourites
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-      <PassportStamps />
+        <PassportStamps />
       </>
     );
   const traveller = buildProfile(profile);
@@ -239,28 +227,119 @@ export function PassportBuilder() {
     <>
       <div className="grid passport-spread">
         <section className="passport-editor">
+          {(passportState.state === "saving" ||
+            passportState.state === "partial" ||
+            passportState.state === "expired") && <PassportPrompt />}
           <div className="page-head">
             <h1>Your Taste Passport</h1>
-            <p className="lead">What you love, so we can pick places for you. Add 3–5 favourite artists, films, books or places.</p>
+            <p className="lead">
+              What you love, so we can pick places for you. Add 3–5 favourite
+              artists, films, books or places.
+            </p>
           </div>
-          <button className="btn btn-secondary" disabled={busy || !ready} onClick={() => {
+          <button
+            className="btn btn-secondary"
+            disabled={busy || !ready}
+            onClick={() => {
               setStatus("");
               setQuizOpen(true);
-            }}>
+            }}
+          >
             {traveller ? "Redo the quiz" : "Make your Passport"}
           </button>
           {showGuest && (
             <div className="paper">
               <h3>Try an example Passport</h3>
-              <label htmlFor="guest-profile">Choose a starting point</label><select id="guest-profile" disabled={busy} value={guestProfile} onChange={e=>setGuestProfile(Number(e.target.value))}><option value={0}>Music & cinema</option><option value={1}>Music first</option></select><p>{guestProfile===0?"Khruangbin · Nina Simone · Before Sunrise (1995)":"Khruangbin · Nina Simone · Patti Smith"}</p>
+              <label htmlFor="guest-profile">Choose a starting point</label>
+              <select
+                id="guest-profile"
+                disabled={busy}
+                value={guestProfile}
+                onChange={(e) => setGuestProfile(Number(e.target.value))}
+              >
+                <option value={0}>Music & cinema</option>
+                <option value={1}>Music first</option>
+              </select>
+              <p>
+                {guestProfile === 0
+                  ? "Khruangbin · Nina Simone · Before Sunrise (1995)"
+                  : "Khruangbin · Nina Simone · Patti Smith"}
+              </p>
               <button
                 disabled={busy || !ready}
                 className="btn btn-secondary"
                 onClick={useGuest}
               >
-                Use this example
+                Preview this example
               </button>
             </div>
+          )}
+          {example.length > 0 && (
+            <section className="paper" aria-label="Example preview">
+              <h3>Example · not your Passport</h3>
+              <p>{example.map((s) => s.entity.name).join(" · ")}</p>
+              <button
+                className="btn btn-secondary"
+                disabled={busy}
+                onClick={() => {
+                  save(example);
+                  setExample([]);
+                }}
+              >
+                Replace my favourites with this example
+              </button>
+              <button
+                className="btn btn-secondary"
+                disabled={busy}
+                onClick={async () => {
+                  setBusy(true);
+                  try {
+                    const result = await discovery<{
+                      results: { place: import("@/lib/discovery").Entity }[];
+                    }>({
+                      action: "explore",
+                      city: "Lisbon",
+                      category: "restaurant",
+                      passport: example.map((s) => s.token),
+                      quiz: {},
+                      exclude: [],
+                      feedback: {},
+                    });
+                    setExamplePicks(result.results);
+                  } catch (e) {
+                    setStatus((e as Error).message);
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+              >
+                See example picks in Lisbon
+              </button>
+              <button className="btn btn-quiet" onClick={() => setExample([])}>
+                Close preview
+              </button>
+              {examplePicks && (
+                <ul>
+                  {examplePicks.length ? (
+                    examplePicks.map(({ place }) => (
+                      <li key={place.id}>
+                        <Link href={`/lisbon/${place.id.toLowerCase()}`}>
+                          {place.name}
+                        </Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li>No picks for this example today.</li>
+                  )}
+                </ul>
+              )}
+            </section>
+          )}
+          {passportState.state === "needs-favourites" && (
+            <p role="status">
+              Your profile is here. Choose {3 - selected.length} more favourites
+              to get personal picks. You don’t need to redo the quiz.
+            </p>
           )}
           <form onSubmit={search} className="search-form">
             <label htmlFor="kind">What kind of favourite?</label>
@@ -293,25 +372,51 @@ export function PassportBuilder() {
               }}
               placeholder="An artist, a film, a book…"
             />
-            <button className="btn btn-secondary" disabled={busy || !ready} type="submit">
+            <button
+              className="btn btn-secondary"
+              disabled={busy || !ready}
+              type="submit"
+            >
               Search
             </button>
           </form>
           <p role="status" aria-live="polite">
             {status}
           </p>
-          {searchState === "loading" && <LoadingCards label="Looking for your favourite…" count={1} />}
+          {searchState === "loading" && (
+            <LoadingCards label="Looking for your favourite…" count={1} />
+          )}
           {searchState === "empty" && (
-            <EmptyState title="No match for that name" action={
-              <button className="btn btn-secondary" onClick={() => document.getElementById("favourite")?.focus()}>Try another name</button>
-            }>
-              <p>Try the full title or a different favourite. Your choices so far are still here.</p>
+            <EmptyState
+              title="No match for that name"
+              action={
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => document.getElementById("favourite")?.focus()}
+                >
+                  Try another name
+                </button>
+              }
+            >
+              <p>
+                Try the full title or a different favourite. Your choices so far
+                are still here.
+              </p>
             </EmptyState>
           )}
           {searchState === "error" && (
-            <EmptyState title="This search couldn’t load" action={
-              <button className="btn btn-secondary" disabled={busy} onClick={() => void runSearch()}>Try again</button>
-            }>
+            <EmptyState
+              title="This search couldn’t load"
+              action={
+                <button
+                  className="btn btn-secondary"
+                  disabled={busy}
+                  onClick={() => void runSearch()}
+                >
+                  Try again
+                </button>
+              }
+            >
               <p>{status}</p>
             </EmptyState>
           )}
@@ -353,11 +458,9 @@ export function PassportBuilder() {
               </button>
             ))}
           </div>
-          <p className="meta">
-            {selected.length} of 5 chosen
-          </p>
+          <p className="meta">{selected.length} of 5 chosen</p>
           <div className="actions">
-            {ready && selected.length >= 3 ? (
+            {ready && passportState.state === "ready" ? (
               <Link className="btn btn-primary" href="/explore">
                 Browse cities
               </Link>
@@ -369,7 +472,7 @@ export function PassportBuilder() {
           </div>
           <p className="muted">
             {userId
-              ? "Saved to your account and this browser."
+              ? "Account save status is shown above."
               : "Saved on this browser. No account needed; sign in to keep it across devices."}{" "}
           </p>
           {feedback.votes.length > 0 && (
@@ -393,34 +496,45 @@ export function PassportBuilder() {
             />
             <SharePassport answers={profile} />
           </div>
+        ) : selected.length > 0 ? (
+          <div className="paper">
+            <h3>Your picks so far</h3>
+            <ul className="entity-list">
+              {selected.map((s) => (
+                <li key={s.entity.id}>
+                  <div>
+                    <strong>{s.entity.name}</strong>
+                    {/* Qloo repeats the name as context for artists; show it only when it adds something (a film's year). */}
+                    {s.entity.context && s.entity.context !== s.entity.name && (
+                      <p className="muted">{s.entity.context}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="muted">
+              Take the 3-minute quiz to turn these into your full Taste
+              Passport, the card you can share.
+            </p>
+          </div>
         ) : (
-          selected.length > 0 ? (
-            <div className="paper">
-              <h3>Your picks so far</h3>
-              <ul className="entity-list">
-                {selected.map((s) => (
-                  <li key={s.entity.id}>
-                    <div>
-                      <strong>{s.entity.name}</strong>
-                      {/* Qloo repeats the name as context for artists; show it only when it adds something (a film's year). */}
-                      {s.entity.context && s.entity.context !== s.entity.name && (
-                        <p className="muted">{s.entity.context}</p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <p className="muted">
-                Take the 3-minute quiz to turn these into your full Taste Passport, the card you can share.
-              </p>
-            </div>
-          ) : (
-            <EmptyState title="Start with what you love" action={
-              <button className="btn btn-primary" disabled={busy} onClick={() => setQuizOpen(true)}>Make your Passport</button>
-            }>
-              <p>A 3-minute quiz helps us pick places for you. Or add your favourites with the search beside this card.</p>
-            </EmptyState>
-          )
+          <EmptyState
+            title="Start with what you love"
+            action={
+              <button
+                className="btn btn-primary"
+                disabled={busy}
+                onClick={() => setQuizOpen(true)}
+              >
+                Make your Passport
+              </button>
+            }
+          >
+            <p>
+              A 3-minute quiz helps us pick places for you. Or add your
+              favourites with the search beside this card.
+            </p>
+          </EmptyState>
         )}
       </div>
       <PassportStamps />

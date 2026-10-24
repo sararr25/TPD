@@ -338,3 +338,13 @@
     min-height: 280px;
   }
 }
+
+@media (max-width: 600px) {
+  .city-cover-photo { min-height: 92px; height: 92px; }
+  .city-cover-copy { padding: 12px 16px; }
+  .city-cover h1 { font-size: clamp(36px, 10vw, 48px); }
+  .city-local { font-size: 14px; }
+  .city-intro { margin: 8px 0; font-size: 14px; }
+  .city-switch { margin-top: 8px; }
+  .city-banner { padding: 16px; gap: 12px; }
+}

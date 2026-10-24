@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { DM_Mono, Hanken_Grotesk, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import { PassportStateProvider } from "@/components/passport-state";
 import { AuthButton } from "@/components/auth-button";
 import { MainNav } from "@/components/main-nav";
 import { NAV_LINKS } from "@/components/nav-links";
@@ -44,13 +46,13 @@ export default function RootLayout({
             <Link className="brand" href="/">
               beesyde<span className="dot" aria-hidden="true">.</span>
             </Link>
-            <MainNav />
+            <Suspense><MainNav /></Suspense>
             <AuthButton compact />
           </header>
           <main>
-            <QuizPanelProvider>{children}</QuizPanelProvider>
+            <PassportStateProvider><QuizPanelProvider><Suspense fallback={<p role="status">Loading…</p>}>{children}</Suspense></QuizPanelProvider></PassportStateProvider>
           </main>
-          <TabBar />
+          <Suspense><TabBar /></Suspense>
           <footer>
             <div className="foot-top">
               <Link className="brand" href="/">

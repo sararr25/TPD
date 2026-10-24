@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --conditions=react-server scripts/check-quiz.mjs && node --experimental-strip-types scripts/check-passport.mjs && node scripts/check-prototype.cjs && node --experimental-strip-types --conditions=react-server scripts/check-discovery.mjs && node --experimental-strip-types --conditions=react-server scripts/check-venue.mjs && node --experimental-strip-types --conditions=react-server scripts/check-store.mjs && node --experimental-strip-types --conditions=react-server scripts/check-user-passport.mjs && node --experimental-strip-types --conditions=react-server scripts/check-user-data.mjs && node --experimental-strip-types --conditions=react-server scripts/check-user-quiz.mjs && node --experimental-strip-types --conditions=react-server scripts/check-feedback.mjs && node --experimental-strip-types scripts/check-saved.mjs && node --experimental-strip-types --conditions=react-server scripts/check-photo-tags.mjs && node scripts/check-benchmark.mjs && node scripts/check-benchmark-cli.mjs && node scripts/check-benchmark-verification.mjs && node scripts/check-benchmark-review.mjs && node --experimental-strip-types --conditions=react-server scripts/check-stamps.mjs && node --experimental-strip-types scripts/check-shared-trip.mjs",
+    "test": "node --experimental-strip-types --conditions=react-server scripts/check-quiz.mjs && node --experimental-strip-types scripts/check-passport.mjs && node scripts/check-prototype.cjs && node --experimental-strip-types --conditions=react-server scripts/check-discovery.mjs && node --experimental-strip-types --conditions=react-server scripts/check-venue.mjs && node --experimental-strip-types --conditions=react-server scripts/check-store.mjs && node --experimental-strip-types --conditions=react-server scripts/check-user-passport.mjs && node --experimental-strip-types --conditions=react-server scripts/check-user-data.mjs && node --experimental-strip-types --conditions=react-server scripts/check-user-quiz.mjs && node --experimental-strip-types --conditions=react-server scripts/check-feedback.mjs && node --experimental-strip-types scripts/check-saved.mjs && node --experimental-strip-types --conditions=react-server scripts/check-photo-tags.mjs && node scripts/check-benchmark.mjs && node scripts/check-benchmark-cli.mjs && node scripts/check-benchmark-verification.mjs && node scripts/check-benchmark-review.mjs && node --experimental-strip-types --conditions=react-server scripts/check-stamps.mjs && node --experimental-strip-types scripts/check-shared-trip.mjs && node scripts/check-quiz-finish.cjs",
     "verify:qloo": "node scripts/verify-qloo.mjs",
     "verify:qloo-features": "node scripts/check-qloo-features.mjs",
     "check:prototype": "node scripts/check-prototype.cjs",
@@ -27,14 +27,18 @@
     "verify:passport": "node --env-file=.env.local --experimental-strip-types --conditions=react-server scripts/verify-user-passport.mjs",
     "verify:quiz": "node --env-file=.env.local --experimental-strip-types --conditions=react-server scripts/verify-user-quiz.mjs",
     "verify:feedback": "node --env-file=.env.local --experimental-strip-types --conditions=react-server scripts/verify-user-feedback.mjs",
-    "verify:userdata": "node --env-file=.env.local --experimental-strip-types --conditions=react-server scripts/verify-user-data.mjs"
+    "verify:userdata": "node --env-file=.env.local --experimental-strip-types --conditions=react-server scripts/verify-user-data.mjs",
+    "test:browser": "playwright test",
+    "catalogue:inventory": "node --env-file=.env.local --experimental-strip-types --conditions=react-server scripts/catalogue-inventory.mjs"
   },
   "engines": {
     "node": ">=22.19.0"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@neondatabase/auth": "^0.6.0-beta",
     "@neondatabase/serverless": "^1.2.0",
+    "gsap": "^3.15.0",
     "maplibre-gl": "6.11.0",
     "next": "16.4.2",
     "react": "^19.2.0",
@@ -42,6 +46,7 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

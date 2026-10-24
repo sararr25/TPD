@@ -5,12 +5,12 @@ import { FEEDBACK_KEY, parseFeedback, type Feedback } from "./feedback";
 // Browser side of the signed-in-only API (E06): Passport, hidden places,
 // collections and account deletion. Hidden places also live in this browser,
 // so guests can use "Not for me" too.
-async function call<T>(path: string, method: "GET" | "PUT" | "POST" | "DELETE", body?: object): Promise<T> {
+async function call<T>(path: string, method: "GET" | "PUT" | "POST" | "DELETE", body?: object, owner?: string): Promise<T> {
   let response: Response;
   try {
     response = await fetch(path, {
       method,
-      headers: body ? { "Content-Type": "application/json" } : undefined,
+      headers: { ...(body ? { "Content-Type": "application/json" } : {}), ...(owner ? { "X-Beesyde-User": owner } : {}) },
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch {
@@ -27,8 +27,8 @@ async function call<T>(path: string, method: "GET" | "PUT" | "POST" | "DELETE", 
 export async function loadAccountPassport(): Promise<Selection[] | null> {
   return (await call<{ passport: Selection[] | null }>("/api/passport", "GET")).passport;
 }
-export async function saveAccountPassport(passport: Selection[]) {
-  await call("/api/passport", "PUT", { passport: passport.map((s) => s.token) });
+export async function saveAccountPassport(passport: Selection[], owner?: string) {
+  await call("/api/passport", "PUT", { passport: passport.map((s) => s.token) }, owner);
 }
 export async function deleteAccountPassport() {
   await call("/api/passport", "DELETE");
@@ -37,8 +37,8 @@ export async function deleteAccountPassport() {
 export async function loadAccountQuiz(): Promise<Answers | null> {
   return (await call<{ answers: Answers | null }>("/api/quiz", "GET")).answers;
 }
-export async function saveAccountQuiz(answers: Answers) {
-  await call("/api/quiz", "PUT", { answers });
+export async function saveAccountQuiz(answers: Answers, owner?: string) {
+  await call("/api/quiz", "PUT", { answers }, owner);
 }
 export async function deleteAccountQuiz() {
   await call("/api/quiz", "DELETE");

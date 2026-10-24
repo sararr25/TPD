@@ -5,7 +5,7 @@ import { AuthButton } from "./auth-button";
 import { authClient } from "@/lib/auth/client";
 import { removeFromList, deleteList, savedItemCity, savedItemPhoto, type SavedList, type SavedItem } from "@/lib/saved";
 import { citySlug } from "@/lib/discovery";
-import { cityCover } from "@/lib/city-covers";
+import { PlacePhoto } from "./place-photo";
 import { CityMap } from "./city-map";
 import { useSavedLists } from "./save-button";
 import { useToast } from "./toast";
@@ -178,27 +178,14 @@ function SavedPlaceCard({ item, list, number, busy, active, onActive, onRemove }
 }) {
   const city = savedItemCity(item, list.name);
   const photo = savedItemPhoto(item);
-  const [photoFailed, setPhotoFailed] = useState(false);
-  const [coverFailed, setCoverFailed] = useState(false);
-  const cover = city && !coverFailed ? cityCover(city, "420x") : null;
-  const actualPhoto = photo && !photoFailed;
   const href = city
     ? `/${citySlug(city)}/${item.placeId.toLowerCase()}`
     : `/place/${item.placeId.toLowerCase()}`;
   return (
     <article className="saved-place" id={`saved-${list.id}-${item.placeId}`} data-active={active || undefined}
       onMouseEnter={onActive} onFocus={onActive}>
-      <Link className="saved-place-photo" href={href} prefetch={false} tabIndex={-1} aria-hidden>
-        {actualPhoto ? (
-          <img src={photo} alt="" loading="lazy" onError={() => setPhotoFailed(true)} />
-        ) : cover ? (
-          <>
-            <img src={cover} alt="" loading="lazy" onError={() => setCoverFailed(true)} />
-            <span className="saved-photo-caption">{city} city photo</span>
-          </>
-        ) : (
-          <span className="saved-photo-placeholder">{city || "Saved place"}</span>
-        )}
+      <Link className="saved-place-photo" href={href} prefetch={false} tabIndex={-1} aria-label={`Open ${item.name}`}>
+        <PlacePhoto image={photo} city={city || ""} label={city || "Saved place"} lazy />
         {hasCoordinates(item) && <span className="saved-place-pin">{number}</span>}
       </Link>
       <div className="saved-place-body">

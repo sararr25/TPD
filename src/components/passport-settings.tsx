@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { discardPendingPassport, PASSPORT_CHANGED } from "@/lib/quiz-finish";
 import { LearnedFromYou } from "./learned-from-you";
 import { dismissTag, FEEDBACK_KEY, type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
@@ -69,6 +70,7 @@ export function PassportSettings() {
     if (userId) {
       setBusy(true);
       try {
+        await discardPendingPassport(userId);
         await deleteAccountPassport();
         await deleteAccountQuiz();
         await deleteAccountFeedback();
@@ -81,12 +83,13 @@ export function PassportSettings() {
       setBusy(false);
     }
     try {
-      if (!userId) await deleteStamps();
+      if (!userId) { await discardPendingPassport(); await deleteStamps(); }
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem("tpd-passport-v1");
       localStorage.removeItem("tpd-design-v1");
       localStorage.removeItem(QUIZ_KEY);
       localStorage.removeItem(FEEDBACK_KEY);
+      window.dispatchEvent(new Event(PASSPORT_CHANGED));
       setStatus(
         userId
           ? "Passport deleted from your account and this browser."
@@ -102,6 +105,7 @@ export function PassportSettings() {
     setBusy(true);
     setStatus("Deleting your account…");
     try {
+      await discardPendingPassport(userId);
       await deleteAccount();
     } catch (e) {
       setStatus((e as Error).message);

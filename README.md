@@ -62,6 +62,9 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 ## Project state
 
 - `DECISIONS.md`: product decisions.
+- `docs/36-implementation-verification.md`: implementation, technical A/B comparison and acceptance boundaries.
+- `docs/35-lisbon-catalogue-proposal.md`: bounded inventory and unapplied schema/storage proposal.
+- `docs/34-implementation-routing.md`: generated scoped ECC planning commands.
 - `docs/28-handover.md`: current continuation, approved scope and implementation next steps, 24 October 2026.
 - `docs/29-ab-comparison-report.md`: final ticket closure and three-scenario source comparison; no statistical user-test claim.
 - `docs/30-site-evaluation.md`: UI, UX and functionality assessment, with live/source evidence and limits.

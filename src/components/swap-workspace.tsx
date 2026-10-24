@@ -1,8 +1,8 @@
 "use client";
+import { usePassportState, PassportPrompt } from "./passport-state";
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  LIVE_PASSPORT_KEY,
   CITIES,
   hasTrait,
   type Choice,
@@ -11,17 +11,13 @@ import {
 } from "@/lib/discovery";
 import {
   discovery,
-  readSelections,
   type Selection,
 } from "@/lib/discovery-client";
 import { authClient } from "@/lib/auth/client";
-import { readStoredQuiz } from "@/lib/quiz";
 import { feedbackSignal } from "@/lib/feedback";
 import { useFeedback } from "./use-feedback";
 import { OpenQuizButton } from "./quiz-panel";
-import { usePassportVersion } from "./use-passport-version";
 import {
-  loadAccountPassport,
   loadHidden,
   hidePlace,
   unhidePlace,
@@ -186,8 +182,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     // Chips or budget changed since the results on screen (docs/22 F14).
     [stale, setStale] = useState(false);
   // Fewer than 3 picks is no Passport: Swap then runs on the starting place alone.
-  const passportVersion = usePassportVersion();
-  const personal = passport.length >= 3;
+
   const toast = useToast();
   const showError = (m: string) => toast(m, { error: true });
   // Read at request time so hiding a card does not re-run the current Swap.
@@ -200,42 +195,21 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   const userId = session?.user?.id;
   const { current: feedback, vote, unvote, voted } = useFeedback(!isPending, userId, showError);
   const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
-  // Signed in: use the account Passport (freshly signed, works on any device).
+  const passportState = usePassportState();
+  const personal = passportState.state === "ready";
+  useEffect(() => { setData(null); setStarted(false); setHidden([]); }, [userId]);
+  useEffect(() => {
+    setPassport(passportState.selections);
+    setReady(passportState.loaded && !passportState.error && !["saving", "partial", "expired"].includes(passportState.state));
+  }, [passportState.selections, passportState.loaded, passportState.error, passportState.state]);
   useEffect(() => {
     if (isPending) return;
-    try {
-      setPassport(readSelections(localStorage.getItem(LIVE_PASSPORT_KEY)));
-    } catch {
-      setStatus(
-        "Your browser Passport could not be read. Reopen the Passport and choose your favourites.",
-      );
-    }
     let active = true;
-    loadHidden(!!userId)
-      .then((list) => active && setHidden(list))
-      .catch((e) => active && setStatus((e as Error).message));
-    if (!userId) {
-      setReady(true);
-      return () => {
-        active = false;
-      };
-    }
-    loadAccountPassport()
-      .then((account) => {
-        if (!active || !account) return;
-        setPassport(account);
-        try {
-          localStorage.setItem(LIVE_PASSPORT_KEY, JSON.stringify(account));
-        } catch {}
-      })
-      .catch((e) => active && setStatus((e as Error).message))
-      .finally(() => active && setReady(true));
-    return () => {
-      active = false;
-    };
-  }, [isPending, userId, passportVersion]);
+    loadHidden(!!userId).then(list => active && setHidden(list)).catch(e => active && setStatus(e.message));
+    return () => { active = false; };
+  }, [isPending, userId]);
   useEffect(() => {
-    if (!started || !reference) return;
+    if (!started || !reference || !ready || passportState.owner !== (userId || "guest")) return;
     const controller = new AbortController();
     let active = true;
     setBusy(true);
@@ -250,7 +224,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         passport: personal ? passport.map((s) => s.token) : [],
         choices,
         exclude: hiddenIds.current,
-        quiz: readStoredQuiz(),
+        quiz: passportState.quiz,
         city,
         feedback: feedbackSignal(feedback.current),
         ...(budget ? { maxPrice: Number(budget) } : {}),
@@ -291,7 +265,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     };
     // Only "Swap it" (attempt) or a new starting place runs a search
     // (docs/22 F14); chips and budget are read from the render that pressed it.
-  }, [started, reference, attempt]);
+  }, [started, reference, attempt, ready, passportState.owner, userId]);
   // A linked place name (from Home) searches once, as soon as the Passport is read.
   const prefilled = useRef(false);
   useEffect(() => {
@@ -442,6 +416,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   }
   return (
     <>
+      {passportState.state !== "ready" && passportState.state !== "new" && <PassportPrompt />}
       <p className="lead">
         Full, closed or not quite right? Name the {category} you wanted and we look for another
         one in {city} with what you liked about it.

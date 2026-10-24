@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cityFromSlug } from "@/lib/discovery";
+import { useNavContext } from "./use-nav-context";
 import { NAV_LINKS } from "./nav-links";
 
 // Mobile bottom tab bar (ADR 0001): the same four links as the header menu.
@@ -30,12 +29,11 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 export function TabBar() {
-  const path = usePathname();
-  const current = cityFromSlug(path.slice(1)) ? "/explore" : path.startsWith("/passport") ? "/passport" : path;
+  const { current, swapHref } = useNavContext();
   return (
     <nav className="tab-bar" aria-label="Main (mobile)">
       {NAV_LINKS.map(([href, label, short]) => (
-        <Link key={href} href={href} aria-current={current === href ? "page" : undefined}>
+        <Link key={href} href={href === "/swap" ? swapHref : href} aria-current={current === href ? "page" : undefined}>
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             {ICONS[href]}
           </svg>

@@ -42,7 +42,7 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
     setBusy(true);
     setError("");
     try {
-      await finishQuiz(answers, cards, signedIn);
+      await finishQuiz(answers, cards, session?.user?.id || false);
       setDone(true);
     } catch (e) {
       setError((e as Error).message);
@@ -57,6 +57,7 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
         ref={dialog}
         className="quiz-panel"
         aria-label="Make your Passport"
+        onCancel={e => { if (busy) e.preventDefault(); }}
         onClose={() => setOpen(false)}
       >
         {open &&
@@ -71,7 +72,7 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
                     <strong>Save your Passport on every device.</strong> Sign in with Google and it
                     follows you. Or skip it: it stays on this browser.
                   </p>
-                  <AuthButton callbackURL="/passport" label="Save with Google" />
+                  <AuthButton label="Save with Google" />
                 </>
               )}
               <div className="actions">

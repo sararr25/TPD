@@ -1,14 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { PassportPrompt, usePassportState } from "./passport-state";
 import Link from "next/link";
-import { LIVE_PASSPORT_KEY, chipTags, citySlug, type Entity, type ExplorePlaceCategory } from "@/lib/discovery";
-import { readSelections } from "@/lib/discovery-client";
-import { cityCover } from "@/lib/city-covers";
+import { chipTags, citySlug, type Entity, type ExplorePlaceCategory } from "@/lib/discovery";
+import { PlacePhoto } from "./place-photo";
 import { authClient } from "@/lib/auth/client";
 import { CityMap } from "./city-map";
 import { SaveButton, useSavedLists } from "./save-button";
-import { OpenQuizButton } from "./quiz-panel";
-import { usePassportVersion } from "./use-passport-version";
 
 const FALLBACK: Record<ExplorePlaceCategory, string> = { restaurant: "Eat", bar: "Drink", museum: "See", hotel: "Stay" };
 
@@ -30,18 +28,11 @@ export function PlaceView({
   // "Why it fits you" needs Qloo's explanation, which only comes with a
   // Passport-driven search, not with a lookup by id. So this page never
   // invents one: without a Passport it points to building one.
-  const passportVersion = usePassportVersion();
-  const [hasPassport, setHasPassport] = useState(true);
-  useEffect(() => {
-    try {
-      setHasPassport(readSelections(localStorage.getItem(LIVE_PASSPORT_KEY)).length >= 3);
-    } catch {
-      setHasPassport(true);
-    }
-  }, [passportVersion]);
-  const [broken, setBroken] = useState(false),
-    [coverBroken, setCoverBroken] = useState(false);
-  const cover = coverBroken ? null : cityCover(city, "1200x");
+  const passportState = usePassportState();
+  const query = useSearchParams();
+  const returnTo = query.get("returnTo");
+  const base = `/${citySlug(city)}`;
+  const backHref = returnTo && (returnTo === base || returnTo.startsWith(base + "?")) ? returnTo : base;
   const chips = chipTags(place, category === "museum" ? "museum" : "restaurant").map((t) => t.name);
   const price = place.price ? "€".repeat(place.price) : null;
   const swappable = category === "restaurant" || category === "museum";
@@ -49,17 +40,11 @@ export function PlaceView({
   const hasPin = place.lat !== null && place.lon !== null;
   return (
     <article className="place-page">
-      <Link className="place-back" href={`/${citySlug(city)}`}>
+      <Link className="place-back" href={backHref}>
         ← {city}
       </Link>
       <div className="place-hero">
-        {place.image && !broken ? (
-          <img src={place.image} alt="" onError={() => setBroken(true)} />
-        ) : cover ? (
-          <img src={cover} alt="" onError={() => setCoverBroken(true)} />
-        ) : (
-          <span aria-hidden>{FALLBACK[category]}</span>
-        )}
+        <PlacePhoto image={place.image} city={city} size="1200x" label={FALLBACK[category]} />
       </div>
       <div className="place-main">
         <span className="meta">
@@ -76,11 +61,7 @@ export function PlaceView({
             {price && <li aria-label={`Price ${place.price} of 4`}>{price}</li>}
           </ul>
         )}
-        {!hasPassport && (
-          <p className="place-why">
-            Your Taste Passport helps us pick places from what you love. <OpenQuizButton className="btn btn-quiet" />
-          </p>
-        )}
+        {passportState.state !== "ready" && <PassportPrompt />}
         <div className="place-page-actions">
           {swappable && (
             <Link className="btn btn-primary" href={twinHref}>

@@ -1,7 +1,7 @@
+import { PassportPrompt } from "@/components/passport-state";
 import { HomeSearch } from "@/components/home-search";
 import { HomeExample } from "@/components/home-example";
 import { HomeCities } from "@/components/home-cities";
-import { OpenQuizButton } from "@/components/quiz-panel";
 import { HomeSwapDemo } from "@/components/home-swap-demo";
 
 const STEPS = [
@@ -49,7 +49,7 @@ export default function Home() {
           <h2 id="h-band">Your taste, carried to every city.</h2>
           <p>Your Taste Passport keeps your favourites together and helps choose places in each city. Save a few for your next trip.</p>
         </div>
-        <OpenQuizButton />
+        <PassportPrompt />
       </section>
     </>
   );

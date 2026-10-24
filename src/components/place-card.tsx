@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
+import { rememberCityPosition } from "./use-city-context";
 import Link from "next/link";
 import { chipTags, citySlug, type Entity, type ExploreCategory } from "@/lib/discovery";
 import type { SavedList } from "@/lib/saved";
-import { cityCover } from "@/lib/city-covers";
+import { PlacePhoto } from "./place-photo";
 import { SaveButton } from "./save-button";
 
 const FALLBACK: Record<ExploreCategory, string> = {
@@ -62,9 +63,6 @@ export function PlaceCard({
 }) {
   // Some Qloo photos are missing or fail to load (docs/22): show the city's
   // cover, and the category text only if the city has none either.
-  const [broken, setBroken] = useState(false);
-  const [coverBroken, setCoverBroken] = useState(false);
-  const cover = coverBroken ? null : cityCover(city, "420x");
   const hood = category === "neighbourhood";
   const price = place.price ? "€".repeat(place.price) : null;
   const chips = hood
@@ -73,7 +71,10 @@ export function PlaceCard({
         .slice(0, 3)
         .map((t) => t.name);
   // Every place (not neighbourhoods) opens its page: /lisbon/<id>.
-  const pageHref = hood ? null : `/${citySlug(city)}/${place.id.toLowerCase()}`;
+  const query = useSearchParams();
+  const path = usePathname();
+  const returnQuery = path === `/${citySlug(city)}` ? `?${new URLSearchParams({ returnTo: path + (query.size ? `?${query}` : "") })}` : "";
+  const pageHref = hood ? null : `/${citySlug(city)}/${place.id.toLowerCase()}${returnQuery}`;
   const swappable = findSimilar && (category === "restaurant" || category === "museum");
   // "Find similar" starts Swap from this place (#8): name + category + id so
   // Swap can pick the matching search result without retyping.
@@ -88,24 +89,17 @@ export function PlaceCard({
       onFocus={() => onHover(place.id)}
     >
       <div className="place-photo">
-        {pageHref && <Link className="place-photo-link" href={pageHref} tabIndex={-1} aria-hidden />}
+        {pageHref && <Link className="place-photo-link" href={pageHref} onClick={rememberCityPosition} tabIndex={-1} aria-hidden />}
         {pin !== null && (
           <span className="place-pin" aria-label={`Pin ${pin} on the map`}>
             {pin}
           </span>
         )}
-        {place.image && !broken ? (
-          // Remote Qloo photos, already sized (420 px): a plain lazy img.
-          <img src={place.image} alt="" loading="lazy" onError={() => setBroken(true)} />
-        ) : cover ? (
-          <img src={cover} alt="" loading="lazy" onError={() => setCoverBroken(true)} />
-        ) : (
-          <span aria-hidden>{FALLBACK[category]}</span>
-        )}
+        <PlacePhoto image={place.image} city={city} label={FALLBACK[category]} lazy />
       </div>
       <div className="place-body">
         {eyebrow && <span className="place-role">{eyebrow}</span>}
-        <h3>{pageHref ? <Link href={pageHref}>{place.name}</Link> : place.name}</h3>
+        <h3>{pageHref ? <Link href={pageHref} onClick={rememberCityPosition}>{place.name}</Link> : place.name}</h3>
         {why && whyLabel && <span className="place-label">{whyLabel}</span>}
         {why && <p className="place-why">{why}</p>}
         {hood && place.context && <p className="place-why">{place.context}</p>}

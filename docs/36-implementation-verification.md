@@ -119,3 +119,14 @@ The verified public deployment remains the baseline `55d757b` receipt above.
 Next action: obtain explicit push authorization, then verify remote commit,
 Vercel READY state, alias and public HTTP responses. The Home review and catalogue
 production-schema approval remain separate pending decisions.
+
+## Authorized publication to main — 24 October 2026
+
+The owner explicitly authorized commits `ee06305` and `f0a44b2` and requested
+`main`. Read-only checks confirmed no existing remote main. The push created
+`main` at `f0a44b2244fcb5788ce1035d07ad537707295dfe`; the remote SHA was verified.
+The original publication blocker is resolved. GitHub default remains
+`claude/blissful-gauss-dymbeo`; no default-branch or production-deploy configuration
+was changed. The owner subsequently explicitly authorized publication of this
+additional handover receipt. Both publication approval blockers are resolved.
+No new production deployment is claimed.

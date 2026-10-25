@@ -110,7 +110,8 @@ export function normalizeEntity(value: unknown): Entity | null {
   const subtype =
     text(e.subtype) || list(e.types).find((t) => typeof t === "string") || "";
   const lat = number(loc.lat),
-    lon = number(loc.lon);
+    lon = number(loc.lon),
+    nativePrice = number(p.price_level);
   return {
     id: id.toUpperCase(),
     name: name.slice(0, 200),
@@ -121,7 +122,9 @@ export function normalizeEntity(value: unknown): Entity | null {
     country: text(geo.country_code),
     lat: lat !== null && Math.abs(lat) <= 90 ? lat : null,
     lon: lon !== null && Math.abs(lon) <= 180 ? lon : null,
-    price: number(p.price_level),
+    // Qloo documents four ordinal levels; unknown/out-of-contract values
+    // must not become a cheap tier or a fabricated fifth band.
+    price: nativePrice !== null && Number.isInteger(nativePrice) && nativePrice >= 1 && nativePrice <= 4 ? nativePrice : null,
     popularity: number(e.popularity),
     tags,
     closed: p.is_closed === true,

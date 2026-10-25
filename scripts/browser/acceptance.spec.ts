@@ -131,19 +131,19 @@ test("category filters and browser history remain distinct", async ({
   await api(page);
   await page.goto(base + "/lisbon");
   await page.locator("#city-price").selectOption("2");
-  await page.getByRole("button", { name: "Hotels", exact: true }).click();
+  await page.getByRole("button", { name: "Bars", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Hotels", exact: true }),
+    page.getByRole("button", { name: "Bars", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await page.locator("#city-price").selectOption("4");
   await page.getByRole("button", { name: "Restaurants", exact: true }).click();
   await expect(page.locator("#city-price")).toHaveValue("2");
   await page.goBack();
   await expect(page.locator("#city-price")).toHaveValue("4");
-  await page.getByRole("tab", { name: "Swap a place" }).click();
+  await page.getByRole("tab", { name: "Twin" }).click();
   await expect(
     page.locator('nav[aria-label="Main"] a[aria-current="page"]'),
-  ).toHaveAccessibleName("Swap");
+  ).toHaveAccessibleName("Twin");
 });
 for (const width of [320, 390, 768, 1440])
   test(`layout ${width} and reduced motion`, async ({ page }) => {
@@ -169,7 +169,7 @@ test("Place internal return restores category, price, view and reading position"
   page,
 }) => {
   await api(page);
-  const city = "/lisbon?category=hotel&price-hotel=3&view=map";
+  const city = "/lisbon?category=bar&price-bar=3&view=map";
   await page.goto(base + city);
   await page.evaluate(() =>
     sessionStorage.setItem(
@@ -184,7 +184,7 @@ test("Place internal return restores category, price, view and reading position"
   await page.locator(".place-back").click();
   await expect(page.locator("#city-price")).toHaveValue("3");
   await expect(
-    page.getByRole("button", { name: "Hotels", exact: true }),
+    page.getByRole("button", { name: "Bars", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
   await page.goBack();

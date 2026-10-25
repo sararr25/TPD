@@ -20,3 +20,12 @@ Status: accepted, 22 Oct 2026 (owner, `/loop-me` session for #6). Spec: #3.
 - The fake "For you / Swap" toggle (#9) becomes a real tab, not a link.
 - Swap must work without a Passport (#10), because it is reachable from every city.
 - #24 (mobile navigation) follows this ADR. The sign-in prompt is after the quiz, not after the 3rd save.
+
+
+## Amendment — 25 Oct 2026: Twin and richer Passport motion
+
+Owner feedback supersedes Swap menu/tab wording with Twin. Keep/Delete/Ignore
+are explicit per-search choices (Delete maps to trait exclusion, not data deletion).
+Passport A now includes a choreographed hero, decorative/photo parallax and viewport
+reveals; reduced motion and immediate interaction remain required. Legacy URLs
+remain compatible. See the Twin and motion specification, issue #36.

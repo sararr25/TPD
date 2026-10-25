@@ -36,6 +36,9 @@ const ACCEPTED: Record<PlaceCategory, Record<string, string[]>> = {
   restaurant: {
     amenity: ["restaurant", "fast_food", "cafe", "bar", "pub", "biergarten", "food_court", "ice_cream"],
   },
+  bar: { amenity: ["bar", "pub", "biergarten"] },
+  cafe: { amenity: ["cafe"] },
+  hotel: { tourism: ["hotel", "hostel", "guest_house", "motel", "apartment"] },
   museum: { tourism: ["museum", "gallery"], amenity: ["arts_centre"] },
 };
 

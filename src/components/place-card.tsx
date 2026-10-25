@@ -2,14 +2,16 @@
 import { useSearchParams, usePathname } from "next/navigation";
 import { rememberCityPosition } from "./use-city-context";
 import Link from "next/link";
-import { chipTags, citySlug, type Entity, type ExploreCategory } from "@/lib/discovery";
+import { chipTags, citySlug, placeCategory, type Entity, type ExploreCategory } from "@/lib/discovery";
 import type { SavedList } from "@/lib/saved";
+import { priceSymbols, priceLabel } from "@/lib/price";
 import { PlacePhoto } from "./place-photo";
 import { SaveButton } from "./save-button";
 
 const FALLBACK: Record<ExploreCategory, string> = {
   restaurant: "Eat",
   bar: "Drink",
+  cafe: "Coffee",
   museum: "See",
   hotel: "Stay",
   neighbourhood: "Area",
@@ -64,10 +66,10 @@ export function PlaceCard({
   // Some Qloo photos are missing or fail to load (docs/22): show the city's
   // cover, and the category text only if the city has none either.
   const hood = category === "neighbourhood";
-  const price = place.price ? "€".repeat(place.price) : null;
+  const price = category === "neighbourhood" ? null : priceSymbols(place.price);
   const chips = hood
     ? []
-    : chipTags(place, category === "museum" ? "museum" : "restaurant")
+    : chipTags(place, placeCategory(category) ?? "restaurant")
         .slice(0, 3)
         .map((t) => t.name);
   // Every place (not neighbourhoods) opens its page: /lisbon/<id>.
@@ -75,7 +77,7 @@ export function PlaceCard({
   const path = usePathname();
   const returnQuery = path === `/${citySlug(city)}` ? `?${new URLSearchParams({ returnTo: path + (query.size ? `?${query}` : "") })}` : "";
   const pageHref = hood ? null : `/${citySlug(city)}/${place.id.toLowerCase()}${returnQuery}`;
-  const swappable = findSimilar && (category === "restaurant" || category === "museum");
+  const swappable = findSimilar && !!placeCategory(category);
   // "Find similar" starts Swap from this place (#8): name + category + id so
   // Swap can pick the matching search result without retyping.
   const similarHref = `/swap?${new URLSearchParams({ city, q: place.name, category, ref: place.id })}`;
@@ -109,7 +111,7 @@ export function PlaceCard({
             {chips.map((c) => (
               <li key={c}>{c}</li>
             ))}
-            {price && <li aria-label={`Price ${place.price} of 4`}>{price}</li>}
+            {price && <li aria-label={priceLabel(place.price)}>{price}</li>}
           </ul>
         )}
         {details}

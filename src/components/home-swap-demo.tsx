@@ -62,22 +62,22 @@ export function HomeSwapDemo() {
   return (
     <section className="home-swap-demo" aria-labelledby="swap-demo-title">
       <div className="home-swap-intro">
-        <span className="meta">Try a real Swap · Lisbon</span>
+        <span className="meta">Try a real Twin search · Lisbon</span>
         <h2 id="swap-demo-title">If Time Out Market is full, where next?</h2>
-        <p>Keep the seafood. Change the casual setting. See up to three real alternatives, without making a Passport.</p>
+        <p>Keep the seafood. Exclude the casual setting. See up to three real alternatives, without making a Passport.</p>
         <button className="btn btn-primary" disabled={busy} onClick={run}>
-          {busy ? "Finding its twins…" : demo ? "Try this Swap again" : error ? "Try again" : "Try this Swap"}
+          {busy ? "Finding its twins…" : demo ? "Find these twins again" : error ? "Try again" : "Find its twin"}
         </button>
       </div>
       <div aria-busy={busy}>
         {!busy && !demo && !error && (
-          <div className="h-swap-sheet" aria-label="Illustration of this Swap, not search results">
+          <div className="h-swap-sheet" aria-label="Illustration of this Twin search, not search results">
             <div className="h-page-top" aria-hidden="true"><span>Find its twin</span><span>B / 002</span></div>
             <p className="meta">The place you wanted</p>
             <h3>Time Out Market</h3>
-            <div className="h-swap-traits"><span>Keep · seafood</span><span>Change · casual</span></div>
+            <div className="h-swap-traits"><span>Keep · seafood</span><span>Delete · casual</span></div>
             <p className="h-swap-next">Another address.<br /><em>Still your kind of evening.</em></p>
-            <p className="muted">An illustration. Try the Swap to see today’s alternatives.</p>
+            <p className="muted">An illustration. Find its twin to see today’s alternatives.</p>
           </div>
         )}
         {busy && <><p role="status">Looking for alternatives in Lisbon…</p><div className="place-grid" aria-hidden>{[0, 1, 2].map((i) => <div className="place-card skeleton" key={i} />)}</div></>}
@@ -94,7 +94,7 @@ export function HomeSwapDemo() {
                       <span className="place-role">{r.role}</span>
                       <h3><Link href={`/lisbon/${r.place.id.toLowerCase()}`}>{r.place.name}</Link></h3>
                       <p className="place-why"><strong>Keeps:</strong> {kept.length ? kept.join(", ") : "Seafood isn’t listed for this alternative."}</p>
-                      <p className="place-why"><strong>Changes:</strong> {changed.length ? `Moves away from ${changed.join(", ")}.` : "No change confirmed in these details."}</p>
+                      <p className="place-why"><strong>Leaves behind:</strong> {changed.length ? `Moves away from ${changed.join(", ")}.` : "No change confirmed in these details."}</p>
                       <p>{r.different}</p>
                     </div>
                   </article>

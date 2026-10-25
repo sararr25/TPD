@@ -2,7 +2,8 @@
 import { useSearchParams } from "next/navigation";
 import { PassportPrompt, usePassportState } from "./passport-state";
 import Link from "next/link";
-import { chipTags, citySlug, type Entity, type ExplorePlaceCategory } from "@/lib/discovery";
+import { chipTags, citySlug, placeCategory, type Entity, type ExplorePlaceCategory } from "@/lib/discovery";
+import { priceSymbols, priceLabel } from "@/lib/price";
 import { PlacePhoto } from "./place-photo";
 import { authClient } from "@/lib/auth/client";
 import { CityMap } from "./city-map";
@@ -10,7 +11,7 @@ import { SaveButton, useSavedLists } from "./save-button";
 import { GuideFolio, JourneyRoute } from "./travel-art";
 import { COVERS } from "@/lib/city-covers";
 
-const FALLBACK: Record<ExplorePlaceCategory, string> = { restaurant: "Eat", bar: "Drink", museum: "See", hotel: "Stay" };
+const FALLBACK: Record<ExplorePlaceCategory, string> = { restaurant: "Eat", bar: "Drink", cafe: "Coffee", museum: "See", hotel: "Stay" };
 
 // The Place page (#20): photo, name, where it is, chips, map, Save, Directions
 // and "Find its twin", which opens the city's Swap tab on this place.
@@ -35,9 +36,9 @@ export function PlaceView({
   const returnTo = query.get("returnTo");
   const base = `/${citySlug(city)}`;
   const backHref = returnTo && (returnTo === base || returnTo.startsWith(base + "?")) ? returnTo : base;
-  const chips = chipTags(place, category === "museum" ? "museum" : "restaurant").map((t) => t.name);
-  const price = place.price ? "€".repeat(place.price) : null;
-  const swappable = category === "restaurant" || category === "museum";
+  const chips = chipTags(place, placeCategory(category) ?? "restaurant").map((t) => t.name);
+  const price = priceSymbols(place.price);
+  const swappable = !!placeCategory(category);
   const twinHref = `/${citySlug(city)}?${new URLSearchParams({ tab: "swap", q: place.name, category, ref: place.id })}`;
   const hasPin = place.lat !== null && place.lon !== null;
   return (
@@ -62,7 +63,7 @@ export function PlaceView({
             {chips.map((c) => (
               <li key={c}>{c}</li>
             ))}
-            {price && <li aria-label={`Price ${place.price} of 4`}>{price}</li>}
+            {price && <li aria-label={priceLabel(place.price)}>{price}</li>}
           </ul>
         )}
         {passportState.state !== "ready" && <PassportPrompt />}

@@ -15,11 +15,11 @@ export const MESSAGES: Record<string, string> = {
     "Your Passport needs a refresh. Pick your favourites again to see picks for you.",
   invalid_selection:
     "We couldn’t use that saved favourite. Search for it and pick it again.",
-  invalid_category: "Choose restaurants or museums.",
+  invalid_category: "Choose restaurants, bars, cafés, museums or hotels.",
   invalid_reference: "Pick a place in that city and category.",
   invalid_city: "Choose one of the listed cities.",
   invalid_feedback: "Your feedback could not be saved. Please try again.",
-  invalid_budget: "You can choose a price range for restaurants only.",
+  invalid_budget: "Choose a supported price level for restaurants, bars or cafés.",
   invalid_passport: "Choose 3–5 different favourites in your Passport first.",
   location_unconfirmed:
     "We couldn’t confirm the city, so we didn’t widen your search.",

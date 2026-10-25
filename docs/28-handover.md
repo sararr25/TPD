@@ -1,5 +1,13 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Twin and motion implementation — 25 October 2026
+
+The owner authorized the implementation and technical/visual A/B comparison,
+then chose four real price tiers (€–€€€€). Work is on local branch
+`codex/twin-motion-ux`; see [implementation and A/B receipt](45-twin-implementation-and-ab.md)
+for verified behavior, corrections, Events Paris-only coverage and test gates.
+No remote push or production change is implied.
+
 ## Passport A implementation — 25 October 2026
 
 The owner selected A / La rilegatura, then authorized extending it across the

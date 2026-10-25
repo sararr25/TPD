@@ -9,7 +9,7 @@ import { PassportEmblem, PassportSecurityLines } from "@/components/passport-art
 const STEPS = [
   ["Make your Passport", "A short quiz about how you travel and what you love. About 3 minutes, no account."],
   ["Open a city", "See popular places, or use your Passport for picks shaped by what you love."],
-  ["Find its twin", "Name the place you wanted. Choose what to keep and what to change."],
+  ["Find its twin", "Name the place you wanted. Keep the traits you love. Leave the rest behind."],
 ];
 
 // Owner-selected direction A: the existing cover and live example, bound

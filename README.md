@@ -1,8 +1,8 @@
 # Beesyde
 
-Find places you’ll love, or a twin for the one that’s full. Next.js/TypeScript web app for the Qloo hackathon, with a Taste Passport, city guides, Swap, saved trips and deliberate sharing.
+Find places you’ll love, or a twin for the one that’s full. Next.js/TypeScript web app for the Qloo hackathon, with a Taste Passport, city guides, Twin, saved trips and deliberate sharing.
 
-**Live demo:** https://beesyde.vercel.app · **Release branch:** `claude/blissful-gauss-dymbeo` (there is no `main`).
+**Live demo:** https://beesyde.vercel.app · **Default/release branch:** `claude/blissful-gauss-dymbeo`. Remote `main` also exists; do not change the default or production configuration.
 
 ## Start here before continuing work
 
@@ -25,7 +25,7 @@ cp -n .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000. Main routes: `/`, `/explore`, `/[city]` (For you / Swap tabs), `/[city]/[place]`, `/swap`, `/passport`, `/passport/settings`, `/collections`, `/trip` and `/compare`.
+Open http://localhost:3000. Main routes: `/`, `/explore`, `/[city]` (For you / Twin tabs), `/[city]/[place]`, `/swap`, `/passport`, `/passport/settings`, `/collections`, `/trip` and `/compare`.
 
 The 18-question quiz builds a Taste Passport, refined by saves and feedback. Guests keep it and trips on this browser; signed-in users use private account storage. Guide visits and saved places add deduplicated Passport stamps. Trip links and postcard PNGs exclude private notes. City/category eligibility is validated locally; Qloo/OSM checks remain L0, without live hours, prices or booking guarantees.
 
@@ -60,6 +60,9 @@ Credentials stay in `.env.local` or server environment variables. Never use `NEX
 The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `claude/blissful-gauss-dymbeo`. Keep all secrets server-only. Inspect the deployment’s Git SHA and READY state, then verify the public alias; a successful local build alone is not production or real-device acceptance.
 
 ## Project state
+
+- `docs/45-twin-implementation-and-ab.md`: current Twin/motion implementation, A/B evidence and local verification boundary.
+- `docs/40-twin-motion-ux-spec.md`: approved scope and owner amendment to use four real euro tiers.
 
 - `docs/37-home-passport-a.md`: owner-selected evolution of the current Passport Home, implemented and verified locally; not yet published.
 - `DECISIONS.md`: product decisions.

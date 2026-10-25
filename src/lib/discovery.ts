@@ -1,7 +1,8 @@
+import { priceSymbols } from "./price.ts";
 import type { VenueCheck } from "./venue-check.ts";
-export type PlaceCategory = "restaurant" | "museum";
+export type PlaceCategory = "restaurant" | "bar" | "cafe" | "museum" | "hotel";
 export function placeCategory(value: unknown = "restaurant"): PlaceCategory | null {
-  return value === "restaurant" || value === "museum" ? value : null;
+  return typeof value === "string" && TWIN_CATEGORIES.includes(value as PlaceCategory) ? value as PlaceCategory : null;
 }
 // Swap destinations (docs/17 D1, coverage in docs/18). `locality` is the
 // name Qloo confirms in query.localities; `places` are the geocode city
@@ -67,10 +68,35 @@ export const cityFromSlug = (slug: string) =>
 export const EXPLORE_TAGS = {
   restaurant: "urn:tag:genre:place:restaurant",
   bar: "urn:tag:category:place:bar",
+  cafe: "urn:tag:category:place:cafe,urn:tag:category:place:coffee_shop",
   museum: "urn:tag:genre:place:museum",
   hotel: "urn:tag:genre:place:hotel",
 } as const;
 export type ExplorePlaceCategory = keyof typeof EXPLORE_TAGS;
+// Category capabilities are shared by City, Twin and links into discovery.
+// Events require a dated event source; Qloo place tags do not supply one.
+export const CATEGORY_CAPABILITIES = {
+  restaurant: { label: "Restaurants", singular: "restaurant", explore: true, twin: true, price: true, facet: "Cuisine" },
+  bar: { label: "Bars", singular: "bar", explore: true, twin: true, price: true, facet: "Type & atmosphere" },
+  cafe: { label: "Cafés", singular: "café", explore: true, twin: true, price: true, facet: "Type & atmosphere" },
+  museum: { label: "Museums", singular: "museum", explore: true, twin: true, price: false, facet: "Theme" },
+  hotel: { label: "Hotels", singular: "hotel", explore: true, twin: true, price: false, facet: "Style & amenities" },
+  neighbourhood: { label: "Neighbourhoods", singular: "neighbourhood", explore: true, twin: false, price: false, facet: null },
+  event: { label: "Events", singular: "event", explore: false, twin: false, price: false, facet: null },
+} as const;
+export const TWIN_CATEGORIES = Object.entries(CATEGORY_CAPABILITIES)
+  .filter(([, capability]) => capability.twin).map(([category]) => category as PlaceCategory);
+export const CATEGORY_LABELS = Object.fromEntries(
+  Object.entries(CATEGORY_CAPABILITIES).map(([key, capability]) => [key, capability.label]),
+) as { [K in keyof typeof CATEGORY_CAPABILITIES]: typeof CATEGORY_CAPABILITIES[K]["label"] };
+export function categoryHasPrice(category: string): boolean {
+  return Object.hasOwn(CATEGORY_CAPABILITIES, category) &&
+    CATEGORY_CAPABILITIES[category as keyof typeof CATEGORY_CAPABILITIES].price;
+}
+export function matchesCategory(e: Pick<Entity, "tags">, category: ExplorePlaceCategory): boolean {
+  const accepted = EXPLORE_TAGS[category].split(",");
+  return e.tags.some(t => accepted.includes(t.id));
+}
 // Neighbourhoods are Qloo localities, not tagged places.
 export type ExploreCategory = ExplorePlaceCategory | "neighbourhood";
 export function exploreCategory(value: unknown): ExploreCategory | null {
@@ -111,12 +137,12 @@ export function explorePlace(e: Entity, city: string, category: ExplorePlaceCate
     e.type === "place" &&
     !e.closed &&
     inCity(e, city) &&
-    e.tags.some((t) => t.id === EXPLORE_TAGS[category]) &&
+    matchesCategory(e, category) &&
     e.lat !== null &&
     e.lon !== null &&
     !!e.address &&
-    // Restaurant cleaning rules apply to bars too (both are food & drink).
-    !((category === "restaurant" || category === "bar") && offCategory(e, "restaurant")) &&
+    // Restaurant cleaning rules also apply to bars and cafés (food & drink).
+    !(categoryHasPrice(category) && offCategory(e, "restaurant")) &&
     !(category === "restaurant" && barNotRestaurant(e))
   );
 }
@@ -317,19 +343,9 @@ export function validPlace(
   maxPrice?: number,
   exclude: string[] = [],
 ): boolean {
-  return (
-    e.type === "place" &&
-    !e.closed &&
-    inCity(e, city) &&
-    e.tags.some((t) => t.id === `urn:tag:genre:place:${category}`) &&
-    e.lat !== null &&
-    e.lon !== null &&
-    !!e.address &&
+  return explorePlace(e, city, category) &&
     (!maxPrice || (e.price !== null && e.price <= maxPrice)) &&
-    !e.tags.some((t) => exclude.includes(t.id)) &&
-    !offCategory(e, category) &&
-    !(category === "restaurant" && barNotRestaurant(e))
-  );
+    !e.tags.some((t) => exclude.includes(t.id));
 }
 // Swap chips (docs/21 A1): what a place is, before what it pours. Qloo lists
 // drinks first and files cuisine under several types (cuisine:qloo:pizza,
@@ -350,8 +366,9 @@ const GENERIC_CHIPS = new Set([
   "happy_hour", "happy_hour_drinks", "small_plates", "full_bar", "late_night_food",
 ]);
 export function chipTags(e: Entity, category: PlaceCategory = "restaurant"): Tag[] {
-  if (category === "museum")
-    return e.tags.filter((t) => MUSEUM_CHIP.test(t.type)).slice(0, 6);
+  if (category === "museum" || category === "hotel")
+    return e.tags.filter((t) => MUSEUM_CHIP.test(t.type) ||
+      (category === "hotel" && /^urn:tag:(amenity:qloo|amenities:place|setting:qloo|hotel_style:qloo)$/.test(t.type))).slice(0, 6);
   const names = new Set<string>();
   const chips: Tag[] = [];
   const bar = barNotRestaurant(e);
@@ -381,6 +398,12 @@ export function chipTags(e: Entity, category: PlaceCategory = "restaurant"): Tag
     }
   }
   return chips;
+}
+// Only list facets whose meaning matches the category control's label.
+export function categoryFacets(e: Entity, category: ExploreCategory): Tag[] {
+  if (category === "neighbourhood") return [];
+  if (category === "restaurant") return e.tags.filter((t) => CUISINE.test(t.type));
+  return chipTags(e, category);
 }
 // The cuisine a Swap stays in (docs/21 A3). Qloo's entity signal barely
 // follows the starting place (checked live: 0 of 20 results had pizza for a
@@ -457,7 +480,7 @@ export function selectRoles(
             ? `Another option near your starting place${km !== null ? ` (${km.toFixed(1)} km in a straight line)` : ""}.`
             : role === "A less-known option"
               ? "Less well known than the other options. That says nothing about how busy it is."
-              : `${km !== null ? `About ${km.toFixed(1)} km from your starting place in a straight line. ` : "We couldn’t compare distances. "}${category === "restaurant" && e.price !== null && reference.price !== null ? `Price level ${e.price} of 4, compared with ${reference.price} for your starting place.` : category === "museum" ? "We couldn’t compare admission prices." : "We couldn’t compare prices."}`,
+              : `${km !== null ? `About ${km.toFixed(1)} km from your starting place in a straight line. ` : "We couldn’t compare distances. "}${categoryHasPrice(category) && e.price !== null && reference.price !== null ? `Indicative price ${priceSymbols(e.price)}, compared with ${priceSymbols(reference.price)} for your starting place.` : category === "museum" ? "We couldn’t compare admission prices." : "We couldn’t compare prices."}`,
         distanceKm: km,
       },
     ];

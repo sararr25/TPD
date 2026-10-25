@@ -51,6 +51,7 @@ export default function RootLayout({
             <AuthButton compact />
           </header>
           <main>
+            <noscript><section className="paper"><h1>Your Taste Passport</h1><p>A city guide shaped by what you love. Enable JavaScript for personal picks and Twin searches.</p><a href="/explore">Browse cities</a></section></noscript>
             <PassportStateProvider><QuizPanelProvider><Suspense fallback={<p role="status">Loading…</p>}><TravelMotion>{children}</TravelMotion></Suspense></QuizPanelProvider></PassportStateProvider>
           </main>
           <Suspense><TabBar /></Suspense>

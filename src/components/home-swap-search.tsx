@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CITIES, type PlaceCategory } from "@/lib/discovery";
+import { CITIES, TWIN_CATEGORIES, CATEGORY_CAPABILITIES, type PlaceCategory } from "@/lib/discovery";
 import { useCity } from "./use-city";
 
 // Home's Swap entrance (docs/24): name the place that's full, pick the city,
@@ -14,31 +14,28 @@ export function HomeSwapSearch() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams({ city, q: query.trim() });
-    if (category === "museum") params.set("category", "museum");
+    params.set("category", category);
     router.push(`/swap?${params}`);
   }
   return (
-    <form className="h-search" onSubmit={submit} role="search" aria-label="Swap a place">
+    <form className="h-search" onSubmit={submit} role="search" aria-label="Twin">
       <label className="sr-only" htmlFor="home-swap-q">
-        The restaurant or museum you wanted
+        The place you wanted
       </label>
       <input
         id="home-swap-q"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={category === "museum" ? "The museum that’s full" : "The restaurant that’s full"}
+        placeholder={`The ${CATEGORY_CAPABILITIES[category].singular} you wanted`}
         minLength={2}
         maxLength={120}
         required
       />
       <div className="h-row">
-        <div className="toggle-group segmented" role="group" aria-label="Kind of place">
-          {(["restaurant", "museum"] as const).map((c) => (
-            <button type="button" className="toggle" key={c} aria-pressed={category === c} onClick={() => setCategory(c)}>
-              {c === "restaurant" ? "Restaurant" : "Museum"}
-            </button>
-          ))}
-        </div>
+        <label className="sr-only" htmlFor="home-twin-category">Kind of place</label>
+        <select id="home-twin-category" value={category} onChange={(e) => setCategory(e.target.value as PlaceCategory)}>
+          {TWIN_CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_CAPABILITIES[c].label}</option>)}
+        </select>
         <label className="sr-only" htmlFor="home-swap-city">
           City
         </label>

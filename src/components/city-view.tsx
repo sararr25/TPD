@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   CITIES,
+  CATEGORY_LABELS, CATEGORY_CAPABILITIES, categoryHasPrice, categoryFacets,
   EXPLORE_TAGS,
   citySlug,
   LOCAL_NAME,
@@ -26,6 +27,7 @@ import { OpenQuizButton } from "./quiz-panel";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
 import { PlaceCard } from "./place-card";
+import { EventsExplorer } from "./events-explorer";
 import { SwapWorkspace } from "./swap-workspace";
 import { CityMap } from "./city-map";
 import { feedbackSignal } from "@/lib/feedback";
@@ -44,6 +46,7 @@ type Payload = {
 const CATEGORY_LABEL: Record<ExploreCategory, string> = {
   restaurant: "Restaurants",
   bar: "Bars",
+  cafe: "Cafés",
   museum: "Museums",
   hotel: "Hotels",
   neighbourhood: "Neighbourhoods",
@@ -51,6 +54,7 @@ const CATEGORY_LABEL: Record<ExploreCategory, string> = {
 const CATEGORY_NOUN: Record<ExploreCategory, string> = {
   restaurant: "restaurants",
   bar: "bars",
+  cafe: "cafés",
   museum: "museums",
   hotel: "hotels",
   neighbourhood: "neighbourhoods",
@@ -61,9 +65,11 @@ export function CityView({ city }: { city: string }) {
   const toast = useToast();
   const context = useCityContext();
   const passportState = usePassportState();
+  const events = new URLSearchParams(context.query).get("events") === "1";
+  const setEvents = (value: boolean) => context.update({ events: value ? "1" : "" });
   const [hiddenOwner, setHiddenOwner] = useState<string | null>(null);
   const { category, prices, areas, tab, view: mobileView } = context;
-  const setCategory = (value: ExploreCategory) => context.update({ category: value });
+  const setCategory = (value: ExploreCategory) => context.update({ category: value, events: "" });
   const setMobileView = (view: "list" | "map") => context.update({ view });
   const setPrices = (fn: (p: Partial<Record<ExploreCategory, string>>) => Partial<Record<ExploreCategory, string>>) => context.update(Object.fromEntries(Object.entries(fn(prices)).map(([k,v]) => [`price-${k}`, v || ""])));
   const setAreas = (fn: (p: Partial<Record<ExploreCategory, string>>) => Partial<Record<ExploreCategory, string>>) => context.update(Object.fromEntries(Object.entries(fn(areas)).map(([k,v]) => [`area-${k}`, v || ""])));
@@ -215,9 +221,13 @@ export function CityView({ city }: { city: string }) {
   const price = prices[category] ?? "";
   const areaId = areas[category] ?? "";
   const area = neighbourhoods.find((h) => h.id === areaId);
-  const priceApplies = category === "restaurant" || category === "bar" || category === "hotel";
+  const priceApplies = categoryHasPrice(category);
   const available = (data?.results ?? []).filter((r) => !hidden.some((h) => h.id === r.place.id));
+  const facet = context.facets[category] || "";
+  const facetOptions = Array.from(new Map(available.flatMap((r) => categoryFacets(r.place, category))
+    .map((t) => [t.id, t])).values()).slice(0, 40);
   const shown = available.filter(({ place }) => {
+    if (facet && !place.tags.some((t) => t.id === facet)) return false;
     if (priceApplies && price && (place.price === null || place.price > Number(price))) return false;
     if (category !== "neighbourhood" && area) {
       const km = distance(place, area);
@@ -269,7 +279,7 @@ export function CityView({ city }: { city: string }) {
       </section>
       <div className="city-toolbar">
         <div className="toggle-group segmented" role="tablist" aria-label="View">
-          {([["foryou", "For you"], ["swap", "Swap a place"]] as const).map(([value, label]) => (
+          {([["foryou", "For you"], ["swap", "Twin"]] as const).map(([value, label]) => (
             <button
               key={value}
               type="button"
@@ -288,10 +298,11 @@ export function CityView({ city }: { city: string }) {
         {tab === "foryou" && (
           <div className="toggle-group" role="group" aria-label="Category">
             {([...Object.keys(EXPLORE_TAGS), "neighbourhood"] as ExploreCategory[]).map((value) => (
-              <button key={value} className="toggle" aria-pressed={category === value} onClick={() => setCategory(value)}>
-                {CATEGORY_LABEL[value]}
+              <button key={value} className="toggle" aria-pressed={!events && category === value} onClick={() => setCategory(value)}>
+                {CATEGORY_LABELS[value]}
               </button>
             ))}
+            <button className="toggle" aria-pressed={events} onClick={() => setEvents(true)}>Events</button>
           </div>
         )}
       </div>
@@ -301,6 +312,8 @@ export function CityView({ city }: { city: string }) {
         </div>
       )}
       <div role="tabpanel" id="city-panel-foryou" aria-labelledby="city-tab-foryou" hidden={tab !== "foryou"}>
+      {events && <EventsExplorer city={city} />}
+      <div hidden={events}>
       {category !== "neighbourhood" && (
         <div className="city-filters">
           {priceApplies && <label htmlFor="city-price">Price up to
@@ -309,6 +322,10 @@ export function CityView({ city }: { city: string }) {
               {[1, 2, 3, 4].map((n) => <option key={n} value={n}>{"€".repeat(n)}</option>)}
             </select>
           </label>}
+          {CATEGORY_CAPABILITIES[category].facet && <label htmlFor="city-trait">{CATEGORY_CAPABILITIES[category].facet}
+            <select id="city-trait" value={facet} onChange={(e) => context.update({ [`trait-${category}`]: e.target.value })}>
+              <option value="">Any listed trait</option>{facetOptions.map((t) => <option key={t.id} value={t.id}>{t.name.replace(/[_-]+/g, " ")}</option>)}
+            </select></label>}
           <label htmlFor="city-area">Near a neighbourhood
             <select id="city-area" disabled={areasBusy || !neighbourhoods.length} value={areaId}
               onChange={(e) => setAreas((p) => ({ ...p, [category]: e.target.value }))}>
@@ -347,7 +364,7 @@ export function CityView({ city }: { city: string }) {
       )}
       {!busy && data && !status && shown.length === 0 && (
         <EmptyState title="No places match this view." action={
-          price || area ? <button className="btn btn-primary" onClick={() => { setPrices((p) => ({ ...p, [category]: "" })); setAreas((p) => ({ ...p, [category]: "" })); }}>Clear filters</button> :
+          price || area || facet ? <button className="btn btn-primary" onClick={() => { context.update({ [`price-${category}`]: "", [`area-${category}`]: "", [`trait-${category}`]: "" }); }}>Clear filters</button> :
           <Link className="btn btn-primary" href="/explore">Choose another city</Link>
         }><p>Try a wider price range, another neighbourhood or another category. Your saved places are still here.</p></EmptyState>
       )}
@@ -394,6 +411,7 @@ export function CityView({ city }: { city: string }) {
           {data.traitsUsed && " Your quiz helped us choose places for your budget and appetite for discovery."}
         </p>
       )}
+      </div>
       </div>
     </div>
   );

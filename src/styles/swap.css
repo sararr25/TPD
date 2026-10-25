@@ -134,3 +134,66 @@ select + .toggle-group {
     display: none;
   }
 }
+
+/* Twin: compact explicit choices and a result in the submitted task's viewport. */
+.twin-workspace { min-width: 0; }
+.twin-intro { margin: 16px 0; color: var(--ink-2); }
+.twin-editor { max-width: 760px; margin-inline: auto; }
+.twin-editor[hidden] { display: none; }
+.twin-reference.paper { padding: 16px; margin: 0 0 16px; }
+.twin-reference-search { display: flex; gap: 8px; align-items: stretch; }
+.twin-reference-search input { min-width: 0; flex: 1; margin: 0; }
+.twin-reference-search .btn { flex-shrink: 0; }
+.twin-reference-recap { display: flex; flex-wrap: wrap; gap: 4px 16px; padding-top: 12px; font-size: var(--text-sm); }
+.twin-reference-recap span { color: var(--ink-2); }
+.twin-traits h2 { font-size: 28px; margin: 0 0 4px; }
+.twin-help { margin: 0 0 12px; font-size: var(--text-sm); color: var(--ink-2); }
+.twin-trait-list .segment { flex-wrap: nowrap; padding: 2px 0; gap: 8px; min-height: 48px; }
+.twin-trait-list .segment > span { overflow-wrap: anywhere; font-size: var(--text-sm); }
+.twin-trait-list .toggle-group { flex-shrink: 0; gap: 2px; }
+.twin-trait-list .toggle { min-width: 54px; min-height: 44px; padding: 6px 8px; font-size: 13px; }
+.twin-trait-list .toggle[aria-pressed="true"] { background: var(--brand); color: var(--paper); }
+.twin-budget { display: flex; align-items: center; gap: 16px; margin-top: 12px; }
+.twin-budget label { margin: 0; }
+.twin-budget select { width: auto; min-width: 130px; margin: 0; }
+.twin-context { margin: 12px 0; font-size: var(--text-sm); }
+.twin-context summary, .twin-details summary, .twin-map summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; text-decoration: underline; text-underline-offset: 4px; }
+.twin-submit { margin-top: 12px; }
+.twin-submit .btn { width: 100%; }
+.twin-outcome { max-width: 760px; margin: 16px auto; min-height: 430px; scroll-margin-top: 96px; }
+.twin-outcome-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.twin-outcome-head h2 { margin: 4px 0; font: 600 18px/1.4 var(--font-body); }
+.twin-spotlight .place-card { display: grid; grid-template-columns: 180px minmax(0, 1fr); }
+.twin-spotlight .place-photo { grid-row: span 2; aspect-ratio: auto; min-height: 220px; }
+.twin-spotlight .place-photo img { height: 100%; object-fit: cover; }
+.twin-spotlight .place-body { padding: 16px 20px 4px; }
+.twin-spotlight .place-body h3 { margin: 6px 0; font-size: 30px; }
+.twin-spotlight .place-actions { grid-column: 2; padding: 8px 20px 16px; }
+.twin-details { font-size: var(--text-sm); }
+.twin-details summary { font-size: 13px; }
+.twin-other-link { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 52px; margin-top: 12px; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--sun); color: var(--ink); cursor: pointer; font: inherit; font-weight: 600; }
+.twin-other-link:hover { border-color: var(--brand); }
+.twin-other-link:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
+.twin-other-link span[aria-hidden] { font-size: 24px; }
+.twin-results { margin-top: 32px; }
+.twin-result-filters { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 24px; }
+.twin-result-filters label { min-width: 190px; flex: 1; }
+.twin-result-filters p { flex-basis: 100%; font-size: var(--text-sm); margin: 0; }
+.twin-other-heading { scroll-margin-top: 100px; }
+.twin-map { margin: 24px 0; }
+.twin-map .city-map { height: 340px; }
+@media (max-width: 600px) {
+ .twin-spotlight .place-card { grid-template-columns: 1fr; }
+ .twin-spotlight .place-photo { display: none; }
+ .twin-spotlight .place-actions { grid-column: 1; }
+ .twin-spotlight .place-body h3 { font-size: 27px; }
+ .twin-outcome { min-height: 390px; }
+ .twin-trait-list .toggle { min-width: 48px; padding-inline: 5px; }
+ .twin-outcome-head { align-items: flex-start; }
+ .twin-reference-search .btn { padding-inline: 12px; }
+}
+@media (max-width: 350px) {
+ .twin-trait-list .segment { flex-wrap: wrap; padding-block: 6px; }
+ .twin-trait-list .toggle-group { margin-left: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .twin-workspace * { scroll-behavior: auto; } }

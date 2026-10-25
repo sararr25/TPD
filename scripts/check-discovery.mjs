@@ -146,6 +146,8 @@ const normalized = normalizeEntity({
     },
   },
 });
+for (const price of [0, 5, -1, 1.5]) assert.equal(normalizeEntity({ entity_id: a.id, name: a.name, properties: { price_level: price } }).price, null);
+for (const price of [1, 2, 3, 4]) assert.equal(normalizeEntity({ entity_id: a.id, name: a.name, properties: { price_level: price } }).price, price);
 assert(normalized.closed);
 assert.equal(normalized.tags[0].id, tag.id);
 assert.deepEqual(normalized.evidence, []);
@@ -245,13 +247,14 @@ assert(validPlace(museum, "Paris", "museum"));
 assert(!validPlace(a, "Paris", "museum"));
 assert(!validPlace(museum, "Paris", "restaurant"));
 assert(!validPlace({ ...museum, type: "artist" }, "Paris", "museum"));
-assert.equal(placeCategory("hotel"), null);
+assert.equal(placeCategory("hotel"), "hotel");
+assert.equal(placeCategory("event"), null);
 const museumToken = selection(museum).token;
 const tokens = passport.map(s => s.token);
 await assert.rejects(swap(signed.token, tokens, [], undefined, "museum"), e => e.code === "invalid_reference");
 await assert.rejects(swap(museumToken, tokens, [], 2, "museum"), e => e.code === "invalid_budget");
-await assert.rejects(swap(museumToken, tokens, [], undefined, "hotel"), e => e.code === "invalid_category");
-await assert.rejects(lookup("Synthetic", "place", true, "hotel"), e => e.code === "invalid_category");
+await assert.rejects(swap(museumToken, tokens, [], undefined, "hotel"), e => e.code === "invalid_reference");
+await assert.rejects(lookup("Synthetic", "place", true, "event"), e => e.code === "invalid_category");
 const museums = [11, 12, 13].map(n => make(n, { tags: [museumTag], price: null }));
 globalThis.fetch = async (url) => {
   if (url.hostname === "nominatim.openstreetmap.org") return Response.json([]);
@@ -444,3 +447,52 @@ console.log("PASS: museum Keep filters Qloo's answer locally (all roles when 3+ 
   assert.equal(empty.anchorDropped, true);
   console.log("PASS: cuisine fallback cannot reintroduce a changed trait under another ID.");
 }
+
+// All supported Twin categories share the public service contract. Category
+// tags survive signed lookup, budgets never include unknown values, Delete
+// aliases remain excluded even if provider fallback ignores its filters.
+{
+  const { EXPLORE_TAGS, CATEGORY_CAPABILITIES, categoryHasPrice } = await import("../src/lib/discovery.ts");
+  assert.equal(CATEGORY_CAPABILITIES.event.twin, false);
+  assert.equal(CATEGORY_CAPABILITIES.neighbourhood.twin, false);
+  for (const [index, category] of ["bar", "cafe", "hotel"].entries()) {
+    const tags = EXPLORE_TAGS[category].split(",").map(id => ({ id, name: category, type: id.slice(0, id.lastIndexOf(":")) }));
+    const trait = t("ambience:qloo", "quiet", "Quiet");
+    const start = make(800 + index * 10, { tags: [...tags, trait] });
+    const candidates = [1, 2, 3].map(n => make(800 + index * 10 + n, { tags, price: category === "hotel" ? null : 2 }));
+    const alias = make(806 + index * 10, { tags: [...tags, t("ambience:place", "quiet", "QUIET")] });
+    const unknown = make(807 + index * 10, { tags, price: null });
+    let seenLookup = false, seenTwin = false;
+    globalThis.fetch = async (url) => {
+      if (url.hostname === "nominatim.openstreetmap.org") return Response.json([]);
+      if (url.pathname === "/search") {
+        seenLookup = true;
+        return Response.json({ results: [raw(start)] });
+      }
+      seenTwin = true;
+      assert.equal(url.searchParams.get("filter.tags"), EXPLORE_TAGS[category]);
+      assert.equal(url.searchParams.get("operator.filter.tags"), "union");
+      return Response.json({ results: { entities: [...candidates, alias, unknown, outside].map(raw) }, query: { localities: { filter: [{ name: "Paris" }] } } });
+    };
+    const found = await lookup(`Synthetic ${category}`, "place", true, category, "Paris");
+    assert(seenLookup);
+    assert.equal(found.choices.length, 1);
+    assert(validPlace(verifySelection(found.choices[0].token), "Paris", category));
+    const outcome = await swap(found.choices[0].token, [], [{ tagId: trait.id, mode: "change" }], categoryHasPrice(category) ? 2 : undefined, category);
+    assert(seenTwin);
+    assert.equal(outcome.category, category);
+    assert.equal(outcome.results.length, 3);
+    assert(outcome.results.every(r => r.place.id !== alias.id));
+    assert(outcome.results.every(r => validPlace(r.place, "Paris", category, categoryHasPrice(category) ? 2 : undefined)));
+    if (categoryHasPrice(category)) {
+      assert.equal(outcome.candidateCount, 3);
+      await assert.rejects(swap(found.choices[0].token, [], [], 5, category), e => e.code === "invalid_budget");
+    } else {
+      await assert.rejects(swap(found.choices[0].token, [], [], 2, category), e => e.code === "invalid_budget");
+    }
+  }
+  const cafeTags = EXPLORE_TAGS.cafe.split(",");
+  for (const id of cafeTags) assert(validPlace(make(900, {tags:[{id,name:"Cafe",type:"urn:tag:category:place"}]}), "Paris", "cafe"));
+  assert(!validPlace(make(901, { tags: [t("amenity:qloo", "cafe", "Cafe")] }), "Paris", "cafe"));
+}
+console.log("PASS: Bars, cafés and hotels support signed references and Twin; exact café tags (not amenities), Delete aliases, price capabilities and unavailable Events are enforced without live calls.");

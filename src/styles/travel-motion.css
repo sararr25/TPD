@@ -1,0 +1,30 @@
+/* Photo-only scroll layers. Overscan prevents exposed edges at either offset.
+   Transform has one owner (TravelMotion); reveal runs on the containing frame. */
+@media (prefers-reduced-motion: no-preference) {
+  .h-visa-photo img,
+  .city-cover-photo img,
+  .place-hero img {
+    height: calc(100% + 40px);
+    max-height: none;
+    top: -20px;
+    position: relative;
+    transition: none;
+    transform: translateY(0);
+  }
+  .place-hero { position: relative; }
+  .city-cover-photo img, .place-hero img { position: absolute; inset: -20px 0 auto; }
+  .home-passport .h-visa-photo:hover img { transform: none; }
+  @media (max-width: 760px) {
+    .h-visa-photo img, .city-cover-photo img, .place-hero img {
+      height: calc(100% + 20px);
+      top: -10px;
+    }
+    .city-cover-photo img, .place-hero img {
+      inset: -10px 0 auto;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-passport .h-visa-photo img,
+  .home-passport .h-city-photo img { transition: none; }
+}

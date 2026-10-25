@@ -126,15 +126,15 @@ export function HomeStory() {
           </h2>
           <p>
             The place you wanted is full? Start there. Tell us what to keep and
-            what to change, and find its twin.
+            what to exclude, and find its twin.
           </p>
           <Link className="btn btn-primary" href="/lisbon?tab=swap">
-            Try a Swap →
+            Find its twin →
           </Link>
         </div>
         <div
           className="story-art story-pair"
-          aria-label="Illustration of Keep and Change, not search results"
+          aria-label="Illustration of Keep and Delete, not search results"
         >
           <span className="meta">How it works · illustration</span>
           <div>
@@ -144,7 +144,7 @@ export function HomeStory() {
           <span aria-hidden>↓</span>
           <div>
             <strong>A different way to spend the evening</strong>
-            <span className="story-change">Change · Casual</span>
+            <span className="story-change">Delete · Casual</span>
           </div>
           <p className="muted">
             You choose the traits. We search for alternatives.

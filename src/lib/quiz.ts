@@ -375,10 +375,10 @@ export function buildProfile(answers: Answers): Profile | null {
 // nothing (too few per city, docs/18) and hotels no price (Qloo has none).
 export function qlooParams(
   profile: Profile | null,
-  category: "restaurant" | "bar" | "museum" | "hotel",
+  category: "restaurant" | "bar" | "cafe" | "museum" | "hotel",
 ): Record<string, string> {
   if (!profile || category === "museum") return {};
-  const withPrice = category === "restaurant" || category === "bar";
+  const withPrice = category === "restaurant" || category === "bar" || category === "cafe";
   const { energy, curiosity, spend } = profile.axes;
   const out: Record<string, string> = {};
   // Calm or adventurous people get fewer of the most popular places.

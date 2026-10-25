@@ -100,3 +100,10 @@ assert.deepEqual(
 assert.throws(() => parseNominatim({ error: "x" }), /nominatim_invalid_response/);
 
 console.log("venue check: ok");
+
+// A café/bar/hotel is checked against its own OSM kind, not restaurant.
+for (const [category, osmCategory, type] of [["bar", "amenity", "bar"], ["cafe", "amenity", "cafe"], ["hotel", "tourism", "hotel"]]) {
+  assert.equal(assessVenue(entity(), category, [osm({ category: osmCategory, type })], at).status, "confirmed");
+  assert.equal(assessVenue(entity(), category, [osm({ type: "restaurant" })], at).status, "conflict");
+}
+console.log("PASS: expanded Twin categories use distinct OSM checks.");

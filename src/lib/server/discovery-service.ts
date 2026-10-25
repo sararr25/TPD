@@ -19,6 +19,7 @@ import {
   type ExplorePlaceCategory,
   type Locality,
   EXPLORE_TAGS,
+  categoryHasPrice,
   type PlaceCategory,
   type Entity,
   type Choice,
@@ -112,7 +113,7 @@ export async function lookup(
               ...e,
               tags: [
                 ...e.tags.filter(
-                  (t) => t.id === `urn:tag:genre:place:${category}`,
+                  (t) => EXPLORE_TAGS[category].split(",").includes(t.id),
                 ),
                 ...chipTags(e, category),
               ],
@@ -132,7 +133,7 @@ export async function placeById(idValue: unknown, cityValue: unknown) {
   if (!city) throw new DiscoveryError("not_found", 404);
   const { entity } = await entityById(idValue);
   const category = entity
-    ? (["restaurant", "museum", "bar", "hotel"] as const).find((c) => explorePlace(entity, city, c))
+    ? (["cafe", "bar", "restaurant", "museum", "hotel"] as const).find((c) => explorePlace(entity, city, c))
     : undefined;
   if (!entity || !category) throw new DiscoveryError("not_found", 404);
   return { ...selection(entity), category };
@@ -232,7 +233,7 @@ export async function swap(
   }
   if (
     maxPrice !== undefined &&
-    (category !== "restaurant" ||
+    (!categoryHasPrice(category) ||
       !Number.isInteger(maxPrice) ||
       Number(maxPrice) < 1 ||
       Number(maxPrice) > 4)
@@ -247,7 +248,8 @@ export async function swap(
     "filter.type": "urn:entity:place",
     "filter.location.query": city,
     "filter.location.radius": "0",
-    "filter.tags": `urn:tag:genre:place:${category}`,
+    "filter.tags": EXPLORE_TAGS[category],
+    "operator.filter.tags": "union",
     "filter.exclude.entities": [ref.id, ...hidden].join(","),
     "signal.interests.entities": signals.map((e) => e.id).join(","),
     "feature.explainability": "true",
@@ -422,6 +424,7 @@ async function explorePlaces(
     "filter.location.query": city,
     "filter.location.radius": "0",
     "filter.tags": EXPLORE_TAGS[category],
+    "operator.filter.tags": "union",
     take: "30",
   };
   // An empty Passport is the baseline: Qloo's answer for everyone.

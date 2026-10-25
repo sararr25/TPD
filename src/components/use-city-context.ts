@@ -5,6 +5,7 @@ import { type ExploreCategory } from "@/lib/discovery";
 const categories: ExploreCategory[] = [
   "restaurant",
   "bar",
+  "cafe",
   "museum",
   "hotel",
   "neighbourhood",
@@ -34,6 +35,7 @@ export function useCityContext() {
     category,
     prices,
     areas,
+    facets: Object.fromEntries(categories.map((c) => [c, search.get(`trait-${c}`) || ""])),
     view: search.get("view") === "map" ? ("map" as const) : ("list" as const),
     tab: search.get("tab") === "swap" ? ("swap" as const) : ("foryou" as const),
     update,

@@ -43,3 +43,12 @@ lemon bookmark and an example city stamp. Existing fonts, palette, equal City
 and Swap entrances, real example results and personal-profile isolation stay.
 Motion is limited to page entrances and stamps; the opening cover from option C
 is not part of A. See [implementation](../37-home-passport-a.md).
+
+
+## Amendment — 25 Oct 2026: Twin and richer Passport motion
+
+Owner feedback supersedes Swap menu/tab wording with Twin. Keep/Delete/Ignore
+are explicit per-search choices (Delete maps to trait exclusion, not data deletion).
+Passport A now includes a choreographed hero, decorative/photo parallax and viewport
+reveals; reduced motion and immediate interaction remain required. Legacy URLs
+remain compatible. See the Twin and motion specification, issue #36.

@@ -32,3 +32,14 @@ City ring marks in the guide, city cards and Passport activity stamps use
 curated city inks on paper; covers continue to use muted `--pass`. Accent
 values live only in `src/styles/tokens.css` and have 5.67:1 or greater text
 contrast on paper. Phu Quoc has no cover photo and keeps the brand fallback.
+
+## Amendment — 24 Oct 2026: Home Passport A
+
+After reviewing local animated HTML studies, the owner chose **A / La rilegatura**.
+Home must improve the existing Passport theme, not replace it with a magazine,
+desk collage or cinematic theme. The berry cover and paper example page form
+one bound Passport, with security linework, stitching, a gutter, paper edges,
+lemon bookmark and an example city stamp. Existing fonts, palette, equal City
+and Swap entrances, real example results and personal-profile isolation stay.
+Motion is limited to page entrances and stamps; the opening cover from option C
+is not part of A. See [implementation](../37-home-passport-a.md).

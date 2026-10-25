@@ -70,6 +70,16 @@ export function HomeSwapDemo() {
         </button>
       </div>
       <div aria-busy={busy}>
+        {!busy && !demo && !error && (
+          <div className="h-swap-sheet" aria-label="Illustration of this Swap, not search results">
+            <div className="h-page-top" aria-hidden="true"><span>Find its twin</span><span>B / 002</span></div>
+            <p className="meta">The place you wanted</p>
+            <h3>Time Out Market</h3>
+            <div className="h-swap-traits"><span>Keep · seafood</span><span>Change · casual</span></div>
+            <p className="h-swap-next">Another address.<br /><em>Still your kind of evening.</em></p>
+            <p className="muted">An illustration. Try the Swap to see today’s alternatives.</p>
+          </div>
+        )}
         {busy && <><p role="status">Looking for alternatives in Lisbon…</p><div className="place-grid" aria-hidden>{[0, 1, 2].map((i) => <div className="place-card skeleton" key={i} />)}</div></>}
         {error && <p className="h-error" role="alert">{error}</p>}
         {demo && (

@@ -1,5 +1,28 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Passport A implementation — 25 October 2026
+
+The owner selected A / La rilegatura, then authorized extending it across the
+product, independent UI/UX review, feedback fixes and push to **main**.
+The final motion implementation is GSAP with original inline SVG; the owner
+approved this code-authored replacement after Rive export failed validation.
+See [delivery board](38-passport-world-task-board.md) and
+[independent review](39-passport-world-review.md). All review findings are fixed.
+Do not change the default branch or production-branch configuration.
+The local-only boundaries in the initial Home record below are historical.
+
+## Home visual decision — 24 October 2026
+
+The owner rejected the first three alternatives as departing too far from the
+Passport theme, then selected **A / La rilegatura** from the revised local HTML
+studies. Preserve the existing berry cover, paper page, fonts, lemon and stamps;
+improve the Passport rather than introduce a new theme. Direction A is now
+implemented on the local Home route. The opening cover from C was not selected.
+See [Home Passport A](37-home-passport-a.md) for changes, verification and the
+local-only delivery boundary. This visual decision supersedes the separate
+editorial Home preview as the implementation direction. Catalogue production
+writes still require their previously stated approval.
+
 ## Implementation update — 24 October 2026
 
 The owner subsequently authorized implementation and iterative testing. The

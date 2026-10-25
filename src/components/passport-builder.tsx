@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { PassportSecurityLines } from "./passport-art";
 import { LearnedFromYou } from "./learned-from-you";
 import { PassportProfile } from "./passport-profile";
 import { PassportStamps } from "./passport-stamps";
@@ -197,7 +198,7 @@ export function PassportBuilder() {
     return <LoadingCards label="Loading your Passport…" count={2} />;
   if (quizOpen)
     return (
-      <>
+      <div className="passport-leaves passport-quiz-leaf" data-travel-page>
         <div className="grid">
           <div>
             <QuizFlow
@@ -220,17 +221,18 @@ export function PassportBuilder() {
           </div>
         </div>
         <PassportStamps />
-      </>
+      </div>
     );
   const traveller = buildProfile(profile);
   return (
-    <>
+    <div className="passport-leaves">
       <div className="grid passport-spread">
-        <section className="passport-editor">
+        <section className="passport-editor" data-travel-page>
           {(passportState.state === "saving" ||
             passportState.state === "partial" ||
             passportState.state === "expired") && <PassportPrompt />}
-          <div className="page-head">
+          <div className="page-head passport-leaf-heading">
+            <PassportSecurityLines />
             <h1>Your Taste Passport</h1>
             <p className="lead">
               What you love, so we can pick places for you. Add 3–5 favourite
@@ -488,7 +490,7 @@ export function PassportBuilder() {
           </p>
         </section>
         {traveller ? (
-          <div>
+          <div className="passport-personal-leaf" data-travel-page>
             <PassportProfile
               profile={traveller}
               holder={session?.user?.name}
@@ -538,6 +540,6 @@ export function PassportBuilder() {
         )}
       </div>
       <PassportStamps />
-    </>
+    </div>
   );
 }

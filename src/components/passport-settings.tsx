@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { PassportSecurityLines } from "./passport-art";
 import { discardPendingPassport, PASSPORT_CHANGED } from "@/lib/quiz-finish";
 import { LearnedFromYou } from "./learned-from-you";
 import { dismissTag, FEEDBACK_KEY, type Feedback } from "@/lib/feedback";
@@ -132,8 +133,9 @@ export function PassportSettings() {
 
   return (
     <>
-      <section>
-        <div className="page-head">
+      <section className="passport-settings-leaf" data-travel-page>
+        <div className="page-head passport-leaf-heading">
+          <PassportSecurityLines />
           <Link className="meta" href="/passport">
             ← Your Passport
           </Link>

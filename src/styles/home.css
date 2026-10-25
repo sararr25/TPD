@@ -2,10 +2,62 @@
  * Home (docs/24): passport-cover hero with two entrances, the live example
  * ("visa"), how it works, the city grid (also /explore) and the Passport band.
  */
+/* Direction A: one bound object, with the original berry cover and live page. */
+.home-passport { min-width: 0; }
+.h-opening-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-5);
+  margin: calc(-1 * var(--space-6)) 0 var(--space-6);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+.h-opening-line a { flex: none; font-size: var(--text-xs); text-underline-offset: 4px; }
 .h-hero {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  gap: clamp(var(--space-5), 3vw, var(--space-10));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-radius: 12px 28px 28px 12px;
+  box-shadow: var(--shadow-lg);
+}
+.h-hero::before {
+  content: "";
+  position: absolute;
+  inset: 6px -5px -8px 7px;
+  z-index: -1;
+  border: 1px solid var(--line-strong);
+  border-bottom: 5px solid var(--pass);
+  border-radius: inherit;
+  background: repeating-linear-gradient(0deg, var(--line) 0 1px, var(--paper) 1px 3px);
+}
+.h-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 3;
+  width: 30px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ink) 12%, transparent) 46%, color-mix(in srgb, var(--ink) 22%, transparent) 50%, transparent);
+  pointer-events: none;
+}
+.h-security {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: .5;
+  opacity: .06;
+  pointer-events: none;
+}
+.h-reading-note {
+  padding-top: var(--space-8);
+  color: var(--ink-2);
+  font: var(--text-xs) / 1.7 var(--font-mono);
 }
 
 /* The Cities index is a shelf of postcards, not a second Home hero. */
@@ -33,56 +85,97 @@
   color: var(--ink-2);
 }
 
-/* Passport cover */
+/* The cover keeps the real search forms immediately available. */
 .h-cover {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 540px;
-  padding: clamp(var(--space-6), 4vw, var(--space-12));
-  border-radius: var(--radius-panel);
+  min-width: 0;
+  min-height: 730px;
+  padding: 34px 40px 34px 46px;
+  border-radius: 12px 0 0 12px;
   background: var(--pass);
   color: var(--on-pass);
   overflow: hidden;
+  box-shadow: inset 9px 0 10px color-mix(in srgb, var(--ink) 12%, transparent);
 }
-
-.h-cover .h-mono {
-  color: var(--on-brand-2);
-}
-
-.h-cover h1 {
-  margin: var(--space-6) 0 var(--space-3);
-}
-
-/* On the brand cover the italic accent can't be brand: it takes the sun. */
-.h-cover h1 em {
-  color: var(--sun);
-}
-
-.h-lead {
-  max-width: 44ch;
-  margin: 0 0 var(--space-6);
-  color: var(--on-brand-2);
-  font-size: var(--text-lg);
-}
-
-.h-seal {
-  position: absolute;
-  top: var(--space-6);
-  right: var(--space-6);
-  width: 150px;
-  height: 150px;
-  border: 2px solid var(--on-brand-line);
-  border-radius: 50%;
-  opacity: 0.5;
-}
-
-.h-seal::after {
+.h-cover::after {
   content: "";
   position: absolute;
-  inset: 22px;
-  border: 1px dashed var(--on-brand-line);
-  border-radius: 50%;
+  inset: 14px 16px 14px 22px;
+  border: 1px solid var(--on-brand-line);
+  opacity: .5;
+  pointer-events: none;
+}
+.h-cover > :not(.h-security) { position: relative; z-index: 1; }
+.h-cover-top, .h-cover-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: var(--on-brand-2);
+  font: 10px / 1.6 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.h-cover-top > span:first-child { font-size: var(--text-xs); color: var(--on-pass); letter-spacing: .12em; }
+.h-cover-bottom { margin-top: var(--space-6); font-size: 8px; }
+.h-cover-heading { margin-top: var(--space-8); }
+.h-cover-kicker { color: var(--on-brand-2); font: italic 24px / 1.2 var(--font-display); }
+.h-cover h1 {
+  max-width: 1200px;
+  margin: var(--space-3) 0 var(--space-5);
+  font-size: clamp(48px, 5.3vw, 74px);
+  line-height: 1.04;
+  text-wrap: initial;
+}
+.h-cover h1 em { color: var(--sun); }
+.h-lead {
+  max-width: 39ch;
+  margin: 0;
+  color: var(--on-brand-2);
+  font-size: var(--text-md);
+  line-height: 1.65;
+}
+.h-emblem {
+  display: block;
+  width: 128px;
+  height: 128px;
+  flex: none;
+  margin: var(--space-6) auto;
+  stroke: var(--sun);
+  stroke-width: .8;
+  color: var(--sun);
+}
+:is(.h-emblem, .h-band-emblem) text {
+  fill: currentColor;
+  stroke: none;
+  font: 8px var(--font-mono);
+  letter-spacing: 1px;
+}
+.h-cover .h-entrance { margin-top: auto; }
+.h-cover .h-entrance > .toggle-group {
+  justify-content: flex-start;
+  gap: var(--space-6);
+  border: 0;
+  border-bottom: 1px solid var(--on-brand-line);
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+.h-cover .h-entrance > .toggle-group .toggle {
+  min-height: var(--target);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--on-brand-2);
+  padding: var(--space-2) 0 var(--space-3);
+  font-size: var(--text-sm);
+  box-shadow: none;
+}
+.h-cover .h-entrance > .toggle-group .toggle[aria-pressed="true"] {
+  border-bottom-color: var(--sun);
+  color: var(--sun);
 }
 
 .h-entrance {
@@ -145,62 +238,107 @@
   font-size: 15px;
 }
 
-/* Live example ("visa") */
+/* A paper page: the recommendations below remain real provider results. */
 .h-visa {
+  position: relative;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  padding: clamp(var(--space-5), 3vw, var(--space-8));
-  border: 1px solid var(--line);
-  border-radius: var(--radius-panel);
+  padding: 34px 36px 34px 42px;
+  border-radius: 0 28px 28px 0;
   background: var(--paper);
-  box-shadow: var(--shadow);
-}
-
-.h-visa-photo {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  border-radius: var(--radius-card);
-  background: var(--line);
   overflow: hidden;
 }
-
+.h-visa > :not(.h-security) { position: relative; z-index: 1; }
+.h-visa > .h-security { color: var(--brand); opacity: .08; }
+.h-page-top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 38px var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+  font: 10px / 1.7 var(--font-mono);
+  color: var(--ink-2);
+  text-transform: uppercase;
+}
+.h-visa > .h-bookmark {
+  position: absolute;
+  top: 0;
+  right: 34px;
+  width: 24px;
+  height: 62px;
+  background: var(--sun);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
+}
+.h-destination { margin-top: var(--space-2); }
+.h-destination > .h-mono { font-size: 10px; text-transform: uppercase; }
+.h-destination h2 { margin: var(--space-1) 0 0; font-size: 60px; line-height: .98; }
+.h-destination h2 em { display: block; margin-top: var(--space-1); font-size: 32px; }
+.h-visa-figure { position: relative; margin: 0 0 var(--space-2); }
+.h-visa-photo {
+  position: relative;
+  height: 210px;
+  border-radius: 2px;
+  background: var(--pass);
+  overflow: hidden;
+}
 .h-visa-photo img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--dur-slower) var(--ease-out);
 }
-
+.h-visa-photo:hover img { transform: scale(1.04); }
+.h-visa-figure figcaption {
+  position: absolute;
+  left: var(--space-2);
+  bottom: var(--space-2);
+  max-width: calc(100% - 110px);
+  padding: var(--space-1) var(--space-2);
+  background: var(--paper);
+  color: var(--ink-2);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.h-photo-unavailable { display: grid; place-items: center; height: 100%; padding: var(--space-4); color: var(--on-pass); font-size: var(--text-sm); }
 .h-visa-photo.skeleton,
 .h-skeleton {
   background: linear-gradient(90deg, var(--paper) 0, var(--line) 50%, var(--paper) 100%) 0 0 / 200% 100%;
   animation: sk 1.2s linear infinite;
 }
-
 .h-stamp {
   position: absolute;
-  right: var(--space-3);
-  bottom: var(--space-3);
-  display: grid;
-  place-items: center;
-  width: 88px;
-  height: 88px;
-  border: 2px solid var(--stamp);
+  right: -8px;
+  bottom: -18px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 104px;
+  height: 104px;
+  border: 2px solid var(--stamp-ink);
   border-radius: 50%;
-  outline: 1px solid var(--stamp);
-  outline-offset: -6px;
+  outline: 1px solid var(--stamp-ink);
+  outline-offset: -7px;
   background: var(--paper);
   color: var(--stamp-ink);
-  font: var(--weight-medium) 11px var(--font-mono);
+  font-family: var(--font-mono);
   transform: rotate(-12deg);
+  pointer-events: none;
 }
-
+.h-stamp small { font-size: 7px; text-transform: uppercase; }
+.h-stamp strong { font-size: 28px; font-weight: var(--weight-regular); line-height: 1.2; }
+.h-stamp > span { font-size: 10px; letter-spacing: .12em; }
+.h-example-label { margin-top: var(--space-2); font-size: 10px; }
 .h-visa-sentence {
   margin: 0;
   color: var(--ink);
-  font-size: var(--text-xl);
-  line-height: 1.35;
+  font-size: var(--text-md);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .h-picks {
@@ -235,13 +373,16 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
 }
 
 /* How it works */
 .h-how {
-  margin-top: var(--space-18);
-  padding: var(--space-18) 0;
+  margin-top: var(--space-14);
+  padding: var(--space-14) 0;
   border-top: 1px solid var(--line);
 }
 
@@ -316,6 +457,7 @@
 
 .h-grid {
   display: grid;
+  grid-auto-flow: dense;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-4);
   margin: var(--space-8) 0 0;
@@ -408,29 +550,31 @@
   font: var(--weight-medium) 11px var(--font-mono);
 }
 
-/* Passport band */
+/* The closing leaf uses the same emblem as the cover. */
 .h-band {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) auto;
+  grid-template-columns: minmax(100px, .6fr) minmax(0, 1fr);
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-14);
   margin: var(--space-18) 0 var(--space-10);
   padding: clamp(var(--space-8), 5vw, 64px);
-  border-radius: var(--radius-panel);
+  border-radius: 8px 28px 28px 8px;
   background: var(--sun-soft);
   color: var(--ink);
 }
+.h-band-emblem { width: 100%; max-width: 240px; margin: auto; color: var(--brand); stroke: currentColor; stroke-width: .8; transform: rotate(-8deg); }
+.h-band h2 { margin: 0; font-size: var(--display-lg); }
+.h-band p { max-width: 46ch; margin: var(--space-4) 0 var(--space-6); color: var(--ink); }
 
-.h-band h2 {
-  margin: 0;
-  font-size: var(--display-lg);
+/* These details are Home-only; the Cities index keeps its existing layout. */
+.home-passport .h-city {
+  border-radius: 5px 16px 16px 5px;
+  box-shadow: 3px 4px 0 var(--line);
 }
-
-.h-band p {
-  max-width: 46ch;
-  margin: var(--space-3) 0 0;
-  color: var(--ink);
-}
+.home-passport .h-city-photo { overflow: hidden; }
+.home-passport .h-city-photo img { transition: transform var(--dur-slower) var(--ease-out); }
+.home-passport .h-city:hover img { transform: scale(1.05); }
+.home-passport .h-city-body { padding: var(--space-4); }
 
 .h-foot {
   max-width: 60ch;
@@ -438,78 +582,109 @@
   font-size: var(--text-sm);
 }
 
-/* Motion: the cover rises in, the stamp lands. */
-@media (prefers-reduced-motion: no-preference) {
-  .h-cover h1,
-  .h-lead,
-  .h-entrance {
-    animation: h-rise var(--dur-slower) var(--ease-out) both;
-  }
-
-  .h-lead {
-    animation-delay: 80ms;
-  }
-
-  .h-entrance {
-    animation-delay: 160ms;
-  }
-
-  .h-stamp {
-    animation: h-stamp 700ms 500ms var(--ease-stamp) both;
-  }
-}
-
-@keyframes h-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-}
-
-@keyframes h-stamp {
-  from {
-    opacity: 0;
-    transform: rotate(-40deg) scale(1.6);
-  }
+@media (max-width: 1000px) and (min-width: 761px) {
+  .h-cover { padding: var(--space-8); }
+  .h-cover h1 { font-size: clamp(43px, 5.5vw, 60px); }
+  .h-cover-top { flex-wrap: wrap; }
+  .h-cover-bottom { flex-direction: column; }
+  .h-visa { padding: var(--space-8); }
+  .h-destination h2 { font-size: 52px; }
+  .h-destination h2 em { font-size: 28px; }
+  .h-page-top { font-size: 9px; }
+  .h-picks li { grid-template-columns: 1fr; gap: var(--space-1); }
 }
 
 @media (max-width: 900px) {
-  .h-hero,
-  .h-band {
-    grid-template-columns: 1fr;
-  }
+  .h-steps { grid-template-columns: 1fr; }
+  .h-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
+@media (max-width: 760px) {
+  .h-opening-line { margin-top: 0; align-items: start; font-size: var(--text-xs); }
+  .h-opening-line > span { max-width: 23ch; }
+  .h-opening-line a { font-size: 11px; }
+  .h-hero { grid-template-columns: 1fr; }
+  .h-hero::after { display: none; }
   .h-cover {
-    min-height: auto;
+    min-height: 620px;
+    padding: var(--space-8) var(--space-6) var(--space-8) var(--space-8);
+    border-radius: 12px 28px 0 0;
   }
-
-  .h-steps {
-    grid-template-columns: 1fr;
-  }
-
-  .h-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .h-seal {
-    top: var(--space-4);
-    right: var(--space-4);
-    width: 96px;
-    height: 96px;
-  }
+  .h-cover::after { inset: 12px 12px 12px 18px; border-radius: 2px 12px 0 0; }
+  .h-cover-top { font-size: 8px; gap: var(--space-2); }
+  .h-cover-top > span:first-child { font-size: 10px; }
+  .h-cover-bottom { font-size: 7px; }
+  .h-cover-heading { margin-top: var(--space-8); }
+  .h-cover h1 { font-size: clamp(40px, 10.5vw, 68px); }
+  .h-lead { font-size: 15px; }
+  .h-emblem { width: 116px; height: 116px; }
+  .h-visa { padding: var(--space-8) var(--space-6); border-radius: 0 0 28px 12px; }
+  .h-page-top { font-size: 9px; }
+  .h-destination h2 { font-size: 56px; }
+  .h-destination h2 em { font-size: 30px; }
+  .h-visa-figure { margin-top: var(--space-2); }
+  .h-visa-photo { height: 220px; }
+  .h-visa-actions { flex-direction: column; align-items: stretch; }
+  .h-band { grid-template-columns: 1fr; gap: var(--space-6); }
+  .h-band-emblem { max-width: 120px; margin: 0; }
+  .h-reading-note { font-size: 10px; }
 }
 
 @media (max-width: 520px) {
-  .h-grid {
-    grid-template-columns: 1fr;
-  }
+  .h-grid { grid-template-columns: 1fr; }
+  .h-grid li[data-big="true"] { grid-column: auto; grid-row: auto; }
+  .h-picks li { grid-template-columns: 76px minmax(0, 1fr); gap: var(--space-2); font-size: 15px; }
+  .h-picks strong { overflow-wrap: anywhere; }
+  .h-cover .h-search .h-row { flex-direction: column; }
+  .h-cover .h-search .h-row input, .h-cover .h-search .h-row select { min-width: 0; }
+}
 
-  .h-grid li[data-big="true"] {
-    grid-column: auto;
-    grid-row: auto;
-  }
+@media (max-width: 360px) {
+  .h-cover { padding-left: var(--space-6); padding-right: var(--space-5); }
+  .h-cover h1 { font-size: 39px; }
+  .h-cover-top { font-size: 7px; }
+  .h-cover-bottom { font-size: 6px; }
+  .h-lead { font-size: var(--text-sm); }
+  .h-cover .h-entrance > .toggle-group { gap: var(--space-5); }
+  .h-visa { padding: var(--space-6) var(--space-5); }
+  .h-page-top { font-size: 8px; }
+  .h-visa-photo { height: 195px; }
+  .h-visa-figure figcaption { font-size: 9px; max-width: calc(100% - 90px); }
+  .h-stamp { width: 90px; height: 90px; }
+  .h-stamp small { font-size: 6px; }
+  .h-visa-sentence { font-size: 15px; }
+}
 
-  .h-picks li {
-    grid-template-columns: 80px 1fr;
-  }
+.home-passport .home-swap-demo {
+  margin-top: var(--space-20);
+  padding: var(--space-14) 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+.home-passport .home-swap-demo:has(.h-swap-sheet) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-14);
+}
+.home-passport .home-swap-intro h2 { font-size: var(--display-lg); }
+.h-swap-sheet {
+  padding: var(--space-8);
+  border: 1px solid var(--line);
+  border-radius: 4px 20px 20px 4px;
+  background: var(--paper);
+  box-shadow: 4px 5px 0 var(--line), 8px 10px 0 var(--pass);
+  transform: rotate(2deg);
+}
+.h-swap-sheet .meta { margin-top: var(--space-6); }
+.h-swap-sheet h3 { font-size: 36px; }
+.h-swap-traits { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: var(--space-6) 0; padding: var(--space-4) 0; border-block: 1px solid var(--line); }
+.h-swap-traits span { color: var(--brand); font-size: var(--text-sm); }
+.h-swap-next { color: var(--ink); font: 36px / 1.1 var(--font-display); }
+.h-swap-next em { color: var(--brand); }
+@media (max-width: 760px) {
+  .home-passport .home-swap-demo:has(.h-swap-sheet) { grid-template-columns: 1fr; gap: var(--space-8); }
+  .h-swap-sheet { margin-right: var(--space-2); padding: var(--space-6); transform: rotate(1deg); }
+  .h-swap-next { font-size: 32px; }
 }

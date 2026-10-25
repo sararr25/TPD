@@ -16,3 +16,6 @@ coverage/
 
 # Copied from node_modules by scripts/copy-maplibre-worker.mjs
 public/maplibre/
+
+# Unusable owner-supplied Rive exports; retained locally for diagnosis.
+/assets/beesyde_journey-final*.riv

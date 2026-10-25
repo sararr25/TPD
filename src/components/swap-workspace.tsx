@@ -1,4 +1,5 @@
 "use client";
+import { JourneyRoute } from "./travel-art";
 import { usePassportState, PassportPrompt } from "./passport-state";
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
@@ -100,11 +101,12 @@ export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: str
     <>
       {!embedded && (
         <>
-          <div className="page-head swap-intro">
-            <span className="swap-intro-stamp" aria-hidden>SWAP</span>
+          <div className="page-head swap-intro" data-travel-page>
+            <span className="swap-intro-stamp" data-travel-stamp aria-hidden>SWAP</span>
             <div>
               <h1>Find its twin</h1>
               <p className="lead">Choose the city and the place you wanted. Keep what you loved, change what didn’t work.</p>
+              <JourneyRoute branching />
             </div>
           </div>
           <label htmlFor="swap-city">City</label>
@@ -445,7 +447,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       )}
       <>
           <div className="grid">
-            <section className="paper">
+            <section className="paper swap-starting-leaf" data-travel-page>
               <span className="meta">Step 1 · The place you wanted</span>
               <form onSubmit={search}>
                 <label htmlFor={uid + "-reference"}>The {category} you wanted</label>

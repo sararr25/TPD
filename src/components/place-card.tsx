@@ -88,7 +88,7 @@ export function PlaceCard({
       onMouseLeave={() => onHover(null)}
       onFocus={() => onHover(place.id)}
     >
-      <div className="place-photo">
+      <div className="place-photo" data-travel-reveal>
         {pageHref && <Link className="place-photo-link" href={pageHref} onClick={rememberCityPosition} tabIndex={-1} aria-hidden />}
         {pin !== null && (
           <span className="place-pin" aria-label={`Pin ${pin} on the map`}>

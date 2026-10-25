@@ -7,6 +7,8 @@ import { PlacePhoto } from "./place-photo";
 import { authClient } from "@/lib/auth/client";
 import { CityMap } from "./city-map";
 import { SaveButton, useSavedLists } from "./save-button";
+import { GuideFolio, JourneyRoute } from "./travel-art";
+import { COVERS } from "@/lib/city-covers";
 
 const FALLBACK: Record<ExplorePlaceCategory, string> = { restaurant: "Eat", bar: "Drink", museum: "See", hotel: "Stay" };
 
@@ -43,15 +45,17 @@ export function PlaceView({
       <Link className="place-back" href={backHref}>
         ← {city}
       </Link>
-      <div className="place-hero">
+      <div className="place-hero" data-travel-reveal>
         <PlacePhoto image={place.image} city={city} size="1200x" label={FALLBACK[category]} />
       </div>
       <div className="place-main">
+        <GuideFolio city={city} code={COVERS[city]?.code ?? "PLACE"} />
         <span className="meta">
           {city}
           {place.context && place.context !== place.address ? ` · ${place.context}` : ""}
         </span>
         <h1>{place.name}</h1>
+        <JourneyRoute className="place-journey-route" />
         {place.address && <p className="place-address">{place.address}</p>}
         {(chips.length > 0 || price) && (
           <ul className="place-chips" aria-label="About this place">

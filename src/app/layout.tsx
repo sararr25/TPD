@@ -10,6 +10,7 @@ import { NAV_LINKS } from "@/components/nav-links";
 import { TabBar } from "@/components/tab-bar";
 import { ToastProvider } from "@/components/toast";
 import { QuizPanelProvider } from "@/components/quiz-panel";
+import { TravelMotion } from "@/components/travel-motion";
 // Type (ADR 0004): self-hosted by next/font, exposed as CSS variables that
 // src/styles/tokens.css turns into --font-display / --font-body / --font-mono.
 const display = Instrument_Serif({
@@ -50,7 +51,7 @@ export default function RootLayout({
             <AuthButton compact />
           </header>
           <main>
-            <PassportStateProvider><QuizPanelProvider><Suspense fallback={<p role="status">Loading…</p>}>{children}</Suspense></QuizPanelProvider></PassportStateProvider>
+            <PassportStateProvider><QuizPanelProvider><Suspense fallback={<p role="status">Loading…</p>}><TravelMotion>{children}</TravelMotion></Suspense></QuizPanelProvider></PassportStateProvider>
           </main>
           <Suspense><TabBar /></Suspense>
           <footer>

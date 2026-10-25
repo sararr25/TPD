@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { PassportSecurityLines, PassportEmblem } from "./passport-art";
 import { AuthButton } from "./auth-button";
 import { authClient } from "@/lib/auth/client";
 import { removeFromList, deleteList, savedItemCity, savedItemPhoto, type SavedList, type SavedItem } from "@/lib/saved";
@@ -38,9 +39,10 @@ export function CollectionsView() {
   }
   const anyLocal = lists.some((l) => l.local);
   return (
-    <>
-      <header className="trip-page-head">
-        <span className="trip-mark" aria-hidden>♡</span>
+    <div className="trip-leaves">
+      <header className="trip-page-head passport-leaf-heading">
+        <PassportSecurityLines />
+        <PassportEmblem className="trip-passport-emblem" />
         <div>
           <h1>Your trips</h1>
           <p>The places you saved, ready for when you go.</p>
@@ -54,8 +56,9 @@ export function CollectionsView() {
         </EmptyState>
       ) : (
         lists.map((c) => (
-          <section className="trip" key={c.id} aria-labelledby={`trip-${c.id}`}>
+          <section className="trip" data-travel-page key={c.id} aria-labelledby={`trip-${c.id}`}>
             <header className="trip-head">
+              <svg className="trip-route-mark" viewBox="0 0 180 60" fill="none" aria-hidden="true"><path data-travel-route d="M8 42C34 42 30 12 62 12S99 49 129 37 151 18 172 18" /><circle cx="8" cy="42" r="4" /><circle cx="172" cy="18" r="4" /></svg>
               <div>
                 <h2 id={`trip-${c.id}`}>{c.name}</h2>
                 <p className="muted">
@@ -157,7 +160,7 @@ export function CollectionsView() {
           <AuthButton />
         </section>
       )}
-    </>
+    </div>
   );
 }
 
@@ -182,7 +185,7 @@ function SavedPlaceCard({ item, list, number, busy, active, onActive, onRemove }
     ? `/${citySlug(city)}/${item.placeId.toLowerCase()}`
     : `/place/${item.placeId.toLowerCase()}`;
   return (
-    <article className="saved-place" id={`saved-${list.id}-${item.placeId}`} data-active={active || undefined}
+    <article data-travel-page className="saved-place" id={`saved-${list.id}-${item.placeId}`} data-active={active || undefined}
       onMouseEnter={onActive} onFocus={onActive}>
       <Link className="saved-place-photo" href={href} prefetch={false} tabIndex={-1} aria-label={`Open ${item.name}`}>
         <PlacePhoto image={photo} city={city || ""} label={city || "Saved place"} lazy />

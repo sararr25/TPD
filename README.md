@@ -61,6 +61,7 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 
 ## Project state
 
+- `docs/37-home-passport-a.md`: owner-selected evolution of the current Passport Home, implemented and verified locally; not yet published.
 - `DECISIONS.md`: product decisions.
 - `docs/36-implementation-verification.md`: implementation, technical A/B comparison and acceptance boundaries.
 - `docs/35-lisbon-catalogue-proposal.md`: bounded inventory and unapplied schema/storage proposal.

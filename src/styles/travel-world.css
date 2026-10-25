@@ -1,0 +1,114 @@
+/* Passport A throughout: paper leaves, binding and itinerary. */
+.travel-world, .travel-world > * { min-width: 0; }
+.guide-folio { display:flex; justify-content:space-between; align-items:center; gap:var(--space-4); margin-bottom:var(--space-4); padding-bottom:var(--space-3); border-bottom:1px solid var(--line); color:var(--ink-2); font:var(--text-xs)/1.5 var(--font-mono); }
+.guide-folio-code { letter-spacing:.14em; }
+.journey-route { display:block; width:280px; max-width:100%; height:82px; overflow:visible; color:var(--brand); stroke:currentColor; stroke-width:1.5; }
+.journey-route-guide { stroke:var(--line-strong); stroke-dasharray:2 6; }
+.journey-route [data-travel-marker] { fill:var(--paper); }
+.journey-route .journey-branch { color:var(--stamp-ink); }
+.city-cover .journey-route [data-travel-marker] { fill:var(--pass); }
+.travel-world .h-cities.page { padding:var(--space-3); border:1px solid var(--line); border-left:10px solid var(--pass); border-radius:5px 28px 28px 5px; background:var(--paper); box-shadow:4px 5px 0 var(--line),7px 9px 0 var(--pass); }
+.travel-world .h-cities.page .h-cities-head { position:relative; isolation:isolate; overflow:hidden; align-items:start; gap:var(--space-6); padding:clamp(24px,4vw,48px); border-radius:3px 18px 18px 3px; border:0; background:var(--pass); color:var(--on-pass); }
+.travel-world .h-cities.page .h-cities-head > :not(.h-security) { position:relative; z-index:1; }
+.travel-world .cities-index-title { flex:1 1 55%; }
+.travel-world .cities-index-title h1 { max-width:20ch; font-size:clamp(36px,4.8vw,64px); line-height:1.05; }
+.travel-world .cities-index-title p { max-width:42ch; color:var(--on-brand-2); font-size:var(--text-md); }
+.cities-journey-route { margin-top:var(--space-5); color:var(--sun); }
+.cities-journey-route [data-travel-marker] { fill:var(--pass); }
+.travel-world .h-cities.page .toggle-group { flex:1 0 100%; }
+.travel-world .h-cities.page .h-grid { padding:var(--space-4); gap:var(--space-5); }
+.travel-world .h-cities.page .h-city { border-radius:3px 15px 15px 3px; box-shadow:3px 4px 0 var(--line); }
+.travel-world .h-cities.page .h-city-body { padding-block:var(--space-5); }
+.travel-world .h-cities.page .h-city-photo { overflow:hidden; }
+.travel-world .h-city-photo img { transition:transform var(--dur-slower) var(--ease-out); }
+.travel-world .h-city:hover .h-city-photo img { transform:scale(1.045); }
+.travel-world .city-cover { isolation:isolate; border:1px solid var(--pass); border-radius:6px 26px 26px 6px; box-shadow:3px 4px 0 var(--line),6px 8px 0 var(--pass); }
+.travel-world .city-cover::after { content:""; position:absolute; inset:13px; z-index:0; border:1px solid var(--on-brand-line); border-radius:2px 16px 16px 2px; opacity:.5; pointer-events:none; }
+.travel-world .city-cover-copy, .travel-world .city-cover-photo { position:relative; z-index:1; }
+.city-cover .guide-folio { color:var(--on-brand-2); border-color:var(--on-brand-line); }
+.city-journey-route { width:230px; height:64px; margin-top:var(--space-5); color:var(--sun); }
+.travel-world .city-cover-photo { padding:var(--space-3); border:1px solid var(--line); border-radius:3px 17px 17px 3px; background:var(--paper); }
+.travel-world .city-cover-photo img { inset:12px; width:calc(100% - 24px); height:calc(100% - 24px); border-radius:2px; }
+.travel-world .city-toolbar { padding:var(--space-6) 0 var(--space-4); border-bottom:1px dashed var(--line-strong); }
+.travel-world .city-banner { border-left:6px solid var(--pass); border-radius:3px 15px 15px 3px; }
+.travel-world .city-layout { padding-top:var(--space-4); }
+.travel-world .place-card { border-radius:4px 19px 19px 4px; box-shadow:2px 3px 0 var(--line); }
+.travel-world .place-actions { border-top-style:dashed; }
+.travel-world .city-map { border-radius:5px 18px 18px 5px; border-bottom:5px solid var(--pass); }
+.travel-world .place-page { column-gap:0; row-gap:var(--space-6); }
+.travel-world .place-hero { border-radius:5px 0 0 5px; border-left:9px solid var(--pass); background:var(--paper); }
+.travel-world .place-main { border-radius:0 22px 22px 0; background-image:repeating-linear-gradient(125deg,transparent 0 22px,color-mix(in srgb,var(--brand) 2%,transparent) 22px 23px); box-shadow:inset 14px 0 18px -17px var(--ink),4px 5px 0 var(--line); }
+.place-main .guide-folio { margin-bottom:0; font-size:10px; }
+.place-journey-route { height:52px; width:215px; margin-block:var(--space-1); }
+.travel-world .place-page .place-map { padding:var(--space-3); border:1px solid var(--line); border-left:8px solid var(--pass); border-radius:4px 20px 20px 4px; background:var(--paper); }
+.travel-world .swap-intro, .comparison-leaves .compare-head { position:relative; padding:clamp(24px,4vw,44px); border:1px solid var(--line); border-left:10px solid var(--pass); border-radius:5px 23px 23px 5px; background-color:var(--paper); background-image:repeating-linear-gradient(125deg,transparent 0 22px,color-mix(in srgb,var(--brand) 2%,transparent) 22px 23px); box-shadow:3px 4px 0 var(--line); }
+.travel-world .swap-intro .journey-route { margin-top:var(--space-5); height:65px; }
+.travel-world .swap-starting-leaf, .travel-world .swap-search-recap { border-left:7px solid var(--pass); border-radius:3px 20px 20px 3px; box-shadow:3px 4px 0 var(--line); }
+.travel-world .swap-summary { border-style:dashed; background:var(--sun-soft); }
+.comparison-leaves .compare-head h1 { margin-top:0; }
+.comparison-leaves .compare-head .journey-route { margin-top:var(--space-6); }
+.comparison-leaves .cmp-form { border-left:7px solid var(--pass); border-radius:3px 20px 20px 3px; }
+.comparison-leaves .cmp-grid { gap:var(--space-2); padding:var(--space-2); background:var(--pass); border-radius:5px 24px 24px 5px; }
+.comparison-leaves .cmp-col { border:0; border-radius:2px 16px 16px 2px; }
+.comparison-leaves .cmp-col + .cmp-col { border-left:1px dashed var(--line-strong); }
+.travel-world .empty-state, .travel-world .route-state { border-left:8px solid var(--pass); border-radius:4px 22px 22px 4px; box-shadow:3px 4px 0 var(--line); }
+.save-imprint { position:absolute; right:0; bottom:calc(100% + 9px); z-index:3; display:grid; place-content:center; width:76px; height:76px; border:2px solid var(--stamp-ink); border-radius:50%; outline:1px solid var(--stamp-ink); outline-offset:-6px; background:var(--paper); color:var(--stamp-ink); font:10px/1.6 var(--font-mono); text-align:center; transform:rotate(-12deg); opacity:0; pointer-events:none; }
+.loading-journey-route { width:220px; height:60px; margin-bottom:var(--space-4); }
+.quiz-panel { border-left:10px solid var(--pass); border-radius:5px 24px 24px 5px; background-image:repeating-linear-gradient(125deg,transparent 0 22px,color-mix(in srgb,var(--brand) 2%,transparent) 22px 23px); box-shadow:5px 7px 0 var(--line),var(--shadow-lg); }
+.quiz-progress { height:18px; overflow:visible; background:transparent; border-bottom:1px dashed var(--line-strong); border-radius:0; }
+.quiz-progress > span { position:relative; top:15px; height:3px; border-radius:0; }
+.quiz-progress > span::after { content:""; position:absolute; right:-5px; top:-4px; width:10px; height:12px; border:1.5px solid var(--brand); border-left-width:3px; border-radius:1px 3px 3px 1px; background:var(--paper); }
+.quiz-question-leaf { min-width:0; }
+.quiz-tile { border-radius:3px 14px 14px 3px; }
+.journey-animation { position:relative; flex:0 1 260px; width:260px; aspect-ratio:16/9; align-self:center; overflow:hidden; border-radius:3px 18px 18px 3px; background:var(--paper); }
+@media (min-width:850px) {
+ .travel-world .place-page .place-back { grid-column:1/-1; grid-row:1; }
+ .travel-world .place-page .place-hero { grid-column:1; grid-row:2; min-height:500px; height:100%; aspect-ratio:auto; }
+ .travel-world .place-page .place-main { grid-column:2; grid-row:2; align-content:start; padding:var(--space-8); }
+ .travel-world .place-page .place-map { grid-column:1/-1; grid-row:3; }
+ .travel-world .place-page .place-map .city-map { height:320px; }
+}
+@media (max-width:850px) {
+ .travel-world .h-cities.page .h-cities-head { padding:var(--space-6); }
+ .travel-world .place-hero { border-radius:5px 20px 0 0; }
+ .travel-world .place-main { border-radius:0 0 20px 5px; border-left:9px solid var(--pass); }
+ .travel-world .place-page { row-gap:var(--space-3); }
+ .journey-animation { flex-basis:185px; width:185px; }
+}
+@media (max-width:600px) {
+ .travel-world .h-cities.page { padding:var(--space-2); border-left-width:7px; }
+ .travel-world .h-cities.page .h-cities-head { padding:var(--space-5); gap:var(--space-4); }
+ .travel-world .cities-index-title { flex-basis:100%; }
+ .travel-world .cities-index-title h1 { font-size:40px; max-width:13ch; }
+ .travel-world .cities-index-title p { font-size:var(--text-sm); }
+ .journey-animation { display:none; }
+ .cities-journey-route { width:220px; height:65px; margin-top:var(--space-3); }
+ .travel-world .h-cities.page .h-grid { padding:var(--space-2); }
+ .travel-world .h-cities.page .toggle-group { gap:var(--space-1); }
+ .travel-world .h-cities.page .toggle { padding-inline:var(--space-3); font-size:13px; }
+ .city-journey-route { display:none; }
+ .city-cover .guide-folio { font-size:10px; margin-bottom:var(--space-3); }
+ .travel-world .city-cover-photo img { inset:8px; width:calc(100% - 16px); height:calc(100% - 16px); }
+ .travel-world .city-toolbar { padding-top:var(--space-4); }
+ .travel-world .place-main { padding:var(--space-5); }
+ .place-journey-route { height:44px; width:180px; }
+ .travel-world .swap-intro { padding:var(--space-5); border-left-width:7px; gap:var(--space-4); }
+ .travel-world .swap-intro .swap-intro-stamp { width:56px; height:56px; font-size:11px; }
+ .travel-world .swap-intro .journey-route { width:190px; height:54px; }
+ .comparison-leaves .compare-head { padding:var(--space-5); }
+ .comparison-leaves .compare-head .lead { font-size:var(--text-md); }
+ .comparison-leaves .cmp-grid { gap:var(--space-2); }
+}
+@media (max-width:520px) { .quiz-panel { padding:var(--space-5); border-left-width:7px; } }
+@media (orientation:landscape) and (max-height:500px) {
+ .travel-world .swap-intro { padding:16px 24px; gap:12px; }
+ .travel-world .swap-intro h1 { margin-block:0 8px; font-size:38px; }
+ .travel-world .swap-intro .lead { margin-block:0; font-size:16px; }
+ .travel-world .swap-intro .journey-route { margin-top:8px; height:34px; width:150px; }
+ .travel-world .swap-intro .swap-intro-stamp { width:54px; height:54px; font-size:11px; }
+}
+@media (prefers-reduced-motion:reduce) {
+ .journey-route [data-travel-route] { stroke-dasharray:none; stroke-dashoffset:0; }
+ .save-imprint { display:none; }
+}
+.journey-animation > svg { display:block; width:100%; height:100%; }

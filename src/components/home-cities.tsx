@@ -3,6 +3,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { CITIES, citySlug, LOCAL_NAME } from "@/lib/discovery";
 import { COVERS, cityCover } from "@/lib/city-covers";
+import { PassportSecurityLines } from "./passport-art";
+import { JourneyRoute } from "./travel-art";
+import { JourneyAnimation } from "./journey-animation";
 
 const REGIONS = ["All", "Europe", "Asia", "Americas"] as const;
 type Region = (typeof REGIONS)[number];
@@ -17,13 +20,16 @@ export function HomeCities({ page = false }: { page?: boolean }) {
   return (
     <section className={page ? "h-cities page" : "h-cities"} id="cities" aria-labelledby="h-cities">
       <div className="h-cities-head">
+        {page && <PassportSecurityLines />}
         {page ? (
           <div className="cities-index-title">
             <h1 id="h-cities">Choose your next city</h1>
             <p>Open a city to explore its places, or find a twin for one you already know.</p>
+            <JourneyRoute className="cities-journey-route" />
           </div>
         ) : <h2 id="h-cities">Eleven cities so far.</h2>}
-        <div className="toggle-group" role="group" aria-label="Filter cities by region">
+        {page && <JourneyAnimation />}
+        <div className={page ? "toggle-group on-dark" : "toggle-group"} role="group" aria-label="Filter cities by region">
           {REGIONS.map((r) => (
             <button type="button" className="toggle" key={r} aria-pressed={region === r} onClick={() => setRegion(r)}>
               {r}
@@ -49,7 +55,7 @@ function CityCard({ city, big }: { city: string; big: boolean }) {
   const photo = broken ? null : cityCover(city, big ? "1200x" : "420x");
   return (
     <Link href={`/${citySlug(city)}`} className="h-city" data-city={citySlug(city)}>
-      <div className={photo ? "h-city-photo" : "h-city-photo none"}>
+      <div className={photo ? "h-city-photo" : "h-city-photo none"} data-travel-reveal>
         {photo ? (
           <img
             src={photo}

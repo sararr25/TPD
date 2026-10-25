@@ -60,7 +60,9 @@ export function SaveButton({
   const id = useId();
   const toast = useToast();
   const { data: session } = authClient.useSession();
+  const [imprint, setImprint] = useState<{ placeId: string; serial: number } | null>(null);
   function stampSaved() {
+    setImprint(previous => ({ placeId: place.id, serial: (previous?.serial ?? 0) + 1 }));
     recordStamp({ kind: "place", city, placeId: place.id, name: place.name, createdAt: new Date().toISOString() }, signedIn ? session?.user?.id : undefined)
       .catch(e => toast(`The place is saved. ${(e as Error).message}`, { error: true }));
   }
@@ -187,6 +189,7 @@ export function SaveButton({
         <span aria-hidden>{saved.length ? "♥" : "♡"}</span>
         {!iconOnly && (saved.length ? " Saved" : " Save")}
       </button>
+      {imprint?.placeId === place.id && saved.length > 0 && <span key={imprint.serial} className="save-imprint" data-travel-stamp aria-hidden="true">SAVED<br />BEESYDE</span>}
       {open && (
         <div className="save-sheet" id={id} role="group" aria-label={`Save ${place.name}`}>
           <strong>Change lists</strong>

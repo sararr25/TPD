@@ -1,0 +1,172 @@
+/* Bound leaves continue the owner-selected Home Passport A. */
+.passport-leaves,
+.trip-leaves,
+.shared-trip-leaf,
+.passport-settings-leaf { min-width: 0; }
+
+.passport-leaf-heading {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(24px, 4vw, 48px) clamp(24px, 4vw, 48px) clamp(24px, 4vw, 48px) clamp(32px, 4vw, 56px);
+  border-radius: 5px 22px 22px 5px;
+  background: var(--pass);
+  color: var(--on-pass);
+  box-shadow: 3px 4px 0 var(--line);
+}
+.passport-leaf-heading::before {
+  position: absolute;
+  content: "";
+  inset: 14px auto 14px 14px;
+  border-left: 1px dashed var(--on-brand-line);
+}
+.passport-leaf-heading::after {
+  position: absolute;
+  content: "";
+  top: 0;
+  right: 32px;
+  width: 18px;
+  height: 32px;
+  background: var(--sun);
+  clip-path: polygon(0 0,100% 0,100% 100%,50% 77%,0 100%);
+}
+.passport-leaf-heading .h-security {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+  opacity: .13;
+  stroke: currentColor;
+  stroke-width: .6;
+  pointer-events: none;
+}
+.passport-leaf-heading h1 { margin-top: 0; color: var(--on-pass); }
+.passport-leaf-heading :is(p, .lead, .meta) { color: var(--on-brand-2); }
+.passport-leaf-heading a:focus-visible { outline-color: var(--sun); }
+
+.passport-leaves .passport-spread {
+  position: relative;
+  gap: 0;
+  align-items: stretch;
+  padding: 8px 8px 8px 12px;
+  border-radius: 7px 26px 26px 7px;
+  background: var(--pass);
+  box-shadow: 3px 4px 0 var(--line), 6px 8px 0 var(--paper);
+}
+.passport-leaves .passport-editor {
+  position: relative;
+  min-width: 0;
+  border: 0;
+  border-radius: 3px 0 0 3px;
+  padding: clamp(20px, 3vw, 36px);
+  background: linear-gradient(90deg, var(--paper) 95%, color-mix(in srgb, var(--ink) 8%, var(--paper)));
+}
+.passport-leaves .passport-editor .passport-leaf-heading {
+  margin: -8px -8px 24px;
+  padding: 28px 24px 28px 32px;
+}
+.passport-leaves .passport-editor .page-head h1 { font-size: clamp(32px, 3.7vw, 46px); }
+.passport-leaves .passport-editor .page-head .lead { font-size: var(--text-md); }
+.passport-leaves .passport-spread > :nth-child(2) {
+  min-width: 0;
+  margin: 0;
+  padding: clamp(20px, 3vw, 36px);
+  border: 0;
+  border-left: 1px dashed var(--line-strong);
+  border-radius: 0 18px 18px 0;
+  background-color: var(--paper);
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--ink) 7%, transparent), transparent 24px), repeating-linear-gradient(125deg, transparent 0 18px, color-mix(in srgb, var(--brand) 2%, transparent) 18px 19px);
+}
+.passport-leaves .passport-personal-leaf .pp { margin-top: 0; border-radius: 3px; }
+.passport-leaves .passport-activity {
+  position: relative;
+  border-radius: 5px 20px 20px 5px;
+  border-left: 10px solid var(--pass);
+  box-shadow: 3px 4px 0 var(--line);
+  background-image: repeating-linear-gradient(125deg, transparent 0 18px, color-mix(in srgb, var(--brand) 2%, transparent) 18px 19px);
+}
+.passport-leaves .activity-stamp { border-radius: 3px 12px 12px 3px; }
+.passport-quiz-leaf { padding: clamp(16px, 3vw, 36px); border-left: 10px solid var(--pass); background: var(--paper); border-radius: 4px 20px 20px 4px; }
+
+.passport-settings-leaf {
+  max-width: 920px;
+  margin-inline: auto;
+  padding: clamp(16px, 4vw, 40px);
+  border: 1px solid var(--line);
+  border-left: 12px solid var(--pass);
+  border-radius: 5px 24px 24px 5px;
+  background: var(--paper);
+  box-shadow: 3px 4px 0 var(--line), 6px 8px 0 var(--paper);
+}
+.passport-settings-leaf .page-head { padding: clamp(24px, 4vw, 40px); margin-bottom: 32px; }
+.passport-settings-leaf .page-head h1 { margin-block: 16px; font-size: clamp(32px, 4vw, 52px); }
+.passport-settings-leaf .divider { padding-block: 28px; border-top-style: dashed; }
+.passport-settings-leaf .divider > .meta { display: block; margin-bottom: 12px; color: var(--brand); }
+
+.trip-leaves .trip-page-head,
+.shared-trip-leaf .trip-page-head { margin-top: 0; gap: clamp(16px, 3vw, 36px); }
+.trip-passport-emblem { flex: none; width: 100px; height: 100px; color: var(--sun); stroke: currentColor; stroke-width: .8; }
+.trip-leaves .trip {
+  position: relative;
+  border-left: 12px solid var(--pass);
+  border-radius: 5px 22px 22px 5px;
+  box-shadow: 3px 4px 0 var(--line), 6px 8px 0 var(--paper);
+}
+.trip-leaves .trip-head {
+  position: relative;
+  isolation: isolate;
+  border-bottom: 1px dashed var(--line-strong);
+  background: repeating-linear-gradient(125deg, transparent 0 18px, color-mix(in srgb, var(--brand) 3%, transparent) 18px 19px);
+}
+.trip-route-mark { position: absolute; z-index: -1; right: 32%; top: 12px; width: 180px; height: 60px; color: var(--brand); opacity: .2; stroke: currentColor; stroke-width: 1.5; pointer-events: none; }
+.trip-route-mark path { stroke-dasharray: 3 5; }
+.trip-route-mark circle { fill: var(--paper); }
+.trip-leaves .saved-place { border-radius: 3px 14px 14px 3px; }
+.trip-leaves .saved-place-photo { overflow: hidden; }
+.trip-leaves .saved-place-photo img { transition: transform 650ms var(--ease-out); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .trip-leaves .saved-place:hover .saved-place-photo img { transform: scale(1.04); }
+}
+.trip-leaves .saved-place-pin { outline: 1px solid var(--on-brand-line); outline-offset: -5px; width: 36px; height: 36px; }
+.trip-leaves .trip-map { padding: 8px; border: 1px solid var(--line); border-radius: 3px 14px 14px 3px; background: var(--paper); }
+.trip-leaves > .paper { border-left: 8px solid var(--pass); border-radius: 4px 18px 18px 4px; }
+.shared-trip-leaf .shared-trip-places { gap: 24px; }
+.shared-trip-leaf .shared-trip-places li { border-left: 8px solid var(--pass); border-radius: 3px 16px 16px 3px; box-shadow: 2px 3px 0 var(--line); background-image: repeating-linear-gradient(125deg, transparent 0 18px, color-mix(in srgb, var(--brand) 2%, transparent) 18px 19px); }
+.shared-trip-leaf .shared-trip-number { outline: 1px solid var(--brand); outline-offset: -5px; transform: rotate(-8deg); }
+.shared-trip-leaf .shared-trip-note { border-radius: 3px 12px 12px 3px; border-left: 3px solid var(--brand); }
+:is(.passport-leaves, .passport-settings-leaf, .trip-leaves, .shared-trip-leaf) .btn { min-height: 44px; }
+
+@media (max-width: 850px) {
+  .passport-leaves .passport-spread { grid-template-columns: 1fr; }
+  .passport-leaves .passport-editor { border-radius: 3px 16px 0 0; }
+  .passport-leaves .passport-spread > :nth-child(2) { border-left: 0; border-top: 1px dashed var(--line-strong); border-radius: 0 0 16px 3px; background-image: linear-gradient(180deg, color-mix(in srgb, var(--ink) 5%, transparent), transparent 20px); }
+  .trip-passport-emblem { width: 72px; height: 72px; }
+}
+@media (max-width: 520px) {
+  .passport-leaf-heading { padding: 24px 20px 24px 30px; }
+  .passport-leaf-heading::after { right: 20px; width: 14px; height: 24px; }
+  .trip-leaves .trip-page-head, .shared-trip-leaf .trip-page-head { align-items: flex-start; }
+  .trip-passport-emblem { width: 52px; height: 52px; margin-top: 4px; }
+  .trip-leaves .trip, .passport-settings-leaf { border-left-width: 7px; }
+  .trip-leaves .trip-head-actions { width: 100%; }
+  .trip-leaves .trip-route-mark { display: none; }
+  .passport-settings-leaf { padding: 12px; }
+  .passport-settings-leaf .page-head { padding: 24px 18px 24px 24px; }
+  .passport-settings-leaf .divider { padding-block: 20px; }
+  .passport-leaves .passport-spread { padding: 5px 5px 5px 7px; }
+  .passport-leaves .passport-editor, .passport-leaves .passport-spread > :nth-child(2) { padding: 20px 16px; }
+  .passport-leaves .passport-editor .passport-leaf-heading { margin-inline: -4px; padding: 24px 18px 24px 24px; }
+  .passport-leaves .passport-editor .page-head h1 { font-size: 32px; }
+  .passport-leaves .passport-editor .page-head .lead { font-size: 14px; }
+  .passport-leaves .passport-activity { padding: 20px 16px; border-left-width: 7px; }
+  .shared-trip-leaf .shared-trip-places { gap: 16px; }
+}
+
+/* User-supplied trip names must not stretch a cover or its action row. */
+:is(.trip-leaves, .shared-trip-leaf) .trip-page-head > div,
+.trip-leaves .trip-head > div { min-width: 0; }
+:is(.trip-leaves, .shared-trip-leaf) .trip-page-head h1,
+.trip-leaves .trip-head h2 { overflow-wrap: anywhere; }
+.passport-quiz-leaf > .grid { grid-template-columns: minmax(0, 1fr); }

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { CITIES, type Entity } from "@/lib/discovery";
 import { discovery, type Selection } from "@/lib/discovery-client";
 import { EmptyState, LoadingCards } from "./empty-state";
+import { JourneyRoute } from "./travel-art";
 
 type LlmPick = { name: string; why: string };
 type Side<T> = { status: "idle" | "loading" | "done" | "error"; items: readonly T[]; error: string };
@@ -67,13 +68,14 @@ export function CompareView() {
   }
 
   return (
-    <>
+    <div className="comparison-leaves">
       <div className="page-head compare-head">
         <h1>Qloo vs AI</h1>
         <p className="lead">
           The same favourites, city and kind of place, answered two ways. Qloo picks from a catalogue of
           places; a general AI model writes its suggestions. This live example doesn’t measure which is better.
         </p>
+        <JourneyRoute branching />
       </div>
       <section className="paper cmp-form">
         <label>
@@ -127,13 +129,13 @@ export function CompareView() {
           )}
         </Column>
       </div>
-    </>
+    </div>
   );
 }
 
 function Column<T>({ title, note, side, children, onRetry, busy }: { title: string; note: string; side: Side<T>; children: (item: T) => React.ReactNode; onRetry: () => void; busy: boolean }) {
   return (
-    <section className="paper cmp-col" aria-busy={side.status === "loading"}>
+    <section className="paper cmp-col" data-travel-page aria-busy={side.status === "loading"}>
       <h2>{title}</h2>
       <p className="meta">{note}</p>
       {side.status === "idle" && (

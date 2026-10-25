@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { LOCAL_NAME, type Entity } from "@/lib/discovery";
 import { cityCover } from "@/lib/city-covers";
 import { OpenQuizButton } from "./quiz-panel";
 import { discovery, type Selection } from "@/lib/discovery-client";
+import { PassportSecurityLines } from "./passport-art";
 
 const CITY = "Lisbon";
 const CITY_LOCAL = LOCAL_NAME[CITY].toUpperCase();
@@ -49,10 +50,15 @@ export function HomeExample() {
   const first = picks?.[0]?.place.image ?? null;
   return (
     <aside className="h-visa" aria-labelledby="home-example">
-      <VisaPhoto src={first} fallback={cityCover(CITY, "420x")} loading={!picks && !error} />
-      <span className="h-mono" id="home-example">
-        For example
-      </span>
+      <PassportSecurityLines />
+      <div className="h-page-top" aria-hidden="true"><span>Your next chapter</span><span>B / 001</span></div>
+      <div className="h-bookmark" aria-hidden="true" />
+      <div className="h-destination">
+        <span className="h-mono">Portugal</span>
+        <h2 id="home-example">Lisbon <em>through your taste.</em></h2>
+      </div>
+      <VisaPhoto src={first} fallback={cityCover(CITY, "1200x")} loading={!picks && !error} />
+      <span className="h-mono h-example-label">An example Passport · not your profile</span>
       <p className="h-visa-sentence">
         Someone who loves{" "}
         {who.length ? (
@@ -103,14 +109,26 @@ export function HomeExample() {
 
 // Some Qloo photos fail to load (docs/22): show a plain panel instead.
 function VisaPhoto({ src, fallback, loading }: { src: string | null; fallback: string | null; loading: boolean }) {
-  const [broken, setBroken] = useState(false);
-  const shown = broken || !src ? fallback : src;
+  const [failed, setFailed] = useState<string[]>([]);
+  const image = useRef<HTMLImageElement>(null);
+  const shown = src && !failed.includes(src) ? src : fallback && !failed.includes(fallback) ? fallback : null;
+  const isCityPhoto = shown === fallback;
+  useEffect(() => {
+    // A server-rendered photo may fail before React attaches onError.
+    if (shown && image.current?.complete && image.current.naturalWidth === 0)
+      setFailed((previous) => previous.includes(shown) ? previous : [...previous, shown]);
+  }, [shown]);
   return (
-    <div className={loading ? "h-visa-photo skeleton" : "h-visa-photo"}>
-      {shown && <img key={shown} src={shown} alt="" loading="lazy" onError={() => setBroken(true)} />}
+    <figure className="h-visa-figure">
+      <div className={loading ? "h-visa-photo skeleton" : "h-visa-photo"}>
+        {shown ? <img ref={image} key={shown} src={shown} alt={isCityPhoto ? "Lisbon city view" : "Photograph from the example’s first place"} onError={() => setFailed((previous) => previous.includes(shown) ? previous : [...previous, shown])} /> : <span className="h-photo-unavailable">City photograph unavailable</span>}
+      </div>
+      {shown && <figcaption>{isCityPhoto ? "Lisbon · city photograph" : "Example pick · place photograph"}</figcaption>}
       <span className="h-stamp" aria-hidden>
-        {CITY_LOCAL}
+        <small>Beesyde · example</small>
+        <strong>LIS</strong>
+        <span>{CITY_LOCAL}</span>
       </span>
-    </div>
+    </figure>
   );
 }

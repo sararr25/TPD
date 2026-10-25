@@ -1,5 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { QuizIcon } from "./quiz-icon";
 import {
   QUESTIONS,
@@ -13,6 +15,8 @@ import {
   type Card,
   type Question,
 } from "@/lib/quiz";
+
+gsap.registerPlugin(useGSAP);
 
 // One question per screen. After the last one, if fewer than three artists
 // or films were liked, a top-up screen asks for a few more so the Passport
@@ -30,6 +34,14 @@ export function QuizFlow({
     [answers, setAnswers] = useState<Answers>({}),
     [extra, setExtra] = useState<string[]>([]);
   const total = QUESTIONS.length;
+  const leaf = useRef<HTMLElement>(null);
+  useGSAP(() => {
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.from(".quiz-question-leaf", { rotationY: -7, x: 12, transformOrigin: "left center", duration: .45, ease: "power3.out", clearProps: "transform,transformOrigin" });
+    });
+    return () => media.revert();
+  }, { scope: leaf, dependencies: [step], revertOnUpdate: true });
   const topUp = step >= total;
   const question = QUESTIONS[step];
   function leave(value: Answers[string] | undefined) {
@@ -43,7 +55,7 @@ export function QuizFlow({
     else setStep(total);
   }
   return (
-    <section className="quiz" aria-labelledby="quiz-title">
+    <section className="quiz" aria-labelledby="quiz-title" ref={leaf}>
       <div className="row">
         <span className="meta">
           {topUp ? "Almost there" : `Question ${step + 1} / ${total}`}
@@ -64,6 +76,7 @@ export function QuizFlow({
       >
         <span style={{ width: `${(Math.min(step, total) / total) * 100}%` }} />
       </div>
+      <div className="quiz-question-leaf">
       {topUp ? (
         <TopUp
           liked={likedEntities(answers)}
@@ -84,6 +97,7 @@ export function QuizFlow({
           onBack={step > 0 ? () => setStep(step - 1) : undefined}
         />
       )}
+      </div>
     </section>
   );
 }

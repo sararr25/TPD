@@ -31,6 +31,8 @@ import { CityMap } from "./city-map";
 import { feedbackSignal } from "@/lib/feedback";
 import { EmptyState } from "./empty-state";
 import { COVERS, cityCover } from "@/lib/city-covers";
+import { PassportSecurityLines } from "./passport-art";
+import { GuideFolio, JourneyRoute } from "./travel-art";
 
 type Payload = {
   // `near`: for neighbourhoods, the Passport's places close to its centre.
@@ -232,8 +234,9 @@ export function CityView({ city }: { city: string }) {
   return (
     <div className="city" data-city={citySlug(city)}>
       <section className="city-cover" aria-labelledby="city-title">
+        <PassportSecurityLines />
         <div className="city-cover-copy">
-          <span className="meta">{COVERS[city]?.country ?? "City guide"}</span>
+          <GuideFolio country={COVERS[city]?.country} code={COVERS[city]?.code ?? "GUIDE"} />
           <h1 id="city-title">{city}</h1>
           {LOCAL_NAME[city] && <p className="city-local">{LOCAL_NAME[city]}</p>}
           <p className="city-intro">
@@ -257,10 +260,11 @@ export function CityView({ city }: { city: string }) {
               ))}
             </ul>
           </details>
+          <JourneyRoute className="city-journey-route" branching={tab === "swap"} />
         </div>
         <div className="city-cover-photo" aria-hidden>
           {cover && <img src={cover} alt="" onError={() => setBrokenCover(city)} />}
-          <span className="city-stamp">{COVERS[city]?.code ?? city.slice(0, 3).toUpperCase()}</span>
+          <span className="city-stamp" data-travel-stamp>{COVERS[city]?.code ?? city.slice(0, 3).toUpperCase()}</span>
         </div>
       </section>
       <div className="city-toolbar">

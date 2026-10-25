@@ -42,3 +42,18 @@ also assert label highlighting/strikethrough, price choice/reset and editor
 geometry. Other cases cover three categories, empty/single/error results,
 reduced motion, CLS, large text, owner changes, Home and source attribution.
 No real-user or cross-device test is implied by intercepted fixtures.
+
+## Confirmed live receipt
+
+Application commit `d05395a119ebe2b848f15cf93951e4115663eba8` was pushed normally
+to both `codex/twin-motion-ux` and the existing production branch
+`claude/blissful-gauss-dymbeo`. Vercel production deployment
+`dpl_7AmrY9oVsWKFHfQc4u1yC3NS2ugF` is READY and aliases
+https://beesyde.vercel.app with no alias error. Default branch/configuration were
+not changed; remote main was not pushed.
+
+Public smoke: Home, Madrid/Twin and photo credits return HTTP 200; public CSS
+contains the new marked-label/inline-price controls. Two additional full Twin
+browser flows at 390 and 1440 passed against the public domain (intercepted
+synthetic APIs, no real-user/provider experiment). This receipt is a documentation
+follow-up on the working branch; the live application commit remains d05395a.

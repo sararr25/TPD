@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { twinFixtures, chooseReference } from "./twin-fixtures";
-const base = "http://127.0.0.1:3000";
+const base = process.env.MOTION_BASE_URL || "http://127.0.0.1:3000";
 test.use({ video: "on" });
 for (const size of [{ width: 390, height: 844 }, { width: 1440, height: 900 }, { width: 320, height: 700 }, { width: 812, height: 375 }]) {
  test(`Twin complete path and visible outcome ${size.width}`, async ({ page }) => {
@@ -16,6 +16,17 @@ for (const size of [{ width: 390, height: 844 }, { width: 1440, height: 900 }, {
   await expect(page.getByRole("button", { name: "Ignore: Quiet", exact: true })).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Keep: Quiet", exact: true }).click();
   await page.getByRole("button", { name: "Delete: Casual", exact: true }).click();
+  await expect(page.locator('.twin-trait-row[data-choice="keep"] .twin-trait-label')).toHaveText('Quiet');
+  await expect(page.locator('.twin-trait-row[data-choice="change"] .twin-trait-label')).toHaveText('Casual');
+  expect(await page.locator('.twin-trait-row[data-choice="change"] .twin-trait-label').evaluate(el => getComputedStyle(el).textDecorationLine)).toContain('line-through');
+  const referenceBox = await page.locator('.twin-reference').boundingBox();
+  const filtersBox = await page.locator('.twin-traits').boundingBox();
+  if (size.width > 900) expect(filtersBox!.x).toBeGreaterThan(referenceBox!.x + referenceBox!.width);
+  else expect(filtersBox!.y).toBeGreaterThanOrEqual(referenceBox!.y + referenceBox!.height);
+  await expect(page.locator('.twin-budget select')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Price up to €€', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Price up to €€', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Any price', exact: true }).click();
   await page.getByRole("button", { name: "Find its twin", exact: true }).click();
   await expect(page.locator(".twin-outcome")).toHaveAttribute("aria-busy", "true");
   await expect(page.locator(".twin-spotlight").getByRole("heading", { name: "Twin match 1" })).toBeVisible();

@@ -302,7 +302,7 @@ export function CityView({ city }: { city: string }) {
                 {CATEGORY_LABELS[value]}
               </button>
             ))}
-            <button className="toggle" aria-pressed={events} onClick={() => setEvents(true)}>Events</button>
+            <button className="toggle" aria-pressed={events} onClick={() => setEvents(true)}>Events · Paris pilot</button>
           </div>
         )}
       </div>

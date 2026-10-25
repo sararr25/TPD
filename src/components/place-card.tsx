@@ -39,6 +39,7 @@ export function PlaceCard({
   details,
   findSimilar = true,
   directions = false,
+  featured = false,
 }: {
   place: Entity;
   token: string;
@@ -62,6 +63,7 @@ export function PlaceCard({
   details?: React.ReactNode;
   findSimilar?: boolean;
   directions?: boolean;
+  featured?: boolean;
 }) {
   // Some Qloo photos are missing or fail to load (docs/22): show the city's
   // cover, and the category text only if the city has none either.
@@ -127,7 +129,7 @@ export function PlaceCard({
               signedIn={signedIn}
               onChange={onListsChange}
               onSaved={onSaved}
-              iconOnly
+              iconOnly={!featured}
             />
             <button className="btn btn-icon" aria-label={`Not for me: hide ${place.name}`} title="Not for me" onClick={onHide}>
               <span aria-hidden>✕</span>

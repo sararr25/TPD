@@ -1,5 +1,44 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Marked Twin labels / live publication — 25 October 2026
+
+Owner selected marked labels (Keep highlights, Delete strikes through, Ignore
+neutral), then authorized implementation and push live. Desktop DNA filters now
+sit to the right of the reference/search; mobile remains stacked. See
+[release receipt](51-marked-labels-live-release.md) for scope and validation.
+This explicit publication instruction supersedes the earlier local-only
+boundaries below for the completed work in this chat.
+
+## Personal Home and real visited cities — 25 October 2026
+
+Latest owner decisions are implemented locally: Lisbon, Paris, Tokyo, New York
+for new visitors; verified Passport affinity first, explicit real visits second;
+no frequency or invented affinity. Read [implementation and exact schema proposal](50-personal-home-implementation-and-visited-schema.md).
+This supersedes the pending questions in the earlier entries below. The owner
+approved the exact table: it is now applied and metadata-verified in configured
+Neon. All eight synthetic browser scenarios passed on the new local preview at
+localhost:3105. Persistent/production sync settings remain unchanged; local preview
+alone enables sync. Real sign-in/cross-device acceptance is unproven. No push or
+deployment occurred.
+
+## Approved city photographs and personal Home direction — 25 October 2026
+
+The owner approved the eleven-city photographic proposal; shared covers and
+`/photo-credits` are implemented locally. Home should rank by Passport affinity,
+then real travel history. Guest shortlist and how real visits are recorded are
+pending owner answers; guide-open stamps are not travel history. Read the
+[latest receipt](49-approved-photos-and-personal-city-ranking.md) before continuing.
+No publication or production schema change is implied.
+
+## Auto-review follow-through — 25 October 2026
+
+The owner authorized fixing the auto-review in sequence and required questions
+instead of invented choices. Stability/viewport, visibility-triggered mobile
+choreography, featured Twin photo/Save, reference-to-result scene and controls
+are implemented locally. See [implementation receipt](47-auto-review-implementation.md).
+Home city shortlist/grid composition and new photographs await the owner's
+answers. No push/deployment is implied; default and release configuration stay.
+
 ## Twin and motion implementation — 25 October 2026
 
 The owner authorized the implementation and technical/visual A/B comparison,

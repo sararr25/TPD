@@ -1,9 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 
-const base = "http://127.0.0.1:3000";
+const base = process.env.MOTION_BASE_URL || "http://127.0.0.1:3000";
 async function fixtures(page: Page, options: { brokenPhotos?: boolean; unavailable?: boolean; longNames?: boolean } = {}) {
   const writes: string[] = [];
-  await page.route("https://images.qloo.com/**", (route) => options.brokenPhotos ? route.abort() : route.fulfill({
+  await page.route(/https:\/\/(?:images\.qloo\.com|(?:upload|thumb)\.wikimedia\.org)\//, (route) => options.brokenPhotos ? route.abort() : route.fulfill({
     contentType: "image/svg+xml",
     body: '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="800" height="400" fill="#6b4a73"/></svg>',
   }));

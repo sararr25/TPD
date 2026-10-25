@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PassportSecurityLines } from "./passport-art";
 import { LearnedFromYou } from "./learned-from-you";
 import { PassportProfile } from "./passport-profile";
+import { VisitedCities } from "./visited-cities";
 import { PassportStamps } from "./passport-stamps";
 import { SharePassport } from "./share-passport";
 import { QuizFlow } from "./quiz-flow";
@@ -539,6 +540,7 @@ export function PassportBuilder() {
           </EmptyState>
         )}
       </div>
+      <VisitedCities />
       <PassportStamps />
     </div>
   );

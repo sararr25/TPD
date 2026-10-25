@@ -39,7 +39,7 @@ export function AuthButton({
     setBusy(false);
   }
 
-  if (isPending) return <span className="meta">{compact ? "…" : "Checking sign-in…"}</span>;
+  if (isPending) return <span className={compact ? "auth compact" : "auth"}><span className="meta" role="status">{compact ? "…" : "Checking sign-in…"}</span></span>;
   return (
     <span className={compact ? "auth compact" : "auth"}>
       {user && compact ? (

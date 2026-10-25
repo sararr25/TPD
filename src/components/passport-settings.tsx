@@ -8,6 +8,7 @@ import { dismissTag, FEEDBACK_KEY, type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import { QUIZ_KEY } from "@/lib/quiz";
 import { clearLocalStamps, deleteStamps } from "@/lib/stamps-client";
+import { clearVisited, deleteVisited } from "@/lib/visited-cities-client";
 import { authClient } from "@/lib/auth/client";
 import {
   deleteAccount,
@@ -76,6 +77,7 @@ export function PassportSettings() {
         await deleteAccountQuiz();
         await deleteAccountFeedback();
         await deleteStamps(userId);
+        await deleteVisited(userId);
       } catch (e) {
         setStatus((e as Error).message);
         setBusy(false);
@@ -84,7 +86,7 @@ export function PassportSettings() {
       setBusy(false);
     }
     try {
-      if (!userId) { await discardPendingPassport(); await deleteStamps(); }
+      if (!userId) { await discardPendingPassport(); await deleteStamps(); await deleteVisited("guest"); }
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem("tpd-passport-v1");
       localStorage.removeItem("tpd-design-v1");
@@ -117,6 +119,8 @@ export function PassportSettings() {
       // The server cascade already removed the account's stamps. Clear the
       // browser's pending copy without another authenticated request.
       clearLocalStamps(userId);
+      if (userId) clearVisited(userId);
+      clearVisited("guest");
       clearLocalStamps();
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem(HIDDEN_KEY);

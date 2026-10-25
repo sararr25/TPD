@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useId, useMemo, useState } from "react";
 import type { EventsResult } from "@/lib/server/events";
 
@@ -44,6 +45,7 @@ export function EventsExplorer({ city }: { city: string }) {
     <h2>Dated events are available in Paris</h2>
     <p>Our municipal-events pilot has dates, venues and links to the original listings. Events in {city} aren’t connected yet. A music venue alone isn’t an event.</p>
     {cityKey === "lisbon" && <a className="btn btn-secondary" href="https://www.agendalx.pt/" target="_blank" rel="noreferrer">Check Lisbon’s official agenda ↗</a>}
+    <p><Link className="btn btn-secondary" href="/paris?events=1">Browse the Paris events pilot →</Link> <a href="https://www.paris.fr/que-faire-a-paris" target="_blank" rel="noreferrer">Official Paris agenda ↗</a></p>
     <p className="meta">Choose Paris to browse the pilot. Event browsing is separate from Find its twin for places.</p>
   </section>;
 

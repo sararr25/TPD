@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { worldFixtures, sharedCode } from "./world-fixtures";
 import { mkdir } from "node:fs/promises";
-const base = "http://127.0.0.1:3000";
+const base = process.env.MOTION_BASE_URL || "http://127.0.0.1:3000";
 const pages = ["/explore", "/lisbon", "/swap", "/passport", "/passport/settings", "/collections", "/compare", "/trip#" + sharedCode, ...(process.env.PASSPORT_PRODUCTION ? [] : ["/preview/checks"])];
 for (const viewport of [{ width: 375, height: 812 }, { width: 812, height: 375 }, { width: 768, height: 1024 }, { width: 1440, height: 1000 }]) {
   test(`Passport world layout ${viewport.width}×${viewport.height}`, async ({ page }) => {

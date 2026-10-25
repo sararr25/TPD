@@ -178,7 +178,7 @@ export function SaveButton({
   return (
     <div className="save" ref={sheet}>
       <button
-        className="btn btn-icon"
+        className={iconOnly ? "btn btn-icon" : "btn btn-secondary"}
         aria-expanded={open}
         aria-controls={id}
         data-on={saved.length > 0 || undefined}

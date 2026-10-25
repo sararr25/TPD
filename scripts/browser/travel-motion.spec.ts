@@ -33,8 +33,11 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     // The lower postcard shelf becomes readable and remains settled when revisited.
     const card = page.locator(".h-grid > li:visible").last();
     await card.scrollIntoViewIfNeeded();
+    // Deliver IntersectionObserver before checking the settled state: the
+    // server-visible card also starts at opacity 1 / transform none.
+    await card.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
     await expect(card).toHaveCSS("opacity", "1");
-    await page.waitForTimeout(1000);
+    await expect(card).toHaveCSS("transform", "none");
     const settled = await card.evaluate((el) => getComputedStyle(el).transform);
     await page.evaluate(() => scrollTo(0, 0));
     await card.scrollIntoViewIfNeeded();

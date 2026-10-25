@@ -606,18 +606,20 @@
   .h-hero { grid-template-columns: 1fr; }
   .h-hero::after { display: none; }
   .h-cover {
-    min-height: 620px;
-    padding: var(--space-8) var(--space-6) var(--space-8) var(--space-8);
+    min-height: 0;
+    padding: var(--space-5) var(--space-6) var(--space-5) var(--space-8);
     border-radius: 12px 28px 0 0;
   }
   .h-cover::after { inset: 12px 12px 12px 18px; border-radius: 2px 12px 0 0; }
   .h-cover-top { font-size: 8px; gap: var(--space-2); }
   .h-cover-top > span:first-child { font-size: 10px; }
   .h-cover-bottom { font-size: 7px; }
-  .h-cover-heading { margin-top: var(--space-8); }
+  .h-cover-heading { margin-top: var(--space-4); }
   .h-cover h1 { font-size: clamp(40px, 10.5vw, 68px); }
   .h-lead { font-size: 15px; }
-  .h-emblem { width: 116px; height: 116px; }
+  .h-cover .h-emblem { width: 56px; height: 56px; margin: var(--space-3) auto; }
+  .h-cover .h-cover-bottom { margin-top: var(--space-3); }
+  .h-cover .h-entrance { margin-top: var(--space-2); }
   .h-visa { padding: var(--space-8) var(--space-6); border-radius: 0 0 28px 12px; }
   .h-page-top { font-size: 9px; }
   .h-destination h2 { font-size: 56px; }
@@ -688,3 +690,38 @@
   .h-swap-sheet { margin-right: var(--space-2); padding: var(--space-6); transform: rotate(1deg); }
   .h-swap-next { font-size: 32px; }
 }
+
+.h-city-photo.none { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--pass); }
+.h-city-photo.none .h-security { opacity: .2; }
+.h-city-photo.none small { color: var(--on-pass); font: 11px var(--font-mono); }
+@media (max-width: 520px) {
+  .h-cover .h-search[aria-label="Twin"] .h-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .h-cover .h-search[aria-label="Twin"] .h-row .btn { grid-column: 1 / -1; }
+}
+
+.h-emblem-depth { display: flow-root; flex: none; }
+/* The approved city-photo set shares the board's restrained tonal treatment. */
+.h-city-photo img, .city-cover-photo img { filter: saturate(.88) contrast(.98); object-position: 50% 50%; }
+.photo-credits > p { max-width: 75ch; }
+.photo-credit-list { display: grid; gap: 24px; margin: 32px 0; padding: 0; list-style: none; }
+.photo-credit-list > li { display: grid; grid-template-columns: 240px minmax(0, 1fr); align-items: center; gap: 24px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); }
+.photo-credit-list img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; }
+.photo-credit-list h2 { margin: 0; }
+.photo-credit-list p { overflow-wrap: anywhere; }
+@media (max-width: 600px) { .photo-credit-list > li { grid-template-columns: 1fr; gap: 12px; } }
+/* Four equally weighted postcards, independent of personal ranking order. */
+.h-personal-cities .h-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.h-personal-cities .h-grid > li { display: flex; flex-direction: column; min-width: 0; }
+.h-personal-cities .h-city { flex: 1; height: auto; }
+.h-personal-cities .h-cities-head p { margin: 8px 0 0; max-width: 55ch; }
+.h-city-reason { margin: 10px 4px 0; color: var(--ink-2); font-size: var(--text-xs); }
+@media (max-width: 1000px) { .h-personal-cities .h-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .h-personal-cities .h-grid { grid-template-columns: 1fr; } }
+.visited-cities { margin-top: 32px; }
+.visited-cities > p { max-width: 72ch; }
+.visited-cities fieldset { padding: 0; border: 0; margin-block: 24px; }
+.visited-city-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 20px; }
+.visited-city-options label { display: flex; align-items: center; gap: 12px; min-height: 44px; margin: 0; cursor: pointer; }
+.visited-city-options input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--brand); }
+@media (max-width: 760px) { .visited-city-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 360px) { .visited-city-options { grid-template-columns: 1fr; } }

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { worldFixtures } from "./world-fixtures";
-const base = "http://127.0.0.1:3000";
+const base = process.env.MOTION_BASE_URL || "http://127.0.0.1:3000";
 const payload = {
  supported: true, checkedAt: '2026-10-25T12:00:00Z', bounded: true,
  period: { from: '2026-10-25T12:00:00Z', to: '2026-11-24T12:00:00Z' },
@@ -11,7 +11,7 @@ for (const width of [390, 1440]) test(`Events real-date browse and filters ${wid
  await worldFixtures(page); await page.setViewportSize({ width, height: 844 });
  await page.route('**/api/events?*', r => r.fulfill({ json: payload }));
  await page.goto(base+'/paris');
- await page.getByRole('button', { name:'Events', exact:true }).click();
+ await page.getByRole('button', { name:'Events · Paris pilot', exact:true }).click();
  const events = page.locator('.events-explorer');
  await expect(events.getByRole('heading', { name:'Dated event 0' })).toBeVisible();
  await expect(events).toHaveAccessibleName('A date with the city');
@@ -30,7 +30,7 @@ for (const width of [390, 1440]) test(`Events real-date browse and filters ${wid
 });
 test('unsupported event city and failed agenda are explicit', async ({ page }) => {
  await worldFixtures(page); await page.goto(base+'/lisbon?tab=swap');
- await page.getByRole('button',{name:'Events',exact:true}).click();
+ await page.getByRole('button',{name:'Events · Paris pilot',exact:true}).click();
  await expect(page.getByRole('link',{name:/Check Lisbon’s official agenda/})).toBeVisible();
  await page.route('**/api/events?*',r=>r.fulfill({status:503,json:{error:'events_unavailable'}}));
  await page.goto(base+'/paris?events=1');

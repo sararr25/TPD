@@ -1,5 +1,6 @@
 import { DiscoveryError } from "@/lib/server/qloo";
 import { lookup, guest, quiz, swap, explore, neighbourhoodOptions } from "@/lib/server/discovery-service";
+import { cityAffinities } from "@/lib/server/city-affinity";
 import { checkBudget } from "@/lib/server/budget";
 export const runtime = "nodejs";
 const headers = {
@@ -37,9 +38,10 @@ export async function POST(request: Request) {
     }
     if (!body || typeof body !== "object")
       throw new DiscoveryError("invalid_request", 400);
-    await checkBudget(request, body.action === "swap" || body.action === "explore");
+    await checkBudget(request, body.action === "swap" || body.action === "explore" || body.action === "cities");
     let result;
-    if (body.action === "guest") result = await guest(body.profile);
+    if (body.action === "cities") result = await cityAffinities(body.passport);
+    else if (body.action === "guest") result = await guest(body.profile);
     else if (body.action === "neighbourhoods") result = await neighbourhoodOptions(body.city);
     else if (body.action === "quiz") result = await quiz(body.cards);
     else if (body.action === "explore")

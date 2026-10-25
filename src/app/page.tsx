@@ -30,13 +30,15 @@ export default function Home() {
             <h1 id="h-title">Your taste.<br /><em>Your next place.</em></h1>
             <p className="h-lead">Find places you’ll love, or a twin for the one that’s full. A 3-minute quiz makes the picks personal.</p>
           </div>
-          <PassportEmblem />
+          <div className="h-emblem-depth"><PassportEmblem /></div>
           <HomeSearch />
           <div className="h-cover-bottom" aria-hidden="true"><span>Made of what you love</span><span>Open to somewhere new ↗</span></div>
         </section>
         <HomeExample />
       </div>
       <div className="h-reading-note"><span>Your taste → Your city → Your next place</span></div>
+
+      <HomeSwapDemo />
 
       <section className="h-how" aria-labelledby="h-how">
         <h2 id="h-how">A city guide shaped by what you love.</h2>
@@ -51,8 +53,6 @@ export default function Home() {
       </section>
 
       <HomeCities />
-
-      <HomeSwapDemo />
 
       <section className="h-band" aria-labelledby="h-band">
         <PassportEmblem className="h-band-emblem" />

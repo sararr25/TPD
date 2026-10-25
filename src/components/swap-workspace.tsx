@@ -30,7 +30,7 @@ import { PlaceCard } from "./place-card";
 import { CityMap } from "./city-map";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
-import { EmptyState, LoadingCards } from "./empty-state";
+import { EmptyState } from "./empty-state";
 import { priceSymbols, PRICE_LEVELS } from "@/lib/price";
 import { EventsExplorer } from "./events-explorer";
 import type { CheckStatus } from "@/lib/venue-check";
@@ -134,7 +134,7 @@ export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: str
             {CATEGORY_CAPABILITIES[value].label}
           </button>
         ))}
-        <button className="toggle" aria-pressed={events} onClick={() => setEvents(true)}>Events</button>
+        <button className="toggle" aria-pressed={events} onClick={() => setEvents(true)}>Events · Paris pilot</button>
       </div>
       {events && <EventsExplorer city={city} />}
       {visited.map((k) => {
@@ -171,7 +171,6 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   const workspaceRef = useRef<HTMLDivElement>(null);
   const [mapOpen, setMapOpen] = useState(false);
   const outcomeRef = useRef<HTMLDivElement>(null);
-  const actionRef = useRef<HTMLButtonElement>(null);
   const submissionTop = useRef(96);
   const otherHeading = useRef<HTMLHeadingElement>(null);
   const outcomeHeading = useRef<HTMLHeadingElement>(null);
@@ -180,11 +179,19 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   // Preserve the submitted task's viewport while replacing its editor with the outcome.
   useLayoutEffect(() => {
     if (!presenting || !outcomeRef.current) return;
-    const top = outcomeRef.current.getBoundingClientRect().top;
-    window.scrollBy({ top: top - submissionTop.current, behavior: "instant" });
+    // Let the browser clamp the scroll after removing the tall editor before
+    // computing the destination. Otherwise landscape clamps away the request.
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        const top = outcomeRef.current?.getBoundingClientRect().top;
+        if (top === undefined) return;
+        window.scrollBy({ top: top - submissionTop.current, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      });
+    });
+    return () => cancelAnimationFrame(frame);
   }, [presenting]);
   function startTwin() {
-    submissionTop.current = Math.max(88, Math.min(actionRef.current?.getBoundingClientRect().top ?? 96, innerHeight - 560));
+    submissionTop.current = Math.max(88, (document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 76) + 12);
     focusOutcome.current = true;
     setBusy(true);
     setPresenting(true);
@@ -502,7 +509,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       </details>}
       lists={lists} signedIn={signedIn} onListsChange={reload} onSaved={() => saved(result.place)}
       onHide={() => notForMe(result)} active={activeResult === result.place.id} onHover={setActiveResult}
-      pin={resultPins.get(result.place.id) ?? null} findSimilar={false} directions />;
+      pin={resultPins.get(result.place.id) ?? null} findSimilar={false} directions featured={spotlight} />;
   }
   return (
     <div className="twin-workspace" ref={workspaceRef}>
@@ -513,13 +520,26 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         <div className="twin-outcome-head"><div><span className="meta">Your search · {reference?.entity.name}</span>
           <h2 ref={outcomeHeading} tabIndex={-1} aria-live="polite">{busy ? "Matching your place’s DNA…" : swapError ? "Search needs attention" : `${visibleResults.length} ${visibleResults.length === 1 ? "match" : "matches"} found`}</h2></div>
           <button className="btn btn-quiet" onClick={editSearch}>Edit search</button></div>
-        {busy && <LoadingCards label="Matching your place’s DNA…" count={1} />}
+        <div className="twin-thread" data-state={busy ? "searching" : swapError ? "error" : closest ? "success" : "empty"}>
+          <div className="twin-thread-origin"><span className="meta">Starting place · {city}</span><strong>{reference?.entity.name}</strong></div>
+          <div className="twin-thread-route" aria-hidden="true"><span /><i>→</i><span /></div>
+          <div className="twin-thread-traits">
+            {busy ? <><span className="meta">Looking for</span><p>{traitNames("keep").join(" · ") || "A place with shared traits"}</p></> : closest ? <>
+              <strong>{closest.place.name}</strong>
+              <span className="meta">Listed in both places</span>
+              <p>{keptChanged(closest).kept.join(" · ") || "No selected Keep traits listed in both"}</p>
+            </> : <><span className="meta">Your choices are kept</span><p>{swapError ? "Try again when you’re ready." : "Adjust the search to explore another direction."}</p></>}
+          </div>
+          {traitNames("change", busy ? choices : usedChoices).length > 0 && <p className="twin-thread-exclusions"><strong>Excluded from this search:</strong> {traitNames("change", busy ? choices : usedChoices).join(" · ")}</p>}
+        </div>
+        {busy && <div className="twin-match-loading" role="status"><span className="twin-loading-photo" aria-hidden="true" /><p>Comparing places with your choices…<br /><span className="meta">You can edit your search at any time.</span></p></div>}
         {!busy && swapError && <EmptyState title="Your twins couldn’t load" action={<button className="btn btn-primary" onClick={startTwin}>Try again</button>}><p>{swapError}</p><p>Your starting place and choices are still here.</p></EmptyState>}
         {!busy && !swapError && data && !closest && <EmptyState title={data.results.length ? "No visible matches for this view" : "No twins for these choices"}
           action={<button className="btn btn-primary" onClick={() => { setFacet(""); setAreaId(""); editSearch(); }}>Adjust search</button>}>
           <p>Try another place, fewer exclusions or a wider price range. Your Passport hasn’t changed.</p></EmptyState>}
         {!busy && !swapError && closest && <div className="twin-spotlight" data-travel-enter>
           {resultCard(closest, true)}
+          <p className="twin-difference"><span>What’s different</span> {closest.different}</p>
           {others.length > 0 && <button className="twin-other-link" onClick={seeOthers}>See other matches <span>({others.length})</span><span aria-hidden>↓</span></button>}
         </div>}
       </div>}
@@ -544,25 +564,26 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
           <div className="twin-trait-list">{choices.map((choice) => {
             const tag = reference.entity.tags.find((t) => t.id === choice.tagId)!;
             const label = traitLabel(tag.name);
-            return <div className="segment" key={choice.tagId}><span>{label}</span>
-              <div className="toggle-group" role="group" aria-label={label}>{(["keep", "change", "ignore"] as const).map((mode) => {
+            return <div className="twin-trait-row" key={choice.tagId} data-choice={choice.mode}><span className="twin-trait-label">{label}</span>
+              <div className="twin-trait-actions" role="group" aria-label={label}>{(["keep", "change", "ignore"] as const).map((mode) => {
                 const action = mode === "change" ? "Delete" : mode === "keep" ? "Keep" : "Ignore";
-                return <button type="button" className="toggle" key={mode} aria-label={`${action}: ${label}`} aria-pressed={choice.mode === mode}
+                return <button type="button" className="twin-trait-action" key={mode} data-mode={mode} aria-label={`${action}: ${label}`} aria-pressed={choice.mode === mode}
                   onClick={() => changeTag(choice.tagId, mode)}>{action}</button>;
               })}</div></div>;
           })}</div>
           {!choices.length && <p className="muted">No traits are listed for this place. Its name{personal ? " and your Passport" : ""} still guides the search.</p>}
-          {categoryHasPrice(category) && <div className="twin-budget"><label htmlFor={uid + "-budget"}>Price up to</label>
-            <select id={uid + "-budget"} value={budget} onChange={(e) => { if (data) setStale(true); setBudget(e.target.value); }}>
-              <option value="">Any price</option>{PRICE_LEVELS.map((n) => <option key={n} value={n}>{priceSymbols(n)}</option>)}
-            </select></div>}
+          {categoryHasPrice(category) && <div className="twin-budget"><span id={uid + "-budget"}>Price up to</span>
+            <div className="twin-price-options" role="group" aria-labelledby={uid + "-budget"}>
+              {["", ...PRICE_LEVELS.map(String)].map(value => <button type="button" key={value} aria-label={value ? `Price up to ${priceSymbols(Number(value))}` : "Any price"} aria-pressed={budget === value}
+                onClick={() => { if (data) setStale(true); setBudget(value); }}>{value ? priceSymbols(Number(value)) : "Any"}</button>)}
+            </div></div>}
           <details className="twin-context"><summary>About these choices{personal ? " & your Passport" : ""}</summary>
             <p>Keep is a preference, not a guarantee. Delete never removes anything from your Passport.</p>
             {categoryHasPrice(category) && <p>Indicative price tiers, not menu prices or currency conversion. Places without a known tier are excluded when a limit is set.</p>}
             {personal ? <><p>{passport.map((s) => s.entity.name).join(" · ")}</p><Link href="/passport">Edit favourites</Link></> : <p>You can search without a Passport. A 3-minute quiz makes the picks personal. <OpenQuizButton /></p>}
           </details>
           {stale && <p role="note">Choices changed. Update results to apply them.</p>}
-          <div className="twin-submit"><button ref={actionRef} className="btn btn-primary" disabled={busy} onClick={startTwin}>{stale ? "Update results" : "Find its twin"}</button></div>
+          <div className="twin-submit"><button className="btn btn-primary" disabled={busy} onClick={startTwin}>{stale ? "Update results" : "Find its twin"}</button></div>
         </section>}
       </div>
       <p className="sr-only" role="status" aria-live="polite">{!presenting ? status : ""}</p>

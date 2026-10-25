@@ -251,3 +251,18 @@ footer p {
 /* Keep every footer destination reachable on narrow phones. */
 .foot-top nav { flex-wrap: wrap; }
 .foot-top nav { flex: 0 1 auto; max-width: 100%; }
+
+/* The shell has the same geometry before and after session/router hydration. */
+.site-header { min-height: 69px; }
+.site-nav-slot { flex: 1; min-width: 0; }
+.site-header > .auth { flex: 0 0 116px; justify-content: flex-end; min-height: 44px; margin-left: auto; }
+main { min-height: calc(100svh - 69px); }
+.page-loading { min-height: calc(100svh - 160px); }
+@media (min-width: 721px) and (max-width: 850px) {
+  .site-nav-slot { order: 3; flex: 1 0 100%; }
+}
+@media (max-width: 720px) {
+  .site-header { min-height: 61px; }
+  .site-nav-slot { display: none; }
+  main { min-height: calc(100svh - 61px); }
+}

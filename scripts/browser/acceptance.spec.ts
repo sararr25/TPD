@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-const base = "http://127.0.0.1:3000";
+const base = process.env.MOTION_BASE_URL || "http://127.0.0.1:3000";
 const choice = (n: number) => ({
   entity: {
     id: `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`,
@@ -231,7 +231,7 @@ for (const width of [320, 390, 768, 1440])
   test(`Place long name and broken image ${width}`, async ({ page }) => {
     await api(page);
     await page.setViewportSize({ width, height: 900 });
-    await page.route("https://images.qloo.com/**", (r) => r.abort());
+    await page.route(/https:\/\/(?:images\.qloo\.com|(?:upload|thumb)\.wikimedia\.org)\//, (r) => r.abort());
     await page.goto(base + "/preview/checks");
     await expect(page.getByText("No place photo · Eat")).toBeVisible();
     expect(

@@ -47,12 +47,12 @@ export default function RootLayout({
             <Link className="brand" href="/">
               beesyde<span className="dot" aria-hidden="true">.</span>
             </Link>
-            <Suspense><MainNav /></Suspense>
+            <div className="site-nav-slot"><Suspense fallback={<nav aria-label="Main">{NAV_LINKS.map(([href, label]) => <Link key={href} href={href}>{label}</Link>)}</nav>}><MainNav /></Suspense></div>
             <AuthButton compact />
           </header>
           <main>
             <noscript><section className="paper"><h1>Your Taste Passport</h1><p>A city guide shaped by what you love. Enable JavaScript for personal picks and Twin searches.</p><a href="/explore">Browse cities</a></section></noscript>
-            <PassportStateProvider><QuizPanelProvider><Suspense fallback={<p role="status">Loading…</p>}><TravelMotion>{children}</TravelMotion></Suspense></QuizPanelProvider></PassportStateProvider>
+            <PassportStateProvider><QuizPanelProvider><Suspense fallback={<div className="page-loading" role="status">Opening your city guide…</div>}><TravelMotion>{children}</TravelMotion></Suspense></QuizPanelProvider></PassportStateProvider>
           </main>
           <Suspense><TabBar /></Suspense>
           <footer>
@@ -67,6 +67,7 @@ export default function RootLayout({
                   </Link>
                 ))}
                 <Link href="/compare">Qloo vs AI</Link>
+                <Link href="/photo-credits">Photo credits</Link>
               </nav>
             </div>
             <p>

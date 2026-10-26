@@ -200,7 +200,7 @@ export function PassportPrompt() {
     return (
       <p role="status">
         Your favourites need a refresh. Your quiz is still here.{" "}
-        <Link className="btn btn-secondary" href="/passport">
+        <Link className="btn btn-secondary" href="/passport#passport-editor">
           Refresh favourites
         </Link>
       </p>
@@ -216,7 +216,7 @@ export function PassportPrompt() {
       <p>
         Your profile is here. Add {3 - passport.selections.length} more
         favourites to get personal picks.{" "}
-        <Link className="btn btn-secondary" href="/passport">
+        <Link className="btn btn-secondary" href="/passport#passport-editor">
           Complete your favourites
         </Link>
       </p>

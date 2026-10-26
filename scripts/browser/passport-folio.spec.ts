@@ -71,3 +71,20 @@ test('preview caps results at three and only explains provider-attributed favour
  await setup(page);await page.route('**/api/discovery',async route=>{if(route.request().postDataJSON().action!=='explore')return route.fallback();return route.fulfill({json:{results:Array.from({length:5},(_,i)=>({place:{...place,id:`20000000-0000-4000-8000-${String(i).padStart(12,'0')}`,name:`Fixture match ${i+1}`,evidence:i===0?[favourites[0].entity.id]:[]},token:'fixture'}))}});});
  await page.goto(base+'/passport');await page.getByRole('button',{name:'Find bars for your evenings'}).click();await expect(page.locator('.pf-mini-place')).toHaveCount(3);await expect(page.locator('.pf-mini-place').first()).toContainText(`Because you like ${favourites[0].entity.name}`);await expect(page.locator('.pf-mini-place').nth(1)).toContainText('Picked for your Passport');
 });
+
+test('Passport adds what you love while quiz changes live in settings', async ({ page }) => {
+ await setup(page);
+ await page.goto(base + '/passport');
+ await expect(page.getByRole('button', { name: 'Redo the quiz', exact: true })).toHaveCount(0);
+ await page.getByRole('button', { name: 'Add what you love', exact: true }).click();
+ const editor = page.getByRole('dialog', { name: 'Add what you love', exact: true });
+ await expect(editor).toBeVisible();
+ await expect(editor.getByLabel('What kind of favourite?')).toBeVisible();
+ await expect(editor.getByRole('button', { name: /quiz/i })).toHaveCount(0);
+ await editor.getByRole('button', { name: 'Close editor', exact: true }).click();
+ await page.getByRole('link', { name: 'Settings & privacy' }).first().click();
+ await page.getByRole('button', { name: 'Redo the quiz', exact: true }).click();
+ await expect(page.locator('.quiz-panel[open] .taste-quiz')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(page.getByRole('button', { name: 'Redo the quiz', exact: true })).toBeFocused();
+});

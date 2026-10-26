@@ -63,8 +63,7 @@ test("reduced-motion touch swipes keep the card still and deliberate horizontal 
   await worldFixtures(page);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(base + "/passport");
-  await page.getByText("Edit favourites & quiz", { exact: true }).click();
+  await page.goto(base + "/passport/settings");
   await page.getByRole("button", { name: "Redo the quiz", exact: true }).click();
   await page.getByRole("button", { name: /Start my quiz/ }).click();
   for (let i = 0; i < 18 && !await page.locator(".taste-card").count(); i++) await page.getByRole("button", { name: "Skip", exact: true }).click();
@@ -110,7 +109,7 @@ test("Passport portrait precedes its editor and existing favourites remain edita
   await page.goto(base + "/passport");
   await expect(page.locator(".pf-analysis")).toBeVisible();
   await expect(page.locator(".pf-editor").first()).not.toHaveAttribute("open");
-  await page.getByText("Edit favourites & quiz", { exact: true }).click();
+  await page.getByText("Add what you love", { exact: true }).click();
   await expect(page.locator(".pf-editor .chips button")).toHaveCount(3);
   await page.getByRole("button", { name: "Remove " + favourites[0].entity.name, exact: true }).click();
   await expect(page.locator(".pf-editor .chips button")).toHaveCount(2);

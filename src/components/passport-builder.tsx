@@ -14,7 +14,7 @@ import {
   stagePassport,
   retryPassportSave,
 } from "@/lib/quiz-finish";
-import { buildProfile, type Answers } from "@/lib/quiz";
+import { type Answers } from "@/lib/quiz";
 import { type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import { discovery, type Selection } from "@/lib/discovery-client";
@@ -229,7 +229,6 @@ export function PassportBuilder() {
         <PassportStamps />
       </div>
     );
-  const traveller = buildProfile(profile);
   const editor = (
 <section className="passport-editor" data-travel-page>
           {(passportState.state === "saving" ||
@@ -237,22 +236,12 @@ export function PassportBuilder() {
             passportState.state === "expired") && <PassportPrompt />}
           <div className="page-head passport-leaf-heading">
             <PassportSecurityLines />
-            <h1 tabIndex={-1}>Your Taste Passport</h1>
+            <h1 tabIndex={-1}>What you love</h1>
             <p className="lead">
               What you love, so we can pick places for you. Add 3–5 favourite
               artists, films, books or places.
             </p>
           </div>
-          <button
-            className="btn btn-secondary"
-            disabled={busy || !ready}
-            onClick={() => {
-              setStatus("");
-              setQuizOpen(true);
-            }}
-          >
-            {traveller ? "Redo the quiz" : "Make your Passport"}
-          </button>
           {showGuest && (
             <div className="paper">
               <h3>Try an example Passport</h3>
@@ -494,5 +483,5 @@ export function PassportBuilder() {
           </p>
         </section>
   );
-  return <PassportFolio key={passportState.owner} answers={profile} favourites={selected.map(s => s.entity.name)} holder={session?.user?.name} editor={editor} onStartQuiz={() => { setStatus(""); setQuizOpen(true); }}/>;
+  return <PassportFolio key={passportState.owner} answers={profile} favourites={selected.map(s => s.entity.name)} editor={editor} onStartQuiz={() => { setStatus(""); setQuizOpen(true); }}/>;
 }

@@ -114,3 +114,29 @@ test('affinity failure and unavailable account sync keep honest local fallback',
   await page.getByRole('button', { name: /^(Add stamps|Edit stamps)$/ }).click();
   await expect(page.getByRole('checkbox', { name: 'Barcelona', exact: true })).toBeChecked();
 });
+
+test('Home travel editor link opens the current stamp dialog', async ({ page }) => {
+ await fixtures(page);
+ await page.goto(base);
+ await page.getByRole('link', { name: 'Update your visited cities' }).click();
+ const dialog = page.getByRole('dialog', { name: 'Add visited city stamps' });
+ await expect(dialog).toBeVisible();
+ await expect(dialog.getByRole('checkbox', { name: 'Paris', exact: true })).toBeEnabled();
+ await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+ await expect(dialog).not.toBeVisible();
+});
+
+test('expired favourites recovery opens the editing controls', async ({ page }) => {
+ await fixtures(page);
+ await page.goto(base + '/passport');
+ await page.evaluate(() => {
+  const entity = { id: '00000000-0000-4000-8000-000000000004', name: 'Expired favourite', type: 'artist', tags: [], evidence: [], image: null, lat: null, lon: null, price: null };
+  const token = btoa(JSON.stringify({ expires: 1 })) + '.fixture';
+  localStorage.setItem('tpd-passport-v2', JSON.stringify([4,5,6].map(n => ({ entity: { ...entity, id: `00000000-0000-4000-8000-00000000000${n}` }, token }))));
+  localStorage.setItem('beesyde-quiz-v1', JSON.stringify({ planning: 2 }));
+ });
+ await page.reload();
+ await page.getByRole('link', { name: 'Refresh favourites', exact: true }).filter({ visible: true }).first().click();
+ await expect(page.locator('dialog.pf-editor')).toHaveAttribute('open', '');
+ await expect(page.locator('dialog.pf-editor').locator('.passport-editor h1')).toBeFocused();
+});

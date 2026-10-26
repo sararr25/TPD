@@ -81,3 +81,64 @@ test("error preserves editor choices and reduced motion arrow has correct focus"
  await page.getByRole("button", { name: "Edit search" }).click();
  await expect(page.getByRole("button", { name: "Keep: Quiet", exact: true })).toHaveAttribute("aria-pressed", "true");
 });
+
+for (const edit of ['trait', 'price']) test(`editing ${edit} during the first pending search requires an explicit update`, async ({ page }) => {
+ const requests = await twinFixtures(page, { delay: 2500 });
+ await chooseReference(page, base);
+ await page.getByRole('button', { name: 'Find its twin', exact: true }).click();
+ await expect(page.locator('.twin-outcome')).toHaveAttribute('aria-busy', 'true');
+ await page.getByRole('button', { name: 'Edit search', exact: true }).click();
+ if (edit === 'trait') await page.getByRole('button', { name: 'Delete: Quiet', exact: true }).click();
+ else await page.getByRole('button', { name: 'Price up to €€', exact: true }).click();
+ await expect(page.locator('.twin-results')).toBeVisible();
+ await expect(page.getByText('Choices changed. Update results to apply them.', { exact: true })).toBeVisible();
+ await expect(page.getByRole('button', { name: 'Update results', exact: true })).toBeEnabled();
+ expect(requests.filter(r => r.action === 'swap')).toHaveLength(1);
+ await page.getByRole('button', { name: 'Update results', exact: true }).click();
+ await expect(page.locator('.twin-spotlight')).toBeVisible();
+ const updated = requests.filter(r => r.action === 'swap');
+ expect(updated).toHaveLength(2);
+ if (edit === 'trait') expect(updated[1].choices).toContainEqual({ tagId: 'urn:tag:fixture:trait:0', mode: 'change' });
+ else expect(updated[1].maxPrice).toBe(2);
+});
+
+for (const pending of [false, true]) test(`Passport changes invalidate ${pending ? 'pending' : 'completed'} Twin results without automatic requests`, async ({ page }) => {
+ const requests = await twinFixtures(page, { delay: pending ? 2500 : 0 });
+ await chooseReference(page, base);
+ await page.getByRole('button', { name: 'Find its twin', exact: true }).click();
+ if (pending) await expect.poll(() => requests.filter(r => r.action === 'swap').length).toBe(1);
+ else await expect(page.locator('.twin-spotlight')).toBeVisible();
+ await page.evaluate(() => {
+  const choices = JSON.parse(localStorage.getItem('tpd-passport-v2')!);
+  choices[0].token = 'updated-profile-token';
+  localStorage.setItem('tpd-passport-v2', JSON.stringify(choices));
+  localStorage.setItem('beesyde-quiz-v1', JSON.stringify({ planning: 1 }));
+  window.dispatchEvent(new Event('storage'));
+ });
+ await expect(page.getByRole('button', { name: 'Update results', exact: true })).toBeEnabled();
+ await expect(page.locator('.twin-spotlight')).not.toBeVisible();
+ expect(requests.filter(r => r.action === 'swap')).toHaveLength(1);
+ await page.getByRole('button', { name: 'Update results', exact: true }).click();
+ await expect(page.locator('.twin-spotlight')).toBeVisible();
+ const updated = requests.filter(r => r.action === 'swap');
+ expect(updated).toHaveLength(2);
+ expect(updated[1].passport).toContain('updated-profile-token');
+ expect(updated[1].quiz).toEqual({ planning: 1 });
+});
+
+test('an expired Passport requires recovery before updating Twin results', async ({ page }) => {
+ const requests = await twinFixtures(page, { delay: 0 });
+ await chooseReference(page, base);
+ await page.getByRole('button', { name: 'Find its twin', exact: true }).click();
+ await expect(page.locator('.twin-spotlight')).toBeVisible();
+ await page.evaluate(() => {
+  const choices = JSON.parse(localStorage.getItem('tpd-passport-v2')!);
+  choices[0].token = btoa(JSON.stringify({ expires: 1 })) + '.fixture';
+  localStorage.setItem('tpd-passport-v2', JSON.stringify(choices));
+  window.dispatchEvent(new Event('storage'));
+ });
+ await expect(page.getByRole('button', { name: 'Update results', exact: true })).toBeDisabled();
+ await expect(page.locator('.twin-spotlight')).not.toBeVisible();
+ await expect(page.getByRole('link', { name: 'Refresh favourites', exact: true }).first()).toBeVisible();
+ expect(requests.filter(r => r.action === 'swap')).toHaveLength(1);
+});

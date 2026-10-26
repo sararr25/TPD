@@ -15,6 +15,6 @@ test('approved city sources have visible attribution and cover every supported c
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
   await page.goto(base + '/explore');
   await expect(page.locator('.h-grid > li:not([hidden])')).toHaveCount(11);
-  await expect(page.locator('[data-city="phu-quoc"] img')).toHaveAttribute('src', /wikimedia/);
+  await expect(page.locator('[data-city="phu-quoc"] img:visible')).toHaveAttribute('src', /wikimedia/);
   await expect(page.locator('footer').getByRole('link', { name: 'Photo credits', exact: true })).toHaveAttribute('href', '/photo-credits');
 });

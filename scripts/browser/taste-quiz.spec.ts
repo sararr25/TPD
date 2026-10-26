@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { worldFixtures, favourites } from './world-fixtures';
 import { QUESTIONS } from '../../src/lib/quiz';
-const base = process.env.TPD_BROWSER_BASE || 'http://127.0.0.1:3107';
+const base = process.env.TPD_BROWSER_BASE || process.env.MOTION_BASE_URL || 'http://127.0.0.1:3000';
 const ordered = [QUESTIONS.find(q => q.id === 'places')!, QUESTIONS.find(q => q.id === 'music')!, ...QUESTIONS.filter(q => !['places','music'].includes(q.id))];
 async function open(page: Page) {
   await worldFixtures(page);
@@ -16,8 +16,7 @@ async function open(page: Page) {
     }
     Object.defineProperty(window,'AudioContext',{value:FakeAudio,configurable:true});
   });
-  await page.goto(base+'/passport');
-  await page.getByText('Edit favourites & quiz',{exact:true}).click();
+  await page.goto(base+'/passport/settings');
   await page.getByRole('button',{name:'Redo the quiz',exact:true}).click();
   await expect(page.locator('#quiz-title')).toBeFocused();
   await page.getByRole('button',{name:'Start my quiz'}).click();
@@ -62,7 +61,7 @@ test('full 18-question guest flow retains answers, retries save, and sounds only
  await page.getByRole('button',{name:'Build my Passport',exact:true}).click();await expect(page.locator('.taste-status')).toContainText('Try building');
  expect(await page.evaluate(()=>(window as unknown as {audioTones:number}).audioTones)).toBe(2);
  await page.getByRole('button',{name:'Build my Passport',exact:true}).click();await expect(page.locator('.taste-quiz')).toHaveCount(0);
- expect(await page.evaluate(()=>(window as unknown as {audioTones:number}).audioTones)).toBe(5);await expect(page.getByRole('heading',{name:'Your Taste Passport',exact:true})).toBeFocused();
+ expect(await page.evaluate(()=>(window as unknown as {audioTones:number}).audioTones)).toBe(5);await expect(page.getByRole('heading',{name:'Your Passport is ready.',exact:true})).toBeFocused();
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('beesyde-quiz-v1')||'{}'));expect(Object.keys(saved)).toHaveLength(18);expect(saved.music).toHaveLength(4);expect(attempts).toBe(2);
 });
 test('mute and keyboard focus stay inside the quiz; Escape closes it',async({page})=>{

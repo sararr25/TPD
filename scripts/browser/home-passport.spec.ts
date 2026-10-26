@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
 const base = process.env.MOTION_BASE_URL || "http://127.0.0.1:3000";
-async function fixtures(page: Page, options: { brokenPhotos?: boolean; unavailable?: boolean; longNames?: boolean } = {}) {
+async function fixtures(page: Page, options: { brokenPhotos?: boolean; unavailable?: boolean; longNames?: boolean; empty?: boolean } = {}) {
   const writes: string[] = [];
   await page.route(/https:\/\/(?:images\.qloo\.com|(?:upload|thumb)\.wikimedia\.org)\//, (route) => options.brokenPhotos ? route.abort() : route.fulfill({
     contentType: "image/svg+xml",
@@ -17,6 +17,7 @@ async function fixtures(page: Page, options: { brokenPhotos?: boolean; unavailab
       if (body.action === "guest") return route.fulfill({ json: { choices: [1, 2, 3].map((n) => ({
         entity: { id: `favourite-${n}`, name: `Fixture favourite ${n}` }, token: `fixture-${n}`,
       })) } });
+      if (options.empty) return route.fulfill({ json: { results: [] } });
       const category = body.category || "place";
       return route.fulfill({ json: { results: [{ place: {
         id: `fixture-${category}`, name: options.longNames ? "A very long example place name ".repeat(7) : `Fixture ${category}`,
@@ -90,4 +91,16 @@ test("reduced motion, keyboard entry and Home return leave no hidden content", a
   await expect(page.locator(".h-cover h1:visible")).toBeVisible();
   await expect(page.locator(".h-stamp:visible")).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+for (const width of [390, 1440]) test(`empty Home example stays readable at ${width}`, async ({ page }) => {
+ await fixtures(page, { empty: true });
+ await page.setViewportSize({ width, height: 900 });
+ await page.goto(base);
+ const message = page.getByText('No picks for this example today.', { exact: true });
+ await expect(message).toBeVisible();
+ await page.evaluate(() => document.fonts.ready);
+ const lines = await message.evaluate(el => el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight));
+ expect(lines).toBeLessThanOrEqual(2.1);
+ await expect(page.locator('.h-picks').getByRole('link', { name: 'Explore Lisbon' })).toBeVisible();
 });

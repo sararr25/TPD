@@ -30,7 +30,10 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const el = dialog.current;
     if (!el) return;
-    if (open && !el.open) el.showModal();
+    if (open && !el.open) {
+      el.showModal();
+      el.querySelector<HTMLElement>("#quiz-title")?.focus({ preventScroll: true });
+    }
     if (!open && el.open) el.close();
   }, [open]);
   useEffect(() => {

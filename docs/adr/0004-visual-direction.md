@@ -78,3 +78,19 @@ The final Home ending retains its original lemon card and adds a dashed imagined
 walking route. Static footprints remain visible with reduced motion. Docs/58
 records the reconciliation: current live quiz/Passport supersede the earlier
 local remake, whose unimported CSS is retained only as historical source.
+
+## Amendment — 26 Oct 2026: equal Passport pages and compact title strip
+
+Owner clarified that the open Passport has two equal-width pages. The left page
+is not a narrower sidebar: its Taste Passport title is a small berry strip at the
+top, with the full left half below reserved for Places you’ve been and visited-city
+stamps. Replace the earlier 40/60 split and tall title cover. Preserve the right
+page's taste analysis and the existing mobile stacked reading order.
+
+## Amendment — 26 Oct 2026: title-only strip and Passport tools
+
+Owner removed the Beesyde/Made for you label from the Passport title strip:
+show only bold Your Passport. Owner rejected the bare native accordion links
+below the book as inconsistent with the brand. Use paper panels: an explicit
+button opens the favourites/quiz editor in its own dialog, while guide/save
+activity is visible directly. Preserve equal page widths and visited-city space.

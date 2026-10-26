@@ -1,5 +1,13 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Passport and backlog publication — 27 October 2026
+
+Owner explicitly requested publishing all pending work. Read [publication continuation](62-passport-and-backlog-release.md); its linked #44 receipt records the final commit, deployment and public-alias verification. This supersedes the local-only boundaries below for the retained changes.
+
+## Post-release acceptance started — 26 October 2026
+
+Programme #44 is now in progress. Read [the working acceptance receipt](60-post-release-acceptance.md) for tracker reconciliation, independently reproduced integration defects, local fixes, fresh verification and remaining device/review gates. The [coverage/catalogue packet](61-coverage-catalogue-and-submission.md) records current inventory and approval boundaries. These new fixes are local only; the published baseline remains the reconciled release below.
+
 ## All changes reconciled / latest handover — 26 October 2026
 
 Owner requested publication of all modified work and a handover. Read

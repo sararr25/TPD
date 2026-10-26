@@ -89,9 +89,9 @@ for (const count of [0, 1, 2, 3, 5])
     await api(page, count);
     await page.goto(base + "/passport");
     await expect(
-      page.getByRole("heading", { name: "Your Taste Passport" }),
+      page.getByRole("heading", { name: "Your Passport", exact: true }),
     ).toBeVisible();
-    await page.getByText("Edit favourites & quiz", { exact: true }).click();
+    await page.getByText("Add what you love", { exact: true }).click();
     await expect(page.getByText(`${count} of 5 chosen`)).toBeVisible();
     if (count < 3)
       await expect(page.locator(".passport-editor").getByText(/Your profile is here/)).toBeVisible();
@@ -119,7 +119,7 @@ test("example preview does not write personal favourites", async ({ page }) => {
   });
   await api(page, 3);
   await page.goto(base + "/passport?guest=1");
-  await page.getByText("Edit favourites & quiz", { exact: true }).click();
+  await page.getByText("Add what you love", { exact: true }).click();
   await page.getByRole("button", { name: "Preview this example" }).click();
   await expect(
     page.getByRole("heading", { name: "Example · not your Passport" }),
@@ -290,7 +290,7 @@ test("foreign pending account is never imported into the current account", async
     );
   });
   await page.goto(base + "/passport");
-  await page.getByText("Edit favourites & quiz", { exact: true }).click();
+  await page.getByText("Add what you love", { exact: true }).click();
   await expect(page.getByText("0 of 5 chosen")).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Retry account save" }),

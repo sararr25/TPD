@@ -61,6 +61,10 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 
 ## Project state
 
+- **Current publication continuation:** `docs/62-passport-and-backlog-release.md` — owner-approved Passport corrections and all pending integration work; final deployment receipt in #44.
+
+- **Post-release acceptance in progress:** `docs/60-post-release-acceptance.md`, programme #44. Integration fixes and fresh checks; publication superseded by docs/62. Coverage/catalogue decision packet: `docs/61-coverage-catalogue-and-submission.md`.
+
 - **Latest continuation:** `docs/58-all-changes-live-handover.md` — all pending work reconciled with the current live quiz/Passport; original workspace is authoritative again.
 
 - `docs/57-passport-inline-matches-release.md`: approved Passport refinement/publication, inline Qloo previews and mobile/stamp UX.

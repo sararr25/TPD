@@ -177,8 +177,10 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   const focusOutcome = useRef(false);
   const cap = CATEGORY_CAPABILITIES[category];
   function startTwin() {
+    if (!ready || busy) return;
     submissionTop.current = Math.max(88, (document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 76) + 12);
     focusOutcome.current = true;
+    submittedProfile.current = profileKey;
     setBusy(true);
     setPresenting(true);
     setStarted(true);
@@ -266,6 +268,18 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
   const passportState = usePassportState();
   const personal = passportState.state === "ready";
+  const profileKey = JSON.stringify({ owner: passportState.owner, tokens: passportState.selections.map(s => s.token), quiz: passportState.quiz });
+  const submittedProfile = useRef("");
+  useEffect(() => {
+    if (!started || submittedProfile.current === profileKey) return;
+    // A changed Passport invalidates this search, without silently sending another.
+    setStarted(false);
+    setData(null);
+    setBusy(false);
+    setPresenting(false);
+    setStale(true);
+    setStatus("Your Passport changed. Update results to use it.");
+  }, [profileKey, started]);
   useEffect(() => { setData(null); setStarted(false); setPresenting(false); setBusy(false); setHidden([]); }, [userId]);
   useEffect(() => {
     setPassport(passportState.selections);
@@ -278,7 +292,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     return () => { active = false; };
   }, [isPending, userId]);
   useEffect(() => {
-    if (!started || !reference || !ready || passportState.owner !== (userId || "guest")) return;
+    if (!started || !reference || !ready || submittedProfile.current !== profileKey || passportState.owner !== (userId || "guest")) return;
     const controller = new AbortController();
     let active = true;
     setBusy(true);
@@ -290,7 +304,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         action: "swap",
         category,
         reference: reference.token,
-        passport: personal ? passport.map((s) => s.token) : [],
+        passport: personal ? passportState.selections.map((s) => s.token) : [],
         choices,
         exclude: hiddenIds.current,
         quiz: passportState.quiz,
@@ -335,7 +349,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     };
     // Only "Swap it" (attempt) or a new starting place runs a search
     // (docs/22 F14); chips and budget are read from the render that pressed it.
-  }, [started, reference, attempt, ready, passportState.owner, userId]);
+  }, [started, reference, attempt, ready, passportState.owner, userId, profileKey]);
   // A linked place name (from Home) searches once, as soon as the Passport is read.
   const prefilled = useRef(false);
   useEffect(() => {
@@ -442,7 +456,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     vote(place, 1).catch((e) => showError((e as Error).message));
   }
   function changeTag(tagId: string, mode: Choice["mode"]) {
-    if (data) setStale(true);
+    if (started) setStale(true);
     setChoices((values) =>
       values.map((c) => (c.tagId === tagId ? { ...c, mode } : c)),
     );
@@ -577,15 +591,15 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
           {categoryHasPrice(category) && <div className="twin-budget"><span id={uid + "-budget"}>Price up to</span>
             <div className="twin-price-options" role="group" aria-labelledby={uid + "-budget"}>
               {["", ...PRICE_LEVELS.map(String)].map(value => <button type="button" key={value} aria-label={value ? `Price up to ${priceSymbols(Number(value))}` : "Any price"} aria-pressed={budget === value}
-                onClick={() => { if (data) setStale(true); setBudget(value); }}>{value ? priceSymbols(Number(value)) : "Any"}</button>)}
+                onClick={() => { if (started) setStale(true); setBudget(value); }}>{value ? priceSymbols(Number(value)) : "Any"}</button>)}
             </div></div>}
           <details className="twin-context"><summary>About these choices{personal ? " & your Passport" : ""}</summary>
             <p>Keep is a preference, not a guarantee. Delete never removes anything from your Passport.</p>
             {categoryHasPrice(category) && <p>Indicative price tiers, not menu prices or currency conversion. Places without a known tier are excluded when a limit is set.</p>}
-            {personal ? <><p>{passport.map((s) => s.entity.name).join(" · ")}</p><Link href="/passport">Edit favourites</Link></> : <p>You can search without a Passport. A 3-minute quiz makes the picks personal. <OpenQuizButton /></p>}
+            {personal ? <><p>{passport.map((s) => s.entity.name).join(" · ")}</p><Link href="/passport#passport-editor">Edit favourites</Link></> : <p>You can search without a Passport. A 3-minute quiz makes the picks personal. <OpenQuizButton /></p>}
           </details>
           {stale && <p role="note">Choices changed. Update results to apply them.</p>}
-          <div className="twin-submit"><button className="btn btn-primary" disabled={busy} onClick={startTwin}>{stale ? "Update results" : "Find its twin"}</button></div>
+          <div className="twin-submit"><button className="btn btn-primary" disabled={busy || !ready} onClick={startTwin}>{stale ? "Update results" : "Find its twin"}</button></div>
         </section>}
       </div>
       <p className="sr-only" role="status" aria-live="polite">{!presenting ? status : ""}</p>

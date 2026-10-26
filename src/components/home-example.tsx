@@ -82,7 +82,7 @@ export function HomeExample() {
         </div>
       ) : (
         <ul className="h-picks" aria-busy={!picks}>
-          {picks?.length === 0 && <li><span>No picks for this example today.</span><Link href="/lisbon">Explore Lisbon →</Link></li>}
+          {picks?.length === 0 && <li className="h-picks-empty"><span>No picks for this example today.</span><Link href="/lisbon">Explore Lisbon →</Link></li>}
           {(picks ?? [null, null, null]).map((p, i) => (
             <li key={p?.place.id ?? i}>
               {p ? (

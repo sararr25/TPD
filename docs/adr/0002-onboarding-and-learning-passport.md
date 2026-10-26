@@ -17,3 +17,12 @@ Status: accepted, 22 Oct 2026 (owner, `/loop-me` session for #7). Spec: #3.
 - #22 changes. It is no longer a "3 favourites, quiz optional" panel. It is about where the quiz opens from (any page) and returning to the same state afterwards.
 - #23 (profile vs settings) keeps "Learned from you" in the profile, where it is visible, and the undo controls in settings.
 - #32 (stamps) is confirmed.
+
+## Amendment — 27 Oct 2026: Passport displays; settings manages quiz
+
+Owner clarified that the Passport is primarily the resulting taste profile and
+actual visited-city stamps, not an invitation to repeat the quiz. Returning
+visitors change the quiz from Settings & privacy. The Passport retains a focused
+Add what you love action for favourite artists, films, books and places; that
+editor does not offer retaking the quiz. First-time Passport creation remains
+available for visitors who have not completed the quiz.

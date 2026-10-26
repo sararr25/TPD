@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useQuizPanel } from "./quiz-panel";
+import { usePassportState } from "./passport-state";
 import { PassportSecurityLines } from "./passport-art";
 import { discardPendingPassport, PASSPORT_CHANGED } from "@/lib/quiz-finish";
 import { LearnedFromYou } from "./learned-from-you";
@@ -25,6 +27,8 @@ import {
 
 // Settings & privacy: everything that changes or removes what Beesyde keeps about you.
 export function PassportSettings() {
+  const openQuiz = useQuizPanel();
+  const passport = usePassportState();
   const [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] }),
     [hidden, setHidden] = useState<Hidden[]>([]),
     [busy, setBusy] = useState(false),
@@ -151,6 +155,11 @@ export function PassportSettings() {
         <p role="status" aria-live="polite">
           {status}
         </p>
+        <section className="divider" aria-labelledby="settings-taste-title">
+          <h2 id="settings-taste-title">Your taste profile</h2>
+          <p className="muted">Your quiz describes how you like to travel. Revisit it whenever your tastes change.</p>
+          <button className="btn btn-secondary" disabled={busy || !passport.loaded || passport.state === "saving"} onClick={openQuiz}>{Object.keys(passport.quiz).length ? "Redo the quiz" : "Take the quiz"}</button>
+        </section>
         <div className="divider">
           <span className="meta">Learned from you</span>
           {feedback.votes.length > 0 ? (

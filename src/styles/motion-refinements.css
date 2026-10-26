@@ -1,0 +1,35 @@
+/* Geometry belongs to the frame. Only the overscanned image moves. */
+@media(prefers-reduced-motion:no-preference) {
+  .travel-world .city-cover-photo { overflow:hidden; }
+  .travel-world .city-cover-photo img { inset:-8px 12px auto; width:calc(100% - 24px); height:calc(100% + 16px); border-radius:0; }
+  .travel-world .city-cover-photo::after { content:""; position:absolute; inset:0; border:12px solid var(--paper); pointer-events:none; }
+  @media(max-width:760px) { .travel-world .city-cover-photo img { inset:-10px 8px auto; width:calc(100% - 16px); height:calc(100% + 20px); } .travel-world .city-cover-photo::after { border-width:8px; } }
+}
+/* Reduced motion disables interactive displacement, not structural rotation. */
+@media(prefers-reduced-motion:reduce) {
+  .btn:active:not(:disabled), .quiz-tile:active:not(:disabled) { transform:none; }
+  .travel-world .h-city:hover .h-city-photo img,
+  .home-passport .h-city:hover img,
+  .h-visa-photo:hover img { transform:none; }
+}
+.toast-region { bottom:24px; }
+.toast { flex-wrap:wrap; gap:8px; max-width:min(600px,100%); }
+.toast > span { flex:1 1 160px; }
+.toast .btn { flex:none; }
+.toast[data-leaving] { opacity:0; transform:translateY(8px); transition:opacity var(--dur-fast), transform var(--dur-fast); pointer-events:none; }
+@media(max-width:720px) { .toast-region { bottom:calc(56px + env(safe-area-inset-bottom) + 16px); } }
+.place-card.skeleton, .h-skeleton, .h-visa-photo.skeleton { position:relative; overflow:hidden; background:var(--bg); animation:none; }
+.place-card.skeleton::after, .h-skeleton::after, .h-visa-photo.skeleton::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--paper) 75%,transparent),transparent); transform:translateX(-100%); animation:skeleton-sweep 1.4s linear infinite; }
+@keyframes skeleton-sweep { to { transform:translateX(100%); } }
+[data-motion-paused] *, [data-motion-paused] *::before, [data-motion-paused] *::after,
+[data-offscreen]::after { animation-play-state:paused !important; }
+.activity-stamp { animation:none; }
+dialog:not(.quiz-panel) { transition:opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete; opacity:0; transform:translateY(8px); }
+dialog:not(.quiz-panel)[open] { opacity:1; transform:translateY(0); }
+dialog:not(.quiz-panel)::backdrop { background:var(--scrim); opacity:0; transition:opacity var(--dur-base), display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete; }
+dialog:not(.quiz-panel)[open]::backdrop { opacity:1; }
+@starting-style { dialog:not(.quiz-panel)[open] { opacity:0; transform:translateY(8px); } dialog:not(.quiz-panel)[open]::backdrop { opacity:0; } }
+body:has(dialog:not(.quiz-panel)[open]) { overflow:hidden; }
+.motion-presence { display:contents; }
+@media(prefers-reduced-motion:reduce) { dialog:not(.quiz-panel), .toast[data-leaving] { transform:none; } .toast { animation:none; } @starting-style { dialog:not(.quiz-panel)[open] { transform:none; } } }
+.twin-trait-label { transition:background-color var(--dur-fast), color var(--dur-fast); }

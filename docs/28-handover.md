@@ -1,5 +1,12 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Cities / Twin publication — 26 October 2026
+
+Owner explicitly requested publishing the local Cities/Twin UI. Read
+[release handover](55-cities-twin-live-handover.md). The live quiz is preserved;
+Home-specific and Passport-profile local work remain outside this release.
+
+
 ## Taste Chemistry quiz — 26 October 2026
 
 Owner approved the compact illustrated quiz and explicitly requested live publication.

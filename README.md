@@ -61,6 +61,8 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 
 ## Project state
 
+- `docs/55-cities-twin-live-handover.md`: Cities/Twin publication and preservation of the live Taste Chemistry quiz.
+
 - `docs/54-taste-quiz-live-handover.md`: approved compact illustrated quiz, audio boundaries, verification and publication receipt.
 
 - `docs/51-marked-labels-live-release.md`: approved marked-label Twin controls, desktop side-by-side layout and live publication receipt.

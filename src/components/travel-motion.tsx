@@ -1,7 +1,8 @@
 "use client";
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
+import { motionTokens as m } from "@/lib/motion-tokens";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -11,8 +12,21 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 export function TravelMotion({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const path = usePathname();
+  const currentPath = useRef(path);
+  const returning = useRef(false);
+  useEffect(() => {
+    const back = () => { returning.current = location.pathname !== currentPath.current; };
+    const visibility = () => { document.documentElement.toggleAttribute("data-motion-paused", document.hidden); };
+    window.addEventListener("popstate", back);
+    document.addEventListener("visibilitychange", visibility);
+    visibility();
+    return () => { window.removeEventListener("popstate", back); document.removeEventListener("visibilitychange", visibility); document.documentElement.removeAttribute("data-motion-paused"); };
+  }, []);
   const kind = path === "/" ? "home" : path.startsWith("/preview/home") ? "preview" : path.split("/")[1] || "guide";
   useGSAP(() => {
+    currentPath.current = path;
+    const skipEntrance = returning.current;
+    returning.current = false;
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", (motionContext) => {
       const seen = new WeakSet<Element>();
@@ -27,35 +41,36 @@ export function TravelMotion({ children }: { children: ReactNode }) {
         // The image has overscan; the readable frame never moves. Scrub binds
         // its offset to actual scroll rather than playing a timed entrance.
         gsap.fromTo(element, { y: () => mobile() ? -8 : -18 }, {
-          y: () => mobile() ? 8 : 18, ease: "none",
+          y: () => mobile() ? 8 : 18, ease: m.ease.linear,
           scrollTrigger: { trigger: frame, start: "top bottom", end: "bottom top", scrub: true, invalidateOnRefresh: true },
         });
       });
-      const select = ".h-how h2, .h-steps li, .h-cities-head, .h-grid > li, .home-swap-intro, .h-swap-sheet, .h-band, .h-picks li:not(:has(.h-skeleton)), .place-grid > .place-card:not(.skeleton), [data-travel-enter], [data-travel-route], [data-travel-marker], [data-travel-page], [data-travel-reveal], [data-travel-stamp], .activity-stamps .activity-stamp-mark";
+      const select = ".h-how h2, .h-steps li, .h-cities-head, .h-grid > li, .home-swap-intro, .h-swap-sheet, .h-band, .h-picks li:not(:has(.h-skeleton)), .place-grid > .place-card:not(.skeleton), [data-travel-enter], [data-travel-route], [data-travel-marker], [data-travel-page], [data-travel-reveal], [data-travel-stamp]";
       motionContext.add("animateLeaf", (element: Element) => {
-        if (seen.has(element) || element.closest("[hidden]")) return;
+        if (seen.has(element) || element.closest("[hidden]") || skipEntrance) return;
         seen.add(element);
         if (element.matches("[data-travel-route]") && element instanceof SVGPathElement) {
           const length = element.getTotalLength();
           gsap.fromTo(element, { strokeDasharray: length, strokeDashoffset: length }, {
-            strokeDashoffset: 0, duration: 1.05, ease: "power2.inOut", clearProps: "strokeDasharray,strokeDashoffset",
+            strokeDashoffset: 0, duration: m.duration.route, ease: m.ease.ink, clearProps: "strokeDasharray,strokeDashoffset",
           });
         } else if (element.matches("[data-travel-marker]")) {
-          gsap.from(element, { scale: .3, transformOrigin: "center", duration: .45, delay: .7, ease: "back.out(1.4)", clearProps: "transform,transformOrigin" });
-        } else if (element.matches("[data-travel-stamp], .activity-stamps .activity-stamp-mark")) {
+          gsap.from(element, { scale: .3, transformOrigin: "center", duration: m.duration.panel, delay: m.duration.hero, ease: m.ease.settle, clearProps: "transform,transformOrigin" });
+        } else if (element.matches("[data-travel-stamp]")) {
           if (element.matches(".save-imprint")) {
-            gsap.timeline().fromTo(element, { scale: 1.8, rotation: -26, opacity: 0 }, { scale: 1, rotation: -12, opacity: 1, duration: .35, ease: "power3.in" })
-              .to(element, { opacity: 0, y: -9, duration: .3, delay: 1.1 });
+            gsap.timeline().fromTo(element, { scale: 1.2, rotation: -18, opacity: 0 }, { scale: 1, rotation: -12, opacity: 1, duration: m.duration.stamp, ease: m.ease.leave })
+              .to(element, { opacity: 0, y: -9, duration: m.duration.exit, delay: m.duration.imprintHold });
           } else {
-            gsap.from(element, { scale: 1.5, rotation: -26, duration: .5, delay: .15, ease: "back.out(1.5)", clearProps: "transform" });
+            gsap.from(element, { scale: 1.15, rotation: -14, duration: m.duration.stamp, ease: m.ease.settle, clearProps: "transform" });
           }
         } else if (element.matches("[data-travel-reveal]")) {
-          gsap.fromTo(element, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: .65, ease: "power3.inOut", clearProps: "clipPath" });
+          if (element.closest(".h-grid")) return;
+          gsap.fromTo(element, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: m.duration.reveal, ease: m.ease.ink, clearProps: "clipPath" });
         } else if (element.matches(".h-how h2, .h-steps li, .h-cities-head, .h-grid > li, .home-swap-intro, .h-swap-sheet, .h-band, .h-picks li, .place-grid > .place-card, [data-travel-enter]")) {
           const index = element.parentElement ? Array.from(element.parentElement.children).indexOf(element) : 0;
-          gsap.from(element, { y: 24, opacity: .3, duration: .6, delay: Math.min(index * .07, .28), ease: "power3.out", clearProps: "transform,opacity" });
+          gsap.from(element, { y: m.distance.reveal, opacity: .5, duration: m.duration.reveal, delay: Math.min(index * m.stagger, m.duration.control), ease: m.ease.enter, clearProps: "transform,opacity" });
         } else if (!element.querySelector(".city-map") && !element.matches(".trip")) {
-          gsap.from(element, { rotationY: -5, skewY: -.3, x: 7, transformOrigin: "left center", duration: .55, ease: "power3.out", clearProps: "transform,transformOrigin" });
+          gsap.from(element, { y: m.distance.small, opacity: .5, duration: m.duration.reveal, ease: m.ease.enter, clearProps: "transform,opacity" });
         }
       });
       const animate = (element: Element) => motionContext.animateLeaf(element);
@@ -78,17 +93,42 @@ export function TravelMotion({ children }: { children: ReactNode }) {
         node.querySelectorAll(select).forEach(queue);
       };
       if (root.current) collect(root.current);
+      let positions = new Map<Element, { x: number; y: number }>();
+      motionContext.add("settleLists", (animate: boolean) => {
+        const next = new Map<Element, { x: number; y: number }>();
+        const moves: { element: Element; x: number; y: number }[] = [];
+        root.current?.querySelectorAll(".h-grid > li, .place-grid > .place-card:not(.skeleton), .events-list > li, .trip-cards > .saved-place").forEach(element => {
+          const rect = element.getBoundingClientRect();
+          const point = { x: rect.left + scrollX - Number(gsap.getProperty(element, "x")), y: rect.top + scrollY - Number(gsap.getProperty(element, "y")) };
+          next.set(element, point);
+          const old = positions.get(element);
+          if (animate && old && rect.bottom > 0 && rect.top < innerHeight && !gsap.isTweening(element) && (Math.abs(old.x - point.x) > 1 || Math.abs(old.y - point.y) > 1)) moves.push({ element, x: old.x - point.x, y: old.y - point.y });
+        });
+        positions = next;
+        // Large results sets stay immediate; only a small visible shift animates.
+        if (moves.length <= 5) moves.forEach(({ element, x, y }) => gsap.fromTo(element, { x, y }, { x: 0, y: 0, duration: m.duration.panel, ease: m.ease.enter, clearProps: "transform" }));
+      });
+      motionContext.settleLists(false);
       const observer = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
           mutation.addedNodes.forEach((node) => { if (node instanceof Element) collect(node); });
           // A hidden workspace becomes a genuine discovery step when selected.
           if (mutation.type === "attributes" && mutation.target instanceof Element && !mutation.target.hasAttribute("hidden")) collect(mutation.target);
         }
+        if (mutations.some(mutation => mutation.type === "childList")) motionContext.settleLists(true);
       });
       if (root.current) observer.observe(root.current, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
-      const resize = new ResizeObserver(() => ScrollTrigger.refresh());
+      let refreshFrame = 0;
+      const resize = new ResizeObserver(() => {
+        if (!refreshFrame) refreshFrame = requestAnimationFrame(() => { refreshFrame = 0; ScrollTrigger.refresh(); });
+      });
       if (root.current) resize.observe(root.current);
-      return () => { observer.disconnect(); entrances.disconnect(); resize.disconnect(); };
+      const skeletons = new IntersectionObserver(entries => entries.forEach(entry => entry.target.toggleAttribute("data-offscreen", !entry.isIntersecting)));
+      const watchSkeletons = () => root.current?.querySelectorAll(".skeleton, .h-skeleton").forEach(node => skeletons.observe(node));
+      watchSkeletons();
+      const loading = new MutationObserver(watchSkeletons);
+      if (root.current) loading.observe(root.current, { childList: true, subtree: true });
+      return () => { observer.disconnect(); entrances.disconnect(); resize.disconnect(); skeletons.disconnect(); loading.disconnect(); cancelAnimationFrame(refreshFrame); };
     });
     return () => media.revert();
   }, { scope: root, dependencies: [path], revertOnUpdate: true });

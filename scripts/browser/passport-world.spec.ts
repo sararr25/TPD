@@ -49,7 +49,7 @@ test("save impression follows a real guest save and trip remains private", async
   expect(writes).toEqual([]);
 });
 
-test("offscreen photos reveal once on discovery", async ({ page }) => {
+test("offscreen city cards reveal once without a second photo wipe", async ({ page }) => {
   await worldFixtures(page);
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(base + "/explore");
@@ -58,11 +58,14 @@ test("offscreen photos reveal once on discovery", async ({ page }) => {
   await page.waitForTimeout(800);
   expect(await photo.evaluate(el => (el as HTMLElement).style.clipPath)).toBe("");
   await photo.scrollIntoViewIfNeeded();
-  await expect.poll(() => photo.evaluate(el => (el as HTMLElement).style.clipPath)).not.toBe("");
+  const card = page.locator(".h-grid > li").last();
+  await expect(card).toHaveCSS("opacity", "1");
+  await expect(card).toHaveCSS("transform", "none");
   await expect.poll(() => photo.evaluate(el => (el as HTMLElement).style.clipPath)).toBe("");
   await page.evaluate(() => scrollTo(0, 0));
   await photo.scrollIntoViewIfNeeded();
   expect(await photo.evaluate(el => (el as HTMLElement).style.clipPath)).toBe("");
+  await expect(card).toHaveCSS("opacity", "1");
 });
 
 test("coded journey plays once and reduced motion keeps static artwork", async ({ page }) => {

@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { motionTokens as m } from "@/lib/motion-tokens";
 
 gsap.registerPlugin(useGSAP);
 
@@ -20,19 +21,22 @@ export function JourneyAnimation() {
         node.dataset.journeyState = "complete";
         observer.disconnect();
       } });
-      timeline.fromTo(".journey-book-cover", { scaleX: 1, skewY: 0 }, { scaleX: .72, skewY: -7, svgOrigin: "60 68", duration: .65, ease: "power2.inOut" }, 0)
-        .to(".journey-book-cover", { scaleX: .82, skewY: -3, duration: .45, ease: "power2.out" }, .65)
-        .from(".journey-page-lines", { opacity: 0, x: -8, duration: .5 }, .25)
-        .fromTo(route, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: 1.25, ease: "power2.inOut", clearProps: "strokeDasharray,strokeDashoffset" }, .45)
-        .from(".journey-arrival-pin", { y: -22, scale: .55, opacity: 0, svgOrigin: "509 210", duration: .5, ease: "back.out(1.3)" }, 1.35)
-        .from(".journey-arrival-stamp", { scale: 1.65, rotation: -17, opacity: 0, svgOrigin: "509 176", duration: .3, ease: "power3.in" }, 1.95)
-        .to(".journey-stamp-ink", { opacity: .7, duration: .12, repeat: 1, yoyo: true }, 2.25);
+      timeline.fromTo(".journey-book-cover", { scaleX: 1, skewY: 0 }, { scaleX: .72, skewY: -7, svgOrigin: "60 68", duration: m.duration.hero, ease: m.ease.ink }, 0)
+        .to(".journey-book-cover", { scaleX: .82, skewY: -3, duration: m.duration.reveal, ease: m.ease.enter }, m.duration.hero)
+        .from(".journey-page-lines", { opacity: 0, x: -m.distance.small, duration: m.duration.reveal }, m.duration.panel)
+        .fromTo(route, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: m.duration.route, ease: m.ease.ink, clearProps: "strokeDasharray,strokeDashoffset" }, m.duration.panel)
+        .from(".journey-arrival-pin", { y: -m.distance.reveal, scale: .8, opacity: 0, svgOrigin: "509 210", duration: m.duration.reveal, ease: m.ease.settle }, m.duration.hero + m.duration.reveal)
+        .from(".journey-arrival-stamp", { scale: 1.2, rotation: -17, opacity: 0, svgOrigin: "509 176", duration: m.duration.stamp, ease: m.ease.leave }, m.duration.hero + m.duration.route)
+        .to(".journey-stamp-ink", { opacity: .7, duration: m.duration.press, repeat: 1, yoyo: true }, m.duration.hero + m.duration.route + m.duration.stamp);
+      let visible = false;
+      const sync = () => visible && !document.hidden ? timeline.play() : timeline.pause();
       const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-        if (entry.isIntersecting) timeline.play();
-        else timeline.pause();
+        visible = entry.isIntersecting;
+        sync();
       }), { threshold: .15 });
       observer.observe(node);
-      return () => { observer.disconnect(); node.dataset.journeyState = "static"; };
+      document.addEventListener("visibilitychange", sync);
+      return () => { observer.disconnect(); document.removeEventListener("visibilitychange", sync); node.dataset.journeyState = "static"; };
     });
     return () => media.revert();
   }, { scope: root });

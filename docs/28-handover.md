@@ -1,5 +1,22 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Passport refinement and publication — 26 October 2026
+
+Owner approved the six UI/UX refinements and explicitly requested live publication.
+See [scope, verification and release receipt](57-passport-inline-matches-release.md).
+This supersedes the local-only boundary below for the completed Passport work.
+
+
+## Personal Passport and Qloo category matches — 26 October 2026
+
+Owner requested implementing the revised Passport and replacing the prototype’s
+From your answers disclosures with real Qloo category discovery. Implemented in
+`/private/tmp/tpd-quiz-live`, branch `codex/passport-qloo-folio`, based on released
+`790f00d` and preserving the current live quiz. Read [implementation and checks](56-passport-folio-qloo-matches.md).
+The original workspace’s older dirty Home/Quiz/Passport sources remain separate.
+No push/deployment in this task; review the local app before publication.
+
+
 ## Cities / Twin publication — 26 October 2026
 
 Owner explicitly requested publishing the local Cities/Twin UI. Read

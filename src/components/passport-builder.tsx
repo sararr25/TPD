@@ -3,10 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PassportSecurityLines } from "./passport-art";
 import { LearnedFromYou } from "./learned-from-you";
-import { PassportProfile } from "./passport-profile";
-import { VisitedCities } from "./visited-cities";
+import { PassportFolio } from "./passport-folio";
 import { PassportStamps } from "./passport-stamps";
-import { SharePassport } from "./share-passport";
 import { QuizFlow } from "./quiz-flow";
 import { EmptyState, LoadingCards } from "./empty-state";
 import { usePassportState, PassportPrompt } from "./passport-state";
@@ -40,7 +38,7 @@ export function PassportBuilder() {
     [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] });
   const quizWasOpen = useRef(false);
   useEffect(() => {
-    if (quizWasOpen.current && !quizOpen) document.querySelector<HTMLElement>(".passport-editor h1")?.focus({ preventScroll: true });
+    if (quizWasOpen.current && !quizOpen) document.querySelector<HTMLElement>(".pf-cover h1, .passport-editor h1")?.focus({ preventScroll: true });
     quizWasOpen.current = quizOpen;
   }, [quizOpen]);
   const passportState = usePassportState();
@@ -232,10 +230,8 @@ export function PassportBuilder() {
       </div>
     );
   const traveller = buildProfile(profile);
-  return (
-    <div className="passport-leaves">
-      <div className="grid passport-spread">
-        <section className="passport-editor" data-travel-page>
+  const editor = (
+<section className="passport-editor" data-travel-page>
           {(passportState.state === "saving" ||
             passportState.state === "partial" ||
             passportState.state === "expired") && <PassportPrompt />}
@@ -497,58 +493,6 @@ export function PassportBuilder() {
             </Link>
           </p>
         </section>
-        {traveller ? (
-          <div className="passport-personal-leaf" data-travel-page>
-            <PassportProfile
-              profile={traveller}
-              holder={session?.user?.name}
-              signals={selected.map((s) => s.entity.name)}
-            />
-            <SharePassport answers={profile} />
-          </div>
-        ) : selected.length > 0 ? (
-          <div className="paper">
-            <h3>Your picks so far</h3>
-            <ul className="entity-list">
-              {selected.map((s) => (
-                <li key={s.entity.id}>
-                  <div>
-                    <strong>{s.entity.name}</strong>
-                    {/* Qloo repeats the name as context for artists; show it only when it adds something (a film's year). */}
-                    {s.entity.context && s.entity.context !== s.entity.name && (
-                      <p className="muted">{s.entity.context}</p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <p className="muted">
-              Take the 3-minute quiz to turn these into your full Taste
-              Passport, the card you can share.
-            </p>
-          </div>
-        ) : (
-          <EmptyState
-            title="Start with what you love"
-            action={
-              <button
-                className="btn btn-primary"
-                disabled={busy}
-                onClick={() => setQuizOpen(true)}
-              >
-                Make your Passport
-              </button>
-            }
-          >
-            <p>
-              A 3-minute quiz helps us pick places for you. Or add your
-              favourites with the search beside this card.
-            </p>
-          </EmptyState>
-        )}
-      </div>
-      <VisitedCities />
-      <PassportStamps />
-    </div>
   );
+  return <PassportFolio key={passportState.owner} answers={profile} favourites={selected.map(s => s.entity.name)} holder={session?.user?.name} editor={editor} onStartQuiz={() => { setStatus(""); setQuizOpen(true); }}/>;
 }

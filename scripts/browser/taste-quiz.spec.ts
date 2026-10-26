@@ -17,6 +17,7 @@ async function open(page: Page) {
     Object.defineProperty(window,'AudioContext',{value:FakeAudio,configurable:true});
   });
   await page.goto(base+'/passport');
+  await page.getByText('Edit favourites & quiz',{exact:true}).click();
   await page.getByRole('button',{name:'Redo the quiz',exact:true}).click();
   await expect(page.locator('#quiz-title')).toBeFocused();
   await page.getByRole('button',{name:'Start my quiz'}).click();

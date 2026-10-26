@@ -61,6 +61,10 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 
 ## Project state
 
+- `docs/57-passport-inline-matches-release.md`: approved Passport refinement/publication, inline Qloo previews and mobile/stamp UX.
+
+- `docs/56-passport-folio-qloo-matches.md`: new personal Passport folio and real Qloo category-match routes, implemented in the isolated release worktree; local only.
+
 - `docs/55-cities-twin-live-handover.md`: Cities/Twin publication and preservation of the live Taste Chemistry quiz.
 
 - `docs/54-taste-quiz-live-handover.md`: approved compact illustrated quiz, audio boundaries, verification and publication receipt.

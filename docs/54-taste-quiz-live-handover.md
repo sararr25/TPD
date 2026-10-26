@@ -54,8 +54,10 @@ not deployed as the application and is not committed.
 
 ## Verification and release receipt
 
-Pending final build, two-axis review, production deployment SHA/alias verification.
-Development browser checks: 9/9 pass, including four viewport sizes, real pointer
+Unit/service suite, typecheck, production build and diff check pass.
+Two-axis review completed against d05395a: all findings corrected and rechecked.
+Production deployment SHA/alias verification follows the authorized push.
+Development browser checks: 11/11 pass, including four viewport sizes, real pointer
 swipe/feedback, automatic progression, keyboard/undo, all 18 questions, save failure
 and retry, exact sound boundaries via mocked Web Audio, top-up and native-dialog
 reopening. Unit/service suite and typecheck pass. Screenshots are synthetic and
@@ -67,3 +69,23 @@ Real speaker output, physical touch hardware, Safari/iOS, VoiceOver and genuine
 Google/cross-device sessions are not newly verified. Qloo requests are intercepted
 in browser tests; no ranking-quality uplift is asserted. Existing data semantics,
 authentication and catalogue remain unchanged.
+
+### Final local evidence
+
+- Full development suite: 80 passed, 2 historical A/B scenarios skipped, 2 failures
+  during dev navigation (Home selector duplicated by staging and Twin 768 timeout).
+- Both failing scenarios pass without changes on the compiled build. Together with
+  all 11 quiz scenarios: **13/13 compiled checks passed**. Do not report the initial
+  full development run as entirely green. No Home/Twin implementation was changed.
+- Review fixes: unique/capped favourite top-up after Back; Skip cannot mutate
+  answers during a swipe exit; runtime reduced motion clears the body entrance;
+  result focus is restored for both entries. Targeted regressions pass.
+- Standards: three initial findings, all addressed. Spec: two initial findings
+  (one overlaps Standards), all addressed. Follow-up confirmations were source
+  review; the primary agent separately ran the compiled regressions.
+- Every illustrated answer maps to a valid local SVG; all 38 SVGs parse as XML.
+- Audio boundary test uses a mocked AudioContext: two opening tones, no tones
+  during 18 answers/undo/failed save, three closing tones after successful save.
+
+Logs: `/tmp/tpd-quiz-unit-final.log`, `/tmp/tpd-quiz-build-final.log`,
+`/tmp/tpd-quiz-review-regressions.log`, `/tmp/tpd-quiz-compiled.log`.

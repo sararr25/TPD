@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PassportSecurityLines } from "./passport-art";
 import { LearnedFromYou } from "./learned-from-you";
@@ -38,6 +38,11 @@ export function PassportBuilder() {
     [quizOpen, setQuizOpen] = useState(false),
     [profile, setProfile] = useState<Answers>({}),
     [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] });
+  const quizWasOpen = useRef(false);
+  useEffect(() => {
+    if (quizWasOpen.current && !quizOpen) document.querySelector<HTMLElement>(".passport-editor h1")?.focus({ preventScroll: true });
+    quizWasOpen.current = quizOpen;
+  }, [quizOpen]);
   const passportState = usePassportState();
   const busy = localBusy || passportState.state === "saving";
   const [example, setExample] = useState<Selection[]>([]);
@@ -236,7 +241,7 @@ export function PassportBuilder() {
             passportState.state === "expired") && <PassportPrompt />}
           <div className="page-head passport-leaf-heading">
             <PassportSecurityLines />
-            <h1>Your Taste Passport</h1>
+            <h1 tabIndex={-1}>Your Taste Passport</h1>
             <p className="lead">
               What you love, so we can pick places for you. Add 3–5 favourite
               artists, films, books or places.

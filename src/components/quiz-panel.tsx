@@ -33,6 +33,9 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
     if (open && !el.open) el.showModal();
     if (!open && el.open) el.close();
   }, [open]);
+  useEffect(() => {
+    if (done) dialog.current?.querySelector<HTMLElement>(".quiz-done h2")?.focus({ preventScroll: true });
+  }, [done]);
   function show() {
     setDone(false);
     setError("");
@@ -65,7 +68,7 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
         {open &&
           (done ? (
             <section className="quiz-done">
-              <h2>Your Passport is ready.</h2>
+              <h2 tabIndex={-1}>Your Passport is ready.</h2>
               {signedIn ? (
                 <p>It is saved to your account.</p>
               ) : (

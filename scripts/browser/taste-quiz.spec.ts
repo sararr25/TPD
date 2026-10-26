@@ -61,7 +61,7 @@ test('full 18-question guest flow retains answers, retries save, and sounds only
  await page.getByRole('button',{name:'Build my Passport',exact:true}).click();await expect(page.locator('.taste-status')).toContainText('Try building');
  expect(await page.evaluate(()=>(window as unknown as {audioTones:number}).audioTones)).toBe(2);
  await page.getByRole('button',{name:'Build my Passport',exact:true}).click();await expect(page.locator('.taste-quiz')).toHaveCount(0);
- expect(await page.evaluate(()=>(window as unknown as {audioTones:number}).audioTones)).toBe(5);
+ expect(await page.evaluate(()=>(window as unknown as {audioTones:number}).audioTones)).toBe(5);await expect(page.getByRole('heading',{name:'Your Taste Passport',exact:true})).toBeFocused();
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('beesyde-quiz-v1')||'{}'));expect(Object.keys(saved)).toHaveLength(18);expect(saved.music).toHaveLength(4);expect(attempts).toBe(2);
 });
 test('mute and keyboard focus stay inside the quiz; Escape closes it',async({page})=>{
@@ -84,4 +84,23 @@ test('native quiz dialog opens, closes and reopens without stale state',async({p
  await page.getByRole('button',{name:'Make your Passport',exact:true}).first().click();
  await expect(page.locator('dialog[open] .taste-quiz')).toBeVisible();await page.getByRole('button',{name:'Start my quiz'}).click();await page.keyboard.press('Escape');await expect(page.locator('dialog[open]')).toHaveCount(0);
  await page.getByRole('button',{name:'Make your Passport',exact:true}).first().click();await expect(page.getByRole('button',{name:'Start my quiz'})).toBeVisible();
+});
+
+test('top-up favourites remain unique after Back revises a music answer',async({page})=>{
+ test.setTimeout(60000);await open(page);
+ let submitted:string[]=[];
+ await page.route('**/api/discovery',async route=>{const body=route.request().postDataJSON();if(body.action!=='quiz')return route.fallback();submitted=body.cards;return route.fulfill({json:{choices:favourites}})});
+ for(const q of ordered){await expect(page.locator('#quiz-title')).toHaveText(q.title);await page.getByRole('button',{name:'Skip',exact:true}).click();}
+ for(let i=0;i<3;i++)await page.locator('.taste-topup button').nth(i).click();
+ for(let i=18;i>1;i--)await page.getByRole('button',{name:'← Back',exact:true}).click();
+ await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');await page.getByRole('button',{name:'Yes →',exact:true}).click();await expect(page.locator('.taste-card h3')).toHaveText('Nina Simone');await page.getByRole('button',{name:'Continue ↗',exact:true}).click();
+ for(const q of ordered.slice(2)){await expect(page.locator('#quiz-title')).toHaveText(q.title);await page.getByRole('button',{name:'Skip',exact:true}).click();}
+ await page.getByRole('button',{name:'Build my Passport',exact:true}).click();await expect(page.locator('.taste-quiz')).toHaveCount(0);expect(submitted.length).toBe(3);expect(new Set(submitted).size).toBe(3);
+});
+
+test('Skip cannot reset a deck during its animated exit; runtime reduced motion clears transforms',async({page})=>{
+ await open(page);await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Continue ↗',exact:true}).click();await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.evaluate(()=>{const root=document.querySelector('.taste-quiz')!;const buttons=[...root.querySelectorAll('button')];buttons.find(b=>b.textContent==='Yes →')!.click();buttons.find(b=>b.textContent==='Skip')!.click()});
+ await expect(page.locator('.taste-card h3')).toHaveText('Nina Simone');await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');
+ await page.emulateMedia({reducedMotion:'reduce'});await expect.poll(()=>page.locator('.taste-body').evaluate(el=>getComputedStyle(el).transform)).toBe('none');await expect(page.locator('.taste-card')).toHaveCSS('transform','none');
 });

@@ -91,6 +91,8 @@ for (const count of [0, 1, 2, 3, 5])
     await expect(
       page.getByRole("heading", { name: "Your Taste Passport" }),
     ).toBeVisible();
+    const favouritesEditor = page.locator(".passport-favourites");
+    if (await favouritesEditor.count() && (await favouritesEditor.getAttribute("open")) === null) await favouritesEditor.locator("summary").click();
     await expect(page.getByText(`${count} of 5 chosen`)).toBeVisible();
     if (count < 3)
       await expect(page.getByText(/Your profile is here/)).toBeVisible();
@@ -98,14 +100,14 @@ for (const count of [0, 1, 2, 3, 5])
       await expect(
         page.getByRole("link", { name: "Browse cities", exact: true }).first(),
       ).toBeVisible();
-    await expect(page.getByText("Question 1 / 18")).toHaveCount(0);
+    await expect(page.locator(".quiz")).toHaveCount(0);
   });
 test("delayed account never starts quiz; failed load can retry", async ({
   page,
 }) => {
   await api(page, 0, 1200, true);
   await page.goto(base + "/passport");
-  await expect(page.getByText("Question 1 / 18")).toHaveCount(0);
+  await expect(page.locator(".quiz")).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Your Passport couldn’t load" }),
   ).toBeVisible();
@@ -123,6 +125,7 @@ test("example preview does not write personal favourites", async ({ page }) => {
     page.getByRole("heading", { name: "Example · not your Passport" }),
   ).toBeVisible();
   expect(writes).toEqual([]);
+  await page.locator(".passport-favourites summary").click();
   await expect(page.getByText("3 of 5 chosen")).toBeVisible();
 });
 test("category filters and browser history remain distinct", async ({
@@ -259,7 +262,7 @@ test("expired guest choices keep quiz and request a refresh", async ({
   }, choices);
   await page.goto(base + "/passport");
   await expect(page.getByText(/Your favourites need a refresh/)).toBeVisible();
-  await expect(page.getByText("Question 1 / 18")).toHaveCount(0);
+  await expect(page.locator(".quiz")).toHaveCount(0);
 });
 test("foreign pending account is never imported into the current account", async ({
   page,

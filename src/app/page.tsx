@@ -1,3 +1,4 @@
+import { InkJourney } from "@/components/ink-journey";
 import { PassportPrompt } from "@/components/passport-state";
 import { HomeSearch } from "@/components/home-search";
 import { HomeExample } from "@/components/home-example";
@@ -54,13 +55,14 @@ export default function Home() {
 
       <HomeCities />
 
-      <section className="h-band" aria-labelledby="h-band">
+      <section className="h-band ink-home-ending" aria-labelledby="h-band">
         <PassportEmblem className="h-band-emblem" />
         <div>
           <h2 id="h-band">Fill it with <em>what you love.</em></h2>
           <p>Your Taste Passport keeps your favourites together and helps choose places in each city. About 3 minutes to make it personal.</p>
           <PassportPrompt />
         </div>
+        <InkJourney />
       </section>
     </HomePassportMotion>
   );

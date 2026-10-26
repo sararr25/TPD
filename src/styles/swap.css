@@ -227,8 +227,8 @@ select + .toggle-group {
   .twin-spotlight .place-chips { gap: 4px; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .twin-thread[data-state="success"] .twin-thread-route { animation: twin-connect .55s ease-out both; }
-  .twin-difference { animation: twin-arrive .45s ease-out both; }
+  .twin-thread[data-state="success"] .twin-thread-route { animation: twin-connect var(--dur-slow) var(--ease-out) both; }
+  .twin-difference { animation: twin-arrive var(--dur-slow) var(--ease-out) both; }
 }
 @keyframes twin-connect { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
 @keyframes twin-arrive { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }

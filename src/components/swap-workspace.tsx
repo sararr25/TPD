@@ -176,20 +176,6 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   const outcomeHeading = useRef<HTMLHeadingElement>(null);
   const focusOutcome = useRef(false);
   const cap = CATEGORY_CAPABILITIES[category];
-  // Preserve the submitted task's viewport while replacing its editor with the outcome.
-  useLayoutEffect(() => {
-    if (!presenting || !outcomeRef.current) return;
-    // Let the browser clamp the scroll after removing the tall editor before
-    // computing the destination. Otherwise landscape clamps away the request.
-    let frame = requestAnimationFrame(() => {
-      frame = requestAnimationFrame(() => {
-        const top = outcomeRef.current?.getBoundingClientRect().top;
-        if (top === undefined) return;
-        window.scrollBy({ top: top - submissionTop.current, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
-      });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [presenting]);
   function startTwin() {
     submissionTop.current = Math.max(88, (document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 76) + 12);
     focusOutcome.current = true;
@@ -242,6 +228,22 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     [activeResult, setActiveResult] = useState<string | null>(null),
     // Chips or budget changed since the results on screen (docs/22 F14).
     [stale, setStale] = useState(false);
+  // Preserve the submitted task's viewport while replacing its editor with the outcome.
+  useLayoutEffect(() => {
+    if (!presenting || !outcomeRef.current) return;
+    // Replacing the editor is a layout correction, not a second scroll animation.
+    const align = () => {
+      const top = outcomeRef.current?.getBoundingClientRect().top;
+      if (top !== undefined) window.scrollBy({ top: top - submissionTop.current, behavior: "instant" });
+    };
+    align();
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        align();
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [presenting, busy]);
   // Fewer than 3 picks is no Passport: Swap then runs on the starting place alone.
 
   const toast = useToast();

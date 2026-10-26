@@ -1,3 +1,4 @@
+import { PassportSecurityLines } from "./passport-art";
 import { QuizIcon } from "./quiz-icon";
 import { AXES, INTERESTS, INTEREST_ICON, type Axis, type Interest, type Profile } from "@/lib/quiz";
 
@@ -27,19 +28,18 @@ export function PassportProfile({
     <article className="pp" aria-label={`Taste Passport of ${name}: ${profile.title}`}>
       <header className="pp-head">
         <span className="meta">Beesyde · Taste Passport</span>
-        <span className="meta">No. {String(profile.answered).padStart(3, "0")}</span>
+        <span className="pp-personal-note">A portrait of your taste</span>
       </header>
       <div className="pp-id">
+        <PassportSecurityLines />
         <div className="pp-photo" aria-hidden>
           <QuizIcon emoji={INTEREST_ICON[stamps[0] ?? "culture"]} big />
         </div>
         <dl>
-          <dt className="meta">Holder</dt>
-          <dd>{name}</dd>
-          <dt className="meta">Traveller type</dt>
+          <dt className="meta">Made for {name}</dt>
           <dd className="pp-title">{profile.title}</dd>
-          <dt className="meta">Motto</dt>
-          <dd className="muted">{profile.motto}</dd>
+          <dt className="sr-only">Motto</dt>
+          <dd className="pp-motto">{profile.motto}</dd>
         </dl>
       </div>
       <ul className="pp-axes">
@@ -65,11 +65,10 @@ export function PassportProfile({
           <span
             key={k}
             className="pp-stamp"
-            style={{ transform: `rotate(${[-8, 6, -3, 10][i]}deg)` }}
+            style={{ transform: `rotate(${[-8, 6, -3, 10][i % 4]}deg)` }}
           >
             <QuizIcon emoji={INTEREST_ICON[k]} />
             {INTERESTS[k]}
-            <small>{profile.interests[k]}%</small>
           </span>
         ))}
       </div>

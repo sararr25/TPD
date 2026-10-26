@@ -1,0 +1,22 @@
+.ink-journey { color:var(--brand); width:100%; min-width:0; height:65px; overflow:hidden; pointer-events:none; }
+.ink-journey svg { display:block; width:100%; height:100%; }
+.ink-journey .ink-mobile-map { display:none; }
+.ink-walk { opacity:.65; }
+.ink-footstep { opacity:0; }
+.ink-home-ending .ink-journey { grid-column:1 / -1; }
+.home-passport .h-band.ink-home-ending { row-gap:16px; }
+@media(max-width:600px) {
+  .ink-journey { height:54px; }
+  .ink-journey .ink-desktop-map { display:none; }
+  .ink-journey .ink-mobile-map { display:block; }
+}
+
+/* The city card itself is the map; its existing content keeps its geometry. */
+.city-ink-map { position:absolute; inset:0; z-index:0; overflow:hidden; border-radius:inherit; pointer-events:none; color:var(--sun); }
+.city-ink-map > svg { display:block; width:100%; height:100%; }
+.cover-ink-trail { opacity:.65; }
+.cover-ink-step { opacity:.8; }
+.cover-ink-streets { opacity:.18; }
+.cover-ink-buildings { opacity:.15; }
+.cover-ink-gardens { opacity:.3; }
+.city-cover[data-ink-cover] .city-journey-route { visibility:hidden; }

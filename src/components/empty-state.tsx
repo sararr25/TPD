@@ -9,7 +9,7 @@ export function EmptyState({ title, children, action }: {
 }) {
   return (
     <section className="empty-state">
-      <span className="empty-stamp" data-travel-stamp aria-hidden>BEESYDE<br />NEXT STOP</span>
+      <span className="empty-stamp" aria-hidden>BEESYDE<br />NEXT STOP</span>
       <div>
         <h2>{title}</h2>
         <div className="empty-message">{children}</div>

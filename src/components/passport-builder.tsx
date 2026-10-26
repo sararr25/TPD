@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { InkJourney } from "./ink-journey";
 import { PassportSecurityLines } from "./passport-art";
 import { LearnedFromYou } from "./learned-from-you";
 import { PassportProfile } from "./passport-profile";
@@ -46,6 +47,19 @@ export function PassportBuilder() {
   >(null);
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
+  const quizWasOpen = useRef(false);
+  useEffect(() => {
+    if (quizOpen) {
+      const quiz = document.querySelector<HTMLElement>(".passport-quiz-leaf");
+      quiz?.scrollIntoView({ block: "start", behavior: "instant" });
+      quiz?.querySelector<HTMLElement>("#quiz-title")?.focus({ preventScroll: true });
+    } else if (quizWasOpen.current) {
+      const heading = document.querySelector<HTMLElement>(".passport-introduction h1");
+      heading?.focus({ preventScroll: true });
+      heading?.closest("header")?.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+    quizWasOpen.current = quizOpen;
+  }, [quizOpen]);
   useEffect(() => {
     setQuizOpen(false);
     setExample([]);
@@ -199,7 +213,8 @@ export function PassportBuilder() {
     return <LoadingCards label="Loading your Passport…" count={2} />;
   if (quizOpen)
     return (
-      <div className="passport-leaves passport-quiz-leaf" data-travel-page>
+      <div className="passport-leaves passport-quiz-leaf">
+        <aside className="quiz-cover"><span className="quiz-cover-brand">Beesyde / Taste Passport</span><h1>Begin with<br /><em>what you love.</em></h1><p>No right answers. Just your kind of day, your kind of places, your kind of city.</p><InkJourney /><p className="quiz-cover-note">About 3 minutes. Yours to keep.</p></aside>
         <div className="grid">
           <div>
             <QuizFlow
@@ -221,24 +236,74 @@ export function PassportBuilder() {
             )}
           </div>
         </div>
-        <PassportStamps />
       </div>
     );
   const traveller = buildProfile(profile);
   return (
-    <div className="passport-leaves">
+    <div className="passport-leaves passport-remade">
+      <header className="passport-introduction">
+        <div><p className="passport-eyebrow">Made of what you love</p><h1 tabIndex={-1}>Your Taste Passport</h1>
+        <p>A little of you. A different way into every city.</p></div>
+        <Link className="btn btn-secondary" href="/explore">Explore with your Passport →</Link>
+      </header>
       <div className="grid passport-spread">
+        {traveller ? (
+          <div className="passport-personal-leaf" data-travel-page>
+            <PassportProfile
+              profile={traveller}
+              holder={session?.user?.name}
+              signals={selected.map((s) => s.entity.name)}
+            />
+            <SharePassport answers={profile} />
+          </div>
+        ) : selected.length > 0 ? (
+          <div className="paper">
+            <h3>Your picks so far</h3>
+            <ul className="entity-list">
+              {selected.map((s) => (
+                <li key={s.entity.id}>
+                  <div>
+                    <strong>{s.entity.name}</strong>
+                    {/* Qloo repeats the name as context for artists; show it only when it adds something (a film's year). */}
+                    {s.entity.context && s.entity.context !== s.entity.name && (
+                      <p className="muted">{s.entity.context}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="muted">
+              Take the 3-minute quiz to turn these into your full Taste
+              Passport, the card you can share.
+            </p>
+          </div>
+        ) : (
+          <EmptyState
+            title="Start with what you love"
+            action={
+              <button
+                className="btn btn-primary"
+                disabled={busy}
+                onClick={() => setQuizOpen(true)}
+              >
+                Make your Passport
+              </button>
+            }
+          >
+            <p>
+              A 3-minute quiz helps us pick places for you. Or add your
+              favourites with the search beside this card.
+            </p>
+          </EmptyState>
+        )}
         <section className="passport-editor" data-travel-page>
           {(passportState.state === "saving" ||
             passportState.state === "partial" ||
             passportState.state === "expired") && <PassportPrompt />}
           <div className="page-head passport-leaf-heading">
             <PassportSecurityLines />
-            <h1>Your Taste Passport</h1>
-            <p className="lead">
-              What you love, so we can pick places for you. Add 3–5 favourite
-              artists, films, books or places.
-            </p>
+            <h2>Keep it personal.</h2>
+            <p className="lead">The artists, films, books and places you love help us find your side of a city.</p>
           </div>
           <button
             className="btn btn-secondary"
@@ -344,6 +409,9 @@ export function PassportBuilder() {
               to get personal picks. You don’t need to redo the quiz.
             </p>
           )}
+          <details className="passport-favourites" open={!traveller || selected.length < 3}>
+          <summary>Edit your favourites <span>{selected.length} / 5</span></summary>
+          <p className="muted">Choose 3–5 favourites. These are what make the picks yours.</p>
           <form onSubmit={search} className="search-form">
             <label htmlFor="kind">What kind of favourite?</label>
             <select
@@ -462,6 +530,7 @@ export function PassportBuilder() {
             ))}
           </div>
           <p className="meta">{selected.length} of 5 chosen</p>
+          </details>
           <div className="actions">
             {ready && passportState.state === "ready" ? (
               <Link className="btn btn-primary" href="/explore">
@@ -490,55 +559,7 @@ export function PassportBuilder() {
             </Link>
           </p>
         </section>
-        {traveller ? (
-          <div className="passport-personal-leaf" data-travel-page>
-            <PassportProfile
-              profile={traveller}
-              holder={session?.user?.name}
-              signals={selected.map((s) => s.entity.name)}
-            />
-            <SharePassport answers={profile} />
-          </div>
-        ) : selected.length > 0 ? (
-          <div className="paper">
-            <h3>Your picks so far</h3>
-            <ul className="entity-list">
-              {selected.map((s) => (
-                <li key={s.entity.id}>
-                  <div>
-                    <strong>{s.entity.name}</strong>
-                    {/* Qloo repeats the name as context for artists; show it only when it adds something (a film's year). */}
-                    {s.entity.context && s.entity.context !== s.entity.name && (
-                      <p className="muted">{s.entity.context}</p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <p className="muted">
-              Take the 3-minute quiz to turn these into your full Taste
-              Passport, the card you can share.
-            </p>
-          </div>
-        ) : (
-          <EmptyState
-            title="Start with what you love"
-            action={
-              <button
-                className="btn btn-primary"
-                disabled={busy}
-                onClick={() => setQuizOpen(true)}
-              >
-                Make your Passport
-              </button>
-            }
-          >
-            <p>
-              A 3-minute quiz helps us pick places for you. Or add your
-              favourites with the search beside this card.
-            </p>
-          </EmptyState>
-        )}
+
       </div>
       <VisitedCities />
       <PassportStamps />

@@ -1,4 +1,5 @@
 "use client";
+import { MotionPresence } from "./motion-presence";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Entity } from "@/lib/discovery";
 import { addToList, deleteList, loadLists, moveLocalLists, removeFromList, setNote, type SavedList } from "@/lib/saved";
@@ -75,7 +76,7 @@ export function SaveButton({
   // Close on Escape or a click outside the sheet.
   useEffect(() => {
     if (!open) return;
-    const key = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const key = (e: KeyboardEvent) => { if (e.key === "Escape") { setOpen(false); sheet.current?.querySelector<HTMLButtonElement>(":scope > button")?.focus(); } };
     const click = (e: MouseEvent) => {
       if (sheet.current && !sheet.current.contains(e.target as Node)) setOpen(false);
     };
@@ -190,7 +191,7 @@ export function SaveButton({
         {!iconOnly && (saved.length ? " Saved" : " Save")}
       </button>
       {imprint?.placeId === place.id && saved.length > 0 && <span key={imprint.serial} className="save-imprint" data-travel-stamp aria-hidden="true">SAVED<br />BEESYDE</span>}
-      {open && (
+      <MotionPresence show={open}>
         <div className="save-sheet" id={id} role="group" aria-label={`Save ${place.name}`}>
           <strong>Change lists</strong>
           {lists.length > 0 && (
@@ -252,7 +253,7 @@ export function SaveButton({
             <p className="muted">Saved on this device. Sign in to keep your lists on every device.</p>
           )}
         </div>
-      )}
+      </MotionPresence>
     </div>
   );
 }

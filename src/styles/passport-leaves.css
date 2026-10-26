@@ -125,7 +125,7 @@
 .trip-route-mark circle { fill: var(--paper); }
 .trip-leaves .saved-place { border-radius: 3px 14px 14px 3px; }
 .trip-leaves .saved-place-photo { overflow: hidden; }
-.trip-leaves .saved-place-photo img { transition: transform 650ms var(--ease-out); }
+.trip-leaves .saved-place-photo img { transition: transform var(--dur-slow) var(--ease-out); }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .trip-leaves .saved-place:hover .saved-place-photo img { transform: scale(1.04); }
 }

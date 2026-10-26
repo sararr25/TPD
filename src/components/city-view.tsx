@@ -1,4 +1,5 @@
 "use client";
+import { CityInkMap } from "./city-ink-map";
 import { useCityContext, useCityPosition } from "./use-city-context";
 import { usePassportState, PassportPrompt } from "./passport-state";
 import { useEffect, useState } from "react";
@@ -243,7 +244,8 @@ export function CityView({ city }: { city: string }) {
   const mapped = shown.filter((r) => r.place.lat !== null && r.place.lon !== null).length;
   return (
     <div className="city" data-city={citySlug(city)}>
-      <section className="city-cover" aria-labelledby="city-title">
+      <section className="city-cover" aria-labelledby="city-title" data-ink-cover={tab === "swap" || undefined}>
+        {tab === "swap" && <CityInkMap key={city} />}
         <PassportSecurityLines />
         <div className="city-cover-copy">
           <GuideFolio country={COVERS[city]?.country} code={COVERS[city]?.code ?? "GUIDE"} />
@@ -400,7 +402,10 @@ export function CityView({ city }: { city: string }) {
               ))}
         </div>
         <aside id="city-place-map" className="city-map-wrap">
-          {(!mobile || mobileView === "map") && <CityMap places={shown.map((r) => r.place)} active={active} onPick={pickFromMap} />}
+          {tab === "foryou" && !events && (!mobile || mobileView === "map") && (
+            mapped > 0 ? <CityMap places={shown.map((r) => r.place)} active={active} onPick={pickFromMap} /> :
+            <p className="muted">These places don’t have map coordinates. You can still browse their details.</p>
+          )}
         </aside>
       </div>
       </>

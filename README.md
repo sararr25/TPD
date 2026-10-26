@@ -61,6 +61,17 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 
 ## Project state
 
+- `docs/57-passport-inline-matches-release.md`: Passport folio and inline Qloo previews published as `b4dcdbe`; read this before continuing Passport work.
+
+- `docs/56-passport-folio-qloo-matches.md`: new personal Passport folio and real Qloo category-match routes, implemented in the isolated release worktree; local only.
+
+- `docs/55-cities-twin-live-handover.md`: Cities/Twin are now live (`790f00d`), preserving the Taste Chemistry quiz.
+
+- `docs/54-taste-quiz-live-handover.md`: latest live quiz release, original vector artwork, sound boundaries and 11/11 public-alias checks; continuation must reconcile this dirty checkout with the release branch.
+
+- `docs/53-quiz-passport-and-ink-motion-remake.md`: local Quiz/Passport visual and UX remake, expanded Twin ink-map motif and Home ending, plus the accepted motion-audit fixes; not published.
+- `docs/52-motion-audit-2026-10-26.md`: motion audit, priorities and acceptance criteria preceding the authorized remake.
+
 - `docs/51-marked-labels-live-release.md`: approved marked-label Twin controls, desktop side-by-side layout and live publication receipt.
 - `docs/50-personal-home-implementation-and-visited-schema.md`: latest personal Home, explicit real visits, approved/applied Neon schema and eight passing synthetic browser checks; production sync settings unchanged.
 - `docs/49-approved-photos-and-personal-city-ranking.md`: approved eleven-city photographs and source credits; pending product questions are superseded by docs/50.

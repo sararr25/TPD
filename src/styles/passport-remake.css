@@ -1,0 +1,120 @@
+/* A personal travel folio: portrait first, editing second. */
+.passport-introduction { display:flex; align-items:end; justify-content:space-between; gap:24px; margin:8px 0 40px; }
+.passport-introduction { scroll-margin-top:100px; }
+.passport-eyebrow { color:var(--brand); margin:0 0 12px; font-size:14px; }
+.passport-introduction h1 { max-width:100%; margin:0; font-size:clamp(40px,5.5vw,72px); line-height:1.05; }
+.passport-introduction p:last-child { color:var(--ink-2); margin-bottom:0; }
+.passport-remade .passport-spread { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); grid-auto-flow:dense; align-items:start; padding:0; border-radius:8px 24px 24px 8px; background:var(--paper); border:1px solid var(--line); border-left:8px solid var(--pass); box-shadow:3px 5px 0 var(--line); }
+.passport-remade .passport-spread > :first-child { min-width:0; padding:clamp(24px,4vw,48px); border:0; border-radius:0; background:var(--paper); }
+.passport-remade .passport-spread > .passport-editor { border:0; border-left:1px dashed var(--line-strong); border-radius:0 24px 24px 0; padding:clamp(24px,3vw,40px); background:color-mix(in srgb,var(--bg) 40%,var(--paper)); }
+.passport-remade .passport-editor .passport-leaf-heading { padding:0; margin:0 0 24px; background:none; box-shadow:none; color:var(--ink); border:0; }
+.passport-remade .passport-leaf-heading::before, .passport-remade .passport-leaf-heading::after, .passport-remade .passport-leaf-heading .h-security { display:none; }
+.passport-remade .passport-leaf-heading h2 { font-size:36px; margin:0 0 12px; color:var(--ink); }
+.passport-remade .passport-leaf-heading .lead { color:var(--ink-2); }
+.passport-favourites { margin-top:28px; border-block:1px solid var(--line); padding:18px 0; }
+.passport-favourites > summary { font-size:18px; font-weight:var(--weight-medium); color:var(--ink); }
+.passport-favourites > summary span { float:right; color:var(--brand); font:13px var(--font-mono); }
+.passport-favourites .search-form { margin-top:16px; }
+.passport-remade .pp { padding:0; margin:0; background:none; border:0; box-shadow:none; }
+.passport-remade .pp-head { border:0; margin:0; padding-bottom:20px; color:var(--ink-2); }
+.pp-personal-note { font-size:12px; color:var(--ink-3); }
+.passport-remade .pp-id { grid-template-columns:64px minmax(0,1fr); gap:20px; margin:12px 0 36px; }
+.passport-remade .pp-id { position:relative; isolation:isolate; overflow:hidden; padding:28px 24px; background:var(--pass); border-radius:4px 18px 18px 4px; }
+.passport-remade .pp-id > .h-security { position:absolute; inset:0; width:100%; height:100%; opacity:.12; z-index:-1; stroke:var(--on-pass); stroke-width:.7; }
+.passport-remade .pp-id .meta { color:var(--on-brand-2); }
+.passport-remade .pp-id .pp-title { color:var(--sun); }
+.passport-remade .pp-id .pp-motto { color:var(--on-brand-2); }
+.passport-remade .pp-photo { width:64px; height:80px; background:var(--sun-soft); border:1px solid var(--brand); border-radius:40px 40px 4px 4px; }
+.passport-remade .pp-photo .quiz-icon.big { width:42px; height:42px; }
+.passport-remade .pp-title { font-size:clamp(32px,3.5vw,48px); line-height:1.05; margin:10px 0 16px; }
+.passport-remade .pp-motto { color:var(--ink-2); font-size:17px; line-height:1.5; margin:0; }
+.passport-remade .pp-axes { gap:22px; padding-block:24px; border-block:1px dashed var(--line-strong); }
+.passport-remade .pp-axes li { grid-template-columns:86px minmax(32px,1fr) 98px; }
+.passport-remade .pp-bar { height:4px; background:var(--line); }
+.passport-remade .pp-bar i { width:12px; height:12px; background:var(--brand); border:2px solid var(--paper); outline:1px solid var(--brand); }
+.passport-remade .pp-stamps { gap:16px; margin:32px 0; }
+.passport-remade .pp-stamp { width:88px; height:88px; border-color:var(--brand); outline-color:var(--brand); color:var(--brand); font-size:12px; }
+.passport-remade .pp-visas { font-size:15px; line-height:1.7; }
+.passport-remade .pp-visas > span { display:block; margin-bottom:8px; }
+.passport-remade .pp-mrz { opacity:.6; margin-top:28px; font-size:10px; letter-spacing:.16em; }
+.passport-remade > .visited-cities, .passport-remade > .passport-activity { margin-top:40px; padding:clamp(24px,4vw,40px); border:1px solid var(--line); border-left:0; border-radius:8px; box-shadow:none; background:var(--paper); }
+.passport-remade > :is(.visited-cities,.passport-activity) h2 { font-size:32px; }
+.passport-remade .visited-city-options { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-block:16px; }
+.passport-remade .visited-city-options label { padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--paper); }
+.passport-remade .visited-city-options label:has(:checked) { border-color:var(--brand); background:var(--brand-soft); }
+.passport-remade .activity-stamp { background:var(--paper); border:0; border-bottom:1px dashed var(--line-strong); padding:20px 0; animation:none; }
+.passport-remade .activity-stamp-mark { flex-basis:56px; width:56px; height:56px; }
+.passport-remade .activity-stamp h3 { font-size:24px; }
+/* The same notebook works inline and in the native modal. */
+dialog.quiz-panel { width:min(920px,calc(100vw - 40px)); max-width:920px; padding:0; border:1px solid var(--line); border-left:8px solid var(--pass); border-radius:8px 24px 24px 8px; background:var(--paper); }
+dialog.quiz-panel > p[role="alert"]:empty { display:none; }
+.quiz { max-width:none; padding:clamp(24px,4vw,48px); }
+.quiz-topline { gap:12px; flex-wrap:wrap; margin-bottom:24px; }
+.quiz-wordmark { font:italic 24px var(--font-display); color:var(--brand); }
+.quiz-step-count { margin-left:auto; color:var(--ink-3); font:12px var(--font-mono); }
+.quiz-topline .btn { font-size:13px; }
+.quiz .quiz-progress { height:3px; margin:0 0 40px; background:var(--line); border:0; overflow:hidden; }
+.quiz .quiz-progress > span { width:100%; top:0; height:100%; transform-origin:left; transition:transform var(--dur-base) var(--ease-out); }
+.quiz .quiz-progress > span::after { display:none; }
+.quiz-question-leaf { min-height:340px; }
+.quiz-question-leaf h2 { max-width:100%; margin:0 0 28px; font-size:clamp(32px,4vw,48px); line-height:1.08; text-wrap:balance; }
+.quiz-question-leaf h2:focus-visible { outline:none; }
+.quiz .quiz-pair { gap:16px; }
+.quiz .quiz-tile { border-radius:5px 18px 18px 5px; background:var(--paper); padding:24px 16px; gap:16px; text-wrap:balance; }
+.quiz .quiz-pair .quiz-tile { min-height:180px; padding:28px 24px; font-size:19px; }
+.quiz .quiz-tile[aria-pressed="true"] { background:var(--brand-soft); }
+.quiz .quiz-icon { width:48px; height:48px; }
+.quiz .quiz-or { display:none; }
+.quiz .quiz-grid { grid-template-columns:repeat(3,minmax(0,1fr)); grid-auto-flow:dense; }
+.quiz .quiz-slider { margin:40px 0; gap:28px; }
+.quiz .quiz-slider input { min-height:44px; cursor:pointer; }
+.quiz .actions { gap:12px; }
+.quiz-question-leaf > .actions { display:inline-flex; margin:24px 16px 0 0; vertical-align:middle; }
+.quiz .swipe-card { max-width:380px; min-height:240px; border:1px solid var(--brand); border-radius:6px 20px 20px 6px; box-shadow:3px 5px 0 var(--line); transition:none; background:var(--paper); }
+.quiz .swipe-card .quiz-icon { width:72px; height:72px; }
+.quiz .swipe-card h3 { font-size:32px; margin:12px 0 0; }
+.quiz-deck-help { font-size:13px; color:var(--ink-2); text-align:center; }
+.quiz-done { padding:clamp(24px,5vw,56px); }
+.quiz-done h2 { font-size:42px; }
+.passport-quiz-leaf { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); padding:0; overflow:hidden; border:1px solid var(--line); scroll-margin-top:88px; }
+.passport-quiz-leaf > .grid { display:block; min-width:0; }
+.quiz-cover { background:var(--pass); color:var(--on-pass); padding:clamp(24px,4vw,48px); display:flex; flex-direction:column; justify-content:center; }
+.quiz-cover-brand { font:12px var(--font-mono); color:var(--on-brand-2); }
+.quiz-cover h1 { font-size:clamp(36px,4vw,56px); line-height:1.05; margin:40px 0 24px; }
+.quiz-cover h1 em { color:var(--sun); }
+.quiz-cover > p { color:var(--on-brand-2); max-width:32ch; }
+.quiz-cover .ink-journey { color:var(--sun); margin-block:24px; }
+.quiz-cover .ink-origin circle:first-child, .quiz-cover .ink-destination > circle:first-child { fill:var(--pass); }
+.quiz-cover-note { font-size:13px; }
+@media(max-width:850px) {
+  .passport-introduction { align-items:start; flex-direction:column; margin-bottom:28px; }
+  .passport-remade .passport-spread { grid-template-columns:minmax(0,1fr); }
+  .passport-remade .passport-spread > .passport-editor { border:0; border-top:1px dashed var(--line-strong); border-radius:0 0 24px 0; }
+  .passport-remade .passport-spread > :first-child { border-radius:0 20px 0 0; }
+  .passport-quiz-leaf { grid-template-columns:1fr; }
+  .quiz-cover { display:none; }
+  .quiz .quiz-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:520px) {
+  dialog.quiz-panel { width:calc(100vw - 24px); max-height:calc(100dvh - 24px); border-left-width:5px; }
+  .quiz { padding:24px 20px; }
+  .quiz-wordmark { font-size:22px; }
+  .quiz-step-count { font-size:11px; }
+  .quiz-topline { margin-bottom:20px; }
+  .quiz-topline .btn { min-height:36px; padding-inline:0; }
+  .quiz .quiz-progress { margin-bottom:28px; }
+  .quiz-question-leaf { min-height:320px; }
+  .quiz .quiz-pair .quiz-tile { min-height:176px; padding:20px 12px; font-size:16px; }
+  .quiz .quiz-tile { padding:20px 12px; font-size:15px; }
+  .quiz .quiz-both .toggle { white-space:normal; }
+  .quiz .quiz-slider { gap:16px; }
+  .passport-remade .passport-spread > :first-child, .passport-remade .passport-spread > .passport-editor { padding:24px 20px; }
+  .passport-remade .pp-id { grid-template-columns:40px minmax(0,1fr); gap:12px; padding:24px 16px; }
+  .passport-remade .pp-photo { width:40px; height:56px; }
+  .passport-remade .pp-photo .quiz-icon.big { width:32px; height:32px; }
+  .passport-remade .pp-head { align-items:start; flex-direction:column; gap:4px; }
+  .passport-remade .pp-axes li { grid-template-columns:72px minmax(20px,1fr) 86px; gap:8px; }
+  .passport-remade .pp-axes .meta { font-size:12px; }
+  .passport-remade .pp-stamp { width:72px; height:72px; font-size:11px; }
+  .passport-remade .visited-city-options { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}

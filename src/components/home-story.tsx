@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
+import { motionTokens as m } from "@/lib/motion-tokens";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { cityCover } from "@/lib/city-covers";
@@ -22,8 +23,8 @@ export function HomeStory() {
             gsap.from(art, {
               y: 24,
               rotation: -2,
-              duration: 0.65,
-              ease: "power2.out",
+              duration: m.duration.hero,
+              ease: m.ease.enter,
               scrollTrigger: { trigger: art, start: "top 92%", once: true },
             });
           });

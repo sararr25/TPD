@@ -1,7 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { motionTokens as m } from "@/lib/motion-tokens";
 import { QuizIcon } from "./quiz-icon";
 import {
   QUESTIONS,
@@ -34,17 +35,24 @@ export function QuizFlow({
     [answers, setAnswers] = useState<Answers>({}),
     [extra, setExtra] = useState<string[]>([]);
   const total = QUESTIONS.length;
+  const direction = useRef(1);
+  const visitedStep = useRef(false);
   const leaf = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (visitedStep.current) leaf.current?.querySelector<HTMLElement>("#quiz-title")?.focus({ preventScroll: true });
+    visitedStep.current = true;
+  }, [step]);
   useGSAP(() => {
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.from(".quiz-question-leaf", { rotationY: -7, x: 12, transformOrigin: "left center", duration: .45, ease: "power3.out", clearProps: "transform,transformOrigin" });
+      gsap.from(".quiz-question-leaf", { x: direction.current * m.distance.reveal, opacity: .3, duration: m.duration.reveal, ease: m.ease.enter, clearProps: "transform,opacity" });
     });
     return () => media.revert();
   }, { scope: leaf, dependencies: [step], revertOnUpdate: true });
   const topUp = step >= total;
   const question = QUESTIONS[step];
   function leave(value: Answers[string] | undefined) {
+    direction.current = 1;
     const next = { ...answers };
     if (value === undefined) delete next[question.id];
     else next[question.id] = value;
@@ -56,10 +64,9 @@ export function QuizFlow({
   }
   return (
     <section className="quiz" aria-labelledby="quiz-title" ref={leaf}>
-      <div className="row">
-        <span className="meta">
-          {topUp ? "Almost there" : `Question ${step + 1} / ${total}`}
-        </span>
+      <div className="row quiz-topline">
+        <span className="quiz-wordmark">Your taste, on paper.</span>
+        <span className="quiz-step-count" aria-label={topUp ? "Final favourites" : `Question ${step + 1} of ${total}`}>{topUp ? "Almost there" : `${step + 1} / ${total}`}</span>
         {onCancel && (
           <button className="btn btn-quiet" disabled={busy} onClick={onCancel}>
             Close quiz
@@ -74,7 +81,7 @@ export function QuizFlow({
         aria-valuenow={Math.min(step, total)}
         aria-label="Quiz progress"
       >
-        <span style={{ width: `${(Math.min(step, total) / total) * 100}%` }} />
+        <span style={{ transform: `scaleX(${Math.min(step, total) / total})` }} />
       </div>
       <div className="quiz-question-leaf">
       {topUp ? (
@@ -94,7 +101,7 @@ export function QuizFlow({
           value={answers[question.id]}
           busy={busy}
           onLeave={leave}
-          onBack={step > 0 ? () => setStep(step - 1) : undefined}
+          onBack={step > 0 ? () => { direction.current = -1; setStep(step - 1); } : undefined}
         />
       )}
       </div>
@@ -118,7 +125,7 @@ function QuestionScreen({
 }) {
   const [value, setValue] = useState(saved);
   const nav = (
-    <div className="actions">
+    <div className="actions quiz-navigation">
       {onBack && (
         <button className="btn btn-quiet" disabled={busy} onClick={onBack}>
           ← Back
@@ -133,7 +140,7 @@ function QuestionScreen({
     const v = typeof value === "number" ? value : Math.ceil(SLIDER_STOPS / 2);
     return (
       <>
-        <h2 id="quiz-title">{q.title}</h2>
+        <h2 id="quiz-title" tabIndex={-1}>{q.title}</h2>
         <div className="quiz-slider">
           <span>
             <QuizIcon emoji={q.left.emoji} /> {q.left.label}
@@ -164,7 +171,7 @@ function QuestionScreen({
   if (q.kind === "this-or-that")
     return (
       <>
-        <h2 id="quiz-title">{q.title}</h2>
+        <h2 id="quiz-title" tabIndex={-1}>{q.title}</h2>
         <div className="quiz-pair">
           {q.options.map((o, i) => (
             <button
@@ -197,7 +204,7 @@ function QuestionScreen({
     const picked = Array.isArray(value) ? value : [];
     return (
       <>
-        <h2 id="quiz-title">{q.title}</h2>
+        <h2 id="quiz-title" tabIndex={-1}>{q.title}</h2>
         <p>Choose up to {q.max}.</p>
         <div className="quiz-grid">
           {q.options.map((o) => {
@@ -233,7 +240,7 @@ function QuestionScreen({
   }
   return (
     <>
-      <h2 id="quiz-title">{q.title}</h2>
+      <h2 id="quiz-title" tabIndex={-1}>{q.title}</h2>
       <SwipeDeck cards={q.cards} busy={busy} onDone={onLeave} />
       {nav}
     </>
@@ -250,63 +257,101 @@ function SwipeDeck({
   busy: boolean;
   onDone: (yes: string[]) => void;
 }) {
-  const [index, setIndex] = useState(0),
-    [yes, setYes] = useState<string[]>([]),
-    [dx, setDx] = useState(0);
-  const start = useRef<number | null>(null);
+  const [index, setIndex] = useState(0), [yes, setYes] = useState<string[]>([]);
+  const [completed, setCompleted] = useState(false);
+  const node = useRef<HTMLDivElement>(null);
+  const gesture = useRef<{ x: number; y: number; lastX: number; time: number; velocity: number; dx: number } | null>(null);
+  const locked = useRef(false);
+  const pending = useRef<(() => void) | null>(null);
   const card = cards[index];
+  const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  useEffect(() => { if (completed) node.current?.focus({ preventScroll: true }); }, [completed]);
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const stop = () => {
+      if (!query.matches || !node.current) return;
+      gesture.current = null;
+      gsap.killTweensOf(node.current);
+      gsap.set(node.current, { clearProps: "transform,opacity" });
+      node.current.dataset.lean = "";
+      pending.current?.();
+    };
+    query.addEventListener("change", stop);
+    return () => query.removeEventListener("change", stop);
+  }, []);
+  useGSAP(() => {
+    locked.current = false;
+    if (!node.current) return;
+    gsap.set(node.current, { clearProps: "transform,opacity" });
+    if (!reduced()) gsap.from(node.current, { opacity: .3, y: m.distance.small, duration: m.duration.panel, clearProps: "transform,opacity" });
+    return () => { if (node.current) gsap.killTweensOf(node.current); };
+  }, { scope: node, dependencies: [index], revertOnUpdate: true });
   function decide(keep: boolean) {
-    const nextYes = keep ? [...yes, card.id] : yes;
-    setYes(nextYes);
-    setDx(0);
-    if (index + 1 >= cards.length) onDone(nextYes);
-    else setIndex(index + 1);
+    if (busy || locked.current || !card) return;
+    locked.current = true;
+    const finish = () => {
+      if (pending.current !== finish) return;
+      pending.current = null;
+      const nextYes = keep ? [...yes, card.id] : yes;
+      setYes(nextYes);
+      if (index + 1 >= cards.length) { setCompleted(true); onDone(nextYes); }
+      else setIndex(index + 1);
+    };
+    pending.current = finish;
+    if (reduced() || !node.current) finish();
+    else gsap.to(node.current, { x: keep ? m.distance.drag * 2 : -m.distance.drag * 2, opacity: 0, duration: m.duration.exit, ease: m.ease.leave, onComplete: finish });
   }
+  function settle() {
+    if (node.current) gsap.to(node.current, { x: 0, rotation: 0, duration: reduced() ? 0 : m.duration.panel, ease: m.ease.settle, clearProps: "transform" });
+  }
+  if (completed) return <div className="quiz-deck-complete" ref={node} tabIndex={-1}>
+    <p>Your choices are ready.</p>
+    <button className="btn btn-primary" disabled={busy} onClick={() => onDone(yes)}>{busy ? "Building your Passport…" : "Continue"}</button>
+  </div>;
   if (!card) return null;
   return (
     <div className="swipe">
-      <p className="meta">
-        Card {index + 1} / {cards.length} · swipe right for yes, left for no
-      </p>
-      <div
-        className="swipe-card paper"
-        tabIndex={0}
-        role="group"
+      <p className="quiz-deck-help">{index + 1} / {cards.length} · Swipe, use the arrow keys, or choose below.</p>
+      <div ref={node} className="swipe-card paper" tabIndex={0} role="group"
         aria-label={`${card.label}${card.note ? `, ${card.note}` : ""}. Use the left and right arrow keys, or the buttons below.`}
-        data-lean={dx > 40 ? "yes" : dx < -40 ? "no" : undefined}
-        style={{ transform: `translateX(${dx}px) rotate(${dx / 20}deg)` }}
-        onPointerDown={(e) => {
-          if (busy) return;
-          start.current = e.clientX;
+        onPointerDown={e => {
+          if (busy || locked.current) return;
+          gsap.killTweensOf(e.currentTarget);
+          gesture.current = { x: e.clientX, y: e.clientY, lastX: e.clientX, time: performance.now(), velocity: 0, dx: 0 };
           e.currentTarget.setPointerCapture(e.pointerId);
         }}
-        onPointerMove={(e) => start.current !== null && setDx(e.clientX - start.current)}
-        onPointerUp={() => {
-          start.current = null;
-          if (Math.abs(dx) > 100) decide(dx > 0);
-          else setDx(0);
+        onPointerMove={e => {
+          const g = gesture.current;
+          if (!g) return;
+          const now = performance.now();
+          g.dx = e.clientX - g.x;
+          g.velocity = (e.clientX - g.lastX) / Math.max(1, now - g.time) * 1000;
+          g.lastX = e.clientX; g.time = now;
+          if (Math.abs(e.clientY - g.y) > Math.abs(g.dx)) return;
+          if (!reduced()) gsap.set(e.currentTarget, { x: g.dx, rotation: g.dx / 35 });
+          e.currentTarget.dataset.lean = g.dx > m.distance.flick ? "yes" : g.dx < -m.distance.flick ? "no" : "";
         }}
-        onPointerCancel={() => {
-          start.current = null;
-          setDx(0);
+        onPointerUp={e => {
+          const g = gesture.current; gesture.current = null;
+          if (!g) return;
+          e.currentTarget.dataset.lean = "";
+          const dx = e.clientX - g.x;
+          const horizontal = Math.abs(dx) > Math.abs(e.clientY - g.y) * 1.3;
+          const flick = performance.now() - g.time < 100 && Math.abs(dx) >= m.distance.flick && Math.abs(g.velocity) >= m.distance.velocity && Math.sign(g.velocity) === Math.sign(dx);
+          if (horizontal && (Math.abs(dx) >= m.distance.drag || flick)) decide(dx > 0);
+          else settle();
         }}
-        onKeyDown={(e) => {
-          if (busy) return;
-          if (e.key === "ArrowRight") decide(true);
-          if (e.key === "ArrowLeft") decide(false);
-        }}
-      >
+        onPointerCancel={e => { gesture.current = null; e.currentTarget.dataset.lean = ""; settle(); }}
+        onKeyDown={e => {
+          if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); decide(e.key === "ArrowRight"); }
+        }}>
         <QuizIcon emoji={card.emoji} big />
         <h3>{card.label}</h3>
         {card.note && <p className="muted">{card.note}</p>}
       </div>
       <div className="actions swipe-buttons">
-        <button className="btn btn-secondary" disabled={busy} onClick={() => decide(false)}>
-          ← No
-        </button>
-        <button className="btn btn-secondary" disabled={busy} onClick={() => decide(true)}>
-          Yes →
-        </button>
+        <button className="btn btn-secondary" disabled={busy} onClick={() => decide(false)}>← No</button>
+        <button className="btn btn-primary" disabled={busy} onClick={() => decide(true)}>Yes →</button>
       </div>
     </div>
   );
@@ -330,7 +375,7 @@ function TopUp({
   const options = Object.values(ENTITY_CARDS).filter((c) => !liked.includes(c.id));
   return (
     <>
-      <h2 id="quiz-title">Pick {need} more you&apos;d give a try</h2>
+      <h2 id="quiz-title" tabIndex={-1}>Pick {need} more you&apos;d give a try</h2>
       <p>Your Passport needs at least {MIN_ENTITIES} artists or films to find places for you.</p>
       <div className="quiz-grid">
         {options.map((c) => {

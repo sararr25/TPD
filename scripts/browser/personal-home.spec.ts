@@ -41,17 +41,17 @@ async function fixtures(page: Page, options: { profile?: boolean; account?: stri
   });
   return { writes, ranks, switchAccount: (value: string | undefined) => { account = value; } };
 }
-const cities = (page: Page) => page.locator('.h-personal-cities .h-city-body strong');
+const cities = (page: Page) => page.locator('.h-personal-cities:visible .h-city-body strong');
 for (const width of [375, 390, 768, 1440]) test(`guest has four approved cities and an immediate all-city route at ${width}`, async ({ page }) => {
   const { ranks } = await fixtures(page);
   await page.setViewportSize({ width, height: 844 });
   await page.goto(base);
   await expect(cities(page)).toHaveText(['Lisbon','Paris','Tokyo','New York']);
   await expect(page.locator('.h-personal-cities .h-grid > li')).toHaveCount(4);
-  await expect(page.locator('.h-personal-cities').getByRole('link', { name: 'All cities · 11 →' })).toHaveAttribute('href','/explore');
+  await expect(page.locator('.h-personal-cities:visible').getByRole('link', { name: 'All cities · 11 →' })).toHaveAttribute('href','/explore');
   expect(ranks).toHaveLength(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
-  await page.locator('.h-personal-cities').getByRole('link', { name: 'All cities · 11 →' }).click();
+  await page.locator('.h-personal-cities:visible').getByRole('link', { name: 'All cities · 11 →' }).click();
   await expect(page.locator('.h-grid > li:not([hidden])')).toHaveCount(11);
   await page.getByRole('button', { name: 'Asia', exact: true }).click();
   await expect(page.locator('.h-grid > li:not([hidden])')).toHaveCount(5);
@@ -79,7 +79,7 @@ test('verified Passport affinity precedes physical visits; missing scores are no
   await expect(page.locator('.h-personal-cities h2')).toHaveText('Cities for your Passport.');
   await expect(cities(page)).toHaveText(['Tokyo','Porto','Hanoi','Phu Quoc']);
   await expect(page.locator('.h-city-reason').last()).toHaveText('Visited by you');
-  await expect(page.locator('.h-personal-cities')).not.toContainText('%');
+  await expect(page.locator('.h-personal-cities:visible')).not.toContainText('%');
 });
 test('account writes name their owner; switching accounts masks previous real visits', async ({ page }) => {
   const state = await fixtures(page, { account: 'fixture-user-a', visited: ['Tokyo'], sync: true });
@@ -97,7 +97,7 @@ test('account writes name their owner; switching accounts masks previous real vi
 test('affinity failure and unavailable account sync keep honest local fallback', async ({ page }) => {
   const { writes } = await fixtures(page, { profile: true, account: 'fixture-user-a', failure: true });
   await page.goto(base);
-  await expect(page.locator('.h-personal-cities')).toContainText('Personal city picks aren’t available right now.');
+  await expect(page.locator('.h-personal-cities:visible')).toContainText('Personal city picks aren’t available right now.');
   await expect(cities(page)).toHaveText(['Lisbon','Paris','Tokyo','New York']);
   await page.goto(base + '/passport');
   await page.getByRole('checkbox', { name: 'Barcelona', exact: true }).check();

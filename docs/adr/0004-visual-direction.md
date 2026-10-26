@@ -52,3 +52,18 @@ are explicit per-search choices (Delete maps to trait exclusion, not data deleti
 Passport A now includes a choreographed hero, decorative/photo parallax and viewport
 reveals; reduced motion and immediate interaction remain required. Legacy URLs
 remain compatible. See the Twin and motion specification, issue #36.
+
+## Amendment — 26 Oct 2026: city cover as an animated ink map
+
+Owner approved the illustrated map and motion spread across the existing berry
+City/Twin cover, identified explicitly in the Paris screenshot. Keep that card's
+composition, typography, text, controls and photograph. Animate dashed walking
+routes and clearly readable larger shoe prints among faint streets, blocks and
+gardens, with actual text/photo bounds masked out. The walking route must remain
+dashed, including at rest; it is decorative, not a geographic itinerary.
+
+The earlier white replacement card and the standalone `/swap` card were the wrong
+target and are not this direction. The same ink vocabulary can accompany the
+existing Home ending. Quiz and Passport use the approved personal folio remake,
+with existing fonts, palette and data semantics. See docs/53 for implementation,
+owner corrections and the local-only verification boundary.

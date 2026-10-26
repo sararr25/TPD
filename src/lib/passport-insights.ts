@@ -1,0 +1,17 @@
+import { buildProfile, cleanAnswers, type Answers } from './quiz.ts';
+import type { ExploreCategory } from './discovery.ts';
+export type PassportInsight = { id: string; title: string; text: string; stamp: string; category: ExploreCategory; action: string };
+// These describe explicit quiz choices. Qloo supplies the places, not this copy.
+export function passportInsights(value: Answers): PassportInsight[] {
+  const a = cleanAnswers(value), profile = buildProfile(a);
+  if (!profile) return [];
+  const has = (key: string, id: string) => Array.isArray(a[key]) && (a[key] as string[]).includes(id);
+  const rows: PassportInsight[] = [];
+  if (has('places','jazz-club') || a.playlist === 'electronic' || (typeof a.rhythm === 'number' && a.rhythm >= 4)) rows.push({ id:'evenings', title:'Your day can continue after dark.', text:has('places','jazz-club') ? 'You chose jazz clubs as somewhere you would walk into. A good evening is part of how you get to know a city.' : 'You leaned toward late nights or an energetic playlist. You like a day that leaves something for the evening.', stamp:'After dark', category:'bar', action:'Find bars for your evenings' });
+  if (has('places','gallery') || has('places','museum') || has('rainy','cinema') || has('places','bookstore')) rows.push({id:'culture',title:'Culture is a reason to stop.',text:'Your choices include galleries, museums, books or cinema. You make time to step inside and discover a different point of view.',stamp:has('places','gallery')?'Small galleries':'Culture stops',category:'museum',action:'Find museums for you'});
+  if (a.dinner || typeof a['food-adventure'] === 'number') rows.push({id:'food',title:a.dinner === 'noodles' ? 'A simple table can be the best one.' : 'Food is part of the discovery.',text:a.dinner === 'noodles' ? 'You chose the plastic stool and the best noodles in town. The setting matters less than a meal worth stopping for.' : a['food-adventure'] === 5 ? 'You would order what the locals order. Explore restaurants through the rest of your taste, too.' : 'Your food choices help shape the restaurants you discover. These are preferences, not a guarantee about every menu.',stamp:a.dinner === 'noodles'?'Simple tables':'Food discoveries',category:'restaurant',action:'Find restaurants for you'});
+  if (has('places','cafe') || has('rainy','cafe-book') || (typeof a.crowds === 'number' && a.crowds >= 4)) rows.push({id:'pause',title:'You make room for a quieter pause.',text:'You chose cafés, a book or quieter streets. A pause can be as much a part of the trip as the next stop.',stamp:'Quiet pauses',category:'cafe',action:'Find cafés for your pauses'});
+  if (a.afternoon === 'trail' || a.base === 'remote' || has('places','park')) rows.push({id:'outdoors',title:'You leave room for the outdoors.',text:'Your choices include a trail, a park or a quieter base. Explore hotels for your Passport as a starting point; this does not verify access to trails or parks.',stamp:'Outdoor detours',category:'hotel',action:'Find places to stay'});
+  if (!rows.length) rows.push({id:'discovery',title:profile.axes.pace >= 60 ? 'You leave space for the unexpected.' : 'Your trip has its own rhythm.',text:profile.motto + '. Use your favourite artists, films and places to discover restaurants through Qloo.',stamp:profile.axes.pace >= 60?'Room to wander':'Your own rhythm',category:'restaurant',action:'Find restaurants for you'});
+  return rows.slice(0,4);
+}

@@ -91,11 +91,10 @@ for (const count of [0, 1, 2, 3, 5])
     await expect(
       page.getByRole("heading", { name: "Your Taste Passport" }),
     ).toBeVisible();
-    const favouritesEditor = page.locator(".passport-favourites");
-    if (await favouritesEditor.count() && (await favouritesEditor.getAttribute("open")) === null) await favouritesEditor.locator("summary").click();
+    await page.getByText("Edit favourites & quiz", { exact: true }).click();
     await expect(page.getByText(`${count} of 5 chosen`)).toBeVisible();
     if (count < 3)
-      await expect(page.getByText(/Your profile is here/)).toBeVisible();
+      await expect(page.locator(".passport-editor").getByText(/Your profile is here/)).toBeVisible();
     else
       await expect(
         page.getByRole("link", { name: "Browse cities", exact: true }).first(),
@@ -120,12 +119,12 @@ test("example preview does not write personal favourites", async ({ page }) => {
   });
   await api(page, 3);
   await page.goto(base + "/passport?guest=1");
+  await page.getByText("Edit favourites & quiz", { exact: true }).click();
   await page.getByRole("button", { name: "Preview this example" }).click();
   await expect(
     page.getByRole("heading", { name: "Example · not your Passport" }),
   ).toBeVisible();
   expect(writes).toEqual([]);
-  await page.locator(".passport-favourites summary").click();
   await expect(page.getByText("3 of 5 chosen")).toBeVisible();
 });
 test("category filters and browser history remain distinct", async ({
@@ -153,7 +152,7 @@ for (const width of [320, 390, 768, 1440])
     await api(page);
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    for (const path of ["/lisbon", "/passport", "/preview/home"]) {
+    for (const path of ["/lisbon", "/passport", process.env.PASSPORT_PRODUCTION ? "/" : "/preview/home"]) {
       await page.goto(base + path);
       await page.waitForTimeout(350);
       expect(
@@ -161,6 +160,10 @@ for (const width of [320, 390, 768, 1440])
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
+    }
+    if (process.env.PASSPORT_PRODUCTION) {
+      await expect(page.getByRole("heading", { name: /Your taste.*Your next place/ })).toBeVisible();
+      return;
     }
     await expect(
       page.getByRole("heading", { name: /The city has/ }),
@@ -172,6 +175,7 @@ test("Place internal return restores category, price, view and reading position"
   page,
 }) => {
   await api(page);
+  test.skip(!!process.env.PASSPORT_PRODUCTION, "This Place fixture is development-only; the full dev suite covers its return path.");
   const city = "/lisbon?category=bar&price-bar=3&view=map";
   await page.goto(base + city);
   await page.evaluate(() =>
@@ -232,6 +236,7 @@ test("partial save survives reload and retry preserves account binding", async (
 });
 for (const width of [320, 390, 768, 1440])
   test(`Place long name and broken image ${width}`, async ({ page }) => {
+    test.skip(!!process.env.PASSPORT_PRODUCTION, "This broken-photo Place fixture is development-only.");
     await api(page);
     await page.setViewportSize({ width, height: 900 });
     await page.route(/https:\/\/(?:images\.qloo\.com|(?:upload|thumb)\.wikimedia\.org)\//, (r) => r.abort());
@@ -261,7 +266,7 @@ test("expired guest choices keep quiz and request a refresh", async ({
     localStorage.setItem("beesyde-quiz-v1", JSON.stringify({ planning: 2 }));
   }, choices);
   await page.goto(base + "/passport");
-  await expect(page.getByText(/Your favourites need a refresh/)).toBeVisible();
+  await expect(page.getByText(/Your favourites need a refresh/).filter({ visible: true })).toBeVisible();
   await expect(page.locator(".quiz")).toHaveCount(0);
 });
 test("foreign pending account is never imported into the current account", async ({
@@ -285,6 +290,7 @@ test("foreign pending account is never imported into the current account", async
     );
   });
   await page.goto(base + "/passport");
+  await page.getByText("Edit favourites & quiz", { exact: true }).click();
   await expect(page.getByText("0 of 5 chosen")).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Retry account save" }),

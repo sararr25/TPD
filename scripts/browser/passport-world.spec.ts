@@ -72,7 +72,7 @@ test("coded journey plays once and reduced motion keeps static artwork", async (
   await worldFixtures(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(base + "/explore");
-  const journey = page.locator(".journey-animation");
+  const journey = page.locator(".journey-animation:visible");
   await expect(journey).toHaveAttribute("data-journey-state", "complete", { timeout: 8000 });
   const cover = journey.locator(".journey-book-cover");
   const resting = await cover.getAttribute("style");

@@ -24,12 +24,12 @@
 [data-motion-paused] *, [data-motion-paused] *::before, [data-motion-paused] *::after,
 [data-offscreen]::after { animation-play-state:paused !important; }
 .activity-stamp { animation:none; }
-dialog { transition:opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete; opacity:0; transform:translateY(8px); }
-dialog[open] { opacity:1; transform:translateY(0); }
-dialog::backdrop { background:var(--scrim); opacity:0; transition:opacity var(--dur-base), display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete; }
-dialog[open]::backdrop { opacity:1; }
-@starting-style { dialog[open] { opacity:0; transform:translateY(8px); } dialog[open]::backdrop { opacity:0; } }
-body:has(dialog[open]) { overflow:hidden; }
+dialog:not(.quiz-panel) { transition:opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete; opacity:0; transform:translateY(8px); }
+dialog:not(.quiz-panel)[open] { opacity:1; transform:translateY(0); }
+dialog:not(.quiz-panel)::backdrop { background:var(--scrim); opacity:0; transition:opacity var(--dur-base), display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete; }
+dialog:not(.quiz-panel)[open]::backdrop { opacity:1; }
+@starting-style { dialog:not(.quiz-panel)[open] { opacity:0; transform:translateY(8px); } dialog:not(.quiz-panel)[open]::backdrop { opacity:0; } }
+body:has(dialog:not(.quiz-panel)[open]) { overflow:hidden; }
 .motion-presence { display:contents; }
-@media(prefers-reduced-motion:reduce) { dialog, .toast[data-leaving] { transform:none; } .toast { animation:none; } @starting-style { dialog[open] { transform:none; } } }
+@media(prefers-reduced-motion:reduce) { dialog:not(.quiz-panel), .toast[data-leaving] { transform:none; } .toast { animation:none; } @starting-style { dialog:not(.quiz-panel)[open] { transform:none; } } }
 .twin-trait-label { transition:background-color var(--dur-fast), color var(--dur-fast); }

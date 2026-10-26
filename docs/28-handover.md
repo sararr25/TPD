@@ -1,13 +1,18 @@
 # Handover — 24 October 2026: approved implementation next steps
 
-## Passport folio and inline Qloo previews live — 26 October 2026
+## All changes reconciled / latest handover — 26 October 2026
 
-Owner approved all six UI/UX refinements and publication. Commit `b4dcdbe` is
-pushed to `claude/blissful-gauss-dymbeo`; deployment is READY with the public alias
-assigned. See [scope and receipt](57-passport-inline-matches-release.md). Work is
-in `/private/tmp/tpd-quiz-live`, branch `codex/passport-qloo-folio`; the original
-workspace still contains older unpublished Home/Quiz/Passport code. Continue
-from the released source; do not replace the live quiz with this dirty checkout.
+Owner requested publication of all modified work and a handover. Read
+[the full continuation](58-all-changes-live-handover.md). The original workspace
+has now been reconciled with the live quiz/Passport; earlier stale-checkout
+warnings below are historical. Default/production branch configuration is unchanged.
+
+
+## Passport refinement and publication — 26 October 2026
+
+Owner approved the six UI/UX refinements and explicitly requested live publication.
+See [scope, verification and release receipt](57-passport-inline-matches-release.md).
+This supersedes the local-only boundary below for the completed Passport work.
 
 
 ## Personal Passport and Qloo category matches — 26 October 2026
@@ -20,30 +25,19 @@ The original workspace’s older dirty Home/Quiz/Passport sources remain separat
 No push/deployment in this task; review the local app before publication.
 
 
-## Cities e Twin ora live — 26 ottobre 2026
+## Cities / Twin publication — 26 October 2026
 
-Pubblicati con `790f00d`, deployment READY e alias pubblico verificati.
-[Handover e perimetro](55-cities-twin-live-handover.md). Il quiz live è preservato;
-le altre modifiche locali Home/Passport rimangono separate.
-
-
-## Quiz Taste Chemistry pubblicato — 26 ottobre 2026
-
-Il quiz approvato è live, con 38 SVG originali e audio soltanto all’avvio e al
-risultato salvato. Leggere [ricevuta e continuazione](54-taste-quiz-live-handover.md).
-È stato pubblicato da un checkout isolato: le altre modifiche locali Home/Twin/
-Passport riportate sotto restano fuori da quel rilascio. Non sovrascrivere il
-quiz live con la vecchia copia ancora presente in questo checkout sporco.
+Owner explicitly requested publishing the local Cities/Twin UI. Read
+[release handover](55-cities-twin-live-handover.md). The live quiz is preserved;
+Home-specific and Passport-profile local work remain outside this release.
 
 
-## Quiz / Passport remake and ink-map motion — 26 October 2026
+## Taste Chemistry quiz — 26 October 2026
 
-Owner approved the motion audit follow-through and a visual/UX/motion remake of
-Quiz and Passport, with an expanded walking-map motif in Twin and the Home
-ending. Implemented locally on `codex/twin-motion-ux`; read
-[scope and verification](53-quiz-passport-and-ink-motion-remake.md).
-Existing quiz/data semantics, Passport A fonts/palette and production settings
-remain. No push or deployment is implied by this local implementation.
+Owner approved the compact illustrated quiz and explicitly requested live publication.
+Read [quiz handover and release receipt](54-taste-quiz-live-handover.md).
+Other local Passport/Home/Twin work is excluded from this isolated release.
+
 
 ## Marked Twin labels / live publication — 25 October 2026
 

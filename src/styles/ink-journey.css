@@ -2,7 +2,7 @@
 .ink-journey svg { display:block; width:100%; height:100%; }
 .ink-journey .ink-mobile-map { display:none; }
 .ink-walk { opacity:.65; }
-.ink-footstep { opacity:0; }
+.ink-footstep { opacity:.9; }
 .ink-home-ending .ink-journey { grid-column:1 / -1; }
 .home-passport .h-band.ink-home-ending { row-gap:16px; }
 @media(max-width:600px) {

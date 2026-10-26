@@ -1,6 +1,5 @@
 "use client";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { motionTokens as m } from "@/lib/motion-tokens";
 import { QuizFlow } from "./quiz-flow";
 import { AuthButton } from "./auth-button";
 import { authClient } from "@/lib/auth/client";
@@ -26,8 +25,6 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const dialog = useRef<HTMLDialogElement>(null);
-  const [shown, setShown] = useState(false);
-  const [revision, setRevision] = useState(0);
   const { data: session } = authClient.useSession();
   const signedIn = !!session?.user?.id;
   useEffect(() => {
@@ -35,18 +32,11 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
     if (!el) return;
     if (open && !el.open) el.showModal();
     if (!open && el.open) el.close();
-    if (!open) {
-      const timer = setTimeout(() => setShown(false), m.duration.panel * 1000);
-      return () => clearTimeout(timer);
-    }
-    el.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }, [open]);
   useEffect(() => {
-    if (done) dialog.current?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+    if (done) dialog.current?.querySelector<HTMLElement>(".quiz-done h2")?.focus({ preventScroll: true });
   }, [done]);
   function show() {
-    setRevision(value => value + 1);
-    setShown(true);
     setDone(false);
     setError("");
     setOpen(true);
@@ -57,8 +47,10 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
     try {
       await finishQuiz(answers, cards, session?.user?.id || false);
       setDone(true);
+      return true;
     } catch (e) {
       setError((e as Error).message);
+      return false;
     } finally {
       setBusy(false);
     }
@@ -73,7 +65,7 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
         onCancel={e => { if (busy) e.preventDefault(); }}
         onClose={() => setOpen(false)}
       >
-        {shown &&
+        {open &&
           (done ? (
             <section className="quiz-done">
               <h2 tabIndex={-1}>Your Passport is ready.</h2>
@@ -96,7 +88,7 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
             </section>
           ) : (
             <>
-              <QuizFlow key={revision} busy={busy} onFinish={onFinish} onCancel={() => setOpen(false)} />
+              <QuizFlow busy={busy} onFinish={onFinish} onCancel={() => setOpen(false)} />
               <p role="alert">{error}</p>
             </>
           ))}

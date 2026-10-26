@@ -13,15 +13,12 @@ export function InkJourney({ className = "" }: { className?: string }) {
   const root = useRef<HTMLDivElement>(null);
   const id = useId().replaceAll(":", "");
   useGSAP(() => {
-    const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      const node = root.current;
-      if (!node) return;
-      const timeline = gsap.timeline({ paused: true, onStart: () => { node.dataset.inkState = "playing"; }, onComplete: () => { node.dataset.inkState = "complete"; } });
-      node.querySelectorAll<SVGSVGElement>("svg").forEach(map => {
+    const node = root.current;
+    if (!node) return;
+    // Position the static drawing before checking animation preferences.
+    node.querySelectorAll<SVGSVGElement>("svg").forEach(map => {
       const route = map.querySelector<SVGPathElement>(".ink-walk")!;
       const length = route.getTotalLength();
-      const reveal = map.querySelector<SVGPathElement>(".ink-route-reveal")!;
       const steps = map.querySelectorAll<SVGGElement>(".ink-footstep");
       steps.forEach((step, index) => {
         const at = length * ((index + 1) / (steps.length + 1));
@@ -30,6 +27,15 @@ export function InkJourney({ className = "" }: { className?: string }) {
         const angle = Math.atan2(next.y - point.y, next.x - point.x) * 180 / Math.PI;
         step.setAttribute("transform", `translate(${point.x} ${point.y}) rotate(${angle}) translate(0 ${index % 2 ? 4 : -4})`);
       });
+    });
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      const timeline = gsap.timeline({ paused: true, onStart: () => { node.dataset.inkState = "playing"; }, onComplete: () => { node.dataset.inkState = "complete"; } });
+      node.querySelectorAll<SVGSVGElement>("svg").forEach(map => {
+      const route = map.querySelector<SVGPathElement>(".ink-walk")!;
+      const length = route.getTotalLength();
+      const reveal = map.querySelector<SVGPathElement>(".ink-route-reveal")!;
+      const steps = map.querySelectorAll<SVGGElement>(".ink-footstep");
       timeline.fromTo(reveal, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: m.duration.journey, ease: m.ease.ink, clearProps: "strokeDasharray,strokeDashoffset" }, 0)
         .fromTo(steps, { opacity: 0 }, { opacity: .9, duration: m.duration.control, stagger: m.duration.journey / steps.length, ease: m.ease.linear }, 0)
         .from(map.querySelector(".ink-destination"), { scale: .8, opacity: 0, transformOrigin: "center", duration: m.duration.stamp, ease: m.ease.settle }, m.duration.journey - m.duration.stamp);

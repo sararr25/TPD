@@ -56,7 +56,7 @@ not deployed as the application and is not committed.
 
 Unit/service suite, typecheck, production build and diff check pass.
 Two-axis review completed against d05395a: all findings corrected and rechecked.
-Production deployment SHA/alias verification follows the authorized push.
+Implementation commit and production alias verified live; see receipt below.
 Development browser checks: 11/11 pass, including four viewport sizes, real pointer
 swipe/feedback, automatic progression, keyboard/undo, all 18 questions, save failure
 and retry, exact sound boundaries via mocked Web Audio, top-up and native-dialog
@@ -89,3 +89,27 @@ authentication and catalogue remain unchanged.
 
 Logs: `/tmp/tpd-quiz-unit-final.log`, `/tmp/tpd-quiz-build-final.log`,
 `/tmp/tpd-quiz-review-regressions.log`, `/tmp/tpd-quiz-compiled.log`.
+
+## Live release receipt
+
+- Implementation: `3ae1075` + review fixes `e430c2c2f6d0e5f5f572268372cb6bd95a047d6e`.
+- Pushed to `claude/blissful-gauss-dymbeo`; no force push, default/production
+  branch or project settings changed.
+- Vercel deployment `dpl_D7xs9oKgbnKQbPWAVetSk5di65Hd`: **READY**, Git SHA
+  exactly `e430c2c2f6d0e5f5f572268372cb6bd95a047d6e`, production target.
+- Public alias verified: https://beesyde.vercel.app and `/passport`.
+- **11/11 browser scenarios pass on the public alias**, with new isolated browser
+  contexts, synthetic fixture data, intercepted APIs and mocked audio. No real
+  account/provider data was written. Log `/tmp/tpd-quiz-live-smoke.log`.
+- This receipt is a subsequent documentation-only commit; application source
+  remains the same reviewed and tested implementation.
+
+## Continuation / original checkout
+
+The original workspace `/Users/sararuffini/Documents/Hackatons/TPD` remains on
+`codex/twin-motion-ux` with pre-existing unrelated uncommitted changes. Do not
+blindly push that checkout as the published state, or copy its older quiz over
+this release. Continue from the remote release branch or this isolated checkout;
+selectively reconcile the unpublished Home/Twin/Passport work in a separate task.
+A copy of this handover and a pointer are left in the original workspace; its
+private HTML prototype was updated too, without publishing it as an app route.

@@ -44,8 +44,10 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
     try {
       await finishQuiz(answers, cards, session?.user?.id || false);
       setDone(true);
+      return true;
     } catch (e) {
       setError((e as Error).message);
+      return false;
     } finally {
       setBusy(false);
     }

@@ -1,5 +1,12 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Taste Chemistry quiz — 26 October 2026
+
+Owner approved the compact illustrated quiz and explicitly requested live publication.
+Read [quiz handover and release receipt](54-taste-quiz-live-handover.md).
+Other local Passport/Home/Twin work is excluded from this isolated release.
+
+
 ## Marked Twin labels / live publication — 25 October 2026
 
 Owner selected marked labels (Keep highlights, Delete strikes through, Ignore

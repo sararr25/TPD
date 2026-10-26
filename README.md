@@ -61,6 +61,8 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 
 ## Project state
 
+- `docs/54-taste-quiz-live-handover.md`: approved compact illustrated quiz, audio boundaries, verification and publication receipt.
+
 - `docs/51-marked-labels-live-release.md`: approved marked-label Twin controls, desktop side-by-side layout and live publication receipt.
 - `docs/50-personal-home-implementation-and-visited-schema.md`: latest personal Home, explicit real visits, approved/applied Neon schema and eight passing synthetic browser checks; production sync settings unchanged.
 - `docs/49-approved-photos-and-personal-city-ranking.md`: approved eleven-city photographs and source credits; pending product questions are superseded by docs/50.

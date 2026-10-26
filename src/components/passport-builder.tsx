@@ -118,8 +118,10 @@ export function PassportBuilder() {
       setProfile(answers);
       setStatus(userId ? "Saved to your account." : "Saved on this browser.");
       setQuizOpen(false);
+      return true;
     } catch (e) {
       setStatus((e as Error).message);
+      return false;
     } finally {
       setBusy(false);
     }
@@ -205,7 +207,7 @@ export function PassportBuilder() {
             <QuizFlow
               busy={busy}
               onFinish={onQuizFinish}
-              onCancel={selected.length ? () => setQuizOpen(false) : undefined}
+              onCancel={() => setQuizOpen(false)}
             />
             <p role="status" aria-live="polite">
               {status}

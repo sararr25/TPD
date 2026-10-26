@@ -31,6 +31,10 @@ for (const width of [1440, 390]) test(`city Twin cover spreads dashed ink while 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(art).toHaveAttribute("data-ink-state", "static");
   await expect(art.locator("svg")).toBeVisible();
+  for (const step of await art.locator(".cover-ink-step").all()) {
+    await expect(step).toHaveCSS("opacity", "0.8");
+    await expect(step).toHaveAttribute("transform", /translate\(.+rotate\(/);
+  }
   await page.getByRole("tab", { name: "For you", exact: true }).click();
   await expect(cover.locator(".city-ink-map")).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
@@ -94,4 +98,18 @@ test("reduced motion disables City hover and preserves the picture window during
     });
     expect(coverage).toEqual({ top: true, bottom: true });
   }
+});
+
+test("initial reduced motion retains positioned footprints", async ({ page }) => {
+ await worldFixtures(page); await page.emulateMedia({reducedMotion:"reduce"}); await page.goto(base+"/paris?tab=swap");
+ const steps=page.locator(".cover-ink-step"); await expect(steps.first()).toHaveCSS("opacity","0.8");
+ await expect(steps.first()).toHaveAttribute("transform",/translate\(.+rotate\(/);
+});
+
+test("new Save feedback still animates after a history return", async ({ page }) => {
+ await worldFixtures(page,false);await page.goto(base+"/lisbon");await expect(page.locator(".place-card").first()).toBeVisible();
+ await page.getByRole("link",{name:"Cities",exact:true}).first().click();await expect(page).toHaveURL(/\/explore$/);await page.goBack();
+ const save=page.locator(".place-card .save > button").first();await expect(save).toBeVisible();await save.click();
+ const imprint=page.locator(".save-imprint").first();await expect(imprint).toBeAttached();
+ await expect.poll(()=>imprint.evaluate(el=>+getComputedStyle(el).opacity)).toBeGreaterThan(0);
 });

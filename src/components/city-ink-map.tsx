@@ -62,6 +62,18 @@ export function CityInkMap() {
 
   useGSAP(() => {
     if (!geometry || !root.current) return;
+    // Geometry is static state; reduced motion still shows positioned footprints.
+    root.current.querySelectorAll<SVGGElement>(".cover-ink-branch").forEach(branch => {
+      const path = branch.querySelector<SVGPathElement>(".cover-ink-trail")!;
+      const length = path.getTotalLength();
+      const steps = branch.querySelectorAll<SVGGElement>(".cover-ink-step");
+        steps.forEach((step, index) => {
+          const at = length * (index + 1) / (steps.length + 1);
+          const p = path.getPointAtLength(at), next = path.getPointAtLength(Math.min(length, at + 1));
+          const angle = Math.atan2(next.y - p.y, next.x - p.x) * 180 / Math.PI;
+          step.setAttribute("transform", `translate(${p.x} ${p.y}) rotate(${angle}) translate(0 ${index % 2 ? 5 : -5})`);
+        });
+    });
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
       const node = root.current!;
@@ -74,12 +86,6 @@ export function CityInkMap() {
         const reveal = node.querySelector<SVGPathElement>(`[data-reveal="${branchIndex}"]`)!;
         const length = path.getTotalLength();
         const steps = branch.querySelectorAll<SVGGElement>(".cover-ink-step");
-        steps.forEach((step, index) => {
-          const at = length * (index + 1) / (steps.length + 1);
-          const p = path.getPointAtLength(at), next = path.getPointAtLength(Math.min(length, at + 1));
-          const angle = Math.atan2(next.y - p.y, next.x - p.x) * 180 / Math.PI;
-          step.setAttribute("transform", `translate(${p.x} ${p.y}) rotate(${angle}) translate(0 ${index % 2 ? 5 : -5})`);
-        });
         const start = branchIndex * m.duration.hero;
         timeline.fromTo(reveal, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: m.duration.journey, ease: m.ease.ink, clearProps: "strokeDasharray,strokeDashoffset" }, start)
           .fromTo(steps, { opacity: 0 }, { opacity: .8, duration: m.duration.control, stagger: m.duration.journey / steps.length }, start);

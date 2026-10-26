@@ -46,8 +46,10 @@ export function TravelMotion({ children }: { children: ReactNode }) {
         });
       });
       const select = ".h-how h2, .h-steps li, .h-cities-head, .h-grid > li, .home-swap-intro, .h-swap-sheet, .h-band, .h-picks li:not(:has(.h-skeleton)), .place-grid > .place-card:not(.skeleton), [data-travel-enter], [data-travel-route], [data-travel-marker], [data-travel-page], [data-travel-reveal], [data-travel-stamp]";
+      // Suppress only the restored content, not feedback from subsequent actions.
+      const restored = new WeakSet<Element>(skipEntrance ? Array.from(root.current?.querySelectorAll(select) ?? []) : []);
       motionContext.add("animateLeaf", (element: Element) => {
-        if (seen.has(element) || element.closest("[hidden]") || skipEntrance) return;
+        if (seen.has(element) || element.closest("[hidden]") || restored.has(element)) return;
         seen.add(element);
         if (element.matches("[data-travel-route]") && element instanceof SVGPathElement) {
           const length = element.getTotalLength();

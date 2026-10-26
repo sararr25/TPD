@@ -81,3 +81,26 @@ Private QA screenshots, videos, provider payloads and credentials stay ignored.
 - Latest compiled preview: http://127.0.0.1:3194.
 - Source diff against `b4dcdbe` confirms no quiz/Passport-folio implementation
   regressions: current releases retained byte-for-byte where applicable.
+
+## Verified production receipt
+
+- Integrated application commit: `975386fea27fbf61fc941862872f855576b4649f`.
+  Both `claude/blissful-gauss-dymbeo` and `codex/twin-motion-ux` were advanced
+  by an atomic, non-force push. No default/production setting was changed.
+- Vercel production deployment: `dpl_HMoXT51aSfUcS6qE5vUKyKQGfK8Y`, **READY**,
+  Git SHA exactly matches the application commit, `beesyde.vercel.app` assigned.
+- Public-alias browser smoke: **36/36 passed**, covering Home entrances/forms,
+  City/Twin covers, touch/reduced motion, toast, hidden map, Home ending,
+  Passport inline matches/visited stamps/empty states, and the full live quiz
+  including save retry, sound boundaries and keyboard focus. All use isolated
+  synthetic fixtures; provider/account endpoints are intercepted. Log:
+  `/tmp/tpd-all-changes-live.log`. No personal production data was modified.
+- Final two focused Home-ending checks also pass; rendered card reviewed from
+  `.private/qa/all-changes-home-ending.png` (private synthetic artifact).
+- Old prototype/release/development servers from this chat were stopped.
+  The reconciled compiled local preview remains at http://127.0.0.1:3194.
+- The commit containing this receipt and the ADR clarification is documentation
+  only relative to the application commit above; application source is identical.
+  The original workspace is clean after its publication. No requested application
+  change from this working set remains unpublished; private QA artifacts remain
+  intentionally ignored.

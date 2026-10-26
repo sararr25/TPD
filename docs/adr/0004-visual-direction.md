@@ -67,3 +67,14 @@ target and are not this direction. The same ink vocabulary can accompany the
 existing Home ending. Quiz and Passport use the approved personal folio remake,
 with existing fonts, palette and data semantics. See docs/53 for implementation,
 owner corrections and the local-only verification boundary.
+
+## Amendment — 26 Oct 2026: final Passport and release reconciliation
+
+The current Passport keeps the berry title at the top of its left page, explicit
+visited-city stamps below it inside the book, and Explore cities nearby. The
+right page contains a quiz-derived traveller category, answer-grounded insights,
+a larger original illustration and deliberate inline Qloo previews. See docs/57.
+The final Home ending retains its original lemon card and adds a dashed imagined
+walking route. Static footprints remain visible with reduced motion. Docs/58
+records the reconciliation: current live quiz/Passport supersede the earlier
+local remake, whose unimported CSS is retained only as historical source.

@@ -187,15 +187,15 @@ test("Place internal return restores category, price, view and reading position"
   await page.goto(
     base + "/preview/checks?" + new URLSearchParams({ returnTo: city }),
   );
-  await expect(page.locator(".place-back")).toHaveAttribute("href", city);
-  await page.locator(".place-back").click();
+  await expect(page.getByRole("link", { name: "Lisbon", exact: true })).toHaveAttribute("href", city);
+  await page.getByRole("link", { name: "Lisbon", exact: true }).click();
   await expect(page.locator("#city-price")).toHaveValue("3");
   await expect(
     page.getByRole("button", { name: "Bars", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
   await page.goBack();
-  await expect(page.locator(".place-back")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Lisbon", exact: true })).toBeVisible();
   await page.goForward();
   await expect(page.locator("#city-price")).toHaveValue("3");
 });

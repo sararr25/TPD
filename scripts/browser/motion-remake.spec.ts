@@ -165,6 +165,8 @@ test("Home ending has positioned static footprints with reduced motion", async (
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(base);
   const ending = page.locator('.ink-home-ending .ink-journey');
+  // Wait for the client-positioned drawing before scrolling a streamed server node.
+  await expect(ending.locator('.ink-mobile-map .ink-footstep').first()).toHaveAttribute('transform', /translate/);
   await ending.scrollIntoViewIfNeeded();
   await expect(ending).toHaveAttribute('data-ink-state', 'static');
   await expect(ending.locator('.ink-mobile-map')).toBeVisible();

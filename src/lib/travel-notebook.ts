@@ -1,8 +1,9 @@
-import {savedItemCity,type SavedList} from './saved.ts';
+import {samePlace,savedItemCity,type SavedList} from './saved.ts';
 import type {TripOrder} from './travel-state.ts';
 export type Notebook={name:string;exportedAt:string;places:{name:string;city:string|null;address:string|null;group:string}[]};
 export function notebookSnapshot(list:SavedList,selected:string[],order?:TripOrder):Notebook{
- const allowed=new Set(selected);return {name:list.name,exportedAt:new Date().toISOString(),places:list.items.filter(i=>allowed.has(i.placeId)).slice(0,100).map(i=>({name:i.name,city:savedItemCity(i,list.name),address:i.address,group:order?.places.find(p=>p.id===i.placeId)?.group||''}))};
+ const clean=(value:unknown,max:number)=>typeof value==='string'?value.slice(0,max).trim():'';
+ const allowed=new Set(selected.map(id=>id.toLowerCase()));return {name:clean(list.name,60)||'My trip',exportedAt:new Date().toISOString(),places:list.items.filter(i=>allowed.has(i.placeId.toLowerCase())).slice(0,100).map(i=>({name:clean(i.name,200)||'Unnamed place',city:savedItemCity(i,list.name),address:clean(i.address,500)||null,group:order?.places.find(p=>samePlace(p.id,i.placeId))?.group||''}))};
 }
 const escape=(text:string)=>text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 export function notebookHTML(value:Notebook){

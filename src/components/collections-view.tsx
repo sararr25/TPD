@@ -77,7 +77,8 @@ export function CollectionsView() {
               <button
                 className="btn btn-quiet"
                 disabled={busy}
-                onClick={() => {
+                onClick={event => {
+                  event.currentTarget.focus();
                   setPending(c);
                   dialog.current?.showModal();
                 }}
@@ -104,7 +105,7 @@ export function CollectionsView() {
                       busy={busy}
                       active={active === `${c.id}:${item.placeId}`}
                       onActive={() => setActive(`${c.id}:${item.placeId}`)}
-                      onRemove={() => run(() => removeFromList(c, item.placeId), `Removed ${item.name} from “${c.name}”.`)}
+                      onRemove={() => run(() => removeFromList(c, item.placeId,userId), `Removed ${item.name} from “${c.name}”.`)}
                     /></Fragment>
                   ))}
                 </div>
@@ -205,7 +206,7 @@ function SavedPlaceCard({ item, list, number, busy, active, onActive, onRemove }
         {city && <p className="meta">{city}</p>}
         {item.address && <p className="muted">{item.address}</p>}
         {item.note && <p className="saved-place-note">{item.note}</p>}
-        <TripPlaceTools list={list} item={item}/><PlaceVisitControl id={item.placeId}/>
+        <TripPlaceTools list={list} item={item}/><PlaceVisitControl id={item.placeId} showErrors={false}/>
         <div className="saved-place-actions">
           {hasCoordinates(item) && (
             <a className="btn btn-quiet" href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`}

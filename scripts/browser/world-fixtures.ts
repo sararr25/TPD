@@ -16,6 +16,7 @@ export async function worldFixtures(page: Page, saved = true) {
   await page.route(/https:\/\/(?:images\.qloo\.com|(?:upload|thumb)\.wikimedia\.org)\//, route => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="800" height="400" fill="#6b4a73"/></svg>' }));
   await page.route("**/api/**", async route => {
     const request = route.request(), path = new URL(request.url()).pathname;
+    if (path === "/api/travel-state") return route.fulfill({json:{state:{version:1,trips:{},visits:[]},revision:0}});
     if (path.startsWith("/api/auth/")) return route.fulfill({ json: null });
     if (path === "/api/discovery") {
       const body = request.postDataJSON();

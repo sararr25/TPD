@@ -127,7 +127,7 @@ export function QuizPanelProvider({ children }: { children: React.ReactNode }) {
 export function OpenQuizButton({ className = "btn btn-primary" }: { className?: string }) {
   const show = useQuizPanel();
   return (
-    <button type="button" className={className} onClick={show}>
+    <button type="button" className={className} onClick={event=>{event.currentTarget.focus();show();}}>
       {QUIZ_CTA}
     </button>
   );

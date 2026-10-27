@@ -26,7 +26,7 @@ export function PassportPreview({ category, title }: { category: ExploreCategory
     setSnapshot({key});
     const input = JSON.parse(key) as { owner: string; city: string; category: ExploreCategory; tokens: string[]; quiz: object };
     (async()=>{
-      const [hidden, feedback] = await Promise.all([loadHidden(input.owner !== 'guest'),loadFeedback(input.owner !== 'guest')]);
+      const [hidden, feedback] = await Promise.all([loadHidden(input.owner !== 'guest',input.owner==='guest'?undefined:input.owner),loadFeedback(input.owner !== 'guest',input.owner==='guest'?undefined:input.owner)]);
       if (!active) return;
       const data = await discovery<Payload>({action:'explore', city:input.city, category:input.category, passport:input.tokens, quiz:input.quiz, exclude:hidden.map(p=>p.id), feedback:feedbackSignal(feedback)},controller.signal);
       if (active) setSnapshot({key,data});

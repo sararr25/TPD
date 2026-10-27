@@ -264,6 +264,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   }, [hidden]);
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
+  const referenceOwner = useRef(userId);
   const { current: feedback, vote, unvote, voted } = useFeedback(!isPending, userId, showError);
   const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
   const passportState = usePassportState();
@@ -279,7 +280,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     catch{setDraftError("Browser storage is unavailable. Keep this search open to retain your choices.");}
   },[userId,isPending,city,category]);
   useEffect(()=>{
-    if(!reference||!ready||isPending)return;
+    if(!reference||!ready||isPending||referenceOwner.current!==userId)return;
     if(skipDraftWrite.current){skipDraftWrite.current=false;return;}
     if(restoring.current){const draft=restoring.current;restoring.current=null;setChoices(draft.choices.filter(c=>reference.entity.tags.some(t=>t.id===c.tagId)));setBudget(draft.budget);setStale(true);setStatus("Starting place refreshed. Review your choices, then Find its twin.");return;}
     try { localStorage.setItem(searchKey(userId||"guest"),JSON.stringify({version:1,at:Date.now(),city,category,reference:{id:reference.entity.id,name:reference.entity.name},choices,budget})); }
@@ -295,7 +296,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     setStale(true);
     setStatus("Your Passport changed. Update results to use it.");
   }, [profileKey, started]);
-  useEffect(() => { setData(null); setStarted(false); setPresenting(false); setBusy(false); setHidden([]); setReference(null); setChoices([]); setBudget(""); searchController.current?.abort(); }, [userId]);
+  useEffect(() => { setData(null); setStarted(false); setPresenting(false); setBusy(false); setHidden([]); setReference(null); setChoices([]); setBudget(""); referenceOwner.current=userId;searchController.current?.abort(); }, [userId]);
   useEffect(() => {
     setPassport(passportState.selections);
     setReady(passportState.loaded && !passportState.error && !["saving", "partial", "expired"].includes(passportState.state));
@@ -303,7 +304,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   useEffect(() => {
     if (isPending) return;
     let active = true;
-    loadHidden(!!userId).then(list => active && setHidden(list)).catch(e => active && setStatus(e.message));
+    loadHidden(!!userId,userId).then(list => active && setHidden(list)).catch(e => active && setStatus(e.message));
     return () => { active = false; };
   }, [isPending, userId]);
   useEffect(() => {
@@ -445,7 +446,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     const place = { id: result.place.id, name: result.place.name };
     setHidden((list) => [...list.filter((h) => h.id !== place.id), place]);
     try {
-      await hidePlace(place, result.token!, !!userId);
+      await hidePlace(place, result.token!, !!userId,userId);
       await vote(result.place, -1);
       toast(`${place.name} is hidden and won’t come up in your next Twin searches.`, {
         action: { label: "Undo", run: () => undoHide(result) },
@@ -457,7 +458,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   async function undoHide(result: Result) {
     setHidden((list) => list.filter((h) => h.id !== result.place.id));
     try {
-      await unhidePlace(result.place.id, !!userId);
+      await unhidePlace(result.place.id, !!userId,userId);
       await unvote(result.place.id);
       toast(`${result.place.name} is back.`);
     } catch (error) {
@@ -526,7 +527,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     return <PlaceCard key={result.place.id} place={result.place} token={result.token ?? ""}
       city={city} category={category} eyebrow={spotlight ? "Your closest twin" : result.role}
       whyLabel="Shared traits" why={result.why}
-      details={<>{categoryHasPrice(category) && <p className="twin-price-comparison"><strong>{priceComparison(result.place.price, reference?.entity.price)}</strong></p>}{!spotlight && <p>{result.different}</p>}<details className="twin-details"><summary>Search details</summary>
+      details={<>{categoryHasPrice(category) && <p className="twin-price-comparison"><strong>{priceComparison(result.place.price, reference?.entity.price)}</strong></p>}{!spotlight && <p>{result.different}</p>}<details className="twin-details"><summary>Search details</summary><p>Price comparison uses indicative tiers against your starting place, not live prices.</p>
         {kept.length > 0 && <p><strong>Keeps:</strong> {joinList(kept)}.</p>}
         {changed.length > 0 && <p><strong>Leaves behind:</strong> {joinList(changed)}.</p>}
         {usedKeepNames.filter((name) => !kept.includes(name)).length > 0 && <p><strong>Kept traits not listed here:</strong> {joinList(usedKeepNames.filter((name) => !kept.includes(name)))}. Keep is a preference, not a guarantee.</p>}

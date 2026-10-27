@@ -30,8 +30,9 @@ export async function loadAccountPassport(): Promise<Selection[] | null> {
 export async function saveAccountPassport(passport: Selection[], owner?: string) {
   await call("/api/passport", "PUT", { passport: passport.map((s) => s.token) }, owner);
 }
-export async function deleteAccountPassport() {
-  await call("/api/passport", "DELETE");
+export async function deleteAccountPassport(owner?:string) {
+  if(!owner)throw new Error("Wait for your account before deleting its data.");
+  await call("/api/passport", "DELETE",undefined,owner);
 }
 
 export async function loadAccountQuiz(): Promise<Answers | null> {
@@ -40,8 +41,9 @@ export async function loadAccountQuiz(): Promise<Answers | null> {
 export async function saveAccountQuiz(answers: Answers, owner?: string) {
   await call("/api/quiz", "PUT", { answers }, owner);
 }
-export async function deleteAccountQuiz() {
-  await call("/api/quiz", "DELETE");
+export async function deleteAccountQuiz(owner?:string) {
+  if(!owner)throw new Error("Wait for your account before deleting its data.");
+  await call("/api/quiz", "DELETE",undefined,owner);
 }
 
 export type Hidden = { id: string; name: string };
@@ -67,27 +69,28 @@ export function readHidden(raw: string | null): Hidden[] {
     return [];
   }
 }
-function localHidden() {
-  return readHidden(localStorage.getItem(HIDDEN_KEY));
+export const hiddenKey=(owner?:string)=>owner?`${HIDDEN_KEY}:${owner}`:HIDDEN_KEY;
+function localHidden(owner?:string) {
+  return readHidden(localStorage.getItem(hiddenKey(owner)));
 }
-function storeHidden(list: Hidden[]) {
-  localStorage.setItem(HIDDEN_KEY, JSON.stringify(list));
+function storeHidden(list: Hidden[],owner?:string) {
+  localStorage.setItem(hiddenKey(owner), JSON.stringify(list));
 }
 // This browser's hidden places, plus the account's when signed in.
-export async function loadHidden(signedIn: boolean): Promise<Hidden[]> {
-  const local = localHidden();
+export async function loadHidden(signedIn: boolean,owner?:string): Promise<Hidden[]> {
+  const local = localHidden(signedIn?owner:undefined);
   if (!signedIn) return local;
-  const { hidden } = await call<{ hidden: Hidden[] }>("/api/hidden", "GET");
+  const { hidden } = await call<{ hidden: Hidden[] }>("/api/hidden", "GET",undefined,owner);
   const ids = new Set(hidden.map((h) => h.id));
   return [...hidden, ...local.filter((h) => !ids.has(h.id))];
 }
-export async function hidePlace(place: Hidden, token: string, signedIn: boolean) {
-  storeHidden([...localHidden().filter((h) => h.id !== place.id), place]);
-  if (signedIn) await call("/api/hidden", "POST", { place: token });
+export async function hidePlace(place: Hidden, token: string, signedIn: boolean,owner?:string) {
+  storeHidden([...localHidden(signedIn?owner:undefined).filter((h) => h.id !== place.id), place],signedIn?owner:undefined);
+  if (signedIn) await call("/api/hidden", "POST", { place: token },owner);
 }
-export async function unhidePlace(id: string, signedIn: boolean) {
-  storeHidden(localHidden().filter((h) => h.id !== id));
-  if (signedIn) await call("/api/hidden", "DELETE", { id });
+export async function unhidePlace(id: string, signedIn: boolean,owner?:string) {
+  storeHidden(localHidden(signedIn?owner:undefined).filter((h) => h.id !== id),signedIn?owner:undefined);
+  if (signedIn) await call("/api/hidden", "DELETE", { id },owner);
 }
 
 export type CollectionItem = {
@@ -100,8 +103,8 @@ export type CollectionItem = {
   savedAt: string;
 };
 export type Collection = { id: string; name: string; createdAt: string; items: CollectionItem[] };
-export async function loadCollections(): Promise<Collection[]> {
-  return (await call<{ collections: Collection[] }>("/api/collections", "GET")).collections;
+export async function loadCollections(owner?: string): Promise<Collection[]> {
+  return (await call<{ collections: Collection[] }>("/api/collections", "GET", undefined, owner)).collections;
 }
 export async function saveToCollection(collection: string, token: string, note: string, owner?: string) {
   await call("/api/collections", "POST", { collection, place: token, note }, owner);
@@ -113,42 +116,27 @@ export async function deleteCollection(collectionId: string, owner?: string) {
   await call("/api/collections", "DELETE", { collectionId }, owner);
 }
 
-export async function deleteAccount() {
-  await call("/api/account", "DELETE");
+export async function deleteAccount(owner?:string) {
+  if(!owner)throw new Error("Wait for your account before deleting its data.");
+  await call("/api/account", "DELETE",undefined,owner);
 }
 
 // Gradual feedback (D3): always in this browser; signed in, the account copy
 // wins and an empty account adopts this browser's votes.
-function storeFeedback(fb: Feedback) {
-  try {
-    localStorage.setItem(FEEDBACK_KEY, JSON.stringify(fb));
-  } catch {
-    throw new Error("Browser storage could not save your feedback.");
-  }
+export const feedbackKey=(owner?:string)=>owner?`${FEEDBACK_KEY}:${owner}`:FEEDBACK_KEY;
+function storeFeedback(fb:Feedback,owner?:string){try{localStorage.setItem(feedbackKey(owner),JSON.stringify(fb));}catch{throw new Error("Browser storage could not save your feedback.");}}
+export function localFeedback(owner?:string):Feedback{try{return parseFeedback(localStorage.getItem(feedbackKey(owner)));}catch{return {votes:[],dismissed:[]};}}
+export async function loadFeedback(signedIn:boolean,owner?:string):Promise<Feedback>{
+ if(!signedIn)return localFeedback();
+ if(!owner)throw new Error("Wait for your account before loading preferences.");
+ const {feedback}=await call<{feedback:Feedback|null}>("/api/feedback","GET",undefined,owner);
+ // Legacy global feedback has no reliable account owner. Never upload it to an account.
+ if(feedback){storeFeedback(feedback,owner);return feedback;}
+ return localFeedback(owner);
 }
-export function localFeedback(): Feedback {
-  try {
-    return parseFeedback(localStorage.getItem(FEEDBACK_KEY));
-  } catch {
-    return { votes: [], dismissed: [] };
-  }
+export async function saveFeedback(fb:Feedback,signedIn:boolean,owner?:string){
+ if(signedIn&&!owner)throw new Error("Wait for your account before saving preferences.");
+ storeFeedback(fb,signedIn?owner:undefined);
+ if(signedIn)await call("/api/feedback","PUT",{feedback:fb},owner);
 }
-export async function loadFeedback(signedIn: boolean): Promise<Feedback> {
-  const local = localFeedback();
-  if (!signedIn) return local;
-  const { feedback } = await call<{ feedback: Feedback | null }>("/api/feedback", "GET");
-  if (feedback) {
-    storeFeedback(feedback);
-    return feedback;
-  }
-  if (local.votes.length || local.dismissed.length)
-    await call("/api/feedback", "PUT", { feedback: local });
-  return local;
-}
-export async function saveFeedback(fb: Feedback, signedIn: boolean) {
-  storeFeedback(fb);
-  if (signedIn) await call("/api/feedback", "PUT", { feedback: fb });
-}
-export async function deleteAccountFeedback() {
-  await call("/api/feedback", "DELETE");
-}
+export async function deleteAccountFeedback(owner?:string){if(!owner)throw new Error("Wait for your account before deleting its data.");await call("/api/feedback","DELETE",undefined,owner);if(owner)localStorage.removeItem(feedbackKey(owner));}

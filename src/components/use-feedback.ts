@@ -5,53 +5,42 @@ import { useToast } from "./toast";
 import { loadFeedback, saveFeedback } from "@/lib/account";
 import type { Entity } from "@/lib/discovery";
 
-// Gradual feedback (D3) for a results page. `current` is read at request time,
-// so voting does not re-run the search that is on screen.
+// Owner-bound reads and queued writes: old completions cannot mutate a new
+// account, and rapid saves cannot replace one another's preference votes.
 export function useFeedback(ready: boolean, userId: string | undefined, onError: (m: string) => void) {
-  const [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] });
-  const current = useRef(feedback);
-  const toast = useToast();
-  useEffect(() => {
-    if (!ready) return;
-    let active = true;
-    loadFeedback(!!userId)
-      .then((fb) => {
-        if (!active) return;
-        current.current = fb;
-        setFeedback(fb);
-      })
-      .catch((e) => active && onError((e as Error).message));
-    return () => {
-      active = false;
-    };
-    // onError is a setter-like callback; loading depends on sign-in only.
-  }, [ready, userId]);
-  async function vote(place: Entity, value: 1 | -1) {
-    const before = current.current;
-    const next = addVote(before, voteFor(place, value));
-    current.current = next;
-    setFeedback(next);
-    await saveFeedback(next, !!userId);
-    // A vote that tips a taste over to strong is announced, with an undo.
-    const learned = newlyStrong(before, next);
-    const [taste, verb] = learned.keep.length ? [learned.keep[0], "you like"] : [learned.avoid[0], "you skip"];
-    if (taste)
-      toast(`Your Passport learned: ${verb} ${taste.name.toLowerCase()}.`, {
-        action: { label: "Undo", run: () => dismiss(taste.id).catch((e) => onError((e as Error).message)) },
-      });
+  const generation=useRef({userId});
+  if(generation.current.userId!==userId)generation.current={userId};
+  const scope=generation.current;
+  const [snapshot,setSnapshot]=useState<{scope:object;value:Feedback}>({scope,value:{votes:[],dismissed:[]}});
+  const current=useRef<Feedback>({votes:[],dismissed:[]});
+  const work=useRef<Promise<void>>(Promise.resolve());
+  const loading=useRef<{scope:object;promise:Promise<Feedback>}|null>(null);
+  const currentScope=useRef(scope);
+  if(currentScope.current!==scope){currentScope.current=scope;current.current={votes:[],dismissed:[]};work.current=Promise.resolve();loading.current=null;}
+  const toast=useToast();
+  function load(){
+    if(loading.current?.scope===scope)return loading.current.promise;
+    const promise=loadFeedback(!!userId,userId).then(fb=>{if(generation.current===scope){current.current=fb;setSnapshot({scope,value:fb});}return fb;});
+    loading.current={scope,promise};void promise.catch(()=>{if(loading.current?.promise===promise)loading.current=null;});return promise;
   }
-  async function dismiss(tagId: string) {
-    const next = dismissTag(current.current, tagId);
-    current.current = next;
-    setFeedback(next);
-    await saveFeedback(next, !!userId);
+  useEffect(()=>{if(!ready)return;load().catch(e=>{if(generation.current===scope)onError(e.message);});},[ready,userId]);
+  function change(transform:(fb:Feedback)=>Feedback,announce=false){
+    if(generation.current!==scope||!ready)return Promise.resolve();
+    const task=work.current.catch(()=>{}).then(async()=>{
+      if(generation.current!==scope)return;
+      await load();if(generation.current!==scope)return;
+      const before=current.current,next=transform(before);current.current=next;setSnapshot({scope,value:next});
+      await saveFeedback(next,!!userId,userId);
+      if(generation.current!==scope||!announce)return;
+      const learned=newlyStrong(before,next);
+      const [taste,verb]=learned.keep.length?[learned.keep[0],'you like']:[learned.avoid[0],'you skip'];
+      if(taste)toast(`Your Passport learned: ${verb} ${taste.name.toLowerCase()}.`,{action:{label:'Undo',run:()=>{void dismiss(taste.id).catch(e=>onError(e.message));}}});
+    });work.current=task;return task;
   }
-  async function unvote(id: string) {
-    const next = removeVote(current.current, id);
-    current.current = next;
-    setFeedback(next);
-    await saveFeedback(next, !!userId);
-  }
-  const voted = (id: string) => feedback.votes.find((v) => v.id === id)?.vote;
-  return { current, vote, unvote, voted };
+  const vote=(place:Entity,value:1|-1)=>change(fb=>addVote(fb,voteFor(place,value)),true);
+  const dismiss=(tagId:string)=>change(fb=>dismissTag(fb,tagId));
+  const unvote=(id:string)=>change(fb=>removeVote(fb,id));
+  const feedback=snapshot.scope===scope?snapshot.value:{votes:[],dismissed:[]};
+  const voted=(id:string)=>feedback.votes.find(v=>v.id===id)?.vote;
+  return {current,vote,unvote,voted};
 }

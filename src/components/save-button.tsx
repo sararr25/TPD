@@ -1,8 +1,10 @@
 "use client";
+import {useRouter} from "next/navigation";
+import {citySlug} from "@/lib/discovery";
 import { ActionIcon } from "./action-icon";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { Entity } from "@/lib/discovery";
-import { addToList, deleteList, loadLists, moveLocalLists, removeFromList, setNote, type SavedList } from "@/lib/saved";
+import { addToList, deleteList, loadLists, moveLocalLists, removeFromList, setNote, samePlace, SAVED_CHANGED, type SavedList } from "@/lib/saved";
 import { useToast } from "./toast";
 import { authClient } from "@/lib/auth/client";
 import { recordStamp } from "@/lib/stamps-client";
@@ -13,12 +15,16 @@ export function useSavedLists(ready: boolean, userId: string | undefined, migrat
   const toast = useToast();
   const [lists, setLists] = useState<SavedList[]>([]),
     [loaded, setLoaded] = useState(false);
-  const owner = useRef(userId); owner.current = userId;
+  const scope = useMemo(()=>({userId}),[userId]);
+  const owner = useRef(scope); owner.current = scope;
+  const readSerial=useRef(0);
   const [listOwner, setListOwner] = useState(userId);
   const reload = useCallback(async () => {
-    const found = await loadLists(!!userId);
-    if (owner.current === userId) { setLists(found); setListOwner(userId); }
-  }, [userId]);
+    if(owner.current!==scope)return;
+    const serial=++readSerial.current;
+    const found = await loadLists(!!userId,userId);
+    if (owner.current === scope && readSerial.current===serial) { setLists(found); setListOwner(userId); setLoaded(true); }
+  }, [userId,scope]);
   useEffect(() => {
     if (!ready) return;
     let active = true;
@@ -29,15 +35,15 @@ export function useSavedLists(ready: boolean, userId: string | undefined, migrat
         if (failed.length)
           toast(`${failed.length} saved place${failed.length === 1 ? "" : "s"} could not move to your account yet: ${failed.join(", ")}. They stay on this device.`, { error: true });
       }
-      const found = await loadLists(!!userId);
-      if (active) { setLists(found); setListOwner(userId); }
+      if(active)await reload();
     })()
       .catch((e) => active && toast((e as Error).message, { error: true }))
       .finally(() => active && setLoaded(true));
     return () => {
       active = false;
     };
-  }, [ready, userId, toast, migrate]);
+  }, [ready, userId, toast, migrate, reload]);
+  useEffect(()=>{if(!ready)return;const update=()=>{void reload().catch(e=>toast((e as Error).message,{error:true}));};window.addEventListener(SAVED_CHANGED,update);return()=>window.removeEventListener(SAVED_CHANGED,update);},[ready,reload,toast]);
   return { lists: listOwner === userId ? lists : [], loaded: loaded && listOwner === userId, reload, signedIn: !!userId };
 }
 
@@ -64,8 +70,10 @@ function OwnedSaveButton({
   iconOnly?: boolean;
 }) {
   const id = useId();
+  const router=useRouter();
   const toast = useToast();
   const { data: session, isPending } = authClient.useSession();
+  const alive=useRef(true);useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);
   const saveOwner = signedIn ? session?.user?.id : undefined;
   const [imprint, setImprint] = useState<{ placeId: string; serial: number } | null>(null);
   function stampSaved() {
@@ -80,7 +88,7 @@ function OwnedSaveButton({
   const sheet = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDialogElement>(null), trigger = useRef<HTMLButtonElement>(null);
   const [error, setError] = useState("");
-  const saved = lists.filter((l) => l.items.some((i) => i.placeId === place.id));
+  const saved = lists.filter((l) => l.items.some((i) => samePlace(i.placeId,place.id)));
   useEffect(() => {
     const dialog = panel.current;
     if (!dialog) return;
@@ -93,12 +101,18 @@ function OwnedSaveButton({
       dialog.style.left = `${Math.max(12, Math.min(rect.left, innerWidth - dialog.offsetWidth - 12))}px`;
       dialog.style.top = `${Math.max(12, Math.min(rect.bottom + 8, innerHeight - dialog.offsetHeight - 12))}px`;
     }
-    position(); window.addEventListener("resize", position);
-    return () => window.removeEventListener("resize", position);
+    position(); const resize=new ResizeObserver(position);resize.observe(dialog);window.addEventListener("resize", position);
+    return () => {resize.disconnect();window.removeEventListener("resize", position);};
   }, [open]);
+  const linkedEditor=useRef(false);
+  useEffect(()=>{
+    if(linkedEditor.current||!saved.length)return;
+    const url=new URL(location.href);if(url.searchParams.get('editSaved')!==place.id)return;
+    linkedEditor.current=true;setOpen(true);url.searchParams.delete('editSaved');history.replaceState(history.state,'',url);
+  },[saved.length,place.id]);
   // The note field shows what is already saved with the place.
   useEffect(() => {
-    if (open) setNote_(saved.find((l) => l.items.some((i) => i.placeId === place.id && i.note))?.items.find((i) => i.placeId === place.id)?.note ?? "");
+    if (open) setNote_(saved.find((l) => l.items.some((i) => samePlace(i.placeId,place.id) && i.note))?.items.find((i) => samePlace(i.placeId,place.id))?.note ?? "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
   async function quickSave() {
@@ -108,16 +122,14 @@ function OwnedSaveButton({
     setBusy(true);
     try {
       await addToList(name, place, token, "", signedIn, saveOwner);
-      stampSaved();
-      await onChange();
-      onSaved?.();
+      if(alive.current){stampSaved();await onChange();if(alive.current)onSaved?.();}
       toast(`Saved to ${name}`, {
         action: {
           label: "Undo",
           run: () => {
             (async () => {
-              const fresh = await loadLists(signedIn);
-              const list = fresh.find((l) => l.name === name && l.items.some((i) => i.placeId === place.id));
+              const fresh = await loadLists(signedIn,saveOwner);
+              const list = fresh.find((l) => l.name === name && l.items.some((i) => samePlace(i.placeId,place.id)));
               if (list) {
                 await removeFromList(list, place.id, saveOwner);
                 // A list this tap created goes with it.
@@ -127,7 +139,7 @@ function OwnedSaveButton({
             })().catch((e) => toast((e as Error).message, { error: true }));
           },
         },
-        secondary: { label: "Change", run: () => setOpen(true) },
+        secondary: { label: "Change", run: () => {if(alive.current)setOpen(true);else router.push(`/${citySlug(city)}/${place.id.toLowerCase()}?editSaved=${encodeURIComponent(place.id)}`);} },
       });
     } catch (e) {
       setError((e as Error).message);
@@ -145,9 +157,7 @@ function OwnedSaveButton({
     setBusy(true);
     try {
       await action();
-      if (added) stampSaved();
-      await onChange();
-      if (added) onSaved?.();
+      if(alive.current){if(added)stampSaved();await onChange();if(added&&alive.current)onSaved?.();}
       toast(message, undo && {
         action: {
           label: "Undo",
@@ -218,7 +228,7 @@ function OwnedSaveButton({
           {lists.length > 0 && (
             <ul>
               {lists.map((list) => {
-                const on = list.items.some((i) => i.placeId === place.id);
+                const on = list.items.some((i) => samePlace(i.placeId,place.id));
                 return (
                   <li key={list.id}>
                     <label>
@@ -254,7 +264,7 @@ function OwnedSaveButton({
             </div>
           </form>
           <details>
-            <summary>{saved.some((l) => l.items.some((i) => i.placeId === place.id && i.note)) ? "Edit note" : "Add a note"}</summary>
+            <summary>{saved.some((l) => l.items.some((i) => samePlace(i.placeId,place.id) && i.note)) ? "Edit note" : "Add a note"}</summary>
             <input
               aria-label="Note for this place"
               value={note}

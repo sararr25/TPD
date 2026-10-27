@@ -22,7 +22,7 @@ The owner confirmed the test seams: existing Playwright journeys with provider/a
 | [#55](https://github.com/sararr25/TPD/issues/55) | Resume search and temporary preferences | Implemented; see docs/68 |
 | [#56](https://github.com/sararr25/TPD/issues/56) | Organise saved places | Implemented; contract docs/67, receipt docs/68 |
 | [#57](https://github.com/sararr25/TPD/issues/57) | Explicit post-visit feedback | Implemented; contract docs/67, receipt docs/68 |
-| [#58](https://github.com/sararr25/TPD/issues/58) | Travel notebook export | After organisation; rights first |
+| [#58](https://github.com/sararr25/TPD/issues/58) | Travel notebook export | Implemented; public text only, no image rights dependency; docs/68 |
 
 ## Implemented behaviour
 

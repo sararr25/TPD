@@ -153,7 +153,7 @@ test('enlarged text keeps Home action reachable without clipping', async ({ page
 for(const size of [{width:1440,height:900},{width:1440,height:780},{width:375,height:812}]) test(`both Home entrances start in the first viewport ${size.width}x${size.height}`,async({page})=>{
  await worldFixtures(page);await page.setViewportSize(size);await page.emulateMedia({reducedMotion:'reduce'});await page.goto(base+'/');
  for(const mode of ['Pick a city','Find its twin']) {
-  await page.locator('.h-entrance').getByRole('button',{name:mode,exact:true}).click();
+  const selected=page.locator('.h-entrance > .toggle-group').getByRole('button',{name:mode,exact:true});await selected.click();await expect(selected).toHaveAttribute('aria-pressed','true');await expect(selected).toHaveCSS('color','rgb(255, 225, 77)');
   const form=page.getByRole('search',{name:mode==='Pick a city'?'Open a city':'Twin',exact:true});
   const cta=form.getByRole('button',{name:mode==='Pick a city'?'Open the city':'Find its twin',exact:true});
   const box=(await cta.boundingBox())!;const bottom=await page.locator('.tab-bar').evaluate(el=>getComputedStyle(el).display==='none'?innerHeight:el.getBoundingClientRect().top);

@@ -12,6 +12,7 @@ import {
 // its signed selection so the server can verify it when it moves.
 export type SavedItem = CollectionItem & { token?: string };
 export type SavedList = { id: string; name: string; items: SavedItem[]; local: boolean };
+export const samePlace=(a:string,b:string)=>a.toLowerCase()===b.toLowerCase();
 export const LISTS_KEY = "beesyde-lists-v1";
 // Same limits as the account (src/lib/server/user-data.ts LIMITS).
 const LIMITS = { lists: 20, items: 100, name: 60, note: 280 };
@@ -33,7 +34,7 @@ export function readLocalLists(raw: string | null): SavedList[] {
         local: true,
         items: (l.items as SavedItem[])
           .filter((i) => i && typeof i.placeId === "string" && typeof i.name === "string" && typeof i.token === "string")
-          .slice(0, LIMITS.items),
+          .slice(0, LIMITS.items).map(i=>({...i,placeId:i.placeId.toLowerCase()})),
       }));
   } catch {
     return [];
@@ -42,9 +43,12 @@ export function readLocalLists(raw: string | null): SavedList[] {
 function localLists(): SavedList[] {
   return readLocalLists(localStorage.getItem(LISTS_KEY));
 }
+export const SAVED_CHANGED = "beesyde-saved-changed";
+function changed() { if(typeof window!=="undefined")window.dispatchEvent(new Event(SAVED_CHANGED)); }
 function storeLocal(lists: SavedList[]) {
   try {
     localStorage.setItem(LISTS_KEY, JSON.stringify(lists));
+    changed();
   } catch {
     throw new Error("This browser could not save your list. Check that site storage is allowed.");
   }
@@ -73,9 +77,9 @@ export async function moveLocalLists(owner?: string): Promise<{ moved: number; f
   return { moved, failed };
 }
 
-export async function loadLists(signedIn: boolean): Promise<SavedList[]> {
+export async function loadLists(signedIn: boolean, owner?: string): Promise<SavedList[]> {
   if (!signedIn) return localLists();
-  const account = (await loadCollections()).map((c) => ({ ...c, local: false }));
+  const account = (await loadCollections(owner)).map((c) => ({ ...c, items:c.items.map(i=>({...i,placeId:i.placeId.toLowerCase()})), local: false }));
   // Items that could not move yet stay visible as this device's lists.
   return [...account, ...localLists()];
 }
@@ -91,7 +95,7 @@ export async function addToList(
   const clean = name.trim();
   if (!clean || clean.length > LIMITS.name || note.length > LIMITS.note)
     throw new Error("Give the list a name (up to 60 characters) and keep the note under 280.");
-  if (signedIn) return void (await saveToCollection(clean, token, note, owner));
+  if (signedIn) { await saveToCollection(clean, token, note, owner); changed(); return; }
   const lists = localLists();
   let list = lists.find((l) => l.name === clean);
   if (!list) {
@@ -99,10 +103,10 @@ export async function addToList(
     list = { id: `local-${crypto.randomUUID()}`, name: clean, items: [], local: true };
     lists.push(list);
   }
-  if (!list.items.some((i) => i.placeId === place.id)) {
+  if (!list.items.some((i) => samePlace(i.placeId,place.id))) {
     if (list.items.length >= LIMITS.items) throw new Error("This list is full. Remove something first.");
     list.items.push({
-      placeId: place.id,
+      placeId: place.id.toLowerCase(),
       name: place.name,
       address: place.address,
       lat: place.lat,
@@ -116,14 +120,14 @@ export async function addToList(
 }
 
 export async function removeFromList(list: SavedList, placeId: string, owner?: string) {
-  if (!list.local) return removeFromCollection(list.id, placeId, owner);
+  if (!list.local) { await removeFromCollection(list.id, placeId, owner); changed(); return; }
   storeLocal(
-    localLists().map((l) => (l.id === list.id ? { ...l, items: l.items.filter((i) => i.placeId !== placeId) } : l)),
+    localLists().map((l) => (l.id === list.id ? { ...l, items: l.items.filter((i) => !samePlace(i.placeId,placeId)) } : l)),
   );
 }
 
 export async function deleteList(list: SavedList, owner?: string) {
-  if (!list.local) return deleteCollection(list.id, owner);
+  if (!list.local) { await deleteCollection(list.id, owner); changed(); return; }
   storeLocal(localLists().filter((l) => l.id !== list.id));
 }
 
@@ -132,11 +136,11 @@ export async function deleteList(list: SavedList, owner?: string) {
 // device the item is edited in place.
 export async function setNote(list: SavedList, place: Entity, token: string, note: string, owner?: string) {
   if (note.length > LIMITS.note) throw new Error("Keep the note under 280 characters.");
-  if (!list.local) return void (await saveToCollection(list.name, token, note, owner));
+  if (!list.local) { await saveToCollection(list.name, token, note, owner); changed(); return; }
   storeLocal(
     localLists().map((l) =>
       l.id === list.id
-        ? { ...l, items: l.items.map((i) => (i.placeId === place.id ? { ...i, note: note.trim() || null } : i)) }
+        ? { ...l, items: l.items.map((i) => (samePlace(i.placeId,place.id) ? { ...i, note: note.trim() || null } : i)) }
         : l,
     ),
   );
@@ -150,7 +154,7 @@ function savedEntity(item: SavedItem): Partial<Entity> | null {
     const body = item.token.split(".")[0].replace(/-/g, "+").replace(/_/g, "/");
     const json = new TextDecoder().decode(Uint8Array.from(atob(body), (byte) => byte.charCodeAt(0)));
     const entity = JSON.parse(json).entity;
-    return entity && typeof entity === "object" && entity.id === item.placeId ? entity : null;
+    return entity && typeof entity === "object" && typeof entity.id === "string" && samePlace(entity.id,item.placeId) ? entity : null;
   } catch {
     return null;
   }

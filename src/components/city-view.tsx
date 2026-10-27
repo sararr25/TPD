@@ -135,7 +135,7 @@ export function CityView({ city }: { city: string }) {
     if (isPending) return;
     let active = true;
     setHiddenOwner(null); setHidden([]);
-    loadHidden(!!userId).then(list => { if (active) { setHidden(list); setHiddenOwner(userId || "guest"); } }).catch(e => active && setStatus(e.message));
+    loadHidden(!!userId,userId).then(list => { if (active) { setHidden(list); setHiddenOwner(userId || "guest"); } }).catch(e => active && setStatus(e.message));
     return () => { active = false; };
   }, [userId, isPending]);
   useEffect(() => {
@@ -187,7 +187,7 @@ export function CityView({ city }: { city: string }) {
     const item = { id: place.id, name: place.name };
     setHidden((list) => [...list.filter((h) => h.id !== item.id), item]);
     try {
-      await hidePlace(item, token, !!userId);
+      await hidePlace(item, token, !!userId,userId);
       if (category !== "neighbourhood") await vote(place, -1);
       toast(`${place.name} is hidden and won’t come up again.`, {
         action: { label: "Undo", run: () => undoHide(place) },
@@ -199,7 +199,7 @@ export function CityView({ city }: { city: string }) {
   async function undoHide(place: Entity) {
     setHidden((list) => list.filter((h) => h.id !== place.id));
     try {
-      await unhidePlace(place.id, !!userId);
+      await unhidePlace(place.id, !!userId,userId);
       if (category !== "neighbourhood") await unvote(place.id);
       toast(`${place.name} is back.`);
     } catch (error) {
@@ -279,7 +279,7 @@ export function CityView({ city }: { city: string }) {
           </p>
           {tab === "foryou" && data && !busy && (
             <p className="city-count" aria-live="polite">
-              {shown.length} {CATEGORY_NOUN[category]} shown · {mapped} on the map
+              {shown.length} {shown.length===1?CATEGORY_CAPABILITIES[category].singular:CATEGORY_NOUN[category]} shown · {mapped} on the map
             </p>
           )}
           <details className="city-switch">

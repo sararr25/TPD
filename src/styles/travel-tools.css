@@ -22,3 +22,10 @@ dialog.save-sheet:not([open]) { display:none; }
 .notebook-preview label { display:flex;gap:12px;align-items:flex-start; }
 
 .place-actions {flex-wrap:wrap;}
+.twin-price-comparison {margin:6px 0;font-size:var(--text-sm);line-height:1.35;}
+.twin-difference {margin:8px 0;}
+
+.comparison-scroll-hint{display:none;}
+@media(max-width:720px){.comparison-scroll-hint{display:block;font-size:var(--text-sm);}}
+
+.comparison-dialog{max-width:1100px;}

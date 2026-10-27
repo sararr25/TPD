@@ -20,7 +20,7 @@ import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import { discovery, type Selection } from "@/lib/discovery-client";
 import { authClient } from "@/lib/auth/client";
 import { loadFeedback } from "@/lib/account";
-export function PassportBuilder() {
+function OwnedPassportBuilder() {
   const [selected, setSelected] = useState<Selection[]>([]),
     [matches, setMatches] = useState<Selection[]>([]),
     [searchState, setSearchState] = useState<
@@ -52,7 +52,7 @@ export function PassportBuilder() {
   useEffect(() => {
     if (!ready) return;
     let active = true;
-    loadFeedback(!!userId)
+    loadFeedback(!!userId,userId)
       .then((fb) => active && setFeedback(fb))
       .catch((e) => active && setStatus((e as Error).message));
     return () => {
@@ -435,3 +435,5 @@ export function PassportBuilder() {
   );
   return <PassportFolio key={passportState.owner} answers={profile} favourites={selected.map(s => s.entity.name)} editor={editor} onStartQuiz={openQuiz}/>;
 }
+
+export function PassportBuilder(){const {data:session,isPending}=authClient.useSession();return isPending?<p role="status">Opening your Passport…</p>:<OwnedPassportBuilder key={session?.user?.id||'guest'}/>;}

@@ -8,6 +8,7 @@ export const TRAVEL_KEY='beesyde-travel-v1:guest';
 export function TravelStateProvider({children}:{children:ReactNode}){
  const {data:session,isPending}=authClient.useSession(),owner=session?.user?.id||'guest';
  const generation=useRef({owner});if(generation.current.owner!==owner)generation.current={owner};
+ const renderScope=generation.current;
  const [snapshot,setSnapshot]=useState({owner:'',state:emptyTravel(),revision:0,ready:false,error:''});
  const [busy,setBusy]=useState(false),[attempt,setAttempt]=useState(0);
  const lock=useRef<object|null>(null);
@@ -28,8 +29,8 @@ export function TravelStateProvider({children}:{children:ReactNode}){
   return()=>{active=false;};
  },[owner,isPending,attempt]);
  async function change(next:TravelState){
-  if(lock.current===generation.current||isPending||snapshot.owner!==owner||!snapshot.ready)return false;
-  const scope=generation.current;let state:TravelState;
+  if(generation.current!==renderScope||lock.current===generation.current||isPending||snapshot.owner!==owner||!snapshot.ready)return false;
+  const scope=renderScope;let state:TravelState;
   try{state=validateTravel(next);}catch{setSnapshot(s=>({...s,error:'This trip has reached its organisation limit. Remove an old group or clear trip organisation in Settings.'}));return false;}
   pending.current={scope,state};lock.current=scope;setBusy(true);
   try{
@@ -44,3 +45,5 @@ export function TravelStateProvider({children}:{children:ReactNode}){
  return <Context.Provider value={{owner:!isPending?owner:"pending",state:visible?snapshot.state:emptyTravel(),ready:visible&&snapshot.ready,busy,error:visible?snapshot.error:'',change,retry:()=>{if(pending.current?.scope===generation.current)void change(pending.current.state);else setAttempt(n=>n+1);},reload:()=>setAttempt(n=>n+1)}}>{children}</Context.Provider>;
 }
 export function useTravelState(){const value=useContext(Context);if(!value)throw new Error('Travel provider missing');return value;}
+
+export function TravelSyncNotice(){const travel=useTravelState();return travel.error?<div className="travel-panel" role="alert"><p>{travel.error}</p><p>Changes are not synced yet. Keep this page open to retain your draft.</p><button className="btn btn-secondary" onClick={travel.retry}>Retry trip changes</button><button className="btn btn-quiet" onClick={travel.reload}>Reload account trip data</button></div>:null;}

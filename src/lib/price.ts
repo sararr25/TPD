@@ -10,5 +10,5 @@ export function priceLabel(value: number | null | undefined): string {
 export function priceComparison(value: number | null | undefined, reference: number | null | undefined): string {
   if (!PRICE_LEVELS.some(n => n === value) || !PRICE_LEVELS.some(n => n === reference)) return "Price comparison unavailable.";
   const relation = value! > reference! ? "Higher" : value! < reference! ? "Lower" : "Same";
-  return `${relation} price tier · ${priceSymbols(value)} vs ${priceSymbols(reference)} at your starting place. Indicative tiers, not live prices.`;
+  return `${relation} price tier · ${priceSymbols(value)} vs ${priceSymbols(reference)}`;
 }

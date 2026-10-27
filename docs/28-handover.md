@@ -1,5 +1,14 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Historical-ticket closure, A/B and handover — 28 October 2026
+
+Read [the latest handover](71-handover-historical-closure.md), then its linked
+acceptance/A-B receipt and physical checklist. Owner chose completion of all
+available checks plus a guided physical/account handoff, retained as not run in
+[#59](https://github.com/sararr25/TPD/issues/59). This supersedes the earlier
+baseline-unavailable note: the original archive was recovered and checked against
+e835875. Do not infer human acceptance from technical ticket closure.
+
 ## Travel tools, publication and open-check review — 27 October 2026
 
 Owner requested #53–58 followed by push live and review of all open checks. Read [the current release and acceptance receipt](68-travel-tools-release-and-acceptance.md), then [the prior icon/photo/copy handover](66-icons-photos-and-honest-copy.md). The exact additive data contract is in docs/67. Preserve the pending #46–52 work; publication and hardware acceptance must be verified separately and recorded, not inferred.

@@ -60,7 +60,9 @@ screen-reader gestures/keyboard, not only visual taps. Record spoken action name
 selected/expanded states, count/result/error announcements, focus containment and
 return focus. Check Save, group selection, visit feedback and notebook selection.
 Verify both normal and reduced motion keep the same readable information; no
-uncontrolled loop, blocked input, replay on Back or moving text is acceptable.
+uncontrolled loop, blocked input, replay on Back or text/control parallax independent
+of its reading surface is acceptable. Approved finite page entrances remain valid;
+controls must stay usable during interaction.
 Report the first blocked task, exact action and spoken/visible result.
 
 ## P4 — private account boundaries and two devices

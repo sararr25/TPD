@@ -31,14 +31,20 @@ no personal data, provider requests or database rows are used.
 
 | Measure | A 390px | B 390px | A 1440px | B 1440px |
 |---|---:|---:|---:|---:|
-| Editor/context height | 1566.19px | 816.30px | 998.50px | 625.80px |
-| Reduction | — | **47.88%** | — | **37.33%** |
+| Editor/context through CTA bottom | 1381.19px | 816.30px | 834.50px | 625.80px |
+| Reduction through CTA bottom | — | **40.90%** | — | **25.01%** |
 | Result name in viewport after response | No | Yes | No | Yes |
 | Reason and primary actions in viewport | No | Yes | No | Yes |
 | Explicit other-matches navigation | No | Yes | No | Yes |
 | Horizontal overflow | 0px | 0px | 0px | 0px |
 
-The historical >=35% mobile height criterion passes. The current mobile editor
+The historical >=35% mobile height criterion passes at **40.90%**. Independent
+review found that the old test included A's post-CTA Passport block; the harness
+now measures both variants from container top through submit-button bottom. The
+corrected rerun passes 2/2 (`/tmp/tpd-historical-cta-ab.log`,
+`.private/historical-cta-ab`). Whole-container secondary measurements remain
+1566.19→816.30px mobile (47.88%) and 998.50→625.80px desktop (37.33%); these are
+not used to prove the pre-CTA criterion. The current mobile editor
 is taller than the intermediate 25 October B (740.30px); larger targets and honest
 context were retained rather than deleting them to maximize the percentage.
 This is a bundled before/after comparison, not a randomized human experiment,
@@ -50,7 +56,7 @@ Reproduce with both servers running:
 TWIN_AB_BASE_URL=http://localhost:3101 MOTION_BASE_URL=http://localhost:3215 TWIN_AB_ARTIFACT_DIR=.private/historical-ab npx playwright test scripts/browser/twin-ab.spec.ts
 ```
 
-Initial fresh comparison: 2/2 pass, `/tmp/tpd-historical-density-ab.log`.
+Initial whole-container comparison: 2/2 pass (superseded for the pre-CTA gate), `/tmp/tpd-historical-density-ab.log`.
 Original artifacts remain in `.private/twin-ab`; fresh captures/metrics are in
 `.private/historical-ab`. Integrated rerun results are recorded below.
 
@@ -59,12 +65,17 @@ Original artifacts remain in `.private/twin-ab`; fresh captures/metrics are in
 `scripts/capture-motion-review.mjs` reuses `worldFixtures` and captures both
 original A and current B at 390/1440px with motion enabled: Home entrance, example,
 Home ending, Paris Twin cover, photo scroll and runtime reduced motion. It records
-continuous WebM, phase markers and PNG samples under `.private/historical-motion`.
+continuous WebM, phase markers and PNG samples. The initial `.private/historical-motion`
+run stopped before the natural route ending; independent review caught this. The
+corrected recorder waits for both normal-motion completion states, captures a
+settled frame and holds 700ms before navigation or reduced motion. Corrected
+artifacts are under `.private/historical-motion-settled`.
 The recorder warms compilation before the measured sequence and makes no latency
 or real-hardware performance claim. Screenshot filenames are nominal capture
 milestones, not precision animation timing measurements.
 
-All four captures completed with zero page errors. The original City photo has
+Initial four captures completed with zero page errors; natural-completion evidence
+is checked separately in the corrected capture. The original City photo has
 zero frame-relative scroll displacement; B changes by about 3.04px mobile and
 6.82px desktop in this recorded scroll segment. The existing regression measures
 parallax separately from page scrolling and checks reduced-motion cleanup.
@@ -74,7 +85,41 @@ top-to-bottom. High-resolution samples accompany them. This supports review of
 ordering, perceivability and finite completion; it cannot certify physical-phone
 comfort, audible sound or continuous-frame smoothness on other hardware.
 
-Independent Standards/Spec and temporal visual review: pending final reports.
+## Standards
+
+Independent review: **0 residual documented-standard violations, 0 actionable
+baseline smells**. The capture harness preserves the archive, uses existing
+provider/account fixtures, keeps media private and makes bounded claims. Review
+corrected the manual checklist's blanket ban on moving text, preserving approved
+finite entrances, and required natural-completion captures with settled holds.
+
+Temporal review inspected original/current filmstrips, high-resolution samples,
+extended completion captures and final filmstrips at 390/1440. Distinguishable
+progression and finite settling are visible. Home controls stay readable; the
+ending reaches its destination. City dashed routes develop around clear copy,
+control and photo regions; reduced motion preserves static information. No
+blocking clipping, hierarchy or motion-order defect was visible. Sampling cannot
+certify continuous smoothness, phone comfort, sound or screen-reader behavior.
+
+Standards total: 0 residual findings; no remaining worst issue within this axis.
+
+## Spec
+
+Independent review: **0 residual findings after two evidence corrections**.
+The corrected matched pre-CTA measurement passes the exact mobile 35% criterion
+at 40.90%. Completion waits and settled holds resolve the premature video cutoff.
+All four corrected captures completed without page errors; Home ending settles
+about 3.9s after entry, City about 4.7–5.0s after load in these captures. These are
+observations of choreography, not performance budgets or uplift.
+
+Original/current filmstrips, high-resolution Home milestones, corrected settled
+frames and reduced-motion City captures were inspected. No application defect or
+scope creep was identified. #59 preserves actual hardware/accounts as not run;
+catalogue activation remains a proposal with rights/selection/headroom prerequisites.
+
+Spec total: 0 residual findings; two evidentiary findings corrected and rechecked.
+Standards and Spec findings are deliberately reported separately, without ranking
+one axis against the other.
 
 ## #43: expanded native Safari guest check
 
@@ -94,9 +139,23 @@ acceptance. Those remain in the owner-approved manual handoff.
 
 ## Integrated checks and closure basis
 
-Full compiled/browser A/B, unit/service, typecheck, build, source review and
-public-alias receipts: pending final run. Do not infer completion from the scoped
-capture or historic receipts.
+Full compiled browser run including the opt-in A/B cases: **157 passed / 9
+development-only skips**, 166 total (`/tmp/tpd-historical-full-browser.log`). The
+subsequent corrected pre-CTA A/B measurement passes **2/2**; these are reruns of
+the same scenarios, not additional unique passes. Complete unit/service and
+typecheck pass (`/tmp/tpd-historical-unit.log`, `/tmp/tpd-historical-types.log`).
+All **9/9 development-only fixtures** pass separately
+(`/tmp/tpd-historical-dev-browser.log`). Independent reports above have no residual
+findings. Production build passes (`/tmp/tpd-historical-build-network.log`); the first
+sandboxed attempt could not fetch Google Fonts. Retrying with network access
+completed the real build without source changes. Final typecheck, recorder syntax
+and diff checks pass. Final focused build and public-alias smoke receipts are
+recorded in the release comment on #44 after publication.
+
+Final rebuilt-artifact check: **38 passed / 1 development-only skip**
+(`/tmp/tpd-historical-release-checks.log`), including the corrected A/B at both
+widths, Home/City motion, responsive/zoom, reduced motion and history. This overlaps
+the full-suite count. Final A/B artifacts: `.private/historical-release-ab`.
 
 Catalogue/Events scope is unchanged: the concrete bounded proposal and missing
 rights/selection/headroom prerequisites are in docs/61. No import, durable provider

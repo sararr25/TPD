@@ -13,7 +13,7 @@ Find places you’ll love, or a twin for the one that’s full. Next.js/TypeScri
 
 Name, Google sign-in, Neon and the visual direction are already decided. ADR 0004’s berry/lemon amendments supersede its original palette. Google Places is outside the demo; Qloo and OpenStreetMap are the connected discovery sources.
 
-Latest continuation: [#53–58 — travel tools and acceptance](docs/68-travel-tools-release-and-acceptance.md), including the pending #46–52 changes. Publication status and acceptance evidence are recorded there.
+Latest continuation: [historical-ticket closure, A/B and release handover](docs/71-handover-historical-closure.md). Technical evidence is in docs/69; owner-run physical/account acceptance remains explicitly not run in [#59](https://github.com/sararr25/TPD/issues/59) and docs/70. The preceding #46–58 release is recorded in docs/68.
 
 ## Local development
 

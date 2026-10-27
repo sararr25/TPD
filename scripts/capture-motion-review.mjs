@@ -47,12 +47,22 @@ try {
         await page.waitForTimeout(index ? 650 : 0);
         await page.screenshot({ path: `${folder}/ending-${index}.png` });
       }
+      if (variant === 'B') await page.locator('.h-band .ink-journey[data-ink-state="complete"]').waitFor({ state: 'visible', timeout: 8000 });
+      else await page.waitForTimeout(2500);
+      await mark('Home ending settled');
+      await page.screenshot({ path: `${folder}/ending-settled.png` });
+      await page.waitForTimeout(700);
       await page.goto(`${base}/paris?tab=swap`);
       await mark('City DOM loaded');
       for (const index of [0, 1, 2, 3]) {
         await page.waitForTimeout(index ? 700 : 0);
         await page.screenshot({ path: `${folder}/city-${index}.png` });
       }
+      if (variant === 'B') await page.locator('.city-ink-map[data-ink-state="complete"]').waitFor({ state: 'visible', timeout: 8000 });
+      else await page.waitForTimeout(3000);
+      await mark('City normal motion settled');
+      await page.screenshot({ path: `${folder}/city-settled.png` });
+      await page.waitForTimeout(700);
       const photo = page.locator('.city-cover-photo img:visible');
       const offset = async () => photo.evaluate(image => image.getBoundingClientRect().top - image.closest('.city-cover-photo').getBoundingClientRect().top);
       const before = await offset();

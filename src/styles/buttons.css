@@ -32,6 +32,9 @@
     color var(--dur-fast) var(--ease-standard),
     transform var(--dur-instant) var(--ease-standard);
 }
+.action-icon { display:inline-block; width:var(--icon-size,20px); height:var(--icon-size,20px); flex:none; vertical-align:-.18em; }
+.action-icon-nav { --icon-size:24px; }
+.btn .action-icon { vertical-align:middle; }
 
 .btn:active:not(:disabled) {
   transform: scale(0.97);

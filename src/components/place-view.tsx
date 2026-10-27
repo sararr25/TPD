@@ -1,4 +1,6 @@
 "use client";
+import {PlaceVisitControl} from "./trip-organisation";
+import { ActionIcon } from "./action-icon";
 import { useSearchParams } from "next/navigation";
 import { PassportPrompt, usePassportState } from "./passport-state";
 import Link from "next/link";
@@ -44,10 +46,10 @@ export function PlaceView({
   return (
     <article className="place-page">
       <Link className="place-back" href={backHref}>
-        ← {city}
+        <ActionIcon name="left" /> {city}
       </Link>
       <div className="place-hero" data-travel-reveal>
-        <PlacePhoto image={place.image} city={city} size="1200x" label={FALLBACK[category]} />
+        <PlacePhoto placeId={place.id} image={place.image} city={city} size="1200x" label={FALLBACK[category]} />
       </div>
       <div className="place-main">
         <GuideFolio city={city} code={COVERS[city]?.code ?? "PLACE"} />
@@ -88,11 +90,12 @@ export function PlaceView({
               target="_blank"
               rel="noreferrer"
             >
-              Directions ↗
+              Directions <ActionIcon name="external" />
             </a>
           )}
         </div>
       </div>
+      <PlaceVisitControl id={place.id}/>
       {hasPin && (
         <div className="place-map">
           <CityMap places={[place]} active={place.id} onPick={() => {}} />

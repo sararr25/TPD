@@ -1,4 +1,5 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { type Choice, type Result, chipTags, hasTrait } from "@/lib/discovery";
@@ -103,7 +104,7 @@ export function HomeSwapDemo() {
             </div>
           </>
         )}
-        {(error || demo) && <p><Link className="btn btn-quiet" href="/lisbon?tab=swap">Choose your own starting place →</Link></p>}
+        {(error || demo) && <p><Link className="btn btn-quiet" href="/lisbon?tab=swap">Choose your own starting place <ActionIcon name="right" /></Link></p>}
       </div>
     </section>
   );

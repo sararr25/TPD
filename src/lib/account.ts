@@ -103,14 +103,14 @@ export type Collection = { id: string; name: string; createdAt: string; items: C
 export async function loadCollections(): Promise<Collection[]> {
   return (await call<{ collections: Collection[] }>("/api/collections", "GET")).collections;
 }
-export async function saveToCollection(collection: string, token: string, note: string) {
-  await call("/api/collections", "POST", { collection, place: token, note });
+export async function saveToCollection(collection: string, token: string, note: string, owner?: string) {
+  await call("/api/collections", "POST", { collection, place: token, note }, owner);
 }
-export async function removeFromCollection(collectionId: string, placeId: string) {
-  await call("/api/collections", "DELETE", { collectionId, placeId });
+export async function removeFromCollection(collectionId: string, placeId: string, owner?: string) {
+  await call("/api/collections", "DELETE", { collectionId, placeId }, owner);
 }
-export async function deleteCollection(collectionId: string) {
-  await call("/api/collections", "DELETE", { collectionId });
+export async function deleteCollection(collectionId: string, owner?: string) {
+  await call("/api/collections", "DELETE", { collectionId }, owner);
 }
 
 export async function deleteAccount() {

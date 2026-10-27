@@ -80,7 +80,9 @@ export async function finishQuiz(
   answers: Answers,
   cards: string[],
   owner: string | false,
+  isCurrent: () => boolean = () => true,
 ): Promise<Selection[]> {
+  if (!isCurrent()) throw new Error("The active account changed. Reopen the quiz to continue.");
   const key = JSON.stringify([owner, answers, cards]);
   const pending = owner ? pendingPassport(owner) : null;
   let choices =
@@ -93,8 +95,9 @@ export async function finishQuiz(
     choices = (
       await discovery<{ choices: Selection[] }>({ action: "quiz", cards })
     ).choices;
-    resolved.set(key, choices);
+    if (isCurrent()) resolved.set(key, choices);
   }
+  if (!isCurrent()) { resolved.delete(key); throw new Error("The active account changed. Reopen the quiz to continue."); }
   try {
     localStorage.setItem(LIVE_PASSPORT_KEY, JSON.stringify(choices));
     localStorage.setItem(QUIZ_KEY, JSON.stringify(answers));

@@ -1,4 +1,5 @@
 import { InkJourney } from "@/components/ink-journey";
+import { ResumeSearch } from "@/components/resume-search";
 import { PassportPrompt } from "@/components/passport-state";
 import { HomeSearch } from "@/components/home-search";
 import { HomeExample } from "@/components/home-example";
@@ -31,8 +32,8 @@ export default function Home() {
             <h1 id="h-title">Your taste.<br /><em>Your next place.</em></h1>
             <p className="h-lead">Find places you’ll love, or a twin for the one that’s full. A 3-minute quiz makes the picks personal.</p>
           </div>
-          <div className="h-emblem-depth"><PassportEmblem /></div>
           <HomeSearch />
+          <div className="h-emblem-depth"><PassportEmblem /></div>
           <div className="h-cover-bottom" aria-hidden="true"><span>Made of what you love</span><span>Open to somewhere new ↗</span></div>
         </section>
         <HomeExample />
@@ -53,7 +54,7 @@ export default function Home() {
         </ol>
       </section>
 
-      <HomeCities />
+      <ResumeSearch /><HomeCities />
 
       <section className="h-band ink-home-ending" aria-labelledby="h-band">
         <PassportEmblem className="h-band-emblem" />

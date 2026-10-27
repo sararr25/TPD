@@ -26,3 +26,14 @@ visitors change the quiz from Settings & privacy. The Passport retains a focused
 Add what you love action for favourite artists, films, books and places; that
 editor does not offer retaking the quiz. First-time Passport creation remains
 available for visitors who have not completed the quiz.
+
+## Amendment — 27 Oct 2026: unfinished quiz recovery
+
+Owner approved the UI/UX audit and urgent quiz corrections. All quiz entry
+points use the shared native dialog. Unfinished answers are a separate,
+browser-only draft per guest/account, with explicit Continue your quiz or
+Start again and a seven-day restore window. Drafts do not steer discovery,
+replace the saved Passport or migrate implicitly between owners. Successful
+completion and the corresponding data deletion clear the draft. Browser mute
+preference persists separately; resume does not play a start sound. See
+the local implementation receipt in docs/64.

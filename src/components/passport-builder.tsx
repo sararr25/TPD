@@ -1,16 +1,16 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { ActionIcon } from "./action-icon";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PassportSecurityLines } from "./passport-art";
 import { LearnedFromYou } from "./learned-from-you";
 import { PassportFolio } from "./passport-folio";
 import { PassportStamps } from "./passport-stamps";
-import { QuizFlow } from "./quiz-flow";
+import { useQuizPanel } from "./quiz-panel";
 import { EmptyState, LoadingCards } from "./empty-state";
 import { usePassportState, PassportPrompt } from "./passport-state";
 import {
   PASSPORT_CHANGED,
-  finishQuiz,
   stagePassport,
   retryPassportSave,
 } from "@/lib/quiz-finish";
@@ -33,14 +33,9 @@ export function PassportBuilder() {
     [ready, setReady] = useState(false),
     [showGuest, setShowGuest] = useState(false),
     [guestProfile, setGuestProfile] = useState(0),
-    [quizOpen, setQuizOpen] = useState(false),
     [profile, setProfile] = useState<Answers>({}),
     [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] });
-  const quizWasOpen = useRef(false);
-  useEffect(() => {
-    if (quizWasOpen.current && !quizOpen) document.querySelector<HTMLElement>(".pf-cover h1, .passport-editor h1")?.focus({ preventScroll: true });
-    quizWasOpen.current = quizOpen;
-  }, [quizOpen]);
+  const openQuiz = useQuizPanel();
   const passportState = usePassportState();
   const busy = localBusy || passportState.state === "saving";
   const [example, setExample] = useState<Selection[]>([]);
@@ -50,7 +45,6 @@ export function PassportBuilder() {
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
   useEffect(() => {
-    setQuizOpen(false);
     setExample([]);
     setStatus("");
   }, [userId]);
@@ -112,23 +106,6 @@ export function PassportBuilder() {
       .finally(() => setBusy(false));
   }
 
-  async function onQuizFinish(answers: Answers, cards: string[]) {
-    setBusy(true);
-    setStatus("Building your Passport…");
-    try {
-      const choices = await finishQuiz(answers, cards, userId || false);
-      setSelected(choices);
-      setProfile(answers);
-      setStatus(userId ? "Saved to your account." : "Saved on this browser.");
-      setQuizOpen(false);
-      return true;
-    } catch (e) {
-      setStatus((e as Error).message);
-      return false;
-    } finally {
-      setBusy(false);
-    }
-  }
   async function search(e: React.FormEvent) {
     e.preventDefault();
     await runSearch();
@@ -202,33 +179,6 @@ export function PassportBuilder() {
     );
   if (!ready || passportState.state === "loading")
     return <LoadingCards label="Loading your Passport…" count={2} />;
-  if (quizOpen)
-    return (
-      <div className="passport-leaves passport-quiz-leaf" data-travel-page>
-        <div className="grid">
-          <div>
-            <QuizFlow
-              busy={busy}
-              onFinish={onQuizFinish}
-              onCancel={() => setQuizOpen(false)}
-            />
-            <p role="status" aria-live="polite">
-              {status}
-            </p>
-            {!selected.length && (
-              <button
-                className="btn btn-quiet"
-                disabled={busy}
-                onClick={() => setQuizOpen(false)}
-              >
-                I&apos;d rather search for my favourites
-              </button>
-            )}
-          </div>
-        </div>
-        <PassportStamps />
-      </div>
-    );
   const editor = (
 <section className="passport-editor" data-travel-page>
           {(passportState.state === "saving" ||
@@ -449,7 +399,7 @@ export function PassportBuilder() {
                 }
                 aria-label={"Remove " + s.entity.name}
               >
-                {s.entity.name} ×
+                {s.entity.name} <ActionIcon name="close" />
               </button>
             ))}
           </div>
@@ -483,5 +433,5 @@ export function PassportBuilder() {
           </p>
         </section>
   );
-  return <PassportFolio key={passportState.owner} answers={profile} favourites={selected.map(s => s.entity.name)} editor={editor} onStartQuiz={() => { setStatus(""); setQuizOpen(true); }}/>;
+  return <PassportFolio key={passportState.owner} answers={profile} favourites={selected.map(s => s.entity.name)} editor={editor} onStartQuiz={openQuiz}/>;
 }

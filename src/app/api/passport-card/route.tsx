@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { AXES, INTERESTS, INTEREST_ICON, buildProfile, cleanAnswers, type Axis, type Interest } from "@/lib/quiz";
+import { AXES, INTERESTS, INTEREST_ICON, buildProfile, quizCompletion, cleanAnswers, type Axis, type Interest } from "@/lib/quiz";
+import { passportInsights } from "@/lib/passport-insights";
 import { QUIZ_ICONS } from "@/lib/quiz-icons";
 
 // Share card (E07): a 1080×1350 PNG of the Passport data page. The URL
@@ -35,6 +36,7 @@ export async function GET(request: Request) {
     return Response.json({ error: "invalid_request" }, { status: 400 });
   }
   const profile = buildProfile(answers);
+  const completion = quizCompletion(answers);
   if (!profile) return Response.json({ error: "no_profile" }, { status: 400 });
   const stamps = (Object.keys(INTERESTS) as Interest[])
     .filter((k) => profile.interests[k] >= 25)
@@ -50,16 +52,23 @@ export async function GET(request: Request) {
         <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.paper, borderRadius: 32, marginTop: 40, padding: 64 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
             <div style={{ width: 180, height: 220, display: "flex", alignItems: "center", justifyContent: "center", background: C.bg, border: `2px solid ${C.line}`, borderRadius: 20 }}>
-              {icon(INTEREST_ICON[top], C.stamp, 130)}
+              {completion.partial ? <span style={{ fontSize: 54, color: C.stamp }}>{completion.answered}/18</span> : icon(INTEREST_ICON[top], C.stamp, 130)}
             </div>
             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-              <span style={{ fontSize: 24, color: C.ink2, letterSpacing: 3 }}>TRAVELLER TYPE</span>
-              <span style={{ fontSize: 72, fontWeight: 700, color: C.brand, lineHeight: 1.05, marginTop: 12 }}>{profile.title}</span>
+              <span style={{ fontSize: 24, color: C.ink2, letterSpacing: 3 }}>YOUR TRAVEL PREFERENCES</span>
+              <span style={{ fontSize: 72, fontWeight: 700, color: C.brand, lineHeight: 1.05, marginTop: 12 }}>{completion.partial ? "Taste, taking shape" : profile.title}</span>
             </div>
           </div>
-          <span style={{ fontSize: 34, color: C.ink, marginTop: 40 }}>{profile.motto}</span>
+          <span style={{ fontSize: 34, color: C.ink, marginTop: 40 }}>{completion.partial ? `A first sketch · ${completion.answered} of ${completion.total} questions answered` : profile.motto}</span>
+          {completion.partial && <div style={{ display: "flex", flexDirection: "column", gap: 36, marginTop: 64 }}>
+            {passportInsights(answers).slice(0,3).map(row => <div key={row.id} style={{ display: "flex", flexDirection: "column", gap: 12, borderTop: `2px solid ${C.line}`, paddingTop: 28 }}>
+              <span style={{ fontSize: 34, color: C.brand }}>{row.title}</span>
+              <span style={{ fontSize: 28, color: C.ink }}>{row.text.split(/(?<=[.!?])\s/)[0]}</span>
+            </div>)}
+            <span style={{ fontSize: 24, color: C.ink2 }}>Based on my answers so far. More travel preferences can be added in Settings &amp; privacy.</span>
+          </div>}
           <div style={{ display: "flex", flexDirection: "column", gap: 30, marginTop: 56 }}>
-            {(Object.keys(AXES) as Axis[]).map((k) => (
+            {(!completion.partial ? Object.keys(AXES) as Axis[] : []).map((k) => (
               <div key={k} style={{ display: "flex", alignItems: "center", gap: 24, fontSize: 26, color: C.ink2 }}>
                 <span style={{ width: 190 }}>{AXES[k][0]}</span>
                 <div style={{ flex: 1, height: 4, background: C.line, display: "flex", position: "relative" }}>
@@ -70,7 +79,7 @@ export async function GET(request: Request) {
             ))}
           </div>
           <div style={{ display: "flex", gap: 32, marginTop: "auto" }}>
-            {stamps.map((k, i) => (
+            {(!completion.partial ? stamps : []).map((k, i) => (
               <div key={k} style={{ width: 170, height: 170, borderRadius: 85, border: `4px solid ${C.stamp}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: C.stamp, fontSize: 24, transform: `rotate(${[-8, 6, -3, 10][i]}deg)` }}>
                 {icon(INTEREST_ICON[k], C.stamp, 56)}
                 <span style={{ marginTop: 6 }}>{INTERESTS[k].toUpperCase()}</span>

@@ -1,0 +1,24 @@
+/* Operative panels use the top layer, clear focus and the existing paper tokens. */
+dialog.save-sheet { position:fixed; inset:auto; margin:0; width:min(380px,calc(100vw - 24px)); max-height:calc(100dvh - 24px); overflow:auto; border:1px solid var(--line); border-radius:var(--radius-control); padding:20px; color:var(--ink); background:var(--paper); box-shadow:var(--shadow-lg); }
+dialog.save-sheet:not([open]) { display:none; }
+.save-error { max-width:280px; color:var(--brand); }
+@media(max-width:720px){ dialog.save-sheet{left:12px;bottom:12px;top:auto;width:calc(100vw - 24px);max-height:85dvh;} }
+.travel-toolbar,.travel-controls { display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0; }
+.travel-panel { border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:20px;margin:20px 0; }
+.travel-panel label { display:block;margin:12px 0; }
+.travel-panel input,.travel-panel select,.travel-panel textarea { max-width:100%; }
+.travel-panel .btn,.travel-controls .btn { white-space:normal; }
+.trip-group-heading { padding-top:16px;border-top:1px solid var(--line); }
+.trip-organise { margin-top:12px;padding-top:12px;border-top:1px solid var(--line); }
+.trip-organise label { display:block; }
+.trip-organise select { max-width:100%; }
+.comparison-dialog { width:min(1100px,calc(100vw - 24px));max-height:90dvh;overflow:auto; }
+.comparison-grid { display:grid;grid-template-columns:repeat(var(--compare-count,2),minmax(220px,1fr));gap:16px;overflow:auto; }
+.comparison-grid article { min-width:0;padding:16px;background:var(--paper);border:1px solid var(--line);border-radius:16px; }
+.comparison-grid h3 { overflow-wrap:anywhere; }
+.comparison-tray { position:sticky;bottom:calc(72px + env(safe-area-inset-bottom));z-index:20;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px;background:var(--paper);border:1px solid var(--brand);border-radius:16px;box-shadow:var(--shadow-lg); }
+@media(min-width:721px){.comparison-tray{bottom:20px;}}
+.notebook-preview { display:grid;gap:12px; }
+.notebook-preview label { display:flex;gap:12px;align-items:flex-start; }
+
+.place-actions {flex-wrap:wrap;}

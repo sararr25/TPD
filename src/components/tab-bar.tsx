@@ -1,32 +1,12 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import Link from "next/link";
 import { useNavContext } from "./use-nav-context";
 import { NAV_LINKS } from "./nav-links";
 
 // Mobile bottom tab bar (ADR 0001): the same four links as the header menu.
 // Hidden on wide screens by src/styles/shell.css.
-const ICONS: Record<string, React.ReactNode> = {
-  "/explore": (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M15.5 8.5 13.5 13.5 8.5 15.5 10.5 10.5z" />
-    </>
-  ),
-  "/swap": (
-    <>
-      <path d="M4 8h14l-3-3" />
-      <path d="M20 16H6l3 3" />
-    </>
-  ),
-  "/collections": <path d="M7 4h10v16l-5-3.5L7 20z" />,
-  "/passport": (
-    <>
-      <rect x="5" y="3" width="14" height="18" rx="2" />
-      <circle cx="12" cy="10" r="3" />
-      <path d="M9 16h6" />
-    </>
-  ),
-};
+const ICONS = { "/explore": "compass", "/swap": "twin", "/collections": "bookmark", "/passport": "passport" } as const;
 
 export function TabBar() {
   const { current, swapHref } = useNavContext();
@@ -34,9 +14,7 @@ export function TabBar() {
     <nav className="tab-bar" aria-label="Main (mobile)">
       {NAV_LINKS.map(([href, label, short]) => (
         <Link key={href} href={href === "/swap" ? swapHref : href} aria-current={current === href ? "page" : undefined}>
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            {ICONS[href]}
-          </svg>
+          <ActionIcon name={ICONS[href as keyof typeof ICONS]} navigation />
           <span>{short ?? label}</span>
         </Link>
       ))}

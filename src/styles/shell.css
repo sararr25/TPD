@@ -252,10 +252,15 @@ footer p {
 .foot-top nav { flex-wrap: wrap; }
 .foot-top nav { flex: 0 1 auto; max-width: 100%; }
 
+/* Enlarged mobile labels may wrap inside their equal-width navigation slot. */
+.tab-bar a { min-width:0; white-space:normal; text-align:center; }
+.tab-bar a span { max-width:100%; overflow-wrap:anywhere; }
+
 /* The shell has the same geometry before and after session/router hydration. */
 .site-header { min-height: 69px; }
 .site-nav-slot { flex: 1; min-width: 0; }
-.site-header > .auth { flex: 0 0 116px; justify-content: flex-end; min-height: 44px; margin-left: auto; }
+.site-header > .auth { flex: 0 1 116px; min-width:0; justify-content: flex-end; min-height: 44px; margin-left: auto; }
+.site-header > .auth .btn { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
 main { min-height: calc(100svh - 69px); }
 .page-loading { min-height: calc(100svh - 160px); }
 @media (min-width: 721px) and (max-width: 850px) {

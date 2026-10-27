@@ -96,3 +96,11 @@ CREATE TABLE IF NOT EXISTS user_stamp (
   CHECK ((kind = 'city' AND place_id IS NULL AND name IS NULL) OR
          (kind = 'place' AND place_id IS NOT NULL AND name IS NOT NULL))
 );
+
+-- #56/#57: private trip organisation and explicit visit feedback.
+CREATE TABLE IF NOT EXISTS user_travel_state (
+  user_id uuid PRIMARY KEY REFERENCES neon_auth."user" (id) ON DELETE CASCADE,
+  revision integer NOT NULL DEFAULT 1 CHECK (revision > 0),
+  state jsonb NOT NULL CHECK (jsonb_typeof(state) = 'object'),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);

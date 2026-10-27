@@ -1,4 +1,5 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import { useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
@@ -38,7 +39,7 @@ export function HomeStory() {
       <div className="story-top">
         <span className="meta">A little more you. A little less obvious.</span>
         <a href="#story-cities" className="btn btn-quiet">
-          Skip the story ↓
+          Skip the story <ActionIcon name="down" />
         </a>
       </div>
       <section className="story-opening">
@@ -110,7 +111,7 @@ export function HomeStory() {
             your favourites shape the picks.
           </p>
           <Link className="btn btn-secondary" href="/lisbon">
-            Explore Lisbon →
+            Explore Lisbon <ActionIcon name="right" />
           </Link>
           <p className="muted">
             Personal matches appear in the guide when there’s taste evidence.
@@ -130,7 +131,7 @@ export function HomeStory() {
             what to exclude, and find its twin.
           </p>
           <Link className="btn btn-primary" href="/lisbon?tab=swap">
-            Find its twin →
+            Find its twin <ActionIcon name="right" />
           </Link>
         </div>
         <div

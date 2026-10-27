@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import "@/styles/travel-tools.css";
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { DM_Mono, Hanken_Grotesk, Instrument_Serif } from "next/font/google";
@@ -11,6 +12,9 @@ import { TabBar } from "@/components/tab-bar";
 import { ToastProvider } from "@/components/toast";
 import { QuizPanelProvider } from "@/components/quiz-panel";
 import { TravelMotion } from "@/components/travel-motion";
+import { PlaceComparisonProvider } from "@/components/place-comparison";
+import { TravelStateProvider } from "@/components/travel-state";
+import { PlacePhotoProvider } from "@/components/place-photo-context";
 // Type (ADR 0004): self-hosted by next/font, exposed as CSS variables that
 // src/styles/tokens.css turns into --font-display / --font-body / --font-mono.
 const display = Instrument_Serif({
@@ -52,7 +56,7 @@ export default function RootLayout({
           </header>
           <main>
             <noscript><section className="paper"><h1>Your Taste Passport</h1><p>A city guide shaped by what you love. Enable JavaScript for personal picks and Twin searches.</p><a href="/explore">Browse cities</a></section></noscript>
-            <PassportStateProvider><QuizPanelProvider><Suspense fallback={<div className="page-loading" role="status">Opening your city guide…</div>}><TravelMotion>{children}</TravelMotion></Suspense></QuizPanelProvider></PassportStateProvider>
+            <PassportStateProvider><PlacePhotoProvider><TravelStateProvider><PlaceComparisonProvider><QuizPanelProvider><Suspense fallback={<div className="page-loading" role="status">Opening your city guide…</div>}><TravelMotion>{children}</TravelMotion></Suspense></QuizPanelProvider></PlaceComparisonProvider></TravelStateProvider></PlacePhotoProvider></PassportStateProvider>
           </main>
           <Suspense><TabBar /></Suspense>
           <footer>

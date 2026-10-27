@@ -1,5 +1,10 @@
 "use client";
-import { useRef, useState } from "react";
+import {organise} from "@/lib/travel-state";
+import {useTravelState} from "./travel-state";
+import {TripGroups,TripPlaceTools,PlaceVisitControl} from "./trip-organisation";
+import {TravelNotebook} from "./travel-notebook";
+import { ActionIcon } from "./action-icon";
+import { Fragment, useRef, useState } from "react";
 import Link from "next/link";
 import { PassportSecurityLines, PassportEmblem } from "./passport-art";
 import { AuthButton } from "./auth-button";
@@ -19,6 +24,7 @@ export function CollectionsView() {
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
   const toast = useToast();
+  const travel = useTravelState();
   const { lists, loaded, reload } = useSavedLists(!isPending, userId);
   const [busy, setBusy] = useState(false);
   const [active, setActive] = useState<string | null>(null);
@@ -52,10 +58,10 @@ export function CollectionsView() {
         <LoadingCards label="Opening your trips…" />
       ) : lists.length === 0 ? (
         <EmptyState title="Your next trip starts with one place." action={<Link className="btn btn-primary" href="/explore">Browse cities</Link>}>
-          <p>Tap the heart on a place you like. We’ll keep it here in a trip list.</p>
+          <p>Tap Save on a place you like. We’ll keep it here in a trip list.</p>
         </EmptyState>
       ) : (
-        lists.map((c) => (
+        lists.map((original) => { const c={...original,items:organise(original.items,travel.state.trips[original.id])};return (
           <section className="trip" data-travel-page key={c.id} aria-labelledby={`trip-${c.id}`}>
             <header className="trip-head">
               <svg className="trip-route-mark" viewBox="0 0 180 60" fill="none" aria-hidden="true"><path data-travel-route d="M8 42C34 42 30 12 62 12S99 49 129 37 151 18 172 18" /><circle cx="8" cy="42" r="4" /><circle cx="172" cy="18" r="4" /></svg>
@@ -67,7 +73,7 @@ export function CollectionsView() {
                 </p>
               </div>
               <div className="actions trip-head-actions">
-              <ShareTrip list={c} />
+              <ShareTrip list={c} /><TravelNotebook list={c} />
               <button
                 className="btn btn-quiet"
                 disabled={busy}
@@ -80,6 +86,7 @@ export function CollectionsView() {
               </button>
               </div>
             </header>
+            <TripGroups list={c} />
             {c.items.length === 0 ? (
               <EmptyState title="Room for your next find." action={<Link className="btn btn-secondary" href="/explore">Find a place</Link>}>
                 <p>This trip has no saved places yet.</p>
@@ -87,7 +94,8 @@ export function CollectionsView() {
             ) : (
               <div className="trip-layout">
                 <div className="trip-cards">
-                  {c.items.map((item) => (
+                  {c.items.map((item,index) => (
+                    <Fragment key={item.placeId}>{(index===0||(travel.state.trips[c.id]?.places.find(p=>p.id===item.placeId)?.group||'')!==(travel.state.trips[c.id]?.places.find(p=>p.id===c.items[index-1].placeId)?.group||''))&&<h3 className="trip-group-heading">{travel.state.trips[c.id]?.places.find(p=>p.id===item.placeId)?.group||'Ungrouped'}</h3>}
                     <SavedPlaceCard
                       key={item.placeId}
                       item={item}
@@ -97,7 +105,7 @@ export function CollectionsView() {
                       active={active === `${c.id}:${item.placeId}`}
                       onActive={() => setActive(`${c.id}:${item.placeId}`)}
                       onRemove={() => run(() => removeFromList(c, item.placeId), `Removed ${item.name} from “${c.name}”.`)}
-                    />
+                    /></Fragment>
                   ))}
                 </div>
                 {c.items.some(hasCoordinates) ? (
@@ -125,8 +133,9 @@ export function CollectionsView() {
               </div>
             )}
           </section>
-        ))
+        );})
       )}
+      {travel.error && <div className="travel-panel" role="alert"><p>{travel.error}</p><button className="btn btn-secondary" onClick={travel.retry}>Retry trip changes</button><button className="btn btn-quiet" onClick={travel.reload}>Reload account trip data</button></div>}
       <dialog ref={dialog} onClose={() => setPending(null)}>
         <h2>Delete “{pending?.name}”?</h2>
         <p>
@@ -139,7 +148,7 @@ export function CollectionsView() {
             onClick={() => {
               const list = pending;
               dialog.current?.close();
-              if (list) run(() => deleteList(list), `Deleted “${list.name}”.`);
+              if (list) run(async () => {await deleteList(list,userId);if(travel.state.trips[list.id]){const trips={...travel.state.trips};delete trips[list.id];await travel.change({...travel.state,trips});}}, `Deleted “${list.name}”.`);
             }}
           >
             Delete list
@@ -188,7 +197,7 @@ function SavedPlaceCard({ item, list, number, busy, active, onActive, onRemove }
     <article data-travel-page className="saved-place" id={`saved-${list.id}-${item.placeId}`} data-active={active || undefined}
       onMouseEnter={onActive} onFocus={onActive}>
       <Link className="saved-place-photo" href={href} prefetch={false} tabIndex={-1} aria-label={`Open ${item.name}`}>
-        <PlacePhoto image={photo} city={city || ""} label={city || "Saved place"} lazy />
+        <PlacePhoto placeId={item.placeId} image={photo} city={city || ""} label={city || "Saved place"} lazy />
         {hasCoordinates(item) && <span className="saved-place-pin">{number}</span>}
       </Link>
       <div className="saved-place-body">
@@ -196,10 +205,11 @@ function SavedPlaceCard({ item, list, number, busy, active, onActive, onRemove }
         {city && <p className="meta">{city}</p>}
         {item.address && <p className="muted">{item.address}</p>}
         {item.note && <p className="saved-place-note">{item.note}</p>}
+        <TripPlaceTools list={list} item={item}/><PlaceVisitControl id={item.placeId}/>
         <div className="saved-place-actions">
           {hasCoordinates(item) && (
             <a className="btn btn-quiet" href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`}
-              target="_blank" rel="noreferrer">Directions ↗</a>
+              target="_blank" rel="noreferrer">Directions <ActionIcon name="external" /></a>
           )}
           <button className="btn btn-quiet" disabled={busy} onClick={onRemove} aria-label={`Remove ${item.name} from ${list.name}`}>Remove</button>
         </div>

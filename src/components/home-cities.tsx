@@ -1,4 +1,5 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CITIES, citySlug, LOCAL_NAME } from "@/lib/discovery";
@@ -43,14 +44,14 @@ function PersonalCityShelf() {
   return <section className="h-cities h-personal-cities" id="cities" aria-labelledby="h-cities">
     <div className="h-cities-head"><div><h2 id="h-cities">{personal ? "Cities for your Passport." : returning ? "Your next city starts here." : "Four cities to start with."}</h2>
       <p>{personal ? "Shaped by your Passport favourites; cities you’ve visited come next." : returning ? "Your visited cities, then a few starting points." : "Choose a starting point, or open all eleven cities."}</p></div>
-      <Link className="btn btn-secondary" href="/explore">All cities · 11 →</Link></div>
+      <Link className="btn btn-secondary" href="/explore">All cities · 11 <ActionIcon name="right" /></Link></div>
     {tokens.length > 0 && rank.key !== requestKey && <p className="meta" role="status">Finding cities through your Passport favourites…</p>}
     {tokens.length > 0 && rank.key === requestKey && (rank.error || !affinities.length) && <p className="meta" role="status">Personal city picks aren’t available right now. These are visited cities and starting points.</p>}
     <ul className="h-grid">{cities.map(({ city, visited, reason }) => <li key={city}>
       <CityCard city={city} big={false} />
       <p className="h-city-reason">{reason === "passport" ? "From your Passport favourites" : reason === "visited" ? "Visited by you" : "A starting point"}{visited && reason === "passport" ? " · Visited by you" : ""}</p>
     </li>)}</ul>
-    <p className="meta"><Link href="/passport#visited-cities-title">Update your visited cities →</Link></p>
+    <p className="meta"><Link href="/passport#visited-cities-title">Update your visited cities <ActionIcon name="right" /></Link></p>
   </section>;
 }
 function CitiesIndex() {

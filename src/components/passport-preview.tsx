@@ -1,4 +1,6 @@
 "use client";
+import { recommendationCopy } from "@/lib/recommendation-copy";
+import { ActionIcon } from "./action-icon";
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { CITIES, citySlug, type Entity, type ExploreCategory } from '@/lib/discovery';
@@ -33,13 +35,13 @@ export function PassportPreview({ category, title }: { category: ExploreCategory
   },[key,attempt,history.loaded,passport.state,passport.selections.length,city]);
   const current = snapshot.key === key ? snapshot : null;
   const canSearch = passport.state === 'ready' && passport.selections.length >= 3;
+  const reasons = recommendationCopy(current?.data?.results.slice(0,3).map(r => r.place) || [], passport.selections);
   return <section className="pf-preview" aria-label={title}>
     <h4 ref={heading} tabIndex={-1}>A few places for you</h4>
     <label>Explore in<select value={city} onChange={e=>setChosen(e.target.value)} disabled={!history.loaded}><option value="" disabled>Choose a city</option>{history.cities.length>0 && <optgroup label="Cities you’ve visited">{history.cities.map(c=><option key={c}>{c}</option>)}</optgroup>}<optgroup label="Other cities">{Object.keys(CITIES).filter(c=>!history.cities.includes(c)).map(c=><option key={c}>{c}</option>)}</optgroup></select></label>
-    {!city ? <p>Choose a city to see your matches. You can add travel stamps whenever you like.</p> : !canSearch ? <><p>Add at least three favourites and save your Passport to see personal matches.</p><PassportPrompt/></> : current?.error ? <div role="status"><p>{current.error}</p><button className="btn btn-secondary" onClick={()=>setAttempt(a=>a+1)}>Try again</button></div> : !current?.data ? <LoadingCards label={`Finding places in ${city}…`} count={3}/> : !current.data.results.length ? <p role="status">No matches in this category today. Try another city.</p> : <div className="pf-preview-grid">{current.data.results.slice(0,3).map(({place})=>{
-      const names = passport.selections.filter(s=>place.evidence.includes(s.entity.id)).map(s=>s.entity.name);
-      return <article className="pf-mini-place" key={place.id}><div className="pf-mini-photo"><PlacePhoto image={place.image} city={city} lazy/></div><div><span className="meta">{city}</span><h5><Link href={`/${citySlug(city)}/${place.id.toLowerCase()}`}>{place.name}</Link></h5><p>{names.length ? `Because you like ${names.slice(0,2).join(' and ')}` : 'Picked for your Passport'}</p></div></article>;
-    })}</div>}
-    {city && <Link className="pf-all-matches" href={`/passport/matches?${new URLSearchParams({category,city})}`}>See all matches in {city} ↗</Link>}
+    {!city ? <p>Choose a city to see your matches. You can add travel stamps whenever you like.</p> : !canSearch ? <><p>Add at least three favourites and save your Passport to see personal matches.</p><PassportPrompt/></> : current?.error ? <div role="status"><p>{current.error}</p><button className="btn btn-secondary" onClick={()=>setAttempt(a=>a+1)}>Try again</button></div> : !current?.data ? <LoadingCards label={`Finding places in ${city}…`} count={3}/> : !current.data.results.length ? <p role="status">No matches in this category today. Try another city.</p> : <>{reasons.summary && <p>{reasons.summary}</p>}<div className="pf-preview-grid">{current.data.results.slice(0,3).map(({place})=>{
+      return <article className="pf-mini-place" key={place.id}><div className="pf-mini-photo"><PlacePhoto placeId={place.id} image={place.image} city={city} lazy/></div><div><span className="meta">{city}</span><h5><Link href={`/${citySlug(city)}/${place.id.toLowerCase()}`}>{place.name}</Link></h5><p>{reasons.why(place) || 'Picked for your Passport'}</p></div></article>;
+    })}</div></>}
+    {city && <Link className="pf-all-matches" href={`/passport/matches?${new URLSearchParams({category,city})}`}>See all matches in {city} <ActionIcon name="external" /></Link>}
   </section>;
 }

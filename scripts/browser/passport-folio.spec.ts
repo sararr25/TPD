@@ -41,7 +41,7 @@ for(const width of [375,768,1440]) test(`folio city stamps and real category lin
 test('no travel history requires choosing a city; stamp editor persists actual visits',async({page})=>{
  const requests=await setup(page,[]);await page.goto(base+'/passport/matches?category=cafe');
  await expect(page.getByRole('heading',{name:'Where would you like to explore?'})).toBeVisible();expect(requests.filter(r=>r.action==='explore')).toHaveLength(0);
- await page.goto(base+'/passport');await page.getByRole('button',{name:'Add stamps',exact:true}).click();await page.getByRole('checkbox',{name:'Tokyo',exact:true}).check();await page.getByRole('button',{name:'Save visited cities',exact:true}).click();
+ await page.goto(base+'/passport');await page.getByRole('button',{name:'Add a visited city',exact:true}).click();await page.getByRole('checkbox',{name:'Tokyo',exact:true}).check();await page.getByRole('button',{name:'Save visited cities',exact:true}).click();
  await expect(page.locator('.pf-stamp-status')).toBeVisible();await expect(page.locator('.pf-stamp-dialog')).not.toBeVisible();await expect(page.locator('.pf-city-stamp:visible')).toContainText('Tokyo');await page.reload();await expect(page.locator('.pf-city-stamp:visible')).toContainText('Tokyo');
 });
 test('empty quiz has an honest entry; reduced motion keeps the portrait visible',async({page})=>{
@@ -64,8 +64,8 @@ test('inline preview is deliberate, retries errors and keeps the selected city',
 });
 test('mobile bookmarks move focus and reduced motion preserves the larger illustration',async({page})=>{
  await setup(page);await page.setViewportSize({width:375,height:844});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(base+'/passport');
- await page.getByRole('button',{name:'Your taste ↓'}).click();await expect(page.locator('#pf-taste')).toBeFocused();await expect(page.locator('.pf-drawing')).toHaveCSS('stroke-dashoffset','0px');
- await page.getByRole('button',{name:'Your travels ↓'}).click();await expect(page.locator('#pf-travels')).toBeFocused();
+ await page.getByRole('button',{name:'Your taste',exact:true}).click();await expect(page.locator('#pf-taste')).toBeFocused();await expect(page.locator('.pf-drawing')).toHaveCSS('stroke-dashoffset','0px');
+ await page.getByRole('button',{name:'Your travels',exact:true}).click();await expect(page.locator('#pf-travels')).toBeFocused();
 });
 test('preview caps results at three and only explains provider-attributed favourites',async({page})=>{
  await setup(page);await page.route('**/api/discovery',async route=>{if(route.request().postDataJSON().action!=='explore')return route.fallback();return route.fulfill({json:{results:Array.from({length:5},(_,i)=>({place:{...place,id:`20000000-0000-4000-8000-${String(i).padStart(12,'0')}`,name:`Fixture match ${i+1}`,evidence:i===0?[favourites[0].entity.id]:[]},token:'fixture'}))}});});

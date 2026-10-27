@@ -35,19 +35,19 @@ export function PassportStamps() {
   return (
     <section className="passport-activity" aria-labelledby="passport-stamps-title">
       <div className="row">
-        <h2 id="passport-stamps-title">Your stamps</h2>
-        <span className="meta">{stamps.length} collected</span>
+        <h2 id="passport-stamps-title">Your Beesyde activity</h2>
+        <span className="meta">{stamps.length} activities</span>
       </div>
-      <p className="muted">City guides you’ve opened and places you’ve saved. {stamps.length === STAMP_LIMIT && `Your latest ${STAMP_LIMIT} stamps.`}</p>
+      <p className="muted">City guides you’ve opened and places you’ve saved. These do not mark a city as visited. {stamps.length === STAMP_LIMIT && `Your latest ${STAMP_LIMIT} activities.`}</p>
       {error && !isPending && owner === userId && <p role="status">{error}</p>}
-      {isPending ? <p className="meta" role="status">Opening your stamp pages…</p> : !stamps.length ? (
+      {isPending ? <p className="meta" role="status">Loading your activity…</p> : !stamps.length ? (
         <div className="passport-stamps-empty">
           <span className="activity-stamp-mark" aria-hidden>+1</span>
-          <p>Your first city guide starts the collection.</p>
+          <p>Open a city guide to start your activity history.</p>
           <Link className="btn btn-secondary" href="/explore">Browse cities</Link>
         </div>
       ) : (
-        <ul className="activity-stamps" aria-label="Collected city and place stamps">
+        <ul className="activity-stamps" aria-label="City guides opened and places saved">
           {stamps.map(stamp => (
             <li key={stampKey(stamp)} className="activity-stamp" data-kind={stamp.kind} data-city={citySlug(stamp.city)}>
               <span className="activity-stamp-mark" aria-hidden>{stamp.kind === "city" ? COVERS[stamp.city]?.code ?? stamp.city.slice(0,3).toUpperCase() : "♡"}</span>

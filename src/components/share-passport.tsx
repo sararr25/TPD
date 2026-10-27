@@ -1,4 +1,5 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import { useState } from "react";
 import type { Answers } from "@/lib/quiz";
 
@@ -39,7 +40,7 @@ export function SharePassport({ answers }: { answers: Answers }) {
   return (
     <div className="actions">
       <button className="btn btn-secondary" disabled={busy} onClick={share}>
-        Share my Passport ↗
+        Share my Passport <ActionIcon name="share" />
       </button>
       <span className="muted" role="status" aria-live="polite">
         {status}

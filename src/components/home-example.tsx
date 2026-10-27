@@ -1,4 +1,5 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { LOCAL_NAME, type Entity } from "@/lib/discovery";
@@ -78,11 +79,11 @@ export function HomeExample() {
         <p className="h-error" role="alert">
           The example could not load: {error}
         </p>
-        <Link className="btn btn-quiet" href="/lisbon">Explore Lisbon →</Link>
+        <Link className="btn btn-quiet" href="/lisbon">Explore Lisbon <ActionIcon name="right" /></Link>
         </div>
       ) : (
         <ul className="h-picks" aria-busy={!picks}>
-          {picks?.length === 0 && <li className="h-picks-empty"><span>No picks for this example today.</span><Link href="/lisbon">Explore Lisbon →</Link></li>}
+          {picks?.length === 0 && <li className="h-picks-empty"><span>No picks for this example today.</span><Link href="/lisbon">Explore Lisbon <ActionIcon name="right" /></Link></li>}
           {(picks ?? [null, null, null]).map((p, i) => (
             <li key={p?.place.id ?? i}>
               {p ? (

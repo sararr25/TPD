@@ -1,4 +1,5 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import { useSearchParams, usePathname } from "next/navigation";
 import { rememberCityPosition } from "./use-city-context";
 import Link from "next/link";
@@ -6,6 +7,7 @@ import { chipTags, citySlug, placeCategory, type Entity, type ExploreCategory } 
 import type { SavedList } from "@/lib/saved";
 import { priceSymbols, priceLabel } from "@/lib/price";
 import { PlacePhoto } from "./place-photo";
+import { ComparePlace } from "./place-comparison";
 import { SaveButton } from "./save-button";
 
 const FALLBACK: Record<ExploreCategory, string> = {
@@ -99,7 +101,7 @@ export function PlaceCard({
             {pin}
           </span>
         )}
-        <PlacePhoto image={place.image} city={city} label={FALLBACK[category]} lazy />
+        <PlacePhoto placeId={place.id} image={place.image} city={city} label={FALLBACK[category]} lazy />
       </div>
       <div className="place-body">
         {eyebrow && <span className="place-role">{eyebrow}</span>}
@@ -132,7 +134,7 @@ export function PlaceCard({
               iconOnly={!featured}
             />
             <button className="btn btn-icon" aria-label={`Not for me: hide ${place.name}`} title="Not for me" onClick={onHide}>
-              <span aria-hidden>✕</span>
+              <ActionIcon name="close" />
             </button>
           </>
         )}
@@ -145,9 +147,10 @@ export function PlaceCard({
             target="_blank"
             rel="noreferrer"
           >
-            <span aria-hidden>↗</span>
+            <ActionIcon name="external" />
           </a>
         )}
+        <ComparePlace place={place} token={token} city={city} category={category} why={why} />
         <span className="grow" />
         {swappable && (
           <Link

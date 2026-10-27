@@ -155,14 +155,14 @@ select + .toggle-group {
 .twin-trait-row[data-choice="keep"] .twin-trait-label { background: #e8d2ed; color: #60256d; font-weight: 600; box-shadow: inset 0 -3px #d0a4da; }
 .twin-trait-row[data-choice="change"] .twin-trait-label { color: #79625d; text-decoration: line-through; text-decoration-color: #a14e43; text-decoration-thickness: 2px; }
 .twin-trait-actions { display: flex; gap: 10px; flex-shrink: 0; }
-.twin-trait-action { border: 0; background: transparent; border-radius: 2px; padding: 6px 2px; min-height: 32px; color: var(--ink-2); font: 12px var(--font-body); cursor: pointer; }
+.twin-trait-action { min-width:44px; border: 0; background: transparent; border-radius: 2px; padding: 6px 4px; min-height: 44px; color: var(--ink-2); font: 12px var(--font-body); cursor: pointer; }
 .twin-trait-action[aria-pressed="true"] { color: #682773; font-weight: 600; }
 .twin-trait-action[aria-pressed="true"][data-mode="change"] { color: #a14e43; }
 .twin-trait-action:hover { text-decoration: underline; text-underline-offset: 3px; }
 .twin-trait-action:focus-visible, .twin-price-options button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 .twin-budget { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-top: 16px; font-size: 13px; }
-.twin-price-options { display: flex; gap: 10px; }
-.twin-price-options button { min-height: 32px; border: 0; border-bottom: 2px solid transparent; padding: 4px 2px; background: transparent; color: var(--ink-2); font: 12px var(--font-body); cursor: pointer; }
+.twin-price-options { display: flex; flex-wrap:wrap; gap: 8px; }
+.twin-price-options button { min-width:44px; min-height:44px; border: 0; border-bottom: 2px solid transparent; padding: 4px 2px; background: transparent; color: var(--ink-2); font: 12px var(--font-body); cursor: pointer; }
 .twin-price-options button[aria-pressed="true"] { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
 @media (max-width: 900px) { .twin-editor { grid-template-columns: minmax(0, 1fr); max-width: 760px; gap: 8px; } }
 @media (pointer: coarse), (max-width: 600px) { .twin-trait-action, .twin-price-options button { min-height: 44px; } .twin-trait-actions { gap: 12px; } }

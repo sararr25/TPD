@@ -76,7 +76,7 @@ export type ExplorePlaceCategory = keyof typeof EXPLORE_TAGS;
 // Category capabilities are shared by City, Twin and links into discovery.
 // Events require a dated event source; Qloo place tags do not supply one.
 export const CATEGORY_CAPABILITIES = {
-  restaurant: { label: "Restaurants", singular: "restaurant", explore: true, twin: true, price: true, facet: "Cuisine" },
+  restaurant: { label: "Restaurants", singular: "restaurant", explore: true, twin: true, price: true, facet: "Food & atmosphere" },
   bar: { label: "Bars", singular: "bar", explore: true, twin: true, price: true, facet: "Type & atmosphere" },
   cafe: { label: "Cafés", singular: "café", explore: true, twin: true, price: true, facet: "Type & atmosphere" },
   museum: { label: "Museums", singular: "museum", explore: true, twin: true, price: false, facet: "Theme" },
@@ -84,6 +84,10 @@ export const CATEGORY_CAPABILITIES = {
   neighbourhood: { label: "Neighbourhoods", singular: "neighbourhood", explore: true, twin: false, price: false, facet: null },
   event: { label: "Events", singular: "event", explore: false, twin: false, price: false, facet: null },
 } as const;
+export const FACET_PLACEHOLDERS: Record<ExploreCategory, string> = {
+  restaurant: "Any food or atmosphere", bar: "Any type or atmosphere", cafe: "Any type or atmosphere",
+  museum: "Any theme", hotel: "Any style or amenity", neighbourhood: "Any area",
+};
 export const TWIN_CATEGORIES = Object.entries(CATEGORY_CAPABILITIES)
   .filter(([, capability]) => capability.twin).map(([category]) => category as PlaceCategory);
 export const CATEGORY_LABELS = Object.fromEntries(

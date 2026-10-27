@@ -11,7 +11,7 @@ for (const width of [390, 1440]) test(`Events real-date browse and filters ${wid
  await worldFixtures(page); await page.setViewportSize({ width, height: 844 });
  await page.route('**/api/events?*', r => r.fulfill({ json: payload }));
  await page.goto(base+'/paris');
- await page.getByRole('button', { name:'Events · Paris pilot', exact:true }).click();
+ await page.getByRole('button', { name:'Paris events pilot', exact:true }).click();
  const events = page.locator('.events-explorer');
  await expect(events.getByRole('heading', { name:'Dated event 0' })).toBeVisible();
  await expect(events).toHaveAccessibleName('A date with the city');
@@ -28,10 +28,10 @@ for (const width of [390, 1440]) test(`Events real-date browse and filters ${wid
  await page.screenshot({ path:`.private/twin-ab/events-${width}.png`,fullPage:true });
  await page.goBack(); await expect(page.getByRole('button',{name:'Restaurants',exact:true})).toHaveAttribute('aria-pressed','true');
 });
-test('unsupported event city and failed agenda are explicit', async ({ page }) => {
+test('events stay separate from local categories and failed agenda is explicit', async ({ page }) => {
  await worldFixtures(page); await page.goto(base+'/lisbon?tab=swap');
- await page.getByRole('button',{name:'Events · Paris pilot',exact:true}).click();
- await expect(page.getByRole('link',{name:/Check Lisbon’s official agenda/})).toBeVisible();
+ await expect(page.getByRole('group', { name:'Category', exact:true }).getByRole('button', { name:/Events/i })).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'Explore the Paris events pilot',exact:true})).toHaveAttribute('href','/paris?events=1');
  await page.route('**/api/events?*',r=>r.fulfill({status:503,json:{error:'events_unavailable'}}));
  await page.goto(base+'/paris?events=1');
  await expect(page.getByRole('button',{name:'Try events again'})).toBeVisible();

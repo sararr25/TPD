@@ -1,4 +1,5 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import Link from "next/link";
 import { useEffect, useId, useMemo, useState } from "react";
 import type { EventsResult } from "@/lib/server/events";
@@ -44,8 +45,8 @@ export function EventsExplorer({ city }: { city: string }) {
     <p className="eyebrow">Events · source coverage</p>
     <h2>Dated events are available in Paris</h2>
     <p>Our municipal-events pilot has dates, venues and links to the original listings. Events in {city} aren’t connected yet. A music venue alone isn’t an event.</p>
-    {cityKey === "lisbon" && <a className="btn btn-secondary" href="https://www.agendalx.pt/" target="_blank" rel="noreferrer">Check Lisbon’s official agenda ↗</a>}
-    <p><Link className="btn btn-secondary" href="/paris?events=1">Browse the Paris events pilot →</Link> <a href="https://www.paris.fr/que-faire-a-paris" target="_blank" rel="noreferrer">Official Paris agenda ↗</a></p>
+    {cityKey === "lisbon" && <a className="btn btn-secondary" href="https://www.agendalx.pt/" target="_blank" rel="noreferrer">Check Lisbon’s official agenda <ActionIcon name="external" /></a>}
+    <p><Link className="btn btn-secondary" href="/paris?events=1">Browse the Paris events pilot <ActionIcon name="right" /></Link> <a href="https://www.paris.fr/que-faire-a-paris" target="_blank" rel="noreferrer">Official Paris agenda <ActionIcon name="external" /></a></p>
     <p className="meta">Choose Paris to browse the pilot. Event browsing is separate from Find its twin for places.</p>
   </section>;
 
@@ -69,10 +70,10 @@ export function EventsExplorer({ city }: { city: string }) {
       <p className="meta">Filters apply to this selection of up to 50 events, including ongoing exhibitions. A date range doesn’t guarantee a session every day. These are municipal listings, not personal Twin rankings.</p>
       {events.length ? <ol className="events-list">{events.map(event => <li key={event.id} className="event-card" data-travel-enter>
         <div className="event-date"><time dateTime={event.start}>{dateLabel(event.start)}</time>{dayKey(event.start) !== dayKey(event.end) && <><span>until</span><time dateTime={event.end}>{dateLabel(event.end)}</time></>}</div>
-        <div className="event-copy"><p className="eyebrow">{event.types.slice(0, 2).join(" · ") || "Cultural event"}</p><h3><a href={event.url} target="_blank" rel="noreferrer">{event.title} ↗</a></h3><p>{event.venue}<br /><span className="meta">{event.address}</span></p>{event.schedule && <p className="event-schedule">{event.schedule}</p>}<p className="event-price">{event.price === "free" ? "Free admission" : event.price === "paid" ? "Paid admission" : "Check admission price"}{event.priceDetail && ` · ${event.priceDetail}`}</p><a className="event-verify" href={event.url} target="_blank" rel="noreferrer">Check sessions & access at Paris.fr ↗</a></div>
+        <div className="event-copy"><p className="eyebrow">{event.types.slice(0, 2).join(" · ") || "Cultural event"}</p><h3><a href={event.url} target="_blank" rel="noreferrer">{event.title} <ActionIcon name="external" /></a></h3><p>{event.venue}<br /><span className="meta">{event.address}</span></p>{event.schedule && <p className="event-schedule">{event.schedule}</p>}<p className="event-price">{event.price === "free" ? "Free admission" : event.price === "paid" ? "Paid admission" : "Check admission price"}{event.priceDetail && ` · ${event.priceDetail}`}</p><a className="event-verify" href={event.url} target="_blank" rel="noreferrer">Check sessions & access at Paris.fr <ActionIcon name="external" /></a></div>
       </li>)}</ol> : <div className="events-status"><h3>{data.events.length ? "No events in this selection match" : "No dated events returned"}</h3><p>{data.events.length ? "Try a wider date range or another event type. These filters cover the supplied selection, not the whole agenda." : "The agenda returned no eligible Paris events for the next 30 days. Check the official agenda for more options."}</p>{data.events.length > 0 && <button type="button" className="btn btn-secondary" onClick={() => setFilters({ city: cityKey, from: "", to: "", type: "", price: "" })}>Clear event filters</button>}</div>}
       <p className="events-credit meta">Source: <a href={data.source.url} target="_blank" rel="noreferrer">{data.source.name}</a> · <a href={data.source.licenseUrl} target="_blank" rel="noreferrer">{data.source.license}</a> · Retrieved {dateLabel(data.checkedAt)}. Listing details can change; availability isn’t confirmed.</p>
     </>}
-    {failed && <p><a href="https://www.paris.fr/que-faire-a-paris" target="_blank" rel="noreferrer">Open the official Paris agenda ↗</a></p>}
+    {failed && <p><a href="https://www.paris.fr/que-faire-a-paris" target="_blank" rel="noreferrer">Open the official Paris agenda <ActionIcon name="external" /></a></p>}
   </section>;
 }

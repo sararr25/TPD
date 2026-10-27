@@ -15,6 +15,7 @@ const events = [],
 let fail = true,
   requests = 0;
 let gate = null;
+let discoveryGate = null;
 const choices = [
   { entity: { id: "fixture", name: "Fixture" }, token: "fixture-token" },
 ];
@@ -25,6 +26,7 @@ const mocks = {
   "./discovery-client": { readSelections: client.readSelections,
     discovery: async () => {
       requests++;
+      if (discoveryGate) await discoveryGate;
       return { choices };
     },
   },
@@ -78,7 +80,16 @@ vm.runInNewContext(
   assert.equal(result.pendingPassport("fixture-owner"), null, "deletion removes retry data");
   storage.set("beesyde-passport-pending:fixture-owner", JSON.stringify({choices:[null],answers:{planning:2},cards:[],passportSaved:false}));
   assert.equal(result.pendingPassport("fixture-owner"), null, "malformed pending data cannot crash consumers");
-  console.log("PASS: partial save notification, retained retry, guest ownership, draft revisions and deletion cleanup.");
+  const beforeStorage = [...storage], beforeWrites = writes.length, beforeEvents = events.length;
+  let current = true, releaseDiscovery;
+  discoveryGate = new Promise(resolve => { releaseDiscovery = resolve; });
+  const late = result.finishQuiz({ planning: 4 }, ["new-fixture"], "leaving-owner", () => current);
+  current = false; releaseDiscovery();
+  await assert.rejects(late, /active account changed/);
+  assert.deepEqual([...storage], beforeStorage, "an old response cannot replace the current browser profile");
+  assert.equal(writes.length, beforeWrites, "an old response cannot start account writes");
+  assert.equal(events.length, beforeEvents, "an old response cannot announce a new profile");
+  console.log("PASS: partial save notification, retained retry, guest ownership, draft revisions, deletion cleanup and late-owner response isolation.");
 })().catch((e) => {
   console.error(e.message);
   process.exitCode = 1;

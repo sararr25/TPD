@@ -55,6 +55,8 @@ test("save toast clears the mobile navigation and stays available while an actio
   await expect(toast).toBeVisible();
   await page.getByRole("link", { name: "beesyde", exact: true }).first().focus();
   await page.clock.fastForward(7000);
+  await expect(toast).toBeVisible();
+  await toast.getByRole("button",{name:"Dismiss",exact:true}).click();
   await expect(toast).toHaveCount(0);
 });
 

@@ -13,6 +13,8 @@ Find places you’ll love, or a twin for the one that’s full. Next.js/TypeScri
 
 Name, Google sign-in, Neon and the visual direction are already decided. ADR 0004’s berry/lemon amendments supersede its original palette. Google Places is outside the demo; Qloo and OpenStreetMap are the connected discovery sources.
 
+Latest continuation: [#53–58 — travel tools and acceptance](docs/68-travel-tools-release-and-acceptance.md), including the pending #46–52 changes. Publication status and acceptance evidence are recorded there.
+
 ## Local development
 
 Node.js 22.19+ and npm are required. Stack: Next.js App Router, TypeScript, React; deployed on Vercel with Neon Postgres and optional Neon Auth/Google sign-in.
@@ -60,6 +62,8 @@ Credentials stay in `.env.local` or server environment variables. Never use `NEX
 The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `claude/blissful-gauss-dymbeo`. Keep all secrets server-only. Inspect the deployment’s Git SHA and READY state, then verify the public alias; a successful local build alone is not production or real-device acceptance.
 
 ## Project state
+
+- **UI/UX continuation:** `docs/66-icons-photos-and-honest-copy.md` — #51/#52 implemented locally after #49/#50 (docs/65) and the quiz corrections; #45–58 plan and quiz receipt in docs/64. Verification and publication boundary are recorded in these continuations.
 
 - **Current publication continuation:** `docs/62-passport-and-backlog-release.md` — owner-approved Passport corrections and all pending integration work; final deployment receipt in #44.
 

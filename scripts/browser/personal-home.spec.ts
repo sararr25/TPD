@@ -48,10 +48,10 @@ for (const width of [375, 390, 768, 1440]) test(`guest has four approved cities 
   await page.goto(base);
   await expect(cities(page)).toHaveText(['Lisbon','Paris','Tokyo','New York']);
   await expect(page.locator('.h-personal-cities:visible .h-grid > li')).toHaveCount(4);
-  await expect(page.locator('.h-personal-cities:visible').getByRole('link', { name: 'All cities · 11 →' })).toHaveAttribute('href','/explore');
+  await expect(page.locator('.h-personal-cities:visible').getByRole('link', { name: 'All cities · 11' })).toHaveAttribute('href','/explore');
   expect(ranks).toHaveLength(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
-  await page.locator('.h-personal-cities:visible').getByRole('link', { name: 'All cities · 11 →' }).click();
+  await page.locator('.h-personal-cities:visible').getByRole('link', { name: 'All cities · 11' }).click();
   await expect(page.locator('.h-grid > li:not([hidden])')).toHaveCount(11);
   await page.getByRole('button', { name: 'Asia', exact: true }).click();
   await expect(page.locator('.h-grid > li:not([hidden])')).toHaveCount(5);
@@ -61,12 +61,12 @@ test('explicit real visits persist and guide opens never create travel history',
   await page.goto(base + '/lisbon');
   expect(await page.evaluate(() => localStorage.getItem('beesyde-visited-cities-v1:guest'))).toBeNull();
   await page.goto(base + '/passport');
-  await page.getByRole('button', { name: /^(Add stamps|Edit stamps)$/ }).click();
+  await page.getByRole('button', { name: 'Add a visited city' }).click();
   await page.getByRole('checkbox', { name: 'Phu Quoc', exact: true }).check();
   await page.getByRole('button', { name: 'Save visited cities', exact: true }).click();
   await expect(page.locator('.pf-stamp-status')).toBeVisible();
   await page.reload();
-  await page.getByRole('button', { name: /^(Add stamps|Edit stamps)$/ }).click();
+  await page.getByRole('button', { name: 'Add a visited city' }).click();
   await expect(page.getByRole('checkbox', { name: 'Phu Quoc', exact: true })).toBeChecked();
   await page.goto(base);
   await expect(cities(page)).toHaveText(['Phu Quoc','Lisbon','Paris','Tokyo']);
@@ -75,7 +75,7 @@ test('explicit real visits persist and guide opens never create travel history',
 test('verified Passport affinity precedes physical visits; missing scores are not invented', async ({ page }) => {
   await fixtures(page, { profile: true });
   await page.goto(base + '/passport');
-  await page.getByRole('button', { name: /^(Add stamps|Edit stamps)$/ }).click();
+  await page.getByRole('button', { name: 'Add a visited city' }).click();
   await page.getByRole('checkbox', { name: 'Phu Quoc', exact: true }).check();
   await page.getByRole('button', { name: 'Save visited cities', exact: true }).click();
   await page.goto(base);
@@ -87,7 +87,7 @@ test('verified Passport affinity precedes physical visits; missing scores are no
 test('account writes name their owner; switching accounts masks previous real visits', async ({ page }) => {
   const state = await fixtures(page, { account: 'fixture-user-a', visited: ['Tokyo'], sync: true });
   await page.goto(base + '/passport');
-  await page.getByRole('button', { name: /^(Add stamps|Edit stamps)$/ }).click();
+  await page.getByRole('button', { name: 'Add a visited city' }).click();
   await expect(page.getByRole('checkbox', { name: 'Tokyo', exact: true })).toBeChecked();
   await page.getByRole('checkbox', { name: 'Paris', exact: true }).check();
   await page.getByRole('button', { name: 'Save visited cities', exact: true }).click();
@@ -95,7 +95,7 @@ test('account writes name their owner; switching accounts masks previous real vi
   expect(state.writes).toEqual([{ owner: 'fixture-user-a', cities: ['Paris','Tokyo'] }]);
   state.switchAccount(undefined);
   await page.reload();
-  await page.getByRole('button', { name: /^(Add stamps|Edit stamps)$/ }).click();
+  await page.getByRole('button', { name: 'Add a visited city' }).click();
   await expect(page.getByRole('checkbox', { name: 'Tokyo', exact: true })).not.toBeChecked();
   await expect(page.getByRole('checkbox', { name: 'Paris', exact: true })).not.toBeChecked();
 });
@@ -105,13 +105,13 @@ test('affinity failure and unavailable account sync keep honest local fallback',
   await expect(page.locator('.h-personal-cities:visible')).toContainText('Personal city picks aren’t available right now.');
   await expect(cities(page)).toHaveText(['Lisbon','Paris','Tokyo','New York']);
   await page.goto(base + '/passport');
-  await page.getByRole('button', { name: /^(Add stamps|Edit stamps)$/ }).click();
+  await page.getByRole('button', { name: 'Add a visited city' }).click();
   await page.getByRole('checkbox', { name: 'Barcelona', exact: true }).check();
   await page.getByRole('button', { name: 'Save visited cities', exact: true }).click();
   await expect(page.getByText('Saved on this browser for this account. Account sync is not available yet.', { exact: true })).toBeVisible();
   expect(writes).toHaveLength(0);
   await page.reload();
-  await page.getByRole('button', { name: /^(Add stamps|Edit stamps)$/ }).click();
+  await page.getByRole('button', { name: 'Add a visited city' }).click();
   await expect(page.getByRole('checkbox', { name: 'Barcelona', exact: true })).toBeChecked();
 });
 

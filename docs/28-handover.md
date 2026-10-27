@@ -1,5 +1,26 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Travel tools, publication and open-check review — 27 October 2026
+
+Owner requested #53–58 followed by push live and review of all open checks. Read [the current release and acceptance receipt](68-travel-tools-release-and-acceptance.md), then [the prior icon/photo/copy handover](66-icons-photos-and-honest-copy.md). The exact additive data contract is in docs/67. Preserve the pending #46–52 work; publication and hardware acceptance must be verified separately and recorded, not inferred.
+
+## SVG actions, photo continuity and honest copy — 27 October 2026
+
+Owner requested #51/#52. Read [the implementation and verification receipt](66-icons-photos-and-honest-copy.md), then [the prior mobile-targets/action handover](65-mobile-targets-and-first-actions.md). The shared action icons, in-memory photo continuity, list reasons, Twin price comparison, partial Passport copy/share card and separate Paris Events entry are local only. Published baseline remains `dfb92e2`; preserve all uncommitted #46–52 changes. Next planned ticket: #53.
+
+## Mobile targets and earlier Home/City actions — 27 October 2026
+
+Owner requested continuing the next priorities. #49/#50 are implemented locally;
+read [the mobile and first-action continuation](65-mobile-targets-and-first-actions.md).
+The previous quiz work remains included. No publication occurs in this continuation.
+
+## UI/UX tickets and urgent quiz corrections — 27 October 2026
+
+Owner approved the audit and requested ticket decomposition plus urgent implementation.
+Read [the ticket plan and local quiz continuation](64-ui-ux-ticket-plan-and-quiz-implementation.md).
+#45 coordinates #46–58; the first three quiz fixes are implemented locally.
+This continuation does not publish application changes or close physical acceptance.
+
 ## Passport and backlog publication — 27 October 2026
 
 Owner explicitly requested publishing all pending work. Read [publication continuation](62-passport-and-backlog-release.md); its linked #44 receipt records the final commit, deployment and public-alias verification. This supersedes the local-only boundaries below for the retained changes.

@@ -321,6 +321,11 @@ const ADJECTIVE: Record<Axis, [string, string]> = {
   curiosity: ["Classic", "Curious"],
 };
 
+// Presentation completeness only: skipped questions do not become answers.
+export function quizCompletion(answers: Answers) {
+  const answered = Object.keys(cleanAnswers(answers)).length;
+  return { answered, total: QUESTIONS.length, partial: answered < QUESTIONS.length };
+}
 export function buildProfile(answers: Answers): Profile | null {
   const sum: Record<string, number> = {};
   const add = (t: Traits | undefined, weight: number) => {

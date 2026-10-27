@@ -52,7 +52,7 @@ function storeLocal(lists: SavedList[]) {
 
 // Moves this browser's lists into the account. Items the server refuses stay
 // here and are reported, never dropped.
-export async function moveLocalLists(): Promise<{ moved: number; failed: string[] }> {
+export async function moveLocalLists(owner?: string): Promise<{ moved: number; failed: string[] }> {
   let moved = 0;
   const failed: string[] = [];
   const kept: SavedList[] = [];
@@ -60,7 +60,7 @@ export async function moveLocalLists(): Promise<{ moved: number; failed: string[
     const left: SavedItem[] = [];
     for (const item of list.items) {
       try {
-        await saveToCollection(list.name, item.token!, item.note ?? "");
+        await saveToCollection(list.name, item.token!, item.note ?? "", owner);
         moved++;
       } catch {
         failed.push(item.name);
@@ -86,11 +86,12 @@ export async function addToList(
   token: string,
   note: string,
   signedIn: boolean,
+  owner?: string,
 ) {
   const clean = name.trim();
   if (!clean || clean.length > LIMITS.name || note.length > LIMITS.note)
     throw new Error("Give the list a name (up to 60 characters) and keep the note under 280.");
-  if (signedIn) return void (await saveToCollection(clean, token, note));
+  if (signedIn) return void (await saveToCollection(clean, token, note, owner));
   const lists = localLists();
   let list = lists.find((l) => l.name === clean);
   if (!list) {
@@ -114,24 +115,24 @@ export async function addToList(
   storeLocal(lists);
 }
 
-export async function removeFromList(list: SavedList, placeId: string) {
-  if (!list.local) return removeFromCollection(list.id, placeId);
+export async function removeFromList(list: SavedList, placeId: string, owner?: string) {
+  if (!list.local) return removeFromCollection(list.id, placeId, owner);
   storeLocal(
     localLists().map((l) => (l.id === list.id ? { ...l, items: l.items.filter((i) => i.placeId !== placeId) } : l)),
   );
 }
 
-export async function deleteList(list: SavedList) {
-  if (!list.local) return deleteCollection(list.id);
+export async function deleteList(list: SavedList, owner?: string) {
+  if (!list.local) return deleteCollection(list.id, owner);
   storeLocal(localLists().filter((l) => l.id !== list.id));
 }
 
 // Writes the note on a saved place (#16: the note comes after saving). The
 // account upserts the note when the place is already in the list; on this
 // device the item is edited in place.
-export async function setNote(list: SavedList, place: Entity, token: string, note: string) {
+export async function setNote(list: SavedList, place: Entity, token: string, note: string, owner?: string) {
   if (note.length > LIMITS.note) throw new Error("Keep the note under 280 characters.");
-  if (!list.local) return void (await saveToCollection(list.name, token, note));
+  if (!list.local) return void (await saveToCollection(list.name, token, note, owner));
   storeLocal(
     localLists().map((l) =>
       l.id === list.id

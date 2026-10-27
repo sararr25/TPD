@@ -1,12 +1,13 @@
 "use client";
+import { recommendationCopy } from "@/lib/recommendation-copy";
 import { CityInkMap } from "./city-ink-map";
 import { useCityContext, useCityPosition } from "./use-city-context";
 import { usePassportState, PassportPrompt } from "./passport-state";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   CITIES,
-  CATEGORY_LABELS, CATEGORY_CAPABILITIES, categoryHasPrice, categoryFacets,
+  CATEGORY_LABELS, CATEGORY_CAPABILITIES, FACET_PLACEHOLDERS, categoryHasPrice, categoryFacets,
   EXPLORE_TAGS,
   citySlug,
   LOCAL_NAME,
@@ -70,6 +71,7 @@ export function CityView({ city }: { city: string }) {
   const setEvents = (value: boolean) => context.update({ events: value ? "1" : "" });
   const [hiddenOwner, setHiddenOwner] = useState<string | null>(null);
   const { category, prices, areas, tab, view: mobileView } = context;
+  const mapSelection = useRef<string | null>(null);
   const setCategory = (value: ExploreCategory) => context.update({ category: value, events: "" });
   const setMobileView = (view: "list" | "map") => context.update({ view });
   const setPrices = (fn: (p: Partial<Record<ExploreCategory, string>>) => Partial<Record<ExploreCategory, string>>) => context.update(Object.fromEntries(Object.entries(fn(prices)).map(([k,v]) => [`price-${k}`, v || ""])));
@@ -89,6 +91,7 @@ export function CityView({ city }: { city: string }) {
     [areasBusy, setAreasBusy] = useState(false),
     [areasError, setAreasError] = useState(""),
     [areasAttempt, setAreasAttempt] = useState(0),
+    [filtersOpen, setFiltersOpen] = useState(false),
     // "For you" or "Swap" tab, mirrored in the URL as ?tab=swap. Swap mounts
     // on first open and then stays mounted (hidden) so its progress survives.
     [swapOpened, setSwapOpened] = useState(false);
@@ -203,20 +206,29 @@ export function CityView({ city }: { city: string }) {
       showError((error as Error).message);
     }
   }
-  // "Because you like X": the Passport picks Qloo says drove this place.
-  function why(place: Entity) {
-    const names = passport.filter((s) => place.evidence.includes(s.entity.id)).map((s) => s.entity.name);
-    return names.length ? `Because you like ${names.slice(0, 2).join(" and ")}` : null;
-  }
-  function pickFromMap(id: string) {
-    setActive(id);
-    setMobileView("list");
-    requestAnimationFrame(() => {
-      document.getElementById(`place-${id}`)?.scrollIntoView({
+  function focusMapSelection() {
+    const id = mapSelection.current;
+    if (!id) return;
+    const card = document.getElementById(`place-${id}`);
+    if (card && card.getClientRects().length) {
+      card.scrollIntoView({
         behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
         block: "center",
       });
-    });
+      card.querySelector<HTMLAnchorElement>("h3 a")?.focus({ preventScroll: true });
+      mapSelection.current = null;
+    }
+  }
+  useEffect(() => {
+    if (mobileView !== "list") return;
+    const frame = requestAnimationFrame(focusMapSelection);
+    return () => cancelAnimationFrame(frame);
+  }, [mobileView, active]);
+  function pickFromMap(id: string) {
+    mapSelection.current = id;
+    setActive(id);
+    setMobileView("list");
+    if (mobileView === "list") requestAnimationFrame(focusMapSelection);
   }
   const museums = CITIES[city].museums;
   const price = prices[category] ?? "";
@@ -236,12 +248,23 @@ export function CityView({ city }: { city: string }) {
     }
     return true;
   });
+  const reasons = recommendationCopy(shown.map(r => r.place), passport);
   // Same numbering as the map's pins (only places with coordinates get one).
   const pins = new Map(
     shown.filter((r) => r.place.lat !== null && r.place.lon !== null).map((r, i) => [r.place.id, i + 1]),
   );
   const cover = brokenCover === city ? null : cityCover(city, "1200x");
   const mapped = shown.filter((r) => r.place.lat !== null && r.place.lon !== null).length;
+  const filterSummary = category === "neighbourhood" ? [] : [
+    priceApplies && price ? `Up to ${"€".repeat(Number(price))}` : "",
+    facet ? facetOptions.find(t => t.id === facet)?.name.replace(/[_-]+/g, " ") || "Selected characteristic" : "",
+    areaId ? `Near ${area?.name || "selected neighbourhood"}` : "",
+  ].filter(Boolean);
+  function clearFilters() { context.update({ [`price-${category}`]: "", [`area-${category}`]: "", [`trait-${category}`]: "" }); }
+  const viewControls = <div className="city-mobile-view toggle-group segmented" role="group" aria-label="Show places as">
+    <button className="toggle" aria-pressed={mobileView === "list"} aria-controls="city-place-list" onClick={() => setMobileView("list")}>List</button>
+    <button className="toggle" aria-pressed={mobileView === "map"} aria-controls="city-place-map" onClick={() => setMobileView("map")}>Map</button>
+  </div>;
   return (
     <div className="city" data-city={citySlug(city)}>
       <section className="city-cover" aria-labelledby="city-title" data-ink-cover={tab === "swap" || undefined}>
@@ -252,8 +275,7 @@ export function CityView({ city }: { city: string }) {
           <h1 id="city-title">{city}</h1>
           {LOCAL_NAME[city] && <p className="city-local">{LOCAL_NAME[city]}</p>}
           <p className="city-intro">
-            Find your next table, museum or neighbourhood.<br />
-            Start with these picks, or make them your own.
+            {tab === "swap" ? "Find an alternative to a place you know." : "Places to eat, drink, stay and explore."}
           </p>
           {tab === "foryou" && data && !busy && (
             <p className="city-count" aria-live="polite">
@@ -304,10 +326,11 @@ export function CityView({ city }: { city: string }) {
                 {CATEGORY_LABELS[value]}
               </button>
             ))}
-            <button className="toggle" aria-pressed={events} onClick={() => setEvents(true)}>Events · Paris pilot</button>
+
           </div>
         )}
       </div>
+      {tab === "foryou" && city === "Paris" && <button className="btn btn-quiet" aria-pressed={events} onClick={() => setEvents(!events)}>{events ? "Back to places" : "Paris events pilot"}</button>}
       {swapOpened && (
         <div role="tabpanel" id="city-panel-swap" aria-labelledby="city-tab-swap" hidden={tab !== "swap"}>
           <SwapWorkspace fixedCity={city} embedded />
@@ -317,7 +340,14 @@ export function CityView({ city }: { city: string }) {
       {events && <EventsExplorer city={city} />}
       <div hidden={events}>
       {category !== "neighbourhood" && (
-        <div className="city-filters">
+        <div className="city-filter-panel">
+        <div className="city-filter-bar">
+          <button type="button" className="btn btn-secondary city-filter-toggle" aria-expanded={filtersOpen} aria-controls="city-filter-fields" onClick={() => setFiltersOpen(!filtersOpen)}>{filtersOpen ? "Hide filters" : "Filters"}{filterSummary.length > 0 && ` (${filterSummary.length})`}</button>
+          {(busy || (!status && shown.length > 0)) && viewControls}
+          <p className="city-filter-summary" role="status">{filterSummary.join(" · ")}</p>
+          {filterSummary.length > 0 && <button type="button" className="btn btn-quiet" onClick={clearFilters}>Clear filters</button>}
+        </div>
+        <div className="city-filters" id="city-filter-fields" role="group" aria-label="Filter these results" data-open={filtersOpen || undefined}>
           {priceApplies && <label htmlFor="city-price">Price up to
             <select id="city-price" value={price} onChange={(e) => setPrices((p) => ({ ...p, [category]: e.target.value }))}>
               <option value="">Any price</option>
@@ -326,7 +356,7 @@ export function CityView({ city }: { city: string }) {
           </label>}
           {CATEGORY_CAPABILITIES[category].facet && <label htmlFor="city-trait">{CATEGORY_CAPABILITIES[category].facet}
             <select id="city-trait" value={facet} onChange={(e) => context.update({ [`trait-${category}`]: e.target.value })}>
-              <option value="">Any listed trait</option>{facetOptions.map((t) => <option key={t.id} value={t.id}>{t.name.replace(/[_-]+/g, " ")}</option>)}
+              <option value="">{FACET_PLACEHOLDERS[category]}</option>{facetOptions.map((t) => <option key={t.id} value={t.id}>{t.name.replace(/[_-]+/g, " ")}</option>)}
             </select></label>}
           <label htmlFor="city-area">Near a neighbourhood
             <select id="city-area" disabled={areasBusy || !neighbourhoods.length} value={areaId}
@@ -338,6 +368,7 @@ export function CityView({ city }: { city: string }) {
           <p className="muted">Filter these picks by distance from the neighbourhood centre, not its boundary.{priceApplies && " Price tiers are indicative, not menu prices."}{price && priceApplies && " Places without a price tier are left out."}</p>
           {areasError && <p role="status">Neighbourhoods couldn’t load. <button className="btn btn-quiet" onClick={() => setAreasAttempt((n) => n + 1)}>Try again</button></p>}
           {!areasError && !areasBusy && !neighbourhoods.length && <p className="muted">No neighbourhood centres are listed for this city yet.</p>}
+        </div>
         </div>
       )}
       {!personal && (
@@ -366,17 +397,15 @@ export function CityView({ city }: { city: string }) {
       )}
       {!busy && data && !status && shown.length === 0 && (
         <EmptyState title="No places match this view." action={
-          price || area || facet ? <button className="btn btn-primary" onClick={() => { context.update({ [`price-${category}`]: "", [`area-${category}`]: "", [`trait-${category}`]: "" }); }}>Clear filters</button> :
+          price || area || facet ? <button className="btn btn-primary" onClick={clearFilters}>Clear filters</button> :
           <Link className="btn btn-primary" href="/explore">Choose another city</Link>
         }><p>Try a wider price range, another neighbourhood or another category. Your saved places are still here.</p></EmptyState>
       )}
+      {!busy && !status && reasons.summary && <p className="city-recommendation-reason">{reasons.summary}</p>}
       {/* No places to show (error, expired Passport): skip the empty map. */}
       {(busy || shown.length > 0) && (
       <>
-      <div className="city-mobile-view toggle-group segmented" role="group" aria-label="Show places as">
-        <button className="toggle" aria-pressed={mobileView === "list"} aria-controls="city-place-list" onClick={() => setMobileView("list")}>List</button>
-        <button className="toggle" aria-pressed={mobileView === "map"} aria-controls="city-place-map" onClick={() => setMobileView("map")}>Map</button>
-      </div>
+      {category === "neighbourhood" && viewControls}
       <div className="city-split" data-view={mobileView}>
         <div id="city-place-list" className="place-grid" aria-busy={busy}>
           {busy && !data
@@ -388,7 +417,7 @@ export function CityView({ city }: { city: string }) {
                   token={token}
                   city={city}
                   category={category}
-                  why={why(place)}
+                  why={reasons.why(place)}
                   near={near}
                   lists={lists}
                   signedIn={signedIn}
@@ -410,6 +439,7 @@ export function CityView({ city }: { city: string }) {
       </div>
       </>
       )}
+      {city !== "Paris" && <p className="muted">Events are a separate Paris guide. <Link href="/paris?events=1">Explore the Paris events pilot</Link></p>}
       {data && shown.length > 0 && (
         <p className="muted city-notice">
           {data.notice}

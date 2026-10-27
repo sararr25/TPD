@@ -1,4 +1,8 @@
 "use client";
+import {useTravelState} from "./travel-state";
+import {emptyTravel} from "@/lib/travel-state";
+import {searchKey} from "@/lib/search-draft";
+import { ActionIcon } from "./action-icon";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useQuizPanel } from "./quiz-panel";
@@ -9,6 +13,7 @@ import { LearnedFromYou } from "./learned-from-you";
 import { dismissTag, FEEDBACK_KEY, type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import { QUIZ_KEY } from "@/lib/quiz";
+import { deleteQuizDraft } from "@/lib/quiz-draft";
 import { clearLocalStamps, deleteStamps } from "@/lib/stamps-client";
 import { clearVisited, deleteVisited } from "@/lib/visited-cities-client";
 import { authClient } from "@/lib/auth/client";
@@ -27,6 +32,7 @@ import {
 
 // Settings & privacy: everything that changes or removes what Beesyde keeps about you.
 export function PassportSettings() {
+  const travel = useTravelState();
   const openQuiz = useQuizPanel();
   const passport = usePassportState();
   const [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] }),
@@ -91,10 +97,12 @@ export function PassportSettings() {
     }
     try {
       if (!userId) { await discardPendingPassport(); await deleteStamps(); await deleteVisited("guest"); }
+      localStorage.removeItem(searchKey(userId||"guest"));
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem("tpd-passport-v1");
       localStorage.removeItem("tpd-design-v1");
       localStorage.removeItem(QUIZ_KEY);
+      deleteQuizDraft(userId || "guest");
       localStorage.removeItem(FEEDBACK_KEY);
       window.dispatchEvent(new Event(PASSPORT_CHANGED));
       setStatus(
@@ -126,6 +134,10 @@ export function PassportSettings() {
       if (userId) clearVisited(userId);
       clearVisited("guest");
       clearLocalStamps();
+      if (userId) deleteQuizDraft(userId);
+      deleteQuizDraft("guest");
+      localStorage.removeItem("beesyde-travel-v1:guest");
+      localStorage.removeItem(searchKey(userId||"guest"));
       localStorage.removeItem(LIVE_PASSPORT_KEY);
       localStorage.removeItem(HIDDEN_KEY);
       localStorage.removeItem(QUIZ_KEY);
@@ -141,11 +153,12 @@ export function PassportSettings() {
 
   return (
     <>
+      <section className="travel-panel"><h2>Trip organisation &amp; visit feedback</h2><p>Private groups, order and visits are separate from your Passport and saved notes.</p><button className="btn btn-secondary" disabled={travel.busy||!travel.ready} onClick={()=>void travel.change(emptyTravel())}>Clear trip organisation and visits</button>{travel.error&&<p role="alert">{travel.error}</p>}</section>
       <section className="passport-settings-leaf" data-travel-page>
         <div className="page-head passport-leaf-heading">
           <PassportSecurityLines />
           <Link className="meta" href="/passport">
-            ← Your Passport
+            <ActionIcon name="left" /> Your Passport
           </Link>
           <h1>Settings &amp; privacy</h1>
           <p className="lead">

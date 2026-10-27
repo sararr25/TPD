@@ -1,4 +1,5 @@
 "use client";
+import { ActionIcon } from "./action-icon";
 import { useRef, useState } from "react";
 import type { SavedList } from "@/lib/saved";
 import { tripPostcard } from "@/lib/trip-postcard";
@@ -70,7 +71,7 @@ export function ShareTrip({ list }: { list: SavedList }) {
   }
   return (
     <>
-      <button className="btn btn-secondary" disabled={!list.items.length} onClick={open}>Share trip ↗</button>
+      <button className="btn btn-secondary" disabled={!list.items.length} onClick={open}>Share trip <ActionIcon name="share" /></button>
       <dialog className="share-trip-dialog" ref={dialog} aria-labelledby={`share-trip-${list.id}`}>
         <h2 id={`share-trip-${list.id}`}>Share this trip?</h2>
         <p>Anyone with the link can read the trip name and places below. Your notes stay private.</p>

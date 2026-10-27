@@ -1,11 +1,13 @@
 "use client";
+import {parseSearch,searchKey,type SearchDraft} from "@/lib/search-draft";
+import { ActionIcon } from "./action-icon";
 import { JourneyRoute } from "./travel-art";
 import { usePassportState, PassportPrompt } from "./passport-state";
 import { useEffect, useLayoutEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import {
   CITIES,
-  TWIN_CATEGORIES, CATEGORY_CAPABILITIES, placeCategory, categoryHasPrice, categoryFacets, distance, type Entity,
+  TWIN_CATEGORIES, CATEGORY_CAPABILITIES, FACET_PLACEHOLDERS, placeCategory, categoryHasPrice, categoryFacets, distance, type Entity,
   hasTrait,
   type Choice,
   type Result,
@@ -31,8 +33,7 @@ import { CityMap } from "./city-map";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
 import { EmptyState } from "./empty-state";
-import { priceSymbols, PRICE_LEVELS } from "@/lib/price";
-import { EventsExplorer } from "./events-explorer";
+import { priceSymbols, priceComparison, PRICE_LEVELS } from "@/lib/price";
 import type { CheckStatus } from "@/lib/venue-check";
 // Qloo tag names in plain sentence case ("fine_dining" -> "Fine dining").
 function traitLabel(name: string): string {
@@ -72,7 +73,6 @@ const CHECK_PLAIN: Record<CheckStatus, string> = {
 // page title and city selector are hidden. Standalone /swap passes neither.
 export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: string; embedded?: boolean } = {}) {
   const [category, setCategory] = useState<PlaceCategory>("restaurant"),
-    [events, setEvents] = useState(false),
     [rememberedCity, setCity, rememberedKnown] = useCity(),
     city = fixedCity ?? rememberedCity,
     cityKnown = fixedCity ? true : rememberedKnown;
@@ -90,6 +90,7 @@ export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: str
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const query = params.get("q")?.trim().slice(0, 120);
+    if(params.get("resume")==="1") { setCategory(placeCategory(params.get("category"))??"restaurant"); return; }
     if (!query) return;
     const cat = placeCategory(params.get("category")) ?? "restaurant";
     setCategory(cat);
@@ -128,19 +129,17 @@ export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: str
           <button
             className="toggle"
             key={value}
-            aria-pressed={!events && category === value}
-            onClick={() => { setEvents(false); setCategory(value); }}
+            aria-pressed={category === value}
+            onClick={() => setCategory(value)}
           >
             {CATEGORY_CAPABILITIES[value].label}
           </button>
         ))}
-        <button className="toggle" aria-pressed={events} onClick={() => setEvents(true)}>Events · Paris pilot</button>
       </div>
-      {events && <EventsExplorer city={city} />}
       {visited.map((k) => {
         const [c, cat] = k.split("|") as [string, PlaceCategory];
         return (
-          <div key={k} hidden={events || k !== key}>
+          <div key={k} hidden={k !== key}>
             <CategoryWorkspace
               city={c}
               category={cat}
@@ -151,6 +150,7 @@ export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: str
           </div>
         );
       })}
+      <p className="muted">Events are a separate Paris guide. <Link href="/paris?events=1">Explore the Paris events pilot</Link></p>
     </>
   );
 }
@@ -270,6 +270,21 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   const personal = passportState.state === "ready";
   const profileKey = JSON.stringify({ owner: passportState.owner, tokens: passportState.selections.map(s => s.token), quiz: passportState.quiz });
   const submittedProfile = useRef("");
+  const [recoverable,setRecoverable]=useState<SearchDraft|null>(null),[draftError,setDraftError]=useState("");
+  const restoring=useRef<SearchDraft|null>(null),skipDraftWrite=useRef(false);
+  useEffect(()=>{
+    setRecoverable(null);restoring.current=null;
+    if(isPending)return;
+    try { const draft=parseSearch(localStorage.getItem(searchKey(userId||"guest")));if(draft?.city===city&&draft.category===category)setRecoverable(draft); }
+    catch{setDraftError("Browser storage is unavailable. Keep this search open to retain your choices.");}
+  },[userId,isPending,city,category]);
+  useEffect(()=>{
+    if(!reference||!ready||isPending)return;
+    if(skipDraftWrite.current){skipDraftWrite.current=false;return;}
+    if(restoring.current){const draft=restoring.current;restoring.current=null;setChoices(draft.choices.filter(c=>reference.entity.tags.some(t=>t.id===c.tagId)));setBudget(draft.budget);setStale(true);setStatus("Starting place refreshed. Review your choices, then Find its twin.");return;}
+    try { localStorage.setItem(searchKey(userId||"guest"),JSON.stringify({version:1,at:Date.now(),city,category,reference:{id:reference.entity.id,name:reference.entity.name},choices,budget})); }
+    catch {setDraftError("Browser storage is unavailable. Keep this search open to retain your choices.");}
+  },[reference,choices,budget,ready,isPending,userId,city,category]);
   useEffect(() => {
     if (!started || submittedProfile.current === profileKey) return;
     // A changed Passport invalidates this search, without silently sending another.
@@ -280,7 +295,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     setStale(true);
     setStatus("Your Passport changed. Update results to use it.");
   }, [profileKey, started]);
-  useEffect(() => { setData(null); setStarted(false); setPresenting(false); setBusy(false); setHidden([]); }, [userId]);
+  useEffect(() => { setData(null); setStarted(false); setPresenting(false); setBusy(false); setHidden([]); setReference(null); setChoices([]); setBudget(""); searchController.current?.abort(); }, [userId]);
   useEffect(() => {
     setPassport(passportState.selections);
     setReady(passportState.loaded && !passportState.error && !["saving", "partial", "expired"].includes(passportState.state));
@@ -510,19 +525,18 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     const { kept, changed } = keptChanged(result);
     return <PlaceCard key={result.place.id} place={result.place} token={result.token ?? ""}
       city={city} category={category} eyebrow={spotlight ? "Your closest twin" : result.role}
-      whyLabel={personal ? "Why it fits you" : "Shared DNA"} why={result.why}
-      details={<details className="twin-details"><summary>What’s different & search details</summary>
+      whyLabel="Shared traits" why={result.why}
+      details={<>{categoryHasPrice(category) && <p className="twin-price-comparison"><strong>{priceComparison(result.place.price, reference?.entity.price)}</strong></p>}{!spotlight && <p>{result.different}</p>}<details className="twin-details"><summary>Search details</summary>
         {kept.length > 0 && <p><strong>Keeps:</strong> {joinList(kept)}.</p>}
         {changed.length > 0 && <p><strong>Leaves behind:</strong> {joinList(changed)}.</p>}
         {usedKeepNames.filter((name) => !kept.includes(name)).length > 0 && <p><strong>Kept traits not listed here:</strong> {joinList(usedKeepNames.filter((name) => !kept.includes(name)))}. Keep is a preference, not a guarantee.</p>}
-        <p>{result.different}</p>
         {result.check && CHECK_BADGE[result.check.status] && <p>{CHECK_BADGE[result.check.status]!.text}</p>}
         <p>Compared with {reference?.entity.name} in {city}. Your starting place, duplicates, hidden places
           and traits marked Delete are excluded.{usedBudget && ` Price up to ${priceSymbols(Number(usedBudget))}.`}</p>
         {result.check && <><p>{CHECK_PLAIN[result.check.status]}</p>{result.check.notes.map((note) => <p key={note}>{note}</p>)}</>}
         <p className="meta">Data read {data ? new Date(data.checkedAt).toLocaleString() : ""}.
           Opening hours, prices and availability aren’t live-checked.</p>
-      </details>}
+      </details></>}
       lists={lists} signedIn={signedIn} onListsChange={reload} onSaved={() => saved(result.place)}
       onHide={() => notForMe(result)} active={activeResult === result.place.id} onHover={setActiveResult}
       pin={resultPins.get(result.place.id) ?? null} findSimilar={false} directions featured={spotlight} />;
@@ -530,6 +544,8 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   return (
     <div className="twin-workspace" ref={workspaceRef}>
       {passportState.state !== "ready" && passportState.state !== "new" && <PassportPrompt />}
+      {recoverable && !reference && <section className="travel-panel" aria-label="Resume this search"><h2>Continue with {recoverable.reference.name}?</h2><p>Old results and tokens are not reused. Refresh your starting place, then review your choices.</p><button className="btn btn-secondary" disabled={!ready||searching} onClick={()=>{restoring.current=recoverable;setQuery(recoverable.reference.name);void runSearch(recoverable.reference.name,recoverable.reference.id);setRecoverable(null);}}>Resume recent search</button><button className="btn btn-quiet" onClick={()=>{try{localStorage.removeItem(searchKey(userId||"guest"));}catch{}setRecoverable(null);}}>Forget recent search</button></section>}
+      {draftError && <p role="status">{draftError}</p>}
       <p className="twin-intro">Find a {cap.singular} in {city} with the DNA you love.</p>
       {museum && museums !== "ok" && <p className="muted">{museums === "none" ? "No museum picks are listed here yet." : "Museum coverage is limited here."}</p>}
       {presenting && <div className="twin-outcome" ref={outcomeRef} aria-busy={busy}>
@@ -556,7 +572,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         {!busy && !swapError && closest && <div className="twin-spotlight" data-travel-enter>
           {resultCard(closest, true)}
           <p className="twin-difference"><span>What’s different</span> {closest.different}</p>
-          {others.length > 0 && <button className="twin-other-link" onClick={seeOthers}>See other matches <span>({others.length})</span><span aria-hidden>↓</span></button>}
+          {others.length > 0 && <button className="twin-other-link" onClick={seeOthers}>See other matches <span>({others.length})</span><ActionIcon name="down" /></button>}
         </div>}
       </div>}
       <div className="twin-editor" hidden={presenting} data-travel-enter>
@@ -576,7 +592,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         </section>
         {reference && <section className="twin-traits" aria-labelledby={uid + "-dna"}>
           <h2 id={uid + "-dna"}>Choose its DNA</h2>
-          <p className="twin-help">Keep favours a trait. Delete excludes it from this search. Ignore leaves it open.</p>
+          <p className="twin-help">Keep favours a trait. Delete excludes it from this search. Ignore leaves it open. Your Passport stays the same.</p><p className="twin-choice-recap"><strong>Prefer:</strong> {traitNames("keep").join(" · ") || "No preference"}. <strong>Exclude:</strong> {traitNames("change").join(" · ") || "None"}.</p>
           <div className="twin-trait-list">{choices.map((choice) => {
             const tag = reference.entity.tags.find((t) => t.id === choice.tagId)!;
             const label = traitLabel(tag.name);
@@ -599,13 +615,14 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
             {personal ? <><p>{passport.map((s) => s.entity.name).join(" · ")}</p><Link href="/passport#passport-editor">Edit favourites</Link></> : <p>You can search without a Passport. A 3-minute quiz makes the picks personal. <OpenQuizButton /></p>}
           </details>
           {stale && <p role="note">Choices changed. Update results to apply them.</p>}
+          <button className="btn btn-quiet" onClick={()=>{skipDraftWrite.current=true;setChoices(choices.map(c=>({...c,mode:"ignore"})));setBudget("");setStale(true);try{localStorage.removeItem(searchKey(userId||"guest"));}catch{}setRecoverable(null);}}>Clear temporary preferences</button>
           <div className="twin-submit"><button className="btn btn-primary" disabled={busy || !ready} onClick={startTwin}>{stale ? "Update results" : "Find its twin"}</button></div>
         </section>}
       </div>
       <p className="sr-only" role="status" aria-live="polite">{!presenting ? status : ""}</p>
       {data && !busy && !swapError && <section ref={resultsRegion} className="twin-results" aria-label="All twin matches">
         <div className="twin-result-filters"><label htmlFor={uid + "-facet"}>{cap.facet}<select id={uid + "-facet"} value={facet} onChange={(e) => setFacet(e.target.value)}>
-          <option value="">Any listed trait</option>{facetOptions.map((t) => <option key={t.id} value={t.id}>{traitLabel(t.name)}</option>)}</select></label>
+          <option value="">{FACET_PLACEHOLDERS[category]}</option>{facetOptions.map((t) => <option key={t.id} value={t.id}>{traitLabel(t.name)}</option>)}</select></label>
           <label htmlFor={uid + "-area"}>Near a neighbourhood<select id={uid + "-area"} value={areaId} disabled={!neighbourhoods.length} onChange={(e) => setAreaId(e.target.value)}>
             <option value="">Anywhere in the city</option>{neighbourhoods.map((h) => <option key={h.id} value={h.id}>{h.name} · within 2 km</option>)}</select></label>
           <p className="muted">Filters apply to these returned matches. Near means within 2 km of the centre, not the boundary.{areasError && ` ${areasError}`}</p>
@@ -614,7 +631,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         {others.length > 0 && <><h2 className="twin-other-heading" ref={otherHeading} tabIndex={-1}>Other matches <span className="meta">{others.length}</span></h2>
           <div className="place-grid swap-results-list">{others.map((r) => resultCard(r))}</div></>}
         {mappedPlaces.length > 0 && <details className="twin-map" onToggle={(e) => setMapOpen(e.currentTarget.open)}><summary>See matches on the map</summary>{mapOpen && <CityMap places={mappedPlaces} active={activeResult} onPick={pickResult} />}</details>}
-        <p className="meta">Keeping: {usedKeepNames.length ? joinList(usedKeepNames) : "nothing in particular"}. Excluding: {usedChangeNames.length ? joinList(usedChangeNames) : "nothing in particular"}.</p>
+        <p className="meta">Prefer: {usedKeepNames.length ? joinList(usedKeepNames) : "nothing in particular"}. Exclude: {usedChangeNames.length ? joinList(usedChangeNames) : "nothing in particular"}.</p>
       </section>}
     </div>
   );

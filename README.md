@@ -15,6 +15,8 @@ Name, Google sign-in, Neon and the visual direction are already decided. ADR 000
 
 Latest continuation: [historical-ticket closure, A/B and release handover](docs/71-handover-historical-closure.md). Technical evidence is in docs/69; owner-run physical/account acceptance remains explicitly not run in [#59](https://github.com/sararr25/TPD/issues/59) and docs/70. The preceding #46–58 release is recorded in docs/68.
 
+Latest product review: [UI, UX and mobile audit — 28 October](docs/72-ui-ux-mobile-review-2026-10-28.md). Contains 28 prioritised feedback items, live-browser observations, responsive measurements and proposed acceptance criteria. This is an assessment, not an implementation or a new physical-device acceptance receipt.
+
 ## Local development
 
 Node.js 22.19+ and npm are required. Stack: Next.js App Router, TypeScript, React; deployed on Vercel with Neon Postgres and optional Neon Auth/Google sign-in.

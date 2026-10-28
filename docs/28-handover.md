@@ -1,5 +1,9 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## UI, UX and mobile review — 28 October 2026
+
+Owner requested a full product review and improvement report. Read [the audit](72-ui-ux-mobile-review-2026-10-28.md): 28 feedback items, evidence/priority/acceptance criteria, a live Lisbon Twin journey and responsive geometry checks. A quiz first-question overlap was reproduced at 667×375; no application change is included. Physical/account acceptance remains in #59 and docs/70. Proposed design improvements do not reopen closed technical tickets or supersede approved brand, Passport structure, auth/provider or catalogue decisions. The release handover below remains the implementation baseline.
+
 ## Historical-ticket closure, A/B and handover — 28 October 2026
 
 Read [the latest handover](71-handover-historical-closure.md), then its linked

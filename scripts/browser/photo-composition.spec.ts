@@ -8,7 +8,16 @@ test('provider images remain whole on list, Saved and Place, with city fallback 
  await page.goto(base+'/lisbon');const card=page.locator('.place-photo img').first();await expect(card).toBeVisible();await expect(card).toHaveCSS('object-fit','contain');const src=await card.getAttribute('src');await page.screenshot({path:'.private/open-tickets/whole-image-city.png'});
  await page.getByRole('navigation',{name:'Main (mobile)',exact:true}).getByRole('link',{name:'Saved',exact:true}).click();const saved=page.locator('.saved-place-photo img').first();await expect(saved).toHaveAttribute('src',src!);await expect(saved).toHaveCSS('object-fit','contain');
  if(!process.env.PASSPORT_PRODUCTION){
-  await page.goto(base+'/preview/checks?photo=known');const detail=page.locator('.place-hero img');await expect(detail).toHaveCSS('object-fit','contain');await expect(detail).toHaveAttribute('src',src!);
+  await page.goto(base+'/preview/checks?photo=known');const detail=page.locator('.place-hero img:visible');await expect(detail).toHaveCount(1);await expect(detail).toHaveCSS('object-fit','contain');await expect(detail).toHaveAttribute('src',src!);
  }
  await page.route('https://images.qloo.com/**',r=>r.abort());await page.goto(base+'/lisbon');await expect(page.locator('.photo-caption').first()).toContainText('city photo');await expect(page.locator('.place-photo img').first()).toHaveCSS('object-fit','cover');
+});
+
+test('a pointer on the contained image reaches the place link',async({page})=>{
+ await worldFixtures(page,false);await page.emulateMedia({reducedMotion:'reduce'});await page.goto(base+'/lisbon');
+ const photo=page.locator('.place-photo').first();await photo.scrollIntoViewIfNeeded();
+ const link=photo.locator('a');const href=await link.getAttribute('href');
+ await link.evaluate(anchor=>anchor.addEventListener('click',event=>{event.preventDefault();(window as unknown as {clickedPhoto:string}).clickedPhoto=(anchor as HTMLAnchorElement).getAttribute('href')||'';},{once:true}));
+ const box=await photo.boundingBox();await page.mouse.click(box!.x+box!.width/2,box!.y+box!.height/2);
+ expect(await page.evaluate(()=>(window as unknown as {clickedPhoto?:string}).clickedPhoto)).toBe(href);
 });

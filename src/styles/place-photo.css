@@ -2,6 +2,6 @@
    Only the soft decorative backdrop is cropped/moved; city fallbacks stay labelled. */
 :is(.place-photo,.place-hero,.saved-place-photo,.h-visa-photo):has([data-place-image]){isolation:isolate;position:relative}
 .place-image-backdrop{position:absolute;inset:-20px;z-index:-1;pointer-events:none;background-position:center;background-size:cover;filter:blur(16px);opacity:.18}
-:is(.place-photo,.place-hero,.saved-place-photo,.h-visa-photo) img[data-place-image]{position:absolute;inset:0;width:100%;height:100%;max-height:100%;object-fit:contain;transform:none;transition:none}
+:is(.place-photo,.place-hero,.saved-place-photo,.h-visa-photo) img[data-place-image]{position:absolute;inset:0;width:100%;height:100%;max-height:100%;object-fit:contain;transform:none;transition:none;pointer-events:none}
 .home-passport .h-visa-photo:hover img[data-place-image]{transform:none}
 @media(prefers-reduced-motion:reduce){.place-image-backdrop{transform:none}}

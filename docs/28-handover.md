@@ -1,5 +1,9 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## UI/UX/mobile tickets and first cycle — 28 October 2026
+
+Owner approved the report, requested ticket decomposition and starting implementation. Read [the ticket mapping and first-cycle receipt](73-ui-ux-mobile-ticket-plan-and-first-cycle.md). Programme #60 has 28 native sub-issues (#61–88); first cycle is #81/#69/#61/#70/#71/#65. All other feedback remains planned or an explicit human gate linked to #59. Read the validation/publication boundary in docs/73 before continuing; this working-branch cycle does not replace the production receipt in docs/71.
+
 ## UI, UX and mobile review — 28 October 2026
 
 Owner requested a full product review and improvement report. Read [the audit](72-ui-ux-mobile-review-2026-10-28.md): 28 feedback items, evidence/priority/acceptance criteria, a live Lisbon Twin journey and responsive geometry checks. A quiz first-question overlap was reproduced at 667×375; no application change is included. Physical/account acceptance remains in #59 and docs/70. Proposed design improvements do not reopen closed technical tickets or supersede approved brand, Passport structure, auth/provider or catalogue decisions. The release handover below remains the implementation baseline.

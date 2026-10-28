@@ -2,6 +2,8 @@
 
 28 ottobre 2026 · Report di valutazione e proposta, senza modifiche all’applicazione.
 
+Continuazione successiva approvata: [programma dei 28 ticket e primo ciclo di implementazione](73-ui-ux-mobile-ticket-plan-and-first-cycle.md), #60. Il presente report conserva le osservazioni della baseline; lo stato di attuazione e le nuove verifiche sono nella continuazione.
+
 ## Valutazione
 
 **Beesyde ha un’identità visiva riconoscibile. Il salto di qualità passa dalla gerarchia delle informazioni e dalla facilità di scegliere un posto.** Passport, carta, timbri, Instrument Serif e berry/lemon costituiscono una firma da conservare. La cornice occupa però molto spazio nei percorsi operativi; la personalizzazione viene spiegata tardi e alcune azioni importanti risultano meno evidenti dell’invito al quiz.

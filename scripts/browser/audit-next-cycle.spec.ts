@@ -22,6 +22,7 @@ for(const width of [320,390,768,1440])test(`comparison C keeps names, prices and
   await expect(dialog.getByRole('list',{name:'Price overview'})).toContainText('Price unknown');
   for(let i=0;i<names.length;i++){
    await dialog.getByRole('button',{name:`Show place ${i+1}: ${names[i]}`,exact:true}).click();
+   await expect(dialog.getByRole('button',{name:`Show place ${i+1}: ${names[i]}`,exact:true})).toHaveCSS('color','rgb(255, 255, 255)');
    const heading=dialog.getByRole('heading',{level:3,name:names[i],exact:true});await expect(heading).toBeFocused();
    await expect(dialog.getByRole('button',{name:'Save',exact:true})).toHaveCount(1);
   }
@@ -156,5 +157,5 @@ test('delayed longest resume name cannot move the Home book',async({page})=>{
  let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});await page.route('**/api/auth/**',async r=>{await gate;await r.fulfill({json:null});});
  await page.goto(base+'/');const book=page.locator('.h-hero');await expect(book).toBeVisible();await page.evaluate(()=>document.fonts.ready);const before=await book.boundingBox();release();
  await expect(page.getByRole('link',{name:'Resume search',exact:true})).toBeVisible();await expect(page.locator('.h-resume-counts')).toHaveText('3 preferences · 3 exclusions');
- const after=await book.boundingBox();expect(Math.abs(after!.y-before!.y)).toBeLessThanOrEqual(1);
+ await expect(page.locator('.h-resume-entry strong')).toHaveText(/^Lisbon · /);const after=await book.boundingBox();expect(Math.abs(after!.y-before!.y)).toBeLessThanOrEqual(1);
 });

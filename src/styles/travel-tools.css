@@ -26,7 +26,7 @@ dialog.save-sheet:not([open]) { display:none; }
 @media(max-width:720px){
  .comparison-dialog{padding:16px}.comparison-grid{display:block}.comparison-grid article[data-selected=false]{display:none}
  .comparison-mobile-nav{display:block}.comparison-selector{display:flex;gap:8px;margin:12px 0}.comparison-selector .btn{flex:1;min-width:0;padding-inline:8px;white-space:normal}
- .comparison-selector [aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+ .comparison-selector .btn[aria-pressed=true],.comparison-selector .btn[aria-pressed=true]:hover{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
  .comparison-price-summary{display:grid;grid-template-columns:repeat(var(--compare-count,3),minmax(0,1fr));gap:8px;list-style:none;margin:12px 0;padding:0;font-size:var(--text-sm)}
  .comparison-price-summary li{min-width:0;padding:8px;background:var(--brand-soft);border-radius:var(--radius-control);overflow-wrap:anywhere}.comparison-price-summary span,.comparison-price-summary strong{display:block}
 }

@@ -48,8 +48,12 @@ for(const size of [{width:320,height:568},{width:390,height:844},{width:812,heig
   await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');await inViewport(page);await page.screenshot({path:`.private/taste-quiz/music-${size.width}.png`});
  });
 }
-test('third selection advances; manual swipe feedback and undo are clear and silent',async({page})=>{
+test('multiple selections await Continue; manual swipe feedback and undo are clear and silent',async({page})=>{
  await open(page);for(let i=0;i<3;i++)await page.locator('.taste-tile').nth(i).click();
+ await page.waitForTimeout(1200);
+ await expect(page.locator('#quiz-title')).toHaveText('Which would you walk into?');
+ await expect(page.locator('.taste-tile[aria-pressed=true]')).toHaveCount(3);
+ await page.getByRole('button',{name:'Continue',exact:true}).click();
  await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');
  expect(await page.evaluate(()=>(window as unknown as {audioTones:number}).audioTones)).toBe(2);
  const r=(await page.locator('.taste-card').boundingBox())!;await page.mouse.move(r.x+r.width/2,r.y+r.height/2);await page.mouse.down();await page.mouse.move(r.x+r.width/2+90,r.y+r.height/2,{steps:10});

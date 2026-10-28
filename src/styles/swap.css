@@ -194,7 +194,7 @@ select + .toggle-group {
 .twin-map .city-map { height: 340px; }
 @media (max-width: 600px) {
  .twin-spotlight .place-card { grid-template-columns: 88px minmax(0, 1fr); }
- .twin-spotlight .place-photo { display: block; grid-row: 1; min-height: 0; margin: 12px 0 12px 12px; border-radius: 8px; }
+ .twin-spotlight .place-photo { display: block; grid-row: 1; min-height: 0; height:88px; align-self:start; margin: 12px 0 12px 12px; border-radius: 8px; }
  .twin-spotlight .place-body { padding: 12px; }
  .twin-spotlight .place-actions { grid-column: 1 / -1; padding: 8px 12px 12px; }
  .twin-spotlight .place-actions .btn { padding-inline:12px; font-size:var(--text-sm); }
@@ -254,3 +254,7 @@ select + .toggle-group {
   .twin-spotlight .place-body > :not(.place-role, h3) { grid-column: 1 / -1; margin-inline: 12px; }
   .twin-spotlight .place-body > .place-label { margin-top: 12px; }
 }
+.twin-steps{display:flex;gap:8px 16px;flex-wrap:wrap;list-style:none;margin:8px 0;padding:0;font-size:var(--text-sm);color:var(--ink-2)}
+.twin-steps li[aria-current=step]{font-weight:var(--weight-semibold);color:var(--brand)}
+.twin-steps span{display:inline-grid;place-items:center;width:22px;height:22px;border:1px solid currentColor;border-radius:50%;font-size:var(--text-xs)}
+.twin-reference form[hidden]{display:none}

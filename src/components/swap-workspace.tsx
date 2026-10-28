@@ -150,7 +150,7 @@ export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: str
           </div>
         );
       })}
-      <p className="muted">Events are a separate Paris guide. <Link href="/paris?events=1">Explore the Paris events pilot</Link></p>
+      {city === "Paris" && <p className="muted"><Link href="/paris?events=1">Explore the Paris events pilot</Link></p>}
     </>
   );
 }
@@ -164,6 +164,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
 }) {
   const uid = useId();
   const [presenting, setPresenting] = useState(false);
+  const [editingReference, setEditingReference] = useState(false);
   const [facet, setFacet] = useState("");
   const [areaId, setAreaId] = useState("");
   const [neighbourhoods, setNeighbourhoods] = useState<Entity[]>([]);
@@ -188,6 +189,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   }
   function editSearch() {
     setPresenting(false);
+    setEditingReference(true);
     requestAnimationFrame(() => document.getElementById(uid + "-reference")?.focus());
   }
   function seeOthers() {
@@ -423,6 +425,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     }
   }
   function select(s: Selection) {
+    setEditingReference(false);
     setNoMatches(false);
     setSearchError("");
     setSwapError("");
@@ -544,6 +547,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   }
   return (
     <div className="twin-workspace" ref={workspaceRef}>
+      <ol className="twin-steps" aria-label="Twin search steps">{['Starting place','Preferences','Matches'].map((label,i)=><li key={label} aria-current={(presenting?2:reference?1:0)===i?'step':undefined}><span aria-hidden="true">{i+1}</span> {label}</li>)}</ol>
       {passportState.state !== "ready" && passportState.state !== "new" && <PassportPrompt />}
       {recoverable && !reference && <section className="travel-panel" aria-label="Resume this search"><h2>Continue with {recoverable.reference.name}?</h2><p>Old results and tokens are not reused. Refresh your starting place, then review your choices.</p><button className="btn btn-secondary" disabled={!ready||searching} onClick={()=>{restoring.current=recoverable;setQuery(recoverable.reference.name);void runSearch(recoverable.reference.name,recoverable.reference.id);setRecoverable(null);}}>Resume recent search</button><button className="btn btn-quiet" onClick={()=>{try{localStorage.removeItem(searchKey(userId||"guest"));}catch{}setRecoverable(null);}}>Forget recent search</button></section>}
       {draftError && <p role="status">{draftError}</p>}
@@ -578,7 +582,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
       </div>}
       <div className="twin-editor" hidden={presenting} data-travel-enter>
         <section className="twin-reference paper">
-          <form onSubmit={search}>
+          <form onSubmit={search} hidden={!!reference && !editingReference}>
             <label htmlFor={uid + "-reference"}>The {cap.singular} you wanted</label>
             <div className="twin-reference-search"><input id={uid + "-reference"} placeholder={`Search a ${cap.singular} name`}
               value={query} onChange={(e) => { setQuery(e.target.value); setNoMatches(false); setSearchError(""); }}
@@ -589,11 +593,11 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
           {noMatches && <p role="status">We couldn’t find that {cap.singular} in {city}. Try its full name.</p>}
           {searchError && <p role="alert">{searchError} <button className="btn btn-quiet" onClick={() => void runSearch(query)}>Try again</button></p>}
           {matches.length > 0 && <ul className="entity-list">{matches.map((s) => <li key={s.entity.id}><div><strong>{s.entity.name}</strong><p className="muted">{s.entity.address}</p></div><button className="btn btn-quiet" onClick={() => select(s)}>Choose</button></li>)}</ul>}
-          {reference && <div className="twin-reference-recap"><strong>{reference.entity.name}</strong><span>{reference.entity.address}</span></div>}
+          {reference && <div className="twin-reference-recap"><strong>{reference.entity.name}</strong><span>{reference.entity.address}</span>{!editingReference ? <button id={uid+'-change'} className="btn btn-quiet" onClick={()=>{setEditingReference(true);requestAnimationFrame(()=>document.getElementById(uid+'-reference')?.focus());}}>Change starting place</button> : <button className="btn btn-quiet" onClick={()=>{setEditingReference(false);setMatches([]);requestAnimationFrame(()=>document.getElementById(uid+'-change')?.focus());}}>Keep this starting place</button>}</div>}
         </section>
         {reference && <section className="twin-traits" aria-labelledby={uid + "-dna"}>
           <h2 id={uid + "-dna"}>Choose its DNA</h2>
-          <p className="twin-help">Keep favours a trait. Delete excludes it from this search. Ignore leaves it open. Your Passport stays the same.</p><p className="twin-choice-recap"><strong>Prefer:</strong> {traitNames("keep").join(" · ") || "No preference"}. <strong>Exclude:</strong> {traitNames("change").join(" · ") || "None"}.</p>
+          <p className="twin-help">Keep favours. Delete excludes. Ignore leaves it open. Your Passport stays the same.</p><p className="twin-choice-recap"><strong>Prefer:</strong> {traitNames("keep").join(" · ") || "No preference"}. <strong>Exclude:</strong> {traitNames("change").join(" · ") || "None"}.</p>
           <div className="twin-trait-list">{choices.map((choice) => {
             const tag = reference.entity.tags.find((t) => t.id === choice.tagId)!;
             const label = traitLabel(tag.name);

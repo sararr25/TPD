@@ -1,4 +1,5 @@
 "use client";
+import { displayTags } from "@/lib/display-tags";
 import {PlaceVisitControl} from "./trip-organisation";
 import { ActionIcon } from "./action-icon";
 import { useSearchParams } from "next/navigation";
@@ -38,7 +39,8 @@ export function PlaceView({
   const returnTo = query.get("returnTo");
   const base = `/${citySlug(city)}`;
   const backHref = returnTo && (returnTo === base || returnTo.startsWith(base + "?")) ? returnTo : base;
-  const chips = chipTags(place, placeCategory(category) ?? "restaurant").map((t) => t.name);
+  const listedTags = chipTags(place, placeCategory(category) ?? "restaurant");
+  const chips = displayTags(listedTags).map((t) => t.name);
   const price = priceSymbols(place.price);
   const swappable = !!placeCategory(category);
   const twinHref = `/${citySlug(city)}?${new URLSearchParams({ tab: "swap", q: place.name, category, ref: place.id })}`;
@@ -62,12 +64,13 @@ export function PlaceView({
         {place.address && <p className="place-address">{place.address}</p>}
         {(chips.length > 0 || price) && (
           <ul className="place-chips" aria-label="About this place">
-            {chips.map((c) => (
+            {chips.slice(0,3).map((c) => (
               <li key={c}>{c}</li>
             ))}
             {price && <li aria-label={priceLabel(place.price)}>{price}</li>}
           </ul>
         )}
+        {listedTags.length > Math.min(3, chips.length) && <details className="place-listed-traits"><summary>All listed traits ({listedTags.length})</summary><ul>{listedTags.map(tag=><li key={tag.id}>{tag.name}</li>)}</ul></details>}
         <div className="place-page-actions">
           {swappable && (
             <Link className="btn btn-primary" href={twinHref}>

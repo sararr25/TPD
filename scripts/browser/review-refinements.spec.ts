@@ -204,7 +204,7 @@ test('overlapping map places share a comfortable chooser and keep list numbering
  await cluster.click();await expect(page.getByRole('dialog',{name:'Choose a place here',exact:true})).toBeVisible();await page.screenshot({path:'.private/priorities/map-popup.png'});await page.keyboard.press('Escape');await expect(cluster).toBeFocused();
  await cluster.click();await page.getByRole('button',{name:'Close popup',exact:true}).click();await expect(cluster).toBeFocused();
  await cluster.click();await page.getByRole('button',{name:'2. Second map place',exact:true}).click();
- await expect(page.getByRole('link',{name:'Second map place',exact:true})).toBeFocused();await expect(page.getByRole('button',{name:'List',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByRole('region',{name:'Selected map place'}).getByRole('heading',{name:'Second map place',exact:true})).toBeFocused();await expect(page.getByRole('button',{name:'Map',exact:true})).toHaveAttribute('aria-pressed','true');await page.getByRole('button',{name:'List',exact:true}).click();await expect(page.getByRole('link',{name:'Second map place',exact:true})).toBeFocused();
  await expect(page.locator('#place-00000000-0000-4000-8000-000000000072 .place-pin')).toHaveText('2');
 });
 

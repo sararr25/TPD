@@ -303,7 +303,7 @@
   .city-filters select { width:100%; }
   .city-filter-bar { margin-bottom:12px; }
   .city-filter-bar .city-mobile-view.toggle-group { margin:0 0 0 auto; }
-  .city-toolbar > .toggle-group[aria-label="Category"] { flex:1 1 100%; min-width:0; flex-wrap:nowrap; max-width:100%; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin; }
+  .city-toolbar > .toggle-group[aria-label="Category"] { flex:1 1 100%; min-width:0; flex-wrap:wrap; max-width:100%; overflow:visible; padding-bottom:0; }
   .city-toolbar > .toggle-group[aria-label="Category"] > button { flex:none; }
   .city-cover {
     flex-direction: column-reverse;
@@ -377,4 +377,28 @@
   .city-banner > div > p { display:none; }
   .city-banner > .btn { padding-inline:12px; font-size:13px; }
   .city-banner > p { grid-column:1 / -1; min-width:0; }
+
+  /* Exploration is an operational page; keep the full illustrated cover for Twin. */
+  .city-cover:not([data-ink-cover]) { display:grid; grid-template-columns:minmax(0,1fr) 80px; align-items:center; padding:10px; gap:8px; }
+  .city-cover:not([data-ink-cover]) .city-cover-copy { padding:4px 6px; }
+  .city-cover:not([data-ink-cover]) .guide-folio { margin-bottom:2px; padding-bottom:4px; }
+  .city-cover:not([data-ink-cover]) h1 { font-size:36px; flex-basis:90px; }
+  .city-cover:not([data-ink-cover]) .city-intro { display:none; }
+  .city-cover:not([data-ink-cover]) .city-local { margin:0; }
+  .city-cover:not([data-ink-cover]) .city-count { margin:0; }
+  .city-cover:not([data-ink-cover]) .city-switch summary { padding-inline:8px; font-size:12px; }
+  .city-cover:not([data-ink-cover]) .city-cover-photo { width:80px; height:100px; min-height:100px; padding:4px; }
+  .travel-world .city-cover:not([data-ink-cover]) .city-cover-photo img { inset:4px; width:calc(100% - 8px); height:calc(100% - 8px); }
+  .city-cover:not([data-ink-cover]) .city-stamp { width:40px; height:40px; font-size:10px; }
+  .city-toolbar > .toggle-group[aria-label="Category"] > button { padding-inline:12px; font-size:14px; }
+  .travel-world .city-toolbar { padding:8px 0 4px; }
+  .city-banner { padding:8px; }
+  .city-filter-bar { margin-bottom:8px; }
+  #city-place-list .place-photo { aspect-ratio:16 / 6; }
+}
+@media(max-width:850px){
+ .city-map-wrap{position:relative}
+ .map-place-preview{position:absolute;bottom:12px;left:12px;right:12px;max-height:50dvh;overflow:auto;padding:12px;background:var(--paper);border:1px solid var(--brand);border-radius:var(--radius-card);box-shadow:var(--shadow-lg);z-index:2}
+ .map-preview-heading{display:flex;align-items:flex-start;gap:8px;justify-content:space-between}.map-preview-heading h3{margin:0;min-width:0;font-size:24px;overflow-wrap:anywhere}.map-preview-heading .btn{flex:none}
+ .map-place-preview p{font-size:var(--text-sm);margin:8px 0}.map-preview-actions{display:flex;flex-wrap:wrap;gap:8px}.map-preview-actions .btn{padding-inline:12px}
 }

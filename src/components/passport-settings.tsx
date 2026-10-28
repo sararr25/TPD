@@ -1,5 +1,6 @@
 "use client";
 import {useTravelState} from "./travel-state";
+import {useVisitedCities} from "./use-visited-cities";
 import {emptyTravel} from "@/lib/travel-state";
 import {searchKey} from "@/lib/search-draft";
 import { ActionIcon } from "./action-icon";
@@ -36,6 +37,7 @@ function OwnedPassportSettings() {
   const travel = useTravelState();
   const openQuiz = useQuizPanel();
   const passport = usePassportState();
+  const visited = useVisitedCities();
   const tripResetDialog = useRef<HTMLDialogElement>(null);
   const tripResetTrigger = useRef<HTMLButtonElement>(null);
   const dataHeading = useRef<HTMLHeadingElement>(null);
@@ -48,6 +50,12 @@ function OwnedPassportSettings() {
     [ready, setReady] = useState(false);
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
+  const passportStorage = passport.state === 'loading' ? 'Loading your Passport…'
+    : passport.state === 'error' ? 'Your Passport could not load. Account storage could not be confirmed.'
+    : passport.state === 'partial' ? 'Your choices are on this browser. Your account save is incomplete.'
+    : passport.state === 'saving' ? 'Saving your Passport to your account…'
+    : passport.state === 'new' ? 'No taste profile saved yet.'
+    : userId ? 'Your Passport was loaded from your account.' : 'Your Passport is kept on this browser only.';
 
   useEffect(() => setReady(true), []);
   useEffect(() => {
@@ -218,6 +226,12 @@ function OwnedPassportSettings() {
         </div>
         <section className="divider" aria-labelledby="settings-data-title">
           <h2 id="settings-data-title" ref={dataHeading} tabIndex={-1}>Manage your data</h2>
+          <section aria-labelledby="settings-storage-title"><h3 id="settings-storage-title">Where your data is kept</h3><dl className="storage-status">
+            <dt>Passport</dt><dd>{passportStorage}</dd>
+            <dt>Saved places &amp; notes</dt><dd>{userId ? 'Signed-in lists use your account. Lists marked “On this device only” stay here until moved.' : 'Kept on this browser. Sign in to move your saved lists to your account.'}</dd>
+            <dt>Trip organisation &amp; visits</dt><dd>{travel.error || (travel.busy ? 'Saving your trip changes…' : !travel.ready ? 'Loading your trip data…' : userId ? 'Loaded from your account.' : 'Kept on this browser only.')}</dd>
+            <dt>Visited cities</dt><dd>{!visited.loaded ? 'Loading visited cities…' : visited.message || (visited.syncAvailable ? 'Loaded from your account.' : 'Visited-city choices stay on this browser only.')}</dd>
+          </dl></section>
           <section className="travel-panel" aria-labelledby="settings-trip-title">
             <h3 id="settings-trip-title">Trip organisation &amp; visit feedback</h3>
             <p>Private groups, order and visits are separate from your Passport and saved notes.</p>
@@ -228,9 +242,7 @@ function OwnedPassportSettings() {
         <div className="divider">
           <h3>Your Passport</h3>
           <p className="muted">
-            {userId
-              ? "Your Passport is saved to your account and this browser."
-              : "Your Passport is saved on this browser only. Sign in to keep it across devices."}
+            {passportStorage}
           </p>
           <button
             className="btn btn-quiet"

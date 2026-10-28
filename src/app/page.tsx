@@ -20,6 +20,7 @@ export default function Home() {
   return (
     <HomePassportMotion>
       <div className="h-opening-line">
+        <ResumeSearch />
         <span>A city guide shaped by what you love.</span>
         <a href="#cities">Skip to cities ↓</a>
       </div>
@@ -54,7 +55,7 @@ export default function Home() {
         </ol>
       </section>
 
-      <ResumeSearch /><HomeCities />
+      <HomeCities />
 
       <section className="h-band ink-home-ending" aria-labelledby="h-band">
         <PassportEmblem className="h-band-emblem" />

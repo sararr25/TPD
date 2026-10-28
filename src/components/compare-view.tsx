@@ -138,11 +138,7 @@ function Column<T>({ title, note, side, children, onRetry, busy }: { title: stri
     <section className="paper cmp-col" data-travel-page aria-busy={side.status === "loading"}>
       <h2>{title}</h2>
       <p className="meta">{note}</p>
-      {side.status === "idle" && (
-        <EmptyState title="Ready to compare" action={<button className="btn btn-secondary" disabled={busy} onClick={onRetry}>Compare</button>}>
-          <p>Choose a city and kind of place above. Both sides use the same example favourites.</p>
-        </EmptyState>
-      )}
+      {side.status === "idle" && <p className="cmp-idle">Choose a city and kind of place above, then Compare. Both answers use the same example favourites.</p>}
       {side.status === "loading" && <LoadingCards label={`Asking ${title}…`} count={1} />}
       {side.status === "error" && (
         <EmptyState title="This answer couldn’t load" action={<button className="btn btn-secondary" disabled={busy} onClick={onRetry}>Try again</button>}>

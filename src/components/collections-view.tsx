@@ -160,8 +160,8 @@ export function CollectionsView() {
         </div>
       </dialog>
       {loaded && !userId && (
-        <section className="paper">
-          <h2>Keep your lists on every device.</h2>
+        <section className={lists.length ? "paper" : "trip-sync-invitation"}>
+          {lists.length > 0 && <h2>Keep your lists on every device.</h2>}
           <p>
             {anyLocal
               ? "These lists are saved on this device. Sign in and they move to your account, so they follow you to your phone and back."

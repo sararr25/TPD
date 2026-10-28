@@ -23,12 +23,23 @@ export function CityMap({
     markers = useRef(new Map<string, Marker>()),
     popup = useRef<Popup | null>(null);
   const [failed, setFailed] = useState("");
+  const [activated, setActivated] = useState(false);
   const pick = useRef(onPick);
   pick.current = onPick;
   const activeId = useRef(active); activeId.current = active;
   const pinned = places.filter((p) => p.lat !== null && p.lon !== null);
   const key = JSON.stringify(pinned.map(p => [p.id, p.name, p.lat, p.lon]));
   useEffect(() => {
+    if (!box.current) return;
+    if (!('IntersectionObserver' in window)) { setActivated(true); return; }
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) { setActivated(true); observer.disconnect(); }
+    }, { rootMargin:'200px' });
+    observer.observe(box.current);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!activated) return;
     let alive = true;
     let detach = () => {};
     (async () => {
@@ -72,6 +83,7 @@ export function CityMap({
         for (const group of groups) {
           const pin = document.createElement("button"), mark = document.createElement("span");
           pin.className = "map-pin"; pin.type = "button";
+          pin.dataset.placeIds = group.items.map(({p})=>p.id).join(' ');
           mark.className = "map-pin-mark"; pin.append(mark);
           if (group.items.length === 1) {
             const {p,i} = group.items[0]; mark.textContent = String(i+1);
@@ -114,7 +126,7 @@ export function CityMap({
       detach(); popup.current?.remove();
     };
     // Re-pin only when the set of places changes.
-  }, [key]);
+  }, [key, activated]);
   useEffect(() => {
     const elements = new Set(markers.current.values());
     elements.forEach(m => m.getElement().toggleAttribute("data-active", !!active && markers.current.get(active) === m));
@@ -127,7 +139,7 @@ export function CityMap({
     [],
   );
   return (
-    <div className="city-map" ref={box} role="region" aria-label="Map of these places">
+    <div className="city-map" ref={box} role="region" aria-label="Map of these places" tabIndex={0} onFocusCapture={()=>setActivated(true)}>
       {failed && <p className="map-error">The map couldn’t load. You can still browse the place cards and open their directions.</p>}
     </div>
   );

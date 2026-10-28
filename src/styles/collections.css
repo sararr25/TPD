@@ -144,3 +144,5 @@
 .shared-trip-places p { margin: var(--space-2) 0 0; }
 .shared-trip-number { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--brand); border-radius: 50%; color: var(--brand); font-size: var(--text-sm); }
 @media (max-width: 650px) { .shared-trip-places { grid-template-columns: 1fr; } }
+.trip-sync-invitation{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;margin-top:20px;padding:16px;border-top:1px solid var(--line);font-size:var(--text-sm)}
+.trip-sync-invitation p{flex:1 1 200px;margin:0}.trip-sync-invitation .btn{font-size:var(--text-sm)}

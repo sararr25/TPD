@@ -23,7 +23,9 @@ import {
   unhidePlace,
   type Hidden,
 } from "@/lib/account";
-import { useSavedLists } from "./save-button";
+import { SaveButton, useSavedLists } from "./save-button";
+import { ActionIcon } from "./action-icon";
+import { priceSymbols } from "@/lib/price";
 import { useFeedback } from "./use-feedback";
 import { OpenQuizButton } from "./quiz-panel";
 import { useToast } from "./toast";
@@ -227,6 +229,10 @@ export function CityView({ city }: { city: string }) {
   function pickFromMap(id: string) {
     mapSelection.current = id;
     setActive(id);
+    if (mobile && mobileView === "map" && category !== "neighbourhood") {
+      context.update({ "map-place":id });
+      return;
+    }
     setMobileView("list");
     if (mobileView === "list") requestAnimationFrame(focusMapSelection);
   }
@@ -249,6 +255,19 @@ export function CityView({ city }: { city: string }) {
     return true;
   });
   const reasons = recommendationCopy(shown.map(r => r.place), passport);
+  const selectedMapId = new URLSearchParams(context.query).get("map-place");
+  const mapPreview = mobile && mobileView === "map" && category !== "neighbourhood" ? shown.find(result=>result.place.id===selectedMapId) : undefined;
+  const mapPreviewHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(()=>{
+    if(!mapPreview)return;
+    const heading=mapPreviewHeading.current;
+    heading?.scrollIntoView({block:'nearest',behavior:'instant'});
+    heading?.focus({preventScroll:true});
+  },[mapPreview?.place.id]);
+  function closeMapPreview(){
+    const pin=Array.from(document.querySelectorAll<HTMLButtonElement>('.city-map-wrap .map-pin')).find(node=>node.dataset.placeIds?.split(' ').includes(selectedMapId||''));
+    context.update({'map-place':''});setActive(null);mapSelection.current=null;pin?.focus({preventScroll:true});
+  }
   // Same numbering as the map's pins (only places with coordinates get one).
   const pins = new Map(
     shown.filter((r) => r.place.lat !== null && r.place.lon !== null).map((r, i) => [r.place.id, i + 1]),
@@ -441,14 +460,18 @@ export function CityView({ city }: { city: string }) {
         </div>
         <aside id="city-place-map" className="city-map-wrap">
           {tab === "foryou" && !events && (!mobile || mobileView === "map") && (
-            mapped > 0 ? <CityMap places={shown.map((r) => r.place)} active={active} onPick={pickFromMap} /> :
+            mapped > 0 ? <CityMap places={shown.map((r) => r.place)} active={mapPreview?.place.id||active} onPick={pickFromMap} /> :
             <p className="muted">These places don’t have map coordinates. You can still browse their details.</p>
           )}
+          {mapPreview && <section className="map-place-preview" aria-label="Selected map place" onKeyDown={event=>{if(event.key==='Escape'&&!(event.target as Element).closest('dialog[open]')){event.preventDefault();event.stopPropagation();closeMapPreview();}}}>
+            <div className="map-preview-heading"><h3 ref={mapPreviewHeading} tabIndex={-1}>{mapPreview.place.name}</h3><button className="btn btn-icon" aria-label="Close map place preview" onClick={closeMapPreview}><ActionIcon name="close"/></button></div>
+            <p>{categoryHasPrice(category) ? priceSymbols(mapPreview.place.price) : CATEGORY_LABEL[category]}</p>
+            <div className="map-preview-actions"><Link className="btn btn-primary" href={`/${citySlug(city)}/${mapPreview.place.id.toLowerCase()}?${new URLSearchParams({returnTo:`/${citySlug(city)}?${context.query}`})}`}>Open place</Link><SaveButton place={mapPreview.place} token={mapPreview.token} city={city} lists={lists} signedIn={signedIn} onChange={reload} onSaved={()=>saved(mapPreview.place)}/></div>
+          </section>}
         </aside>
       </div>
       </>
       )}
-      {city !== "Paris" && <p className="muted">Events are a separate Paris guide. <Link href="/paris?events=1">Explore the Paris events pilot</Link></p>}
       </div>
       </div>
     </div>

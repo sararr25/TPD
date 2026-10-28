@@ -7,7 +7,8 @@
 .h-opening-line {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
+  min-height: 76px;
   gap: var(--space-5);
   margin: calc(-1 * var(--space-6)) 0 var(--space-6);
   color: var(--ink-2);
@@ -607,7 +608,7 @@
 }
 
 @media (max-width: 760px) {
-  .h-opening-line { margin-top: 0; align-items: start; font-size: var(--text-xs); }
+  .h-opening-line { margin-top: 0; min-height: 132px; align-items: center; font-size: var(--text-xs); }
   .h-opening-line > span { max-width: 23ch; }
   .h-opening-line a { font-size: 11px; }
   .h-hero { grid-template-columns: 1fr; }
@@ -732,3 +733,11 @@
 .visited-city-options input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--brand); }
 @media (max-width: 760px) { .visited-city-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 360px) { .visited-city-options { grid-template-columns: 1fr; } }
+
+/* Returning visitors can resume from the opening line, without a second story section. */
+.h-opening-line:has(.h-resume-entry)>span,.h-opening-line:has(.h-resume-entry)>a{display:none}
+.h-resume-entry{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;width:100%;min-width:0}
+.h-resume-entry>div{min-width:0;flex:1 1 180px}
+.h-resume-entry strong{display:block;overflow-wrap:anywhere;font-size:var(--text-sm);font-weight:var(--weight-medium)}
+.h-resume-entry .meta{font-size:var(--text-xs)}
+.h-resume-entry .btn{font-size:var(--text-sm);flex:none}

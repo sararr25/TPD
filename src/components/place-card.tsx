@@ -1,4 +1,5 @@
 "use client";
+import { displayTags } from "@/lib/display-tags";
 import { ActionIcon } from "./action-icon";
 import { useSearchParams, usePathname } from "next/navigation";
 import { rememberCityPosition } from "./use-city-context";
@@ -73,7 +74,7 @@ export function PlaceCard({
   const price = category === "neighbourhood" ? null : priceSymbols(place.price);
   const chips = hood
     ? []
-    : chipTags(place, placeCategory(category) ?? "restaurant")
+    : displayTags(chipTags(place, placeCategory(category) ?? "restaurant"))
         .slice(0, 3)
         .map((t) => t.name);
   // Every place (not neighbourhoods) opens its page: /lisbon/<id>.
@@ -108,6 +109,7 @@ export function PlaceCard({
         <h3>{pageHref ? <Link href={pageHref} onClick={rememberCityPosition}>{place.name}</Link> : place.name}</h3>
         {why && whyLabel && <span className="place-label">{whyLabel}</span>}
         {why && <p className="place-why">{why}</p>}
+        {!why && !hood && (place.context || place.address) && <p className="place-location">{place.context || place.address}</p>}
         {hood && place.context && <p className="place-why">{place.context}</p>}
         {near && near.length > 0 && <p className="place-why">Close to your picks: {near.join(" · ")}</p>}
         {(chips.length > 0 || price) && (

@@ -170,3 +170,9 @@
 :is(.trip-leaves, .shared-trip-leaf) .trip-page-head h1,
 .trip-leaves .trip-head h2 { overflow-wrap: anywhere; }
 .passport-quiz-leaf > .grid { grid-template-columns: minmax(0, 1fr); }
+
+/* Settings is a tool page; the full book treatment stays on Home and Passport. */
+.passport-settings-leaf .passport-leaf-heading{padding:var(--space-5)}
+.passport-settings-leaf .passport-leaf-heading h1{font-size:var(--display-md)}
+.passport-settings-leaf .passport-leaf-heading .lead{font-size:var(--text-md)}
+.storage-status{font-size:var(--text-md);line-height:var(--leading-body)}.storage-status dt{font-weight:var(--weight-semibold);margin-top:12px}.storage-status dd{margin:4px 0 0;overflow-wrap:anywhere}

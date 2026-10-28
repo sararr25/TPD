@@ -434,14 +434,14 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     setData(null);
     setStarted(false);
     setBusy(false);
-    setChoices(
+    setChoices(previous =>
       s.entity.tags
         .filter((t) => t.id !== `urn:tag:genre:place:${category}`)
         .slice(0, 6)
-        .map((t) => ({ tagId: t.id, mode: "ignore" })),
+        .map((t) => ({ tagId: t.id, mode: previous.find(choice=>choice.tagId===t.id)?.mode ?? "ignore" })),
     );
     setStatus(
-      "Keep what you love, Delete what to avoid, or Ignore a trait. These choices apply only to this search.",
+      "Shared-trait choices are kept; other previous traits are removed. New traits start at Ignore. These choices apply only to this search.",
     );
     setMatches([]);
   }

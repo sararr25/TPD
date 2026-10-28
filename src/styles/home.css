@@ -8,7 +8,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 76px;
+  min-height: 64px;
   gap: var(--space-5);
   margin: calc(-1 * var(--space-6)) 0 var(--space-6);
   color: var(--ink-2);
@@ -608,7 +608,7 @@
 }
 
 @media (max-width: 760px) {
-  .h-opening-line { margin-top: 0; min-height: 132px; align-items: center; font-size: var(--text-xs); }
+  .h-opening-line { margin-top: 0; min-height: 96px; align-items: center; font-size: var(--text-xs); }
   .h-opening-line > span { max-width: 23ch; }
   .h-opening-line a { font-size: 11px; }
   .h-hero { grid-template-columns: 1fr; }
@@ -738,6 +738,10 @@
 .h-opening-line:has(.h-resume-entry)>span,.h-opening-line:has(.h-resume-entry)>a{display:none}
 .h-resume-entry{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;width:100%;min-width:0}
 .h-resume-entry>div{min-width:0;flex:1 1 180px}
-.h-resume-entry strong{display:block;overflow-wrap:anywhere;font-size:var(--text-sm);font-weight:var(--weight-medium)}
+.h-resume-entry strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;font-size:var(--text-sm);font-weight:var(--weight-medium)}
 .h-resume-entry .meta{font-size:var(--text-xs)}
 .h-resume-entry .btn{font-size:var(--text-sm);flex:none}
+
+.h-resume-counts{display:block;font-size:var(--text-sm);color:var(--ink-2)}
+
+@media(max-width:760px){.h-resume-entry>div{flex-basis:100%}.h-resume-entry strong{-webkit-line-clamp:1}.h-resume-counts{line-height:1.25}}

@@ -1,6 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {worldFixtures,place} from './world-fixtures';
-import {twinFixtures,chooseReference} from './twin-fixtures';
+import {twinFixtures,chooseReference,reference} from './twin-fixtures';
 const base=process.env.MOTION_BASE_URL||'http://127.0.0.1:3220';
 const names=['Carmo','A very long place name for an afternoon with Portuguese and Italian cooking',"Fama d’Alfama"];
 async function comparison(page:Page){
@@ -82,7 +82,7 @@ test('display tags reduce repetition without altering filter identifiers',async(
 test('resume sits at the opening line and compare demonstration has one initial action',async({page})=>{
  const requests:string[]=[];await worldFixtures(page,false);await page.addInitScript(()=>localStorage.setItem('beesyde-search-v1:guest',JSON.stringify({version:1,at:Date.now(),city:'Lisbon',category:'restaurant',reference:{id:'fixture',name:'The last starting place'},choices:[],budget:''})));
  await page.route('**/api/discovery',route=>{requests.push(route.request().postDataJSON().action);return route.fallback();});
- await page.goto(base+'/');await expect(page.locator('.h-opening-line').getByRole('link',{name:'Resume search'})).toBeVisible();expect(requests).not.toContain('swap');
+ await page.goto(base+'/');await expect(page.locator('.h-opening-line').getByRole('link',{name:'Resume search'})).toBeVisible();await expect(page.locator('.h-resume-counts')).toHaveText('0 preferences · 0 exclusions');expect(requests).not.toContain('swap');
  await page.goto(base+'/compare');await expect(page.getByRole('button',{name:'Compare',exact:true})).toHaveCount(1);
 });
 test('storage status distinguishes local visited cities from account data',async({page})=>{
@@ -113,4 +113,48 @@ test('an offscreen map defers initialisation and keyboard focus activates it',as
  await page.route('**/api/discovery',route=>route.request().postDataJSON().action==='explore'?route.fulfill({json:{results:[{place:{...place,lat:38.7,lon:-9.1},token:'fixture'}],notice:'Fixture',checkedAt:'2026-10-28T12:00:00Z'}}):route.fallback());
  await page.goto(base+'/lisbon');const map=page.getByRole('region',{name:'Map of these places',exact:true});await expect(map).toBeVisible();
  await expect(map.locator('.maplibregl-canvas')).toHaveCount(0);await map.focus();await expect(map.locator('.maplibregl-canvas')).toHaveCount(1);
+});
+
+test('signed-in storage reports disabled visited sync and failed Passport reads honestly',async({page})=>{
+ await worldFixtures(page,false);
+ await page.route('**/api/auth/**',r=>r.fulfill({json:{session:{id:'fixture',userId:'storage-owner',expiresAt:'2099-01-01'},user:{id:'storage-owner',name:'Visitor',email:'fixture@example.invalid'}}}));
+ await page.route('**/api/passport',r=>r.fulfill({status:503,json:{error:'Fixture unavailable'}}));
+ await page.route('**/api/visited-cities',r=>r.fulfill({json:{cities:[],syncAvailable:false}}));
+ await page.goto(base+'/passport/settings');
+ await expect(page.locator('.storage-status')).toContainText('Account sync for visited cities is not enabled yet.');
+ await expect(page.locator('.storage-status')).toContainText('Account storage could not be confirmed.');
+ await expect(page.locator('.storage-status')).not.toContainText('Your Passport was loaded from your account.');
+});
+
+test('comparison C keeps its selected name and actions reachable with doubled text',async({page})=>{
+ await page.setViewportSize({width:320,height:740});await page.emulateMedia({reducedMotion:'reduce'});
+ const dialog=await comparison(page);await dialog.getByRole('button',{name:`Show place 2: ${names[1]}`,exact:true}).click();
+ await page.evaluate(()=>{document.querySelectorAll('dialog *').forEach(node=>{const el=node as HTMLElement;el.style.fontSize=`${parseFloat(getComputedStyle(el).fontSize)*2}px`;});});
+ expect(await dialog.evaluate(n=>n.scrollWidth<=n.clientWidth)).toBe(true);
+ await expect(dialog.getByRole('heading',{name:names[1],exact:true})).toBeVisible();
+ await dialog.getByRole('button',{name:'Save',exact:true}).scrollIntoViewIfNeeded();
+ await expect(dialog.getByRole('button',{name:'Save',exact:true})).toBeInViewport();
+ await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();
+});
+
+test('choosing another reference preserves shared Keep and Delete choices',async({page})=>{
+ await twinFixtures(page);await chooseReference(page,base);
+ await page.getByRole('button',{name:'Keep: Quiet',exact:true}).click();await page.getByRole('button',{name:'Delete: Casual',exact:true}).click();
+ await page.getByRole('button',{name:'Change starting place',exact:true}).click();
+ const next={...reference,id:'00000000-0000-4000-8000-000000000099',name:'A different starting place',tags:reference.tags.slice(0,3)};
+ await page.route('**/api/discovery',r=>r.request().postDataJSON().action==='search'?r.fulfill({json:{choices:[{entity:next,token:'new-fixture'}]}}):r.fallback());
+ await page.getByRole('textbox',{name:'The restaurant you wanted'}).fill(next.name);await page.getByRole('button',{name:'Search',exact:true}).click();await page.getByRole('button',{name:'Choose',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Keep: Quiet',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByRole('button',{name:'Delete: Casual',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByRole('button',{name:'Ignore: Outdoor',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByRole('button',{name:'Keep: Natural wine',exact:true})).toHaveCount(0);
+});
+
+test('delayed longest resume name cannot move the Home book',async({page})=>{
+ await worldFixtures(page,false);await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'reduce'});
+ await page.addInitScript(()=>localStorage.setItem('beesyde-search-v1:guest',JSON.stringify({version:1,at:Date.now(),city:'Lisbon',category:'restaurant',reference:{id:'fixture',name:'A very long restaurant name with seafood Portuguese cuisine and an exceptionally memorable evening '.repeat(2).slice(0,200)},choices:Array.from({length:6},(_,i)=>({tagId:'fixture:'+i,mode:i<3?'keep':'change'})),budget:''})));
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});await page.route('**/api/auth/**',async r=>{await gate;await r.fulfill({json:null});});
+ await page.goto(base+'/');const book=page.locator('.h-hero');await expect(book).toBeVisible();await page.evaluate(()=>document.fonts.ready);const before=await book.boundingBox();release();
+ await expect(page.getByRole('link',{name:'Resume search',exact:true})).toBeVisible();await expect(page.locator('.h-resume-counts')).toHaveText('3 preferences · 3 exclusions');
+ const after=await book.boundingBox();expect(Math.abs(after!.y-before!.y)).toBeLessThanOrEqual(1);
 });

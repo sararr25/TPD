@@ -136,8 +136,8 @@ select + .toggle-group {
 }
 
 /* Twin: compact explicit choices and a result in the submitted task's viewport. */
-.twin-workspace { min-width: 0; }
-.twin-intro { margin: 16px 0; color: var(--ink-2); }
+.twin-workspace { min-width: 0; padding-top: 24px; }
+.twin-intro { margin: 0 0 32px; color: var(--ink-2); }
 .twin-editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 36px; margin-inline: auto; }
 .twin-editor > * { min-width: 0; }
 .twin-editor[hidden] { display: none; }
@@ -254,7 +254,8 @@ select + .toggle-group {
   .twin-spotlight .place-body > :not(.place-role, h3) { grid-column: 1 / -1; margin-inline: 12px; }
   .twin-spotlight .place-body > .place-label { margin-top: 12px; }
 }
-.twin-steps{display:flex;gap:8px 16px;flex-wrap:wrap;list-style:none;margin:8px 0;padding:0;font-size:var(--text-sm);color:var(--ink-2)}
+.twin-steps{display:flex;gap:12px 24px;flex-wrap:wrap;list-style:none;margin:0 0 24px;padding:0 0 24px;border-bottom:1px solid var(--line);font-size:var(--text-sm);color:var(--ink-2)}
+.twin-steps li{display:flex;align-items:center;gap:8px;min-height:28px}
 .twin-steps li[aria-current=step]{font-weight:var(--weight-semibold);color:var(--brand)}
 .twin-steps span{display:inline-grid;place-items:center;width:22px;height:22px;border:1px solid currentColor;border-radius:50%;font-size:var(--text-xs)}
 .twin-reference form[hidden]{display:none}

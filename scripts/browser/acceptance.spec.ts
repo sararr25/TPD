@@ -94,7 +94,7 @@ for (const count of [0, 1, 2, 3, 5])
     await page.getByText("Add what you love", { exact: true }).click();
     await expect(page.getByText(`${count} of 5 chosen`)).toBeVisible();
     if (count < 3)
-      await expect(page.locator(".passport-editor").getByText(/Your profile is here/)).toBeVisible();
+      await expect(page.locator(".passport-editor").getByText(/Choose at least three favourites/)).toBeVisible();
     else
       await expect(
         page.getByRole("link", { name: "Browse cities", exact: true }).first(),

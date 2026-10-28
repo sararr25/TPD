@@ -1,5 +1,9 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Post-release owner feedback — 28 October 2026
+
+Read [docs/80](80-post-release-ticket-plan.md): approved tickets #89–92, native dependency #91 blocked by #90, and local implementation/verification. Source feedback is docs/79. These changes are not a new production release; preserve the published theatre C and existing physical/account gates.
+
 ## Passport theatre C and full publication — 28 October 2026
 
 Read [docs/78](78-passport-theatre-release.md) first. Latest explicit owner choice C supersedes B. Owner requests all pending commits on main and live; preserve the configured production branch and verify both source refs, deployment SHA/READY and public alias separately. Physical acceptance remains open.

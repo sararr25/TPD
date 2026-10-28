@@ -21,6 +21,8 @@ Latest implementation/publication: [Passport theatre C](docs/78-passport-theatre
 
 Implementation continuation: [S24 quiz feedback and corrections](docs/76-s24-quiz-feedback-and-fixes.md), following [open-ticket engineering and guided acceptance](docs/75-open-ticket-engineering-and-acceptance.md), following [second cycle and comparison C](docs/74-ui-ux-mobile-second-cycle.md), following the [28-ticket mapping and first cycle](docs/73-ui-ux-mobile-ticket-plan-and-first-cycle.md), programme [#60](https://github.com/sararr25/TPD/issues/60). Working-branch implementation and checks are separate from the production release above and the physical/account gates in #59.
 
+Latest local continuation: [post-release owner feedback and tickets #89–92](docs/80-post-release-ticket-plan.md). Linked Twin identity, one favourites invitation, spacing and enlarged shared journey art; local verification is separate from publication.
+
 ## Local development
 
 Node.js 22.19+ and npm are required. Stack: Next.js App Router, TypeScript, React; deployed on Vercel with Neon Postgres and optional Neon Auth/Google sign-in.

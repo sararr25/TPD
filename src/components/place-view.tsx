@@ -55,12 +55,12 @@ export function PlaceView({
       </div>
       <div className="place-main">
         <GuideFolio city={city} code={COVERS[city]?.code ?? "PLACE"} />
+        <JourneyRoute className="place-journey-route" />
         <span className="meta">
           {city}
           {place.context && place.context !== place.address ? ` · ${place.context}` : ""}
         </span>
         <h1>{place.name}</h1>
-        <JourneyRoute className="place-journey-route" />
         {place.address && <p className="place-address">{place.address}</p>}
         {(chips.length > 0 || price) && (
           <ul className="place-chips" aria-label="About this place">

@@ -395,14 +395,14 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
         query,
         type: "place",
         reference: true,
+        ...(refId ? { referenceId: refId } : {}),
         category,
         city,
       }, controller.signal);
       if (controller.signal.aborted) return;
       // The linked place is in the results: start from it, no second click.
-      const sameName = found.choices.filter((s) => s.entity.name.toLowerCase() === query.toLowerCase());
       const linkedMatch = refId
-        ? (found.choices.find((s) => s.entity.id === refId) ?? (sameName.length === 1 ? sameName[0] : undefined))
+        ? found.choices.find((s) => s.entity.id.toLowerCase() === refId.toLowerCase())
         : undefined;
       if (linkedMatch) {
         select(linkedMatch);

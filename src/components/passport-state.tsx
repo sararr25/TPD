@@ -211,15 +211,7 @@ export function PassportPrompt({ actionClassName = "btn btn-primary" }: { action
         Your Passport is ready
       </Link>
     );
-  if (passport.state === "needs-favourites")
-    return (
-      <p>
-        Your profile is here. Add {3 - passport.selections.length} more
-        favourites to get personal picks.{" "}
-        <Link className="btn btn-secondary" href="/passport#passport-editor">
-          Complete your favourites
-        </Link>
-      </p>
-    );
+  // Favourite completion has one home: the dedicated Passport tools panel.
+  if (passport.state === "needs-favourites") return null;
   return <OpenQuizButton className={actionClassName} />;
 }

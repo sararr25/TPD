@@ -282,8 +282,7 @@ function OwnedPassportBuilder() {
           )}
           {passportState.state === "needs-favourites" && (
             <p role="status">
-              Your profile is here. Choose {3 - selected.length} more favourites
-              to get personal picks. You don’t need to redo the quiz.
+              Choose at least three favourites. Your quiz answers stay saved.
             </p>
           )}
           <form onSubmit={search} className="search-form">

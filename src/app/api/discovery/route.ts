@@ -47,10 +47,11 @@ export async function POST(request: Request) {
     else if (body.action === "explore")
       result = await explore(body.passport, body.city, body.category, body.quiz ?? {}, body.exclude ?? [], body.feedback ?? {});
     else if (body.action === "search") {
+      const linkedReference = body.reference === true && body.type === "place" && body.referenceId !== undefined;
       if (
-        typeof body.query !== "string" ||
+        (!linkedReference && (typeof body.query !== "string" ||
         body.query.trim().length < 2 ||
-        body.query.length > 120 ||
+        body.query.length > 120)) ||
         !["artist", "movie", "book", "place"].includes(body.type)
       )
         throw new DiscoveryError("invalid_request", 400);
@@ -59,11 +60,12 @@ export async function POST(request: Request) {
       if (body.reference && body.type !== "place")
         throw new DiscoveryError("invalid_request", 400);
       result = await lookup(
-        body.query.trim(),
+        linkedReference ? "" : body.query.trim(),
         body.type,
         body.reference === true,
         body.category,
         body.city,
+        body.referenceId,
       );
     } else if (body.action === "swap")
       result = await swap(

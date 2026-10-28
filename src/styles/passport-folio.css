@@ -18,6 +18,21 @@
 .pf-tools h2{margin:var(--space-2) 0;font-size:var(--display-sm)}
 .pf-tools p{margin:0;color:var(--ink-2)}
 .pf-tools .btn{flex-shrink:0}
+.pf-tools{margin-top:48px;border-left-width:1px;border-radius:24px;padding:32px;gap:32px;box-shadow:none}
+.pf-tools>div{max-width:52ch;min-width:0}
+.pf-tools .meta{display:none}
+.pf-tools h2{margin:0 0 12px}
+.pf-tools p{line-height:1.6}
+.pf-tools .pf-favourite-invitation{border-radius:999px;min-height:48px;padding:8px 18px 8px 8px;gap:12px;white-space:normal;text-align:left;justify-content:center;transition:background-color 180ms ease,border-color 180ms ease}
+.pf-invitation-mark{display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;border-radius:50%;background:var(--brand);color:var(--on-brand)}
+.pf-favourite-invitation>.action-icon:last-child{width:18px;height:18px}
+.pf-left-foot{display:grid;gap:24px}
+.pf-left-foot .pf-explore{justify-self:start;min-height:44px;padding:10px 18px;gap:24px;border-radius:999px}
+.pf-left-foot>p{margin:0;line-height:1.6}
+.pf-tools .pf-favourite-invitation:hover .pf-invitation-mark{animation:pf-invite-turn 280ms ease-out both}
+@keyframes pf-invite-turn{from{transform:rotate(-35deg) scale(.9)}to{transform:rotate(0) scale(1)}}
+@media(max-width:850px){.pf-tools .pf-favourite-invitation{align-self:flex-start;max-width:100%}.pf-tools{margin-top:32px;gap:24px}}
+@media(prefers-reduced-motion:reduce){.pf-tools .pf-favourite-invitation:hover .pf-invitation-mark{animation:none}}
 .pf-start{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3);padding:var(--space-4);margin-bottom:var(--space-4);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:var(--radius-control);background:var(--paper)}
 .pf-start p{flex:1 1 240px;margin:0;font-size:var(--text-md)}
 .pf-activity-panel .passport-activity{margin:0;padding:0;border:0;background:transparent}

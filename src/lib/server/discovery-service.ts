@@ -95,13 +95,21 @@ export async function lookup(
   reference = false,
   categoryValue: unknown = "restaurant",
   cityValue: unknown = "Paris",
+  referenceId?: unknown,
 ) {
   const category = placeCategory(categoryValue);
   if (!category) throw new DiscoveryError("invalid_category", 400);
   const city = swapCity(cityValue);
   if (!city) throw new DiscoveryError("invalid_city", 400);
-  // A reference is searched inside its city ("Le Baratin Paris").
-  const result = await searchEntities(reference ? `${query} ${city}` : query, type);
+  if (referenceId !== undefined && (!reference || type !== "place" || typeof referenceId !== "string" || !UUID.test(referenceId)))
+    throw new DiscoveryError("invalid_reference", 400);
+  // Suggested places already carry an identity. Name search is not guaranteed
+  // to return them, even while their detail page remains available by ID.
+  const result = referenceId
+    ? await entityById(referenceId as string).then(({ entity, checkedAt }) => ({
+        entities: entity && entity.id.toLowerCase() === (referenceId as string).toLowerCase() ? [entity] : [], checkedAt,
+      }))
+    : await searchEntities(reference ? `${query} ${city}` : query, type);
   const values = reference
     ? result.entities.filter((e) => validPlace(e, city, category))
     : result.entities;

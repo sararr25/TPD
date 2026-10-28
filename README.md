@@ -17,7 +17,7 @@ Latest continuation: [historical-ticket closure, A/B and release handover](docs/
 
 Latest product review: [UI, UX and mobile audit — 28 October](docs/72-ui-ux-mobile-review-2026-10-28.md). Contains 28 prioritised feedback items, live-browser observations, responsive measurements and proposed acceptance criteria. This is an assessment, not an implementation or a new physical-device acceptance receipt.
 
-Implementation continuation: [28-ticket programme and first cycle](docs/73-ui-ux-mobile-ticket-plan-and-first-cycle.md), programme [#60](https://github.com/sararr25/TPD/issues/60). Working-branch implementation and checks are separate from the production release above and the physical/account gates in #59.
+Implementation continuation: [second cycle and comparison C](docs/74-ui-ux-mobile-second-cycle.md), following the [28-ticket mapping and first cycle](docs/73-ui-ux-mobile-ticket-plan-and-first-cycle.md), programme [#60](https://github.com/sararr25/TPD/issues/60). Working-branch implementation and checks are separate from the production release above and the physical/account gates in #59.
 
 ## Local development
 

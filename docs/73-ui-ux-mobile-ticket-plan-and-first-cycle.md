@@ -4,37 +4,39 @@
 
 Baseline: local `ec7630d` (report), application/release `7b4e3a1`. Working branch `codex/twin-motion-ux`; default/production configuration unchanged.
 
+Current continuation: [second cycle, owner-selected comparison C and final receipt](74-ui-ux-mobile-second-cycle.md). Owner subsequently authorised the push; first-cycle source is remote at `beed89d`. The pending-push narrative below is retained as historical evidence and is superseded by docs/74.
+
 ## Complete feedback mapping
 
 | Feedback | Issue | Current scope/status |
 |---|---|---|
-| UI-01 | [#61](https://github.com/sararr25/TPD/issues/61) | Implemented locally; source push pending approval |
+| UI-01 | [#61](https://github.com/sararr25/TPD/issues/61) | Pushed in first cycle; closed |
 | UI-02 | [#62](https://github.com/sararr25/TPD/issues/62) | Photo rules/proposal; rights and import remain gated |
-| UI-03 | [#63](https://github.com/sararr25/TPD/issues/63) | Planned |
-| UI-04 | [#64](https://github.com/sararr25/TPD/issues/64) | Planned |
-| UI-05 | [#65](https://github.com/sararr25/TPD/issues/65) | Implemented locally; source push pending approval |
-| UI-06 | [#66](https://github.com/sararr25/TPD/issues/66) | Planned |
-| UI-07 | [#67](https://github.com/sararr25/TPD/issues/67) | Planned |
-| UI-08 | [#68](https://github.com/sararr25/TPD/issues/68) | Planned |
-| UX-01 | [#69](https://github.com/sararr25/TPD/issues/69) | Implemented locally; source push pending approval |
-| UX-02 | [#70](https://github.com/sararr25/TPD/issues/70) | Implemented locally; source push pending approval |
-| UX-03 | [#71](https://github.com/sararr25/TPD/issues/71) | Implemented locally; source push pending approval |
-| UX-04 | [#72](https://github.com/sararr25/TPD/issues/72) | Planned |
-| UX-05 | [#73](https://github.com/sararr25/TPD/issues/73) | Planned |
-| UX-06 | [#74](https://github.com/sararr25/TPD/issues/74) | Planned |
-| UX-07 | [#75](https://github.com/sararr25/TPD/issues/75) | Planned |
-| UX-08 | [#76](https://github.com/sararr25/TPD/issues/76) | Planned |
-| UX-09 | [#77](https://github.com/sararr25/TPD/issues/77) | Planned |
-| UX-10 | [#78](https://github.com/sararr25/TPD/issues/78) | Planned |
-| UX-11 | [#79](https://github.com/sararr25/TPD/issues/79) | Planned |
-| UX-12 | [#80](https://github.com/sararr25/TPD/issues/80) | Planned |
-| MOB-01 | [#81](https://github.com/sararr25/TPD/issues/81) | Implemented locally; source push pending approval |
-| MOB-02 | [#82](https://github.com/sararr25/TPD/issues/82) | Planned |
-| MOB-03 | [#83](https://github.com/sararr25/TPD/issues/83) | Planned |
-| MOB-04 | [#84](https://github.com/sararr25/TPD/issues/84) | Planned |
+| UI-03 | [#63](https://github.com/sararr25/TPD/issues/63) | Implemented in second cycle; see docs/74 |
+| UI-04 | [#64](https://github.com/sararr25/TPD/issues/64) | Implemented in second cycle; see docs/74 |
+| UI-05 | [#65](https://github.com/sararr25/TPD/issues/65) | Pushed in first cycle; closed |
+| UI-06 | [#66](https://github.com/sararr25/TPD/issues/66) | Implemented in second cycle; see docs/74 |
+| UI-07 | [#67](https://github.com/sararr25/TPD/issues/67) | Implemented in second cycle; see docs/74 |
+| UI-08 | [#68](https://github.com/sararr25/TPD/issues/68) | Implemented in second cycle; see docs/74 |
+| UX-01 | [#69](https://github.com/sararr25/TPD/issues/69) | Pushed in first cycle; closed |
+| UX-02 | [#70](https://github.com/sararr25/TPD/issues/70) | Pushed in first cycle; closed |
+| UX-03 | [#71](https://github.com/sararr25/TPD/issues/71) | Pushed in first cycle; closed |
+| UX-04 | [#72](https://github.com/sararr25/TPD/issues/72) | Implemented in second cycle; see docs/74 |
+| UX-05 | [#73](https://github.com/sararr25/TPD/issues/73) | Implemented in second cycle; see docs/74 |
+| UX-06 | [#74](https://github.com/sararr25/TPD/issues/74) | Owner chose auto-advance; correction/Back tested; human comparison pending |
+| UX-07 | [#75](https://github.com/sararr25/TPD/issues/75) | Implemented in second cycle; see docs/74 |
+| UX-08 | [#76](https://github.com/sararr25/TPD/issues/76) | Implemented in second cycle; see docs/74 |
+| UX-09 | [#77](https://github.com/sararr25/TPD/issues/77) | Implemented in second cycle; see docs/74 |
+| UX-10 | [#78](https://github.com/sararr25/TPD/issues/78) | Implemented in second cycle; see docs/74 |
+| UX-11 | [#79](https://github.com/sararr25/TPD/issues/79) | State-specific copy implemented; real account acceptance pending |
+| UX-12 | [#80](https://github.com/sararr25/TPD/issues/80) | Implemented in second cycle; see docs/74 |
+| MOB-01 | [#81](https://github.com/sararr25/TPD/issues/81) | Pushed in first cycle; closed |
+| MOB-02 | [#82](https://github.com/sararr25/TPD/issues/82) | Implemented in second cycle; see docs/74 |
+| MOB-03 | [#83](https://github.com/sararr25/TPD/issues/83) | Implemented in second cycle; see docs/74 |
+| MOB-04 | [#84](https://github.com/sararr25/TPD/issues/84) | Implemented in second cycle; see docs/74 |
 | MOB-05 | [#85](https://github.com/sararr25/TPD/issues/85) | Human gate; evidence register #59 |
 | MOB-06 | [#86](https://github.com/sararr25/TPD/issues/86) | Human gate; evidence register #59 |
-| MOB-07 | [#87](https://github.com/sararr25/TPD/issues/87) | Planned |
+| MOB-07 | [#87](https://github.com/sararr25/TPD/issues/87) | Implemented in second cycle; see docs/74 |
 | MOB-08 | [#88](https://github.com/sararr25/TPD/issues/88) | Human gate; evidence register #59 |
 
 ## First cycle

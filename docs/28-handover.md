@@ -1,8 +1,12 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Second UI/UX/mobile cycle — 28 October 2026
+
+Read [docs/74](74-ui-ux-mobile-second-cycle.md) first, then docs/73 and its linked prior release handover. Owner authorised the working-branch push and selected mobile comparison C. The second cycle implements the remaining agent work, with explicit open gates for photo rights/selection (#62), quiz comparison with people (#74), real account acceptance (#79) and physical-device checks (#85/#86/#88, #59). Read the final receipt in docs/74 before continuing. No production promotion is claimed.
+
 ## UI/UX/mobile tickets and first cycle — 28 October 2026
 
-Owner approved the report, requested ticket decomposition and starting implementation. Read [the ticket mapping and first-cycle receipt](73-ui-ux-mobile-ticket-plan-and-first-cycle.md). Programme #60 has 28 native sub-issues (#61–88); first cycle is #81/#69/#61/#70/#71/#65. All other feedback remains planned or an explicit human gate linked to #59. Read the validation/publication boundary in docs/73 before continuing; this working-branch cycle does not replace the production receipt in docs/71.
+Owner approved the report, requested ticket decomposition and starting implementation. Read [the ticket mapping and first-cycle receipt](73-ui-ux-mobile-ticket-plan-and-first-cycle.md). Programme #60 has 28 native sub-issues (#61–88); first cycle is #81/#69/#61/#70/#71/#65. This first-cycle snapshot is superseded by the second cycle above. Read the validation/publication boundary in docs/73 before continuing; this working-branch cycle does not replace the production receipt in docs/71.
 
 ## UI, UX and mobile review — 28 October 2026
 

@@ -2,7 +2,7 @@
 
 ## Post-release owner feedback — 28 October 2026
 
-Read [docs/80](80-post-release-ticket-plan.md): approved tickets #89–92, native dependency #91 blocked by #90, and local implementation/verification. Source feedback is docs/79. These changes are not a new production release; preserve the published theatre C and existing physical/account gates.
+Read [docs/81](81-post-release-live-verification.md) for authorised publication and the real-provider failure/fix/retest receipt, then [docs/80](80-post-release-ticket-plan.md): approved tickets #89–92, native dependency #91 blocked by #90, and local implementation/verification. Source feedback is docs/79. The owner subsequently authorised live publication. Preserve the published theatre C and existing physical/account gates.
 
 ## Passport theatre C and full publication — 28 October 2026
 

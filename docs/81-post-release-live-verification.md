@@ -21,3 +21,15 @@ A browser regression using the same genre/category pattern fails before the fix.
 The exact Gardens record is still unknown. A single public name lookup did not identify a Lisbon match; no unrelated same-name place was treated as the owner’s location. The owner has been asked for its exact link while other real checks continue.
 
 Hotfix build/TypeScript passes; all40 affected Chrome regressions pass, including the exact genre/category case. Final browser, deployment and real-provider rerun receipts are recorded below or in the linked issue receipts after completion. All raw provider selections and screenshots remain private under `.private/qa/post-release-live`; no account, cookie or personal profile was copied. Physical-phone, assistive-technology and genuine cross-device account acceptance are separate from these fresh-guest checks.
+
+## Hotfix publication and successful real rerun
+
+`f698379c0e2e5f2098da806335ae28708554b818` pushed atomically to main and production. Vercel deployment `dpl_ByoAijq1yHKydsbP4tLDNxQSTbaV` is READY on that exact SHA; independently resolving beesyde.vercel.app returned that same deployment and commit.
+
+Real, non-intercepted Chrome rerun: Pastéis de Belém selected from the nine actual Lisbon suggestions, detail opened, coordinate Directions link present, Save retained after a full reload in the isolated guest browser, same reference automatically selected in Twin, then HTTP200 with **three real Twin results**. The headline reads “3 matches found”; only the featured card is visible initially, while the two other results are deliberately behind See other matches. No API error and no pageerror occurred. Home/Cities/Passport at375px and Passport/Cities/Lisbon Twin at1440px have zero root horizontal overflow. The Place route is285px wide above the title on mobile. No API routes were mocked in this real check; no real user account was used or modified. Private summaries: real-receipt.json and retained first-failure.json under .private/qa/post-release-live.
+
+After hotfix, public fixture regression run: **7 passed / 3 explicit development-only skips**. These are separate from real-provider checks. Build/TypeScript passes; affected local Twin/refinement browser suite40/40 passes. Review Standards0 residual; Spec0 residual.
+
+The exact owner Gardens record remains pending its link; the real Pastéis test is not represented as that same place. Physical S24/iPhone, native assistive technologies and real cross-device Google-account checks remain untested in this release, tracked by the existing human gates.
+
+This documentation-only continuation records the tested application commits; its own final source/deployment pointer is recorded in GitHub #89–92 after the documentation push.

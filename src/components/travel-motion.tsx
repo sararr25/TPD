@@ -31,7 +31,7 @@ export function TravelMotion({ children }: { children: ReactNode }) {
     media.add("(prefers-reduced-motion: no-preference)", (motionContext) => {
       const seen = new WeakSet<Element>();
       const parallaxSeen = new WeakSet<Element>();
-      const photoSelect = ".h-visa-photo img, .city-cover-photo img, .place-hero img";
+      const photoSelect = ".h-visa-photo img:not([data-place-image]), .city-cover-photo img, .place-hero img:not([data-place-image]), .h-visa-photo .place-image-backdrop, .place-hero .place-image-backdrop";
       const mobile = () => window.matchMedia("(max-width: 760px)").matches;
       motionContext.add("animatePhoto", (element: Element) => {
         if (parallaxSeen.has(element) || element.closest("[hidden]")) return;

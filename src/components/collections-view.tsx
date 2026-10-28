@@ -197,7 +197,7 @@ function SavedPlaceCard({ item, list, number, busy, active, onActive, onRemove }
   return (
     <article data-travel-page className="saved-place" id={`saved-${list.id}-${item.placeId}`} data-active={active || undefined}
       onMouseEnter={onActive} onFocus={onActive}>
-      <Link className="saved-place-photo" href={href} prefetch={false} tabIndex={-1} aria-label={`Open ${item.name}`}>
+      <Link className="saved-place-photo" href={href} prefetch={false} tabIndex={-1} aria-hidden="true">
         <PlacePhoto placeId={item.placeId} image={photo} city={city || ""} label={city || "Saved place"} lazy />
         {hasCoordinates(item) && <span className="saved-place-pin">{number}</span>}
       </Link>

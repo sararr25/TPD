@@ -21,7 +21,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     await page.setViewportSize(viewport);
     await page.goto(base);
     await expect(page.locator(".h-picks:visible")).toHaveAttribute("aria-busy", "false");
-    const photo = page.locator(".h-visa-photo img:visible");
+    const photo = page.locator(".h-visa-photo .place-image-backdrop:visible, .h-visa-photo img:not([data-place-image]):visible");
     await expect(photo).toBeVisible();
     await page.waitForTimeout(1400);
     await photo.scrollIntoViewIfNeeded();
@@ -63,7 +63,7 @@ test("switching reduced motion removes scroll offsets and keeps controls readabl
   await expect(page.getByRole("heading", { name: "Your taste. Your next place.", exact: true })).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".h-picks:visible")).toHaveAttribute("aria-busy", "false");
-  const photo = page.locator(".h-visa-photo img:visible");
+  const photo = page.locator(".h-visa-photo .place-image-backdrop:visible, .h-visa-photo img:not([data-place-image]):visible");
   await expect(photo).toHaveCSS("transform", "none");
   await expect(photo).toBeVisible();
   const before = await relativeOffset(photo);
@@ -81,7 +81,7 @@ test("Place photo scrolls within its frame and is static without motion", async 
   await page.setViewportSize({ width: 390, height: 600 });
   await page.route("**/missing-fixture-photo.jpg", (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="800" height="400" fill="#6b4a73"/></svg>' }));
   await page.goto(base + "/preview/checks");
-  const photo = page.locator(".place-hero img:visible");
+  const photo = page.locator(".place-hero .place-image-backdrop:visible, .place-hero img:not([data-place-image]):visible");
   await expect(photo).toBeVisible();
   await page.waitForTimeout(850);
   const before = await relativeOffset(photo);

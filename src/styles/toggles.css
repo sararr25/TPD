@@ -44,6 +44,7 @@
 }
 
 .toggle[aria-pressed="true"],
+.toggle[aria-selected="true"],
 .toggle[aria-current="page"] {
   background: var(--ink);
   border-color: var(--ink);
@@ -90,11 +91,12 @@
   border-left: 1.5px solid var(--line);
 }
 
-.segmented .toggle:hover:not(:disabled):not([aria-pressed="true"]):not([aria-current="page"]) {
+.segmented .toggle:hover:not(:disabled):not([aria-pressed="true"]):not([aria-current="page"]):not([aria-selected="true"]) {
   background: var(--bg);
 }
 
 .segmented .toggle[aria-pressed="true"],
+.segmented .toggle[aria-selected="true"],
 .segmented .toggle[aria-current="page"] {
   background: var(--ink);
   color: var(--paper);

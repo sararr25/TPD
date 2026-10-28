@@ -329,9 +329,16 @@ export function CityView({ city }: { city: string }) {
               role="tab"
               id={`city-tab-${value}`}
               aria-selected={tab === value}
+              tabIndex={tab === value ? 0 : -1}
+              onKeyDown={event=>{
+                if (!["ArrowLeft","ArrowRight","Home","End"].includes(event.key)) return;
+                event.preventDefault();
+                const next=event.key==="Home"?"foryou":event.key==="End"?"swap":value==="foryou"?"swap":"foryou";
+                document.getElementById(`city-tab-${next}`)?.focus();
+                chooseTab(next);
+              }}
               aria-controls={`city-panel-${value}`}
               className="toggle"
-              aria-pressed={tab === value}
               onClick={() => chooseTab(value)}
             >
               {label}

@@ -5,6 +5,10 @@ available local checks. **Not executed / not accepted yet.** Historical technica
 ticket closure must link this checklist and its open human follow-up; it must not
 imply these criteria passed. No credentials or personal screenshots go into GitHub.
 
+## New UI/UX candidate — separate from the public baseline
+
+For the subsequent audit changes on `codex/twin-motion-ux`, follow the [candidate checklist](75-open-ticket-engineering-and-acceptance.md) and use its exact branch-preview READY SHA from #60. Do not attribute that candidate to the unchanged public alias. Whole images, comparison C, automatic quiz advancement, native keyboard and AT tasks need actual candidate observations. All physical/account rows below remain NOT RUN until evidence is recorded; Chrome/WebKit fixtures do not fill them.
+
 ## Record the environment first
 
 Use the production URL https://beesyde.vercel.app and the exact READY deployment

@@ -1,5 +1,9 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Open-ticket engineering continuation — 28 October 2026
+
+Read [docs/75](75-open-ticket-engineering-and-acceptance.md), then docs/74 and the linked prior handovers. Additional photo-composition, accessible-tab/label fixes and Chrome/WebKit checks are complete. The six human/rights gates remain open with precise inputs and a guided candidate checklist. Use the branch-preview READY SHA in #60 for this candidate; the production release is unchanged.
+
 ## Second UI/UX/mobile cycle — 28 October 2026
 
 Read [docs/74](74-ui-ux-mobile-second-cycle.md) first, then docs/73 and its linked prior release handover. Owner authorised the working-branch push and selected mobile comparison C. The second cycle implements the remaining agent work, with explicit open gates for photo rights/selection (#62), quiz comparison with people (#74), real account acceptance (#79) and physical-device checks (#85/#86/#88, #59). Read the final receipt in docs/74 before continuing. No production promotion is claimed.

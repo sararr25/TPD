@@ -1,7 +1,7 @@
 "use client";
 import {motionTokens as m} from "@/lib/motion-tokens";
 import { ActionIcon } from "./action-icon";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { QuizArtwork } from "./quiz-artwork";
 import { BOTH, ENTITY_CARDS, MIN_ENTITIES, MAX_ENTITIES, likedEntities, type Answers } from "@/lib/quiz";
@@ -23,6 +23,7 @@ export function QuizFlow({ busy, onFinish, onCancel, draftOwner }: {
   const [savedDraft, setSavedDraft] = useState(() => readQuizDraft(draftOwner));
   const [draftUnavailable, setDraftUnavailable] = useState(false);
   const root = useRef<HTMLElement>(null), cardNode = useRef<HTMLDivElement>(null);
+  const autoAdvance = useRef<{action: () => void; delay: number} | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null), gesture = useRef<Gesture | null>(null);
   const locked = useRef(false), alive = useRef(true), pendingDecision = useRef<(() => void) | null>(null);
   const audio = useRef<AudioContext | null>(null), mutedRef = useRef(muted), soundClosing = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -45,7 +46,7 @@ export function QuizFlow({ busy, onFinish, onCancel, draftOwner }: {
     // Resuming never produces an unsolicited start sound.
     if (!resume) play("start");
   }
-  function cancelAdvance() { if (timer.current) clearTimeout(timer.current); timer.current = null; }
+  function cancelAdvance() { if (timer.current) clearTimeout(timer.current); timer.current = null; autoAdvance.current = null; }
   function play(kind: "start" | "result") {
     if (mutedRef.current || document.hidden) return;
     try {
@@ -66,7 +67,10 @@ export function QuizFlow({ busy, onFinish, onCancel, draftOwner }: {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     if (soundClosing.current) clearTimeout(soundClosing.current);
-    const hide = () => { if (document.hidden) cancelAdvance(); };
+    const hide = () => {
+      if (document.hidden) { if (timer.current) clearTimeout(timer.current); timer.current = null; }
+      else if (autoAdvance.current) { const pending = autoAdvance.current; schedule(pending.action, pending.delay); }
+    };
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const stop = () => {
       if (!media.matches) return;
@@ -89,17 +93,27 @@ export function QuizFlow({ busy, onFinish, onCancel, draftOwner }: {
     if (readingArea) readingArea.scrollTop = 0;
     root.current?.querySelector<HTMLElement>("#quiz-title")?.focus({ preventScroll: true });
   }, [step, started]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     locked.current = false;
+    gesture.current = null;
+    feedback(0);
     if (cardNode.current) gsap.set(cardNode.current, { clearProps: "transform,opacity" });
+  }, [step, started, hist.length]);
+  useEffect(() => {
     if (!reduced() && root.current) {
       const tween = gsap.fromTo(root.current.querySelector(".taste-body"), { opacity: .4, y: 6 }, { opacity: 1, y: 0, duration: motion.fade, ease: motion.ease });
       return () => { tween.kill(); };
     }
-  }, [step, started, hist.length]);
+  }, [step, started]);
   useEffect(() => { if (started && cardNode.current) cardNode.current.focus({ preventScroll: true }); }, [hist.length]);
   function schedule(action: () => void, delay = 1050) {
-    cancelAdvance(); timer.current = setTimeout(() => { timer.current = null; if (alive.current && !document.hidden && !busy) action(); }, delay);
+    cancelAdvance(); autoAdvance.current = {action, delay};
+    timer.current = setTimeout(() => {
+      timer.current = null;
+      if (document.hidden) return;
+      autoAdvance.current = null;
+      if (alive.current && !busy) action();
+    }, delay);
   }
   function move(next: number) { if (busy || locked.current) return; cancelAdvance(); setMessage(""); setStep(Math.max(0, Math.min(ordered.length, next))); }
   function store(value: Answers[string] | undefined) {
@@ -158,7 +172,10 @@ export function QuizFlow({ busy, onFinish, onCancel, draftOwner }: {
     cancelAdvance(); const next = hist.slice(0, -1); setHistory(h => ({ ...h, [q.id]: next })); store(deck.filter((_, i) => next[i]).map(c => c.id));
   }
   const value = q ? answers[q.id] : undefined;
-  const canContinue = q?.kind === "swipe" || (q?.kind === "pick" ? Array.isArray(value) && value.length > 0 : value !== undefined);
+  const pickedCount = q?.kind === "pick" && Array.isArray(value) ? value.length : 0;
+  const canFinishEarly = q?.kind === "pick" && pickedCount > 0 && pickedCount < q.max;
+  const answered = q?.kind === "swipe" ? hist.length === deck.length : q?.kind === "pick" ? pickedCount === q.max : value !== undefined;
+  const reviewingAnswer = started && !final && answered && !autoAdvance.current;
   return <section className="taste-quiz" ref={root} aria-label="Make your Taste Passport" aria-busy={busy}
     onKeyDown={event => {
       if (event.key === "Escape" && onCancel) { event.preventDefault(); event.stopPropagation(); if (!busy) { cancelAdvance(); onCancel(); } }
@@ -174,14 +191,18 @@ export function QuizFlow({ busy, onFinish, onCancel, draftOwner }: {
     </header>
     <div className="taste-progress" role="progressbar" aria-label="Quiz progress" aria-valuemin={0} aria-valuemax={ordered.length} aria-valuenow={started ? step : 0}><i style={{ transform: `scaleX(${started ? step / ordered.length : 0})` }} /></div>
     {!started ? <div className="taste-body taste-intro"><div><p className="taste-kicker">A little instinct. A lot of you.</p><h2 id="quiz-title" tabIndex={-1}>Your taste.<br /><em>Your kind of city.</em></h2><p>Swipe what moves you. Pick what pulls you in.</p><p>18 questions. About 3 minutes.</p>{savedDraft ? <div className="taste-resume"><p>Your unfinished quiz is saved on this browser.</p><button type="button" className="taste-primary" onClick={() => begin(true)}>Continue your quiz</button><button type="button" className="taste-text" onClick={() => begin(false)}>Start again</button></div> : <button type="button" className="taste-primary" onClick={() => begin(false)}>Start my quiz <ActionIcon name="external" /></button>}</div><div className="taste-intro-art"><QuizArtwork id="khruangbin" /></div></div> : final ? <div className="taste-body taste-final"><div><p className="taste-kicker">One last detail</p><h2 id="quiz-title" tabIndex={-1}>{remaining ? (selectedFavourites.length ? `${remaining} more to go` : "Choose 3 favourites to finish") : "Your choices are ready."}</h2><p>Choose 3–5 artists or films you love for personal picks.</p><p role="status" aria-live="polite">{selectedFavourites.length} of 5 selected</p></div><div className="taste-grid taste-topup">{Object.values(ENTITY_CARDS).filter(c => !seeds.includes(c.id)).map(c => <button key={c.id} type="button" className="taste-tile" disabled={busy || (!validExtra.includes(c.id) && selectedFavourites.length >= MAX_ENTITIES)} aria-pressed={validExtra.includes(c.id)} onClick={() => setExtra(validExtra.includes(c.id) ? validExtra.filter(x => x !== c.id) : [...validExtra, c.id])}><QuizArtwork id={c.id} /><span>{c.label}</span></button>)}</div></div> : <div className={`taste-body taste-${q.kind}`}><div className="taste-question"><p className="taste-kicker">Follow your instinct</p><h2 id="quiz-title" tabIndex={-1}>{q.title}</h2><p>{q.kind === "pick" ? `Choose up to ${q.max}. The last pick moves you on automatically.` : q.kind === "swipe" ? "Swipe right for yes. Left for no." : "Choose one to continue automatically."}</p></div>
-      {q.kind === "slider" ? <div className="taste-scale"><div className="taste-scale-labels"><span>{q.left.label}</span><span>{q.right.label}</span></div><div className="taste-stops" role="group" aria-label={q.title}>{[1, 2, 3, 4, 5].map(n => <button key={n} type="button" disabled={busy} aria-pressed={value === n} aria-label={`${n}: ${n < 3 ? q.left.label : n > 3 ? q.right.label : "It depends"}`} onClick={() => { if (busy) return; store(n); setMessage("Noted. Moving on…"); schedule(() => move(step + 1)); }}><span aria-hidden>{n === 3 ? "◑" : n < 3 ? "◐" : "◕"}</span>{["Definitely", "Mostly", "It depends", "Mostly", "Definitely"][n - 1]}</button>)}</div></div> : q.kind === "swipe" ? <div className="taste-deck-area"><div className="taste-directions" aria-hidden><span>← NO</span><span>YES <ActionIcon name="right" /></span></div><div className="taste-deck">{card ? <div className="taste-card" ref={cardNode} tabIndex={0} role="group" aria-label={`${card.label}. Right arrow yes, left arrow no.`}
+      {q.kind === "slider" ? <div className="taste-scale"><div className="taste-stops" role="group" aria-label={q.title}>{[1, 2, 3, 4, 5].map(n => {
+        const strength = ["Definitely", "Mostly", "It depends", "Mostly", "Definitely"][n - 1];
+        const context = n < 3 ? q.left.label : n > 3 ? q.right.label : "A bit of both";
+        return <button key={n} type="button" disabled={busy} aria-pressed={value === n} onClick={() => { if (busy) return; store(n); setMessage("Noted. Moving on…"); schedule(() => move(step + 1)); }}><span className="taste-choice-strength">{strength}</span><small>{context}</small>{value === n && <ActionIcon name="check" />}</button>;
+      })}</div></div> : q.kind === "swipe" ? <div className="taste-deck-area"><div className="taste-directions" aria-hidden><span>← NO</span><span>YES <ActionIcon name="right" /></span></div><div className="taste-deck">{card ? <div className="taste-card" ref={cardNode} tabIndex={0} role="group" aria-label={`${card.label}. Right arrow yes, left arrow no.`}
         onPointerDown={e => { if (busy || locked.current || e.button !== 0) return; gsap.killTweensOf(e.currentTarget); gesture.current = { x: e.clientX, y: e.clientY, lastX: e.clientX, time: performance.now(), velocity: 0, axis: null }; e.currentTarget.setPointerCapture(e.pointerId); }}
         onPointerMove={e => { const g = gesture.current; if (!g || locked.current) return; const dx = e.clientX - g.x, dy = e.clientY - g.y; if (!g.axis && Math.max(Math.abs(dx), Math.abs(dy)) > 8) g.axis = Math.abs(dx) > Math.abs(dy) * 1.2 ? "x" : "y"; if (g.axis !== "x") return; const now = performance.now(); g.velocity = (e.clientX - g.lastX) / Math.max(1, now - g.time); g.lastX = e.clientX; g.time = now; if (!reduced()) gsap.set(e.currentTarget, { x: dx, rotation: dx / 26 }); feedback(dx); }}
         onPointerUp={e => { const g = gesture.current; gesture.current = null; if (!g) return; const dx = e.clientX - g.x; const flick = Math.abs(dx) > 28 && performance.now() - g.time < 100 && Math.abs(g.velocity) > .65 && Math.sign(dx) === Math.sign(g.velocity); if (g.axis === "x" && (Math.abs(dx) >= 70 || flick)) decide(dx > 0); else settle(); }} onPointerCancel={settle}
         onKeyDown={e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); decide(e.key === "ArrowRight"); } }}>
-        <span className="taste-deck-count">{hist.length + 1} / {deck.length}</span><span className="taste-intent taste-yes" aria-hidden>YES · KEEP</span><span className="taste-intent taste-no" aria-hidden>NO · PASS</span><QuizArtwork id={card.id} /><h3>{card.label}</h3>{card.note && <p>{card.note}</p>}</div> : <div className="taste-card taste-card-complete"><h3>Your choices are ready.</h3><p>Moving to the next question…</p></div>}</div>
+        <span className="taste-deck-count">{hist.length + 1} / {deck.length}</span><span className="taste-intent taste-yes" aria-hidden>YES · KEEP</span><span className="taste-intent taste-no" aria-hidden>NO · PASS</span><QuizArtwork id={card.id} /><h3>{card.label}</h3>{card.note && <p>{card.note}</p>}</div> : <div className="taste-card taste-card-complete"><h3>Your choices are ready.</h3><p>{autoAdvance.current ? "Moving to the next question…" : "All cards answered. Undo to change a choice."}</p></div>}</div>
         <p className="taste-drag-status" data-drag-status aria-live="polite">Drag right for yes, left for no</p><div className="taste-deck-buttons"><button type="button" className="taste-secondary" disabled={busy || !hist.length} onClick={undo}>Undo</button><button type="button" className="taste-secondary" disabled={busy || !card} onClick={() => decide(false)}><ActionIcon name="left" /> No</button><button type="button" className="taste-secondary" disabled={busy || !card} onClick={() => decide(true)}>Yes <ActionIcon name="right" /></button></div></div> : <div className={`taste-grid ${q.kind === "this-or-that" ? "taste-pair" : ""}`}>{q.options.map(o => { const picked = q.kind === "pick" ? Array.isArray(value) && value.includes(o.id) : value === o.id; return <button type="button" key={o.id} className="taste-tile" aria-pressed={picked} disabled={busy} onClick={() => choose(o.id)}><QuizArtwork id={o.id} /><span>{o.label}<i aria-hidden>{picked && <ActionIcon name="check" />}</i></span></button>; })}{q.kind === "this-or-that" && <button type="button" className="taste-text taste-both" aria-pressed={value === BOTH} disabled={busy} onClick={() => choose(BOTH)}>Both, it depends</button>}</div>}
     </div>}
-    {started && <footer className="taste-nav"><button type="button" className="taste-text" disabled={busy || locked.current} onClick={() => { if (step === 0) { cancelAdvance(); setSavedDraft({ step, answers, history, extra }); setStarted(false); } else move(step - 1); }}><ActionIcon name="left" /> Back</button><p className="taste-status" role="status">{draftUnavailable ? "Progress can’t be saved on this browser. Keep this quiz open." : message}</p><div>{!final && <button type="button" className="taste-text" disabled={busy} onClick={() => { if (busy || locked.current) return; cancelAdvance(); store(undefined); if (q.kind === "swipe") setHistory(h => ({ ...h, [q.id]: [] })); move(step + 1); }}>Skip</button>}<button type="button" className="taste-primary" disabled={busy || (final ? selectedFavourites.length < MIN_ENTITIES : !canContinue)} onClick={() => final ? void finish() : move(step + 1)}>{busy ? "Saving…" : final ? "Build my Passport" : <>Continue <ActionIcon name="right" /></>}</button></div></footer>}
+    {started && <footer className="taste-nav"><button type="button" className="taste-text" disabled={busy || locked.current} onClick={() => { if (step === 0) { cancelAdvance(); setSavedDraft({ step, answers, history, extra }); setStarted(false); } else move(step - 1); }}><ActionIcon name="left" /> Back</button><p className="taste-status" role="status">{draftUnavailable ? "Progress can’t be saved on this browser. Keep this quiz open." : message}</p><div>{!final && <button type="button" className="taste-text" disabled={busy} onClick={() => { if (busy || locked.current) return; cancelAdvance(); store(undefined); if (q.kind === "swipe") setHistory(h => ({ ...h, [q.id]: [] })); move(step + 1); }}>Skip</button>}{(final || canFinishEarly || reviewingAnswer) && <button type="button" className="taste-primary" disabled={busy || (final && selectedFavourites.length < MIN_ENTITIES)} onClick={() => final ? void finish() : move(step + 1)}>{busy ? "Saving…" : final ? "Build my Passport" : reviewingAnswer ? "Keep these answers" : `Use ${pickedCount} ${pickedCount === 1 ? "choice" : "choices"}`}</button>}</div></footer>}
   </section>;
 }

@@ -44,7 +44,7 @@ for(const size of [{width:320,height:568},{width:390,height:844},{width:812,heig
  test(`quiz controls fit ${size.width}x${size.height}`,async({page})=>{
   await page.setViewportSize(size);await open(page);await inViewport(page);await page.screenshot({path:`.private/taste-quiz/places-${size.width}.png`});
   await expect.poll(()=>page.locator('.taste-art').evaluateAll(imgs=>imgs.every(i=>(i as HTMLImageElement).complete&&(i as HTMLImageElement).naturalWidth>0))).toBe(true);
-  await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Continue',exact:true}).click();
+  await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Use 1 choice',exact:true}).click();
   await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');await inViewport(page);await page.screenshot({path:`.private/taste-quiz/music-${size.width}.png`});
  });
 }
@@ -65,8 +65,8 @@ test('full 18-question guest flow retains answers, retries save, and sounds only
   await expect(page.locator('#quiz-title')).toHaveText(q.title);
   if(q.kind==='swipe'){
    for(let i=0;i<q.cards.length;i++){await expect(page.locator('.taste-card h3')).toHaveText(q.cards[i].label);await page.getByRole('button',{name:'Yes',exact:true}).click();}
-  }else if(q.kind==='slider'){await page.locator('.taste-stops button').nth(2).click();await page.getByRole('button',{name:'Continue',exact:true}).click();}
-  else {await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Continue',exact:true}).click();}
+  }else if(q.kind==='slider'){await page.locator('.taste-stops button').nth(2).click();}
+  else {await page.locator('.taste-tile').first().click();if(q.kind==='pick')await page.getByRole('button',{name:'Use 1 choice',exact:true}).click();}
  }
  await expect(page.locator('#quiz-title')).toHaveText('Your choices are ready.');
  expect(await page.evaluate(()=>(window as unknown as {audioTones:number}).audioTones)).toBe(2);
@@ -83,7 +83,7 @@ test('mute and keyboard focus stay inside the quiz; Escape closes it',async({pag
 });
 
 test('skips lead to explicit favourites top-up; back keeps selections; all added art loads',async({page})=>{
- await open(page);await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.locator('.taste-tile').first()).toHaveAttribute('aria-pressed','true');
+ await open(page);await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Use 1 choice',exact:true}).click();await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page.locator('.taste-tile').first()).toHaveAttribute('aria-pressed','true');
  for(const q of ordered){await expect(page.locator('#quiz-title')).toHaveText(q.title);await page.getByRole('button',{name:'Skip',exact:true}).click();}
  await expect(page.locator('#quiz-title')).toHaveText('Choose 3 favourites to finish');
  await expect(page.getByRole('button',{name:'Build my Passport',exact:true})).toBeDisabled();
@@ -137,20 +137,20 @@ test('top-up favourites remain unique after Back revises a music answer',async({
  for(const q of ordered){await expect(page.locator('#quiz-title')).toHaveText(q.title);await page.getByRole('button',{name:'Skip',exact:true}).click();}
  for(let i=0;i<3;i++)await page.locator('.taste-topup button').nth(i).click();
  for(let i=18;i>1;i--)await page.getByRole('button',{name:'Back',exact:true}).click();
- await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');await page.getByRole('button',{name:'Yes',exact:true}).click();await expect(page.locator('.taste-card h3')).toHaveText('Nina Simone');await page.getByRole('button',{name:'Continue',exact:true}).click();
+ await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');await page.getByRole('button',{name:'Yes',exact:true}).click();await expect(page.locator('.taste-card h3')).toHaveText('Nina Simone');for(let i=0;i<3;i++)await page.getByRole('button',{name:'No',exact:true}).click();
  for(const q of ordered.slice(2)){await expect(page.locator('#quiz-title')).toHaveText(q.title);await page.getByRole('button',{name:'Skip',exact:true}).click();}
  await page.getByRole('button',{name:'Build my Passport',exact:true}).click();await expect(page.locator('.taste-quiz')).toHaveCount(0);expect(submitted.length).toBe(3);expect(new Set(submitted).size).toBe(3);
 });
 
 test('Skip cannot reset a deck during its animated exit; runtime reduced motion clears transforms',async({page})=>{
- await open(page);await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Continue',exact:true}).click();await page.emulateMedia({reducedMotion:'no-preference'});
+ await open(page);await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Use 1 choice',exact:true}).click();await page.emulateMedia({reducedMotion:'no-preference'});
  await page.evaluate(()=>{const root=document.querySelector('.taste-quiz')!;const buttons=[...root.querySelectorAll('button')];buttons.find(b=>b.textContent?.trim()==='Yes')!.click();buttons.find(b=>b.textContent==='Skip')!.click()});
  await expect(page.locator('.taste-card h3')).toHaveText('Nina Simone');await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');
  await page.emulateMedia({reducedMotion:'reduce'});await expect.poll(()=>page.locator('.taste-body').evaluate(el=>getComputedStyle(el).transform)).toBe('none');await expect(page.locator('.taste-card')).toHaveCSS('transform','none');
 });
 
 test('resuming a swipe retains the next card and Undo history',async({page})=>{
- await open(page);await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Continue',exact:true}).click();
+ await open(page);await page.locator('.taste-tile').first().click();await page.getByRole('button',{name:'Use 1 choice',exact:true}).click();
  await page.getByRole('button',{name:'Yes',exact:true}).click();await expect(page.locator('.taste-card h3')).toHaveText('Nina Simone');
  await page.keyboard.press('Escape');await page.getByRole('button',{name:'Redo the quiz',exact:true}).click();await page.getByRole('button',{name:'Continue your quiz',exact:true}).click();
  await expect(page.locator('.taste-card h3')).toHaveText('Nina Simone');await page.getByRole('button',{name:'Undo',exact:true}).click();await expect(page.locator('.taste-card h3')).toHaveText('Khruangbin');
@@ -176,7 +176,7 @@ for(const invalid of ['different owner','expired','malformed']) test(`quiz ignor
 test('storage failure is explained while current answers remain usable',async({page})=>{
  await open(page);await page.evaluate(()=>{Storage.prototype.setItem=()=>{throw new DOMException('Storage blocked','QuotaExceededError');};});
  await page.locator('.taste-tile').first().click();await expect(page.locator('.taste-status')).toContainText('Progress can’t be saved on this browser');
- await page.getByRole('button',{name:'Continue',exact:true}).click();await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');
+ await page.getByRole('button',{name:'Use 1 choice',exact:true}).click();await expect(page.locator('#quiz-title')).toHaveText('Would this be on your trip playlist?');
 });
 
 test('top-up draft resumes on a small phone with selections and accurate count',async({page})=>{

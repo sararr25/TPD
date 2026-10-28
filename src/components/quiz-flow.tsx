@@ -85,6 +85,8 @@ export function QuizFlow({ busy, onFinish, onCancel, draftOwner }: {
     };
   }, []);
   useEffect(() => {
+    const readingArea = root.current?.querySelector<HTMLElement>(".taste-body");
+    if (readingArea) readingArea.scrollTop = 0;
     root.current?.querySelector<HTMLElement>("#quiz-title")?.focus({ preventScroll: true });
   }, [step, started]);
   useEffect(() => {

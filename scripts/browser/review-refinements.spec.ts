@@ -163,6 +163,7 @@ for(const size of [{width:1440,height:900},{width:1440,height:780},{width:375,he
 });
 
 for(const width of [320,375,768]) test(`Twin choices provide comfortable touch areas at ${width}`,async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
  await page.setViewportSize({width,height:812});await twinFixtures(page);await chooseReference(page,base);
  for(const button of await page.locator('.twin-trait-actions button, .twin-price-options button').all()) {
   const r=(await button.boundingBox())!;expect(r.width).toBeGreaterThanOrEqual(44);expect(r.height).toBeGreaterThanOrEqual(44);

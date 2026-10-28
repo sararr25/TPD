@@ -17,6 +17,14 @@ async function noAnswerOverlap(page: Page) {
   expect(overlap, 'Answer targets must not intersect neighbouring rows').toEqual([]);
 }
 
+async function doubleQuizText(page: Page) {
+  await page.locator('.taste-quiz').evaluate(root=>{
+    const textNodes=[...root.querySelectorAll<HTMLElement>('*')].filter(node=>!node.dataset.auditTextSize&&[...node.childNodes].some(child=>child.nodeType===Node.TEXT_NODE&&child.textContent?.trim()));
+    const sizes=textNodes.map(node=>[node,parseFloat(getComputedStyle(node).fontSize)] as const);
+    for(const [node,size] of sizes){node.style.fontSize=`${size*2}px`;node.dataset.auditTextSize='2';}
+  });
+}
+
 test('landscape quiz answer tiles never overlap', async ({ page }) => {
   await page.setViewportSize({ width: 667, height: 375 });
   await worldFixtures(page);
@@ -40,11 +48,11 @@ for (const size of [{width:667,height:375}, {width:844,height:390}, {width:320,h
     await page.getByRole('button',{name:'Start my quiz'}).click();
     for (const q of ordered) {
       await expect(page.locator('#quiz-title')).toHaveText(q.title);
-      if(size.textScale) await page.locator('.taste-quiz').evaluate(root=>{
-        const textNodes=[...root.querySelectorAll<HTMLElement>('*')].filter(node=>!node.dataset.auditTextSize&&[...node.childNodes].some(child=>child.nodeType===Node.TEXT_NODE&&child.textContent?.trim()));
-        const sizes=textNodes.map(node=>[node,parseFloat(getComputedStyle(node).fontSize)] as const);
-        for(const [node,size] of sizes){node.style.fontSize=`${size*2}px`;node.dataset.auditTextSize='2';}
-      });
+      if(size.textScale) await doubleQuizText(page);
+      await expect.poll(()=>page.locator('#quiz-title').evaluate(node=>{
+        const r=node.getBoundingClientRect(),body=node.closest('.taste-body')!.getBoundingClientRect();
+        return r.top>=body.top-.5&&r.top<body.bottom;
+      }),{message:'The next focused question must be inside the reading viewport'}).toBe(true);
       await noAnswerOverlap(page);
       const last = page.locator('.taste-body button').last();
       await last.scrollIntoViewIfNeeded();
@@ -55,6 +63,7 @@ for (const size of [{width:667,height:375}, {width:844,height:390}, {width:320,h
       await page.getByRole('button',{name:'Skip',exact:true}).click();
     }
     await expect(page.locator('#quiz-title')).toHaveText('Choose 3 favourites to finish');
+    if(size.textScale) await doubleQuizText(page);
     await noAnswerOverlap(page);
     const last=page.locator('.taste-topup button').last();
     await last.scrollIntoViewIfNeeded();
@@ -119,6 +128,7 @@ test('trip reset requires deliberate confirmation and preserves Saved and quiz',
   await dialog.getByRole('button',{name:'Clear organisation and visits',exact:true}).click();
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeDisabled();
+  await expect(page.getByRole('heading',{name:'Manage your data',exact:true})).toBeFocused();
   expect(await page.evaluate(()=>({quiz:localStorage.getItem('beesyde-quiz-v1'),saved:localStorage.getItem('beesyde-lists-v1')}))).toEqual(original);
 });
 
@@ -145,12 +155,20 @@ test('place actions precede the secondary Passport prompt',async({page})=>{
   await page.addInitScript(()=>{localStorage.removeItem('tpd-passport-v2');localStorage.removeItem('beesyde-quiz-v1');});
   await page.setViewportSize({width:390,height:844});
   await page.emulateMedia({reducedMotion:'reduce'});
-  await page.goto(base+'/preview/checks?photo=known');
+  await page.goto(base+'/preview/checks?photo=known&details=1');
   const primary=page.locator('.place-page-actions').getByRole('link',{name:'Find its twin',exact:true});
   const quiz=page.locator('.place-passport-prompt').getByRole('button',{name:'Make your Passport',exact:true});
   await expect(primary).toHaveClass(/btn-primary/);
   await expect(quiz).toHaveClass(/btn-quiet/);
+  await expect(page.locator('.place-page-actions').getByRole('link',{name:'Directions',exact:false})).toBeVisible();
   expect(await primary.evaluate(node=>!!(node.compareDocumentPosition(document.querySelector('.place-passport-prompt')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
-  await primary.scrollIntoViewIfNeeded();
+  await page.locator('.place-page-actions').scrollIntoViewIfNeeded();
+  const bar=page.getByRole('navigation',{name:'Main (mobile)',exact:true});
+  const barTop=(await bar.boundingBox())!.y;
+  for(const action of await page.locator('.place-page-actions').getByRole('link').or(page.locator('.place-page-actions').getByRole('button')).all()){
+    const r=(await action.boundingBox())!;
+    expect(r.y).toBeGreaterThanOrEqual(61);
+    expect(r.y+r.height).toBeLessThanOrEqual(barTop);
+  }
   await page.screenshot({path:'.private/audit-72/place-actions-390.png'});
 });

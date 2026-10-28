@@ -8,7 +8,7 @@ import Link from "next/link";
 import {
   CITIES,
   TWIN_CATEGORIES, CATEGORY_CAPABILITIES, FACET_PLACEHOLDERS, placeCategory, categoryHasPrice, categoryFacets, distance, type Entity,
-  hasTrait,
+  hasTrait, chipTags,
   type Choice,
   type Result,
   type PlaceCategory,
@@ -284,7 +284,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
   useEffect(()=>{
     if(!reference||!ready||isPending||referenceOwner.current!==userId)return;
     if(skipDraftWrite.current){skipDraftWrite.current=false;return;}
-    if(restoring.current){const draft=restoring.current;restoring.current=null;setChoices(draft.choices.filter(c=>reference.entity.tags.some(t=>t.id===c.tagId)));setBudget(draft.budget);setStale(true);setStatus("Starting place refreshed. Review your choices, then Find its twin.");return;}
+    if(restoring.current){const draft=restoring.current;restoring.current=null;setChoices(draft.choices.filter(c=>chipTags(reference.entity,category).some(t=>t.id===c.tagId)));setBudget(draft.budget);setStale(true);setStatus("Starting place refreshed. Review your choices, then Find its twin.");return;}
     try { localStorage.setItem(searchKey(userId||"guest"),JSON.stringify({version:1,at:Date.now(),city,category,reference:{id:reference.entity.id,name:reference.entity.name},choices,budget})); }
     catch {setDraftError("Browser storage is unavailable. Keep this search open to retain your choices.");}
   },[reference,choices,budget,ready,isPending,userId,city,category]);
@@ -435,9 +435,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
     setStarted(false);
     setBusy(false);
     setChoices(previous =>
-      s.entity.tags
-        .filter((t) => t.id !== `urn:tag:genre:place:${category}`)
-        .slice(0, 6)
+      chipTags(s.entity, category)
         .map((t) => ({ tagId: t.id, mode: previous.find(choice=>choice.tagId===t.id)?.mode ?? "ignore" })),
     );
     setStatus(

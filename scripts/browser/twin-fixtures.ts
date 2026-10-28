@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { worldFixtures, place } from "./world-fixtures";
-const traits = ["Quiet", "Casual", "Outdoor", "Natural wine", "Small rooms", "Seafood"].map((name, n) => ({ id: `urn:tag:fixture:trait:${n}`, name, type: "urn:tag:ambience:qloo" }));
+const traits = ["Quiet", "Casual", "Outdoor", "Natural wine", "Portuguese", "Seafood"].map((name, n) => ({ id: `urn:tag:fixture:trait:${n}`, name, type: `urn:tag:${["ambience:qloo", "ambience:qloo", "offerings:place", "beverage_offering:qloo", "cuisine:qloo", "cuisine:qloo"][n]}` }));
 export const reference = { ...place, name: "The starting place", tags: traits, price: 2 };
 export const twinResults = ["Closest match", "Nearby option", "A less-known option"].map((role, n) => ({
   place: { ...place, id: `00000000-0000-4000-8000-00000000001${n}`, name: `Twin match ${n + 1}`, tags: traits.slice(0, 3), price: n + 1 },

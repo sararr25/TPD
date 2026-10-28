@@ -18,3 +18,19 @@ test("a different place with the same name never replaces a linked starting plac
   await expect(page.getByRole("button", { name: "Choose", exact: true })).toBeVisible();
   await expect(page.locator(".twin-reference-recap")).toHaveCount(0);
 });
+
+test("multiple category tags never become editable Twin traits", async ({ page }) => {
+  const requests = await twinFixtures(page);
+  const genres = ["genre", "category"].map(kind => ({ id: `urn:tag:${kind}:place:cafe`, name: "Cafe", type: `urn:tag:${kind}:place` }));
+  await page.route("**/api/discovery", async route => {
+    if (route.request().postDataJSON().action === "search") return route.fulfill({ json: { choices: [{ entity: { ...reference, tags: [...genres, ...reference.tags] }, token: "fixture-reference" }] } });
+    return route.fallback();
+  });
+  await page.goto(`${base}/lisbon?tab=swap&category=cafe&q=${encodeURIComponent(reference.name)}&ref=${reference.id}`);
+  await expect(page.locator(".twin-reference-recap strong")).toHaveText(reference.name);
+  await page.getByRole("button", { name: "Find its twin", exact: true }).click();
+  await expect.poll(() => requests.filter(r => r.action === "swap").length).toBe(1);
+  const choices = requests.find(r => r.action === "swap")!.choices as { tagId: string }[];
+  expect(choices.length).toBeGreaterThan(0);
+  expect(choices.some(c => /^urn:tag:(genre|category):/.test(c.tagId))).toBe(false);
+});

@@ -1,5 +1,9 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Passport theatre C and full publication — 28 October 2026
+
+Read [docs/78](78-passport-theatre-release.md) first. Latest explicit owner choice C supersedes B. Owner requests all pending commits on main and live; preserve the configured production branch and verify both source refs, deployment SHA/READY and public alias separately. Physical acceptance remains open.
+
 ## Physical S24 quiz feedback — 28 October 2026
 
 Read [docs/76](76-s24-quiz-feedback-and-fixes.md), then docs/75 and its prior handovers. Owner-reported S24/Android17 quiz FAIL led to swipe-feedback, natural-card-height, larger five-option controls, readable type and conditional advancement actions. The new candidate requires a focused S24 retest; Chrome version is unknown. Preserve the original failure and other NOT RUN rows. Use the exact READY branch-preview SHA in #60, not the unchanged production alias.

@@ -4,4 +4,7 @@ export const motionTokens = {
   distance: { small: 8, reveal: 12, drag: 96, flick: 32, velocity: 550 },
   ease: { enter: "power3.out", leave: "power2.in", ink: "power2.inOut", settle: "back.out(1.15)", linear: "none" },
   stagger: .06,
+  quiz: { hover: 4, press: .97, sceneOpacity: .4 },
 } as const;
+
+export const quizSprings = { snappy: {type:"spring" as const,stiffness:300,damping:30} };

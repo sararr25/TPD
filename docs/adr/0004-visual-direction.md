@@ -94,3 +94,7 @@ show only bold Your Passport. Owner rejected the bare native accordion links
 below the book as inconsistent with the brand. Use paper panels: an explicit
 button opens the favourites/quiz editor in its own dialog, while guide/save
 activity is visible directly. Preserve equal page widths and visited-city space.
+
+## 28 October 2026 — owner-selected quiz C
+
+Owner selected Passport theatre C, superseding the earlier B reply: saturated berry quiz stage, paper illustrated choices, lemon feedback and finite native SVG city motion. Existing type and answer semantics remain binding; reduced motion is static, short landscape prioritises controls. See docs/78 for implementation and release evidence.

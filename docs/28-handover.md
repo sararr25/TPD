@@ -1,5 +1,9 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Physical S24 quiz feedback — 28 October 2026
+
+Read [docs/76](76-s24-quiz-feedback-and-fixes.md), then docs/75 and its prior handovers. Owner-reported S24/Android17 quiz FAIL led to swipe-feedback, natural-card-height, larger five-option controls, readable type and conditional advancement actions. The new candidate requires a focused S24 retest; Chrome version is unknown. Preserve the original failure and other NOT RUN rows. Use the exact READY branch-preview SHA in #60, not the unchanged production alias.
+
 ## Open-ticket engineering continuation — 28 October 2026
 
 Read [docs/75](75-open-ticket-engineering-and-acceptance.md), then docs/74 and the linked prior handovers. Additional photo-composition, accessible-tab/label fixes and Chrome/WebKit checks are complete. The six human/rights gates remain open with precise inputs and a guided candidate checklist. Use the branch-preview READY SHA in #60 for this candidate; the production release is unchanged.

@@ -1,13 +1,13 @@
 # Guided physical-device and account acceptance
 
 28 October 2026 · Owner selected this manual handoff while agent completes all
-available local checks. **Not executed / not accepted yet.** Historical technical
+available local checks. **Partially reported / not accepted yet.** Historical technical
 ticket closure must link this checklist and its open human follow-up; it must not
 imply these criteria passed. No credentials or personal screenshots go into GitHub.
 
 ## New UI/UX candidate — separate from the public baseline
 
-For the subsequent audit changes on `codex/twin-motion-ux`, follow the [candidate checklist](75-open-ticket-engineering-and-acceptance.md) and use its exact branch-preview READY SHA from #60. Do not attribute that candidate to the unchanged public alias. Whole images, comparison C, automatic quiz advancement, native keyboard and AT tasks need actual candidate observations. All physical/account rows below remain NOT RUN until evidence is recorded; Chrome/WebKit fixtures do not fill them.
+For the subsequent audit changes on `codex/twin-motion-ux`, follow the [candidate checklist](75-open-ticket-engineering-and-acceptance.md) and use its exact branch-preview READY SHA from #60. Do not attribute that candidate to the unchanged public alias. Whole images, comparison C, automatic quiz advancement, native keyboard and AT tasks need actual candidate observations. The S24 quiz row below now records owner-reported failure; other physical/account rows remain NOT RUN. Chrome/WebKit fixtures do not fill them.
 
 ## Record the environment first
 
@@ -20,7 +20,7 @@ places and synthetic notes. Keep unrelated personal data unchanged.
 | Environment | Model / OS / browser | Outcome / evidence |
 |---|---|---|
 | Physical iPhone / Safari | To record | Not run |
-| Physical Android / Chrome | To record | Not run |
+| Physical Android / Chrome | Samsung S24; Android 17 owner-reported; Chrome version unknown | Owner-reported quiz FAIL after a0455be link; corrections await S24 retest. Other tasks not run; see docs/76. |
 | iPhone VoiceOver | To record | Not run |
 | Android TalkBack | To record | Not run |
 | macOS Safari / VoiceOver | To record | Not run |

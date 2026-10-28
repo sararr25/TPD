@@ -36,6 +36,9 @@ function OwnedPassportSettings() {
   const travel = useTravelState();
   const openQuiz = useQuizPanel();
   const passport = usePassportState();
+  const tripResetDialog = useRef<HTMLDialogElement>(null);
+  const tripResetTrigger = useRef<HTMLButtonElement>(null);
+  const hasTripMetadata = travel.state.visits.length > 0 || Object.values(travel.state.trips).some(trip => trip.groups.length > 0 || trip.places.length > 0);
   const [feedback, setFeedback] = useState<Feedback>({ votes: [], dismissed: [] }),
     [hidden, setHidden] = useState<Hidden[]>([]),
     [busy, setBusy] = useState(false),
@@ -174,7 +177,6 @@ function OwnedPassportSettings() {
             See what Beesyde has learned from you, and change or delete any of it.
           </p>
         </div>
-      <section className="travel-panel"><h2>Trip organisation &amp; visit feedback</h2><p>Private groups, order and visits are separate from your Passport and saved notes.</p><button className="btn btn-secondary" disabled={travel.busy||!travel.ready} onClick={()=>void travel.change(emptyTravel())}>Clear trip organisation and visits</button>{travel.error&&<p role="alert">{travel.error}</p>}</section>
         <p role="status" aria-live="polite">
           {status}
         </p>
@@ -212,8 +214,17 @@ function OwnedPassportSettings() {
             <p className="muted">No hidden places. When you choose Not for me on a place, you can bring it back here.</p>
           )}
         </div>
+        <section className="divider" aria-labelledby="settings-data-title">
+          <h2 id="settings-data-title">Manage your data</h2>
+          <section className="travel-panel" aria-labelledby="settings-trip-title">
+            <h3 id="settings-trip-title">Trip organisation &amp; visit feedback</h3>
+            <p>Private groups, order and visits are separate from your Passport and saved notes.</p>
+            {travel.ready && !hasTripMetadata && !travel.error && <p>There’s no trip organisation or visit feedback to clear yet.</p>}
+            <button ref={tripResetTrigger} className="btn btn-secondary" disabled={busy||travel.busy||!travel.ready||!hasTripMetadata} onClick={()=>tripResetDialog.current?.showModal()}>Clear trip organisation and visits</button>
+            {travel.error&&<p role="alert">{travel.error}</p>}
+          </section>
         <div className="divider">
-          <span className="meta">Your Passport</span>
+          <h3>Your Passport</h3>
           <p className="muted">
             {userId
               ? "Your Passport is saved to your account and this browser."
@@ -229,7 +240,7 @@ function OwnedPassportSettings() {
         </div>
         {userId && (
           <div className="divider">
-            <span className="meta">Your account</span>
+            <h3>Your account</h3>
             <p className="muted">
               Deleting your account removes your Passport, saved lists and hidden places from Beesyde, and signs you
               out.
@@ -243,7 +254,17 @@ function OwnedPassportSettings() {
             </button>
           </div>
         )}
+        </section>
       </section>
+      <dialog ref={tripResetDialog} aria-labelledby="clear-trip-title" onClose={()=>tripResetTrigger.current?.focus({preventScroll:true})}>
+        <h2 id="clear-trip-title">Clear trip organisation and visits?</h2>
+        <p>This removes your groups, place order and visit feedback. Your saved places, notes and Passport stay here. This cannot be undone.</p>
+        {travel.error && <p role="alert">{travel.error}</p>}
+        <div className="actions">
+          <button className="btn btn-secondary" disabled={travel.busy} onClick={async()=>{if(await travel.change(emptyTravel()))tripResetDialog.current?.close();}}>Clear organisation and visits</button>
+          <button className="btn btn-quiet" disabled={travel.busy} onClick={()=>tripResetDialog.current?.close()}>Keep my trip data</button>
+        </div>
+      </dialog>
       <dialog id="erase-passport">
         <h2>{userId ? "Delete your Passport?" : "Delete your Passport from this device?"}</h2>
         <p>

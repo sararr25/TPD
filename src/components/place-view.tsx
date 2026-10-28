@@ -68,7 +68,6 @@ export function PlaceView({
             {price && <li aria-label={priceLabel(place.price)}>{price}</li>}
           </ul>
         )}
-        {passportState.state !== "ready" && <PassportPrompt />}
         <div className="place-page-actions">
           {swappable && (
             <Link className="btn btn-primary" href={twinHref}>
@@ -94,6 +93,7 @@ export function PlaceView({
             </a>
           )}
         </div>
+        {passportState.state !== "ready" && <div className="place-passport-prompt"><PassportPrompt actionClassName="btn btn-quiet" /></div>}
       </div>
       <PlaceVisitControl id={place.id}/>
       {hasPin && (

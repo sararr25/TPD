@@ -68,6 +68,11 @@
   border-top: 1px dashed var(--line-strong);
 }
 
+.place-passport-prompt {
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
 /* Save carries its label here, so it sizes to the text, not the square icon. */
 .place-page-actions .save .btn-icon {
   width: auto;

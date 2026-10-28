@@ -197,6 +197,7 @@ select + .toggle-group {
  .twin-spotlight .place-photo { display: block; grid-row: 1; min-height: 0; margin: 12px 0 12px 12px; border-radius: 8px; }
  .twin-spotlight .place-body { padding: 12px; }
  .twin-spotlight .place-actions { grid-column: 1 / -1; padding: 8px 12px 12px; }
+ .twin-spotlight .place-actions .btn { padding-inline:12px; font-size:var(--text-sm); }
  .twin-spotlight .place-body h3 { font-size: 27px; }
  .twin-outcome { min-height: 390px; }
 

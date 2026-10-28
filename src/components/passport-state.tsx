@@ -172,7 +172,7 @@ export function usePassportState() {
   if (!value) throw new Error("PassportStateProvider is missing");
   return value;
 }
-export function PassportPrompt() {
+export function PassportPrompt({ actionClassName = "btn btn-primary" }: { actionClassName?: string } = {}) {
   const passport = usePassportState();
   if (passport.state === "loading")
     return <p role="status">Loading your Passport…</p>;
@@ -221,5 +221,5 @@ export function PassportPrompt() {
         </Link>
       </p>
     );
-  return <OpenQuizButton />;
+  return <OpenQuizButton className={actionClassName} />;
 }

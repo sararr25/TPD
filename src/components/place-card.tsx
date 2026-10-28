@@ -133,14 +133,15 @@ export function PlaceCard({
               onSaved={onSaved}
               iconOnly={!featured}
             />
-            <button className="btn btn-icon" aria-label={`Not for me: hide ${place.name}`} title="Not for me" onClick={onHide}>
+            <button className={featured ? "btn btn-secondary" : "btn btn-icon"} aria-label={`Not for me: hide ${place.name}`} title="Not for me" onClick={onHide}>
               <ActionIcon name="close" />
+              {featured && <span>Not for me</span>}
             </button>
           </>
         )}
         {directions && place.lat !== null && place.lon !== null && (
           <a
-            className="btn btn-icon"
+            className={featured ? "btn btn-secondary" : "btn btn-icon"}
             aria-label={`Directions to ${place.name}`}
             title="Directions"
             href={`https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lon}`}
@@ -148,6 +149,7 @@ export function PlaceCard({
             rel="noreferrer"
           >
             <ActionIcon name="external" />
+            {featured && <span>Directions</span>}
           </a>
         )}
         <ComparePlace place={place} token={token} city={city} category={category} why={why} />

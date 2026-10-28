@@ -23,6 +23,18 @@ async function open(page: Page) {
   await expect(page.locator('#quiz-title')).toHaveText('Which would you walk into?');
 }
 async function inViewport(page:Page){
+ const readingArea=page.locator('.taste-body');
+ const scrollable=await readingArea.evaluate(n=>['auto','scroll'].includes(getComputedStyle(n).overflowY));
+ if(scrollable){
+  // Short screens deliberately scroll the reading area; each answer must be reachable.
+  for(const button of await readingArea.locator('button:visible').all()){
+   await button.scrollIntoViewIfNeeded();
+   expect(await button.evaluate(n=>{const r=n.getBoundingClientRect(),p=n.closest('.taste-body')!.getBoundingClientRect();return r.top>=p.top-.5&&r.bottom<=p.bottom+.5&&r.left>=0&&r.right<=innerWidth;})).toBe(true);
+  }
+  const fixed=await page.locator('.taste-top button:visible,.taste-nav button:visible').evaluateAll(nodes=>nodes.every(n=>{const r=n.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+.5&&r.left>=0&&r.right<=innerWidth+.5;}));
+  expect(fixed).toBe(true);
+  return;
+ }
  const bad=await page.locator('.taste-quiz button:visible').evaluateAll(nodes=>nodes.filter(n=>{const r=n.getBoundingClientRect();return r.top<0||r.bottom>innerHeight+.5||r.left<0||r.right>innerWidth+.5}).map(n=>n.textContent));
  expect(bad).toEqual([]);
  const clipped=await page.locator('.taste-body').evaluate(n=>n.scrollHeight>n.clientHeight+2);

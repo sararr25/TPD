@@ -374,7 +374,10 @@ export function CityView({ city }: { city: string }) {
       {!personal && (
         <div className="city-banner">
           <div>
-            <h2>Let’s find your side of {city}.</h2>
+            {!busy && !status && data && shown.length > 0 ? <h2 className="city-notice">
+              {data.notice}
+              {data.traitsUsed && " Your quiz helped us choose places for your budget and appetite for discovery."}
+            </h2> : <h2>Let’s find your side of {city}.</h2>}
             <p>Your favourites help us shape these picks around you.</p>
           </div>
           <PassportPrompt />
@@ -402,6 +405,12 @@ export function CityView({ city }: { city: string }) {
         }><p>Try a wider price range, another neighbourhood or another category. Your saved places are still here.</p></EmptyState>
       )}
       {!busy && !status && reasons.summary && <p className="city-recommendation-reason">{reasons.summary}</p>}
+      {personal && !busy && !status && data && shown.length > 0 && (
+        <p className="muted city-notice">
+          {data.notice}
+          {data.traitsUsed && " Your quiz helped us choose places for your budget and appetite for discovery."}
+        </p>
+      )}
       {/* No places to show (error, expired Passport): skip the empty map. */}
       {(busy || shown.length > 0) && (
       <>
@@ -440,12 +449,6 @@ export function CityView({ city }: { city: string }) {
       </>
       )}
       {city !== "Paris" && <p className="muted">Events are a separate Paris guide. <Link href="/paris?events=1">Explore the Paris events pilot</Link></p>}
-      {data && shown.length > 0 && (
-        <p className="muted city-notice">
-          {data.notice}
-          {data.traitsUsed && " Your quiz helped us choose places for your budget and appetite for discovery."}
-        </p>
-      )}
       </div>
       </div>
     </div>

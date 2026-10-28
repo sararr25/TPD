@@ -31,6 +31,20 @@
 }
 @media(max-height:650px) { .taste-quiz { gap:8px; padding-block:8px; }.taste-quiz #quiz-title { font-size:30px; }.taste-question>p:last-child,.taste-final>div>p { font-size:11px; margin-top:6px; }.taste-body { gap:8px; }.taste-tile { padding:5px; }.taste-tile>span { min-height:22px; font-size:10px; }.taste-card h3 { font-size:25px; }.taste-card { padding:10px; }.taste-kicker { margin-bottom:4px; }.taste-stops button { min-height:75px; }.taste-intro .taste-primary { margin-top:12px; } }
 @media(max-height:450px) and (min-width:751px) { .taste-quiz { padding:5px 18px; gap:5px; }.taste-body { gap:20px; }.taste-deck-area { grid-template-rows:16px minmax(0,1fr) 18px 44px; gap:2px; }.taste-drag-status { font-size:10px; }.taste-grid { gap:6px; }.taste-quiz .taste-nav { min-height:47px; padding-top:2px; }.taste-card h3 { font-size:20px; }.taste-card p { display:none; }.taste-deck-count { font-size:8px; }.taste-stops button { min-height:65px; }.taste-stops button>span { font-size:17px; margin-bottom:6px; } }
+/* Short phones need real answer rows, not fractional tracks smaller than targets. */
+@media (max-width:750px) and (max-height:650px) {
+ .taste-body { overflow-y:auto; overflow-x:hidden; align-items:start; align-content:start; grid-template-rows:auto auto; padding:4px 4px 8px; scroll-padding:8px; }
+ .taste-grid { height:auto; max-height:none; grid-auto-rows:minmax(112px,auto); align-content:start; }
+ .taste-tile { min-height:112px; padding:8px; }
+ .taste-tile>.taste-art { flex:none; height:64px; }
+ .taste-tile>span { font-size:14px; min-height:26px; }
+ .taste-question>p:last-child,.taste-final>div>p { font-size:14px; }
+ .taste-pair { grid-template-rows:auto 44px; }
+ .taste-deck-area { height:430px; min-height:430px; grid-template-rows:20px 300px 28px 44px; }
+ .taste-deck { height:300px; }
+ .taste-intro { grid-template-rows:auto 180px; }
+ .taste-intro-art { height:180px; }
+}
 /* At extreme zoom, preserve readable controls with scrolling rather than clipping. */
 @media(max-width:280px),(max-height:350px) { .taste-quiz { overflow:auto; grid-template-rows:auto 3px minmax(450px,1fr) auto; }.taste-body { min-height:450px; } }
 @media(prefers-reduced-motion:reduce) { .taste-quiz *, .taste-quiz *:before { transition:none!important; animation:none!important; }.taste-art,.taste-intro-art { transform:none!important; } }

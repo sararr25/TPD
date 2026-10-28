@@ -12,12 +12,12 @@ for(const reduced of [false,true])test(`theatre city settles, pauses and respect
  if(reduced){await expect(dot).toHaveCSS('opacity','0');await expect(dot).toHaveCSS('transform','none');return;}
  await expect(dot).toHaveCSS('opacity','1');
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
- const paused=await dot.evaluate(n=>getComputedStyle(n).transform);
- await page.waitForTimeout(250);expect(await dot.evaluate(n=>getComputedStyle(n).transform)).toBe(paused);
+ const paused=await dot.evaluate(n=>n.getAttribute('transform'));
+ await page.waitForTimeout(250);expect(await dot.evaluate(n=>n.getAttribute('transform'))).toBe(paused);
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'));});
- await expect.poll(()=>dot.evaluate(n=>getComputedStyle(n).transform)).not.toBe(paused);
+ await expect.poll(()=>dot.evaluate(n=>n.getAttribute('transform'))).not.toBe(paused);
  await page.emulateMedia({reducedMotion:'reduce'});await expect(dot).toHaveCSS('opacity','0');
- await expect.poll(()=>dot.evaluate(n=>new DOMMatrixReadOnly(getComputedStyle(n).transform).isIdentity)).toBe(true);
- const still=await dot.evaluate(n=>getComputedStyle(n).transform);await page.waitForTimeout(250);expect(await dot.evaluate(n=>getComputedStyle(n).transform)).toBe(still);
+ await expect.poll(()=>dot.evaluate(n=>new DOMMatrixReadOnly(n.getAttribute('transform')||'none').isIdentity)).toBe(true);
+ const still=await dot.evaluate(n=>n.getAttribute('transform'));await page.waitForTimeout(250);expect(await dot.evaluate(n=>n.getAttribute('transform'))).toBe(still);
  await page.getByRole('button',{name:'Close quiz',exact:true}).click();await expect(scene).toHaveCount(0);
 });

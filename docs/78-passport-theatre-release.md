@@ -13,3 +13,11 @@ Motion 14.7.1 is the only added application dependency. No auth/provider/schema 
 Chrome development: 48/48 existing quiz, S24-feedback, enlarged-text and automated-accessibility checks passed. Build including TypeScript and unit/service checks pass. A new scene regression reproduced a runtime reduced-motion defect in the library hook; a reactive useSyncExternalStore media subscription now stops the active traveller and updates answer feedback. Focused Chrome scene checks pass 2/2, covering initial reduced motion, background pause/resume, runtime switching and unmount. Compiled cross-browser checks and exact publication receipts follow below.
 
 The original physical S24 FAIL in docs/76 remains historical evidence. Concept C is owner-selected; physical S24 validation of this implementation, TalkBack, keyboard, account synchronisation and download/audio checks remain open in #59/#74/#79/#85/#86/#88. Photo rights/selection remain open in #62. Synthetic browser checks do not close those gates.
+
+## Release regression loop
+
+The compiled whole-product Chrome run executed 213 scenarios: 197 passed, 12 were explicitly skipped (development fixtures and opt-in A/B), and four failed. Two failures reproduced the same real compact City thumbnail gap: its fixed-inset image was still displaced by parallax. Displacement is now zero only at the compact layout breakpoint (600px); full/ink City covers retain their overscanned motion. The other failures were stale test assumptions: Paris-only events entry searched in Lisbon, and scrolling a streamed Home SVG before hydration. Both expectations are corrected without changing those product behaviors.
+
+After rebuilding, all 22 scenarios in the affected City, Events, motion and theatre suites pass. All 201 executed scenarios are therefore covered by the complete run plus focused successful reruns; this is not claimed as a second clean whole-suite run. Final build/TypeScript passes. Scene motion checks pass in Chrome and WebKit using the actual SVG transform attribute (WebKit does not expose it as the computed CSS transform).
+
+Independent review: Standards 0 residual findings; Spec 0 residual findings. The final compact-layout breakpoint matches the CSS exactly. Tests use synthetic browser fixtures, not production account/provider writes.

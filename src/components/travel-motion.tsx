@@ -38,10 +38,12 @@ export function TravelMotion({ children }: { children: ReactNode }) {
         parallaxSeen.add(element);
         const frame = element.closest(".h-visa-photo, .city-cover-photo, .place-hero");
         if (!frame) return;
+        // Compact city thumbnails have a fixed inset and no overscan.
+        const compactCity = () => window.matchMedia("(max-width: 600px)").matches && element.matches(".city-cover:not([data-ink-cover]) .city-cover-photo img");
         // The image has overscan; the readable frame never moves. Scrub binds
         // its offset to actual scroll rather than playing a timed entrance.
-        gsap.fromTo(element, { y: () => mobile() ? -8 : -18 }, {
-          y: () => mobile() ? 8 : 18, ease: m.ease.linear,
+        gsap.fromTo(element, { y: () => compactCity() ? 0 : mobile() ? -8 : -18 }, {
+          y: () => compactCity() ? 0 : mobile() ? 8 : 18, ease: m.ease.linear,
           scrollTrigger: { trigger: frame, start: "top bottom", end: "bottom top", scrub: true, invalidateOnRefresh: true },
         });
       });

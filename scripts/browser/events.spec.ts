@@ -31,6 +31,8 @@ for (const width of [390, 1440]) test(`Events real-date browse and filters ${wid
 test('events stay separate from local categories and failed agenda is explicit', async ({ page }) => {
  await worldFixtures(page); await page.goto(base+'/lisbon?tab=swap');
  await expect(page.getByRole('group', { name:'Category', exact:true }).getByRole('button', { name:/Events/i })).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'Explore the Paris events pilot',exact:true})).toHaveCount(0);
+ await page.goto(base+'/paris?tab=swap');
  await expect(page.getByRole('link',{name:'Explore the Paris events pilot',exact:true})).toHaveAttribute('href','/paris?events=1');
  await page.route('**/api/events?*',r=>r.fulfill({status:503,json:{error:'events_unavailable'}}));
  await page.goto(base+'/paris?events=1');

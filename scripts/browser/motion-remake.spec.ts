@@ -181,6 +181,8 @@ test("Home ending draws once and retains its dashed route after completion", asy
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(base);
   const ending = page.locator('.ink-home-ending .ink-journey');
+  // Await hydration before scrolling the streamed SVG, as in the static test.
+  await expect(ending.locator('.ink-desktop-map .ink-footstep').first()).toHaveAttribute('transform', /translate/);
   await ending.scrollIntoViewIfNeeded();
   await expect(ending).toHaveAttribute('data-ink-state', 'complete', { timeout: 8000 });
   await ending.locator('..').screenshot({ path: '.private/qa/all-changes-home-ending.png' });

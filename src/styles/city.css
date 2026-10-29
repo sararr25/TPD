@@ -413,6 +413,7 @@
    cover becomes a slim label; categories scroll in one row. */
 @media (max-width: 600px) {
   .city-cover .city-pins,
+  .city-cover .city-ink-map,
   .city-cover:not([data-ink-cover]) .city-journey-route,
   .city-cover:not([data-ink-cover]) .guide-folio { display: none; }
   .city-cover:not([data-ink-cover]) { grid-template-columns: minmax(0,1fr) 56px; padding: 8px; }

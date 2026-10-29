@@ -6,7 +6,8 @@ import { motionTokens as m } from "@/lib/motion-tokens";
 
 // Toasts (docs/22 1.2): feedback appears where the user is looking, at the
 // bottom of the screen, with an optional action such as Undo (and a second one
-// such as Change, #16). Queue messages; errors and actions require dismissal.
+// such as Change, #16). Queue messages; errors require dismissal, everything
+// else (actions included) leaves after 5s unless hovered or focused.
 type Action = { label: string; run: () => void };
 type Toast = { id: number; message: string; action?: Action; secondary?: Action; error?: boolean; origin?: HTMLElement; owner:string };
 type Show = (message: string, options?: { action?: Action; secondary?: Action; error?: boolean }) => void;
@@ -58,7 +59,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       timedId.current = toast.id;
       remaining.current = toast.error ? 8000 : 5000;
     }
-    if (paused || leaving || toast.action || toast.secondary || toast.error) return;
+    if (paused || leaving || toast.error) return;
     const started = performance.now();
     const timer = setTimeout(() => setLeaving(true), remaining.current);
     return () => { clearTimeout(timer); remaining.current = Math.max(0, remaining.current - (performance.now() - started)); };
@@ -81,6 +82,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div className="toast on-dark" data-error={toast.error || undefined} data-leaving={leaving || undefined} key={toast.id}
             onMouseEnter={() => suspend("hover", true)} onMouseLeave={() => suspend("hover", false)}
             onFocusCapture={() => suspend("focus", true)} onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) suspend("focus", false); }}>
+            <div className="toast-body">
             <span>{toast.message}{queue.length > 1 && <small> · {queue.length} messages</small>}</span>
             {[toast.action, toast.secondary].map(
               (a) =>
@@ -97,6 +99,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   </button>
                 ),
             )}
+            </div>
             <button className="btn btn-icon toast-close" aria-label="Dismiss" onClick={() => setLeaving(true)}>
               <ActionIcon name="close" />
             </button>

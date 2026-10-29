@@ -5,12 +5,10 @@ import Link from "next/link";
 import { CITIES, citySlug, LOCAL_NAME } from "@/lib/discovery";
 import { COVERS, cityCover } from "@/lib/city-covers";
 import { PassportSecurityLines } from "./passport-art";
-import { JourneyRoute } from "./travel-art";
 import { discovery } from "@/lib/discovery-client";
 import { selectHomeCities, type CityAffinity } from "@/lib/home-cities";
 import { usePassportState } from "./passport-state";
 import { useVisitedCities } from "./use-visited-cities";
-import { JourneyAnimation } from "./journey-animation";
 
 const REGIONS = ["All", "Europe", "Asia", "Americas"] as const;
 type Region = (typeof REGIONS)[number];
@@ -63,9 +61,8 @@ function CitiesIndex() {
       <div className="cities-index-title">
         <h1 id="h-cities">Choose your next city</h1>
         <p>Open a city to explore its places, or find a twin for one you already know.</p>
-        <JourneyRoute className="cities-journey-route" />
       </div>
-      <JourneyAnimation />
+      <CitySkyline />
       <div className="toggle-group on-dark" role="group" aria-label="Filter cities by region">
         {REGIONS.map(r => <button type="button" className="toggle" key={r} aria-pressed={region === r} onClick={() => setRegion(r)}>{r}</button>)}
       </div>
@@ -74,6 +71,13 @@ function CitiesIndex() {
       <CityCard city={city} big={index === 0 && region === "All"} />
     </li>)}</ul>
   </section>;
+}
+
+// A faint skyline outline: says "cities" without competing with the title (docs/84 §2).
+function CitySkyline() {
+  return <svg className="cities-skyline" viewBox="0 0 400 90" preserveAspectRatio="xMaxYMax meet" aria-hidden>
+    <path d="M0 90V70h20V55h12v15h14V40l8-10 8 10v30h18V60h10V45h6V30h4v15h6v25h20V50q10-14 20 0v20h16V58h22v12h12V35h8V20h4v15h8v35h18v-8h24v8h20V48h10v22h40v20" />
+  </svg>;
 }
 
 function CityCard({ city, big }: { city: string; big: boolean }) {

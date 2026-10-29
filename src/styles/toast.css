@@ -1,5 +1,7 @@
 /*
- * Toast (docs/22 1.2): one at a time, bottom centre, with optional actions.
+ * Toast (docs/22 1.2): one at a time, bottom right on desktop and above the
+ * bottom nav on mobile, so it never sits over the page's main content.
+ * Compact: message and actions share one row, close X pinned top right.
  * The toast is an `.on-dark` surface, so its buttons use the white variants.
  */
 .toast-region {
@@ -9,24 +11,39 @@
   left: 0;
   z-index: 50;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   padding: 0 var(--space-4);
   pointer-events: none;
 }
 
 .toast {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  max-width: 560px;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
+  align-items: flex-start;
+  gap: var(--space-1);
+  max-width: min(400px, 100%);
+  padding: var(--space-2) var(--space-1) var(--space-2) var(--space-3);
   border-radius: var(--radius-card);
   background: var(--ink);
   color: var(--on-brand);
-  font-size: 15px;
+  font-size: var(--text-sm);
+  line-height: 1.35;
   box-shadow: var(--shadow-lg);
   pointer-events: auto;
   animation: toast-in var(--dur-base) var(--ease-out);
+}
+
+.toast-body {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  align-self: center;
+}
+
+.toast-body > span {
+  flex: 1 1 140px;
 }
 
 .toast[data-error] {
@@ -36,13 +53,24 @@
 }
 
 .toast .btn {
-  font-size: var(--text-sm);
+  flex: none;
+  min-height: 28px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
 }
 
 .toast .toast-close {
+  width: 28px;
+  min-width: 28px;
+  padding: 0;
   border-color: transparent;
-  font-size: 22px;
-  line-height: 1;
+  --icon-size: 16px;
+}
+
+@media (max-width: 720px) {
+  .toast-region {
+    justify-content: center;
+  }
 }
 
 @keyframes toast-in {

@@ -13,9 +13,6 @@
   .h-visa-photo:hover img { transform:none; }
 }
 .toast-region { bottom:24px; }
-.toast { flex-wrap:wrap; gap:8px; max-width:min(600px,100%); }
-.toast > span { flex:1 1 160px; }
-.toast .btn { flex:none; }
 .toast[data-leaving] { opacity:0; transform:translateY(8px); transition:opacity var(--dur-fast), transform var(--dur-fast); pointer-events:none; }
 @media(max-width:720px) { .toast-region { bottom:calc(56px + env(safe-area-inset-bottom) + 16px); } }
 .place-card.skeleton, .h-skeleton, .h-visa-photo.skeleton { position:relative; overflow:hidden; background:var(--bg); animation:none; }

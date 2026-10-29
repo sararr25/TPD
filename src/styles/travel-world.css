@@ -11,10 +11,13 @@
 .travel-world .h-cities.page .h-cities-head { position:relative; isolation:isolate; overflow:hidden; align-items:start; gap:var(--space-6); padding:clamp(24px,4vw,48px); border-radius:3px 18px 18px 3px; border:0; background:var(--pass); color:var(--on-pass); }
 .travel-world .h-cities.page .h-cities-head > :not(.h-security) { position:relative; z-index:1; }
 .travel-world .cities-index-title { flex:1 1 55%; }
-.travel-world .cities-index-title h1 { max-width:20ch; font-size:clamp(36px,4.8vw,64px); line-height:1.05; }
-.travel-world .cities-index-title p { max-width:42ch; color:var(--on-brand-2); font-size:var(--text-md); }
-.cities-journey-route { margin-top:var(--space-5); color:var(--sun); }
-.cities-journey-route [data-travel-marker] { fill:var(--pass); }
+.travel-world .cities-index-title h1 { max-width:20ch; font-size:clamp(28px,3.4vw,40px); line-height:1.1; margin-bottom:var(--space-2); }
+.travel-world .cities-index-title p { max-width:42ch; color:var(--on-brand-2); font-size:var(--text-sm); }
+/* Short hero (docs/84 §2): skyline outline bottom right, small region toggles. */
+.travel-world .h-cities.page .h-cities-head { padding:var(--space-5) var(--space-6); gap:var(--space-4); }
+.travel-world .h-cities.page .h-cities-head > .cities-skyline { position:absolute; right:0; bottom:0; z-index:0; width:min(58%,560px); height:auto; fill:none; stroke:currentColor; stroke-width:1.2; opacity:.28; pointer-events:none; }
+.travel-world .h-cities.page .toggle { min-height:32px; padding-inline:var(--space-3); font-size:var(--text-xs); }
+.travel-world .h-cities.page .toggle-group { gap:var(--space-1); }
 .travel-world .h-cities.page .toggle-group { flex:1 0 100%; }
 .travel-world .h-cities.page .h-grid { padding:var(--space-4); gap:var(--space-5); }
 .travel-world .h-cities.page .h-city { border-radius:3px 15px 15px 3px; box-shadow:3px 4px 0 var(--line); }
@@ -69,7 +72,6 @@
  .travel-world .place-page .place-map .city-map { height:320px; }
 }
 @media (max-width:850px) {
- .travel-world .h-cities.page .h-cities-head { padding:var(--space-6); }
  .travel-world .place-hero { border-radius:5px 20px 0 0; }
  .travel-world .place-main { border-radius:0 0 20px 5px; border-left:9px solid var(--pass); }
  .travel-world .place-page { row-gap:var(--space-3); }
@@ -79,13 +81,12 @@
  .travel-world .h-cities.page { padding:var(--space-2); border-left-width:7px; }
  .travel-world .h-cities.page .h-cities-head { padding:var(--space-5); gap:var(--space-4); }
  .travel-world .cities-index-title { flex-basis:100%; }
- .travel-world .cities-index-title h1 { font-size:40px; max-width:13ch; }
+ .travel-world .cities-index-title h1 { font-size:28px; max-width:13ch; }
+ .travel-world .h-cities.page .h-cities-head > .cities-skyline { width:85%; opacity:.16; }
  .travel-world .cities-index-title p { font-size:var(--text-sm); }
  .journey-animation { display:none; }
- .cities-journey-route { width:100%; height:auto; margin-top:var(--space-5); }
  .travel-world .h-cities.page .h-grid { padding:var(--space-2); }
  .travel-world .h-cities.page .toggle-group { gap:var(--space-1); }
- .travel-world .h-cities.page .toggle { padding-inline:var(--space-3); font-size:13px; }
  .city-journey-route { width:100%; height:auto; }
  .city-cover .guide-folio { font-size:10px; margin-bottom:var(--space-3); }
  .travel-world .city-cover-photo img { inset:8px; width:calc(100% - 16px); height:calc(100% - 16px); }

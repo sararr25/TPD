@@ -85,12 +85,12 @@ export function HomeSwapDemo() {
         {error && <p className="h-error" role="alert">{error}</p>}
         {demo && (
           <>
-            <p className="meta" role="status">{demo.results.length} alternative{demo.results.length === 1 ? "" : "s"} to Time Out Market · Keep is a preference, so check each result.</p>
+            <p className="meta" role="status"><span className="h-demo-all">{demo.results.length} alternative{demo.results.length === 1 ? "" : "s"} to Time Out Market</span><span className="h-demo-one">Closest alternative to Time Out Market</span> · Keep is a preference, so check each result.</p>
             <div className="place-grid">
-              {demo.results.map((r) => {
+              {demo.results.map((r, i) => {
                 const kept = traits(r, "keep"), changed = traits(r, "change");
                 return (
-                  <article className="place-card" key={r.place.id}>
+                  <article className={i ? "place-card h-demo-extra" : "place-card"} key={r.place.id}>
                     <div className="place-body">
                       <span className="place-role">{r.role}</span>
                       <h3><Link href={`/lisbon/${r.place.id.toLowerCase()}`}>{r.place.name}</Link></h3>

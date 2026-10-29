@@ -745,3 +745,16 @@
 .h-resume-counts{display:block;font-size:var(--text-sm);color:var(--ink-2)}
 
 @media(max-width:760px){.h-resume-entry>div{flex-basis:100%}.h-resume-entry strong{-webkit-line-clamp:1}.h-resume-counts{line-height:1.25}}
+
+/* #103 How it works: Passport pages — numbered steps, two plain columns. */
+.how-it-works { max-width: 960px; margin: 0 auto; padding-block: var(--space-8); }
+.how-it-works h1 em { color: var(--brand); }
+.how-steps { list-style: none; padding: 0; margin: var(--space-8) 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); }
+.how-steps li { display: grid; gap: var(--space-2); padding: var(--space-5); background: var(--paper); border: 1px solid var(--line); border-left: 6px solid var(--pass); border-radius: 3px var(--radius-card) var(--radius-card) 3px; }
+.how-steps h2 { font: var(--weight-semibold) var(--text-lg)/var(--leading-snug) var(--font-body); margin: 0 0 var(--space-1); }
+.how-steps p { margin: 0; font-size: var(--text-sm); color: var(--ink-2); }
+.how-number { font: 28px var(--font-display); color: var(--brand); }
+.how-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-6); }
+.how-columns h2 { font-size: var(--display-sm); }
+.how-columns li { margin-block: var(--space-2); }
+.how-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }

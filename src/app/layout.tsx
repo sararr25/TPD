@@ -71,6 +71,7 @@ export default function RootLayout({
                   </Link>
                 ))}
                 <Link href="/compare">Qloo vs AI</Link>
+                <Link href="/how-it-works">How it works</Link>
                 <Link href="/photo-credits">Photo credits</Link>
               </nav>
             </div>

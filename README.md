@@ -25,6 +25,8 @@ Latest release verification: [publication and real-provider verification](docs/8
 
 Latest implementation continuation: [post-release owner feedback and tickets #89–92](docs/80-post-release-ticket-plan.md). Linked Twin identity, one favourites invitation, spacing and enlarged shared journey art; local verification is separate from publication.
 
+Latest demo preparation: [90-second demo script](docs/82-demo-script.md) and `/how-it-works` (programme [#93](https://github.com/sararr25/TPD/issues/93)).
+
 ## Local development
 
 Node.js 22.19+ and npm are required. Stack: Next.js App Router, TypeScript, React; deployed on Vercel with Neon Postgres and optional Neon Auth/Google sign-in.

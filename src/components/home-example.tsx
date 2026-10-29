@@ -99,10 +99,10 @@ export function HomeExample() {
         </ul>
       )}
       <div className="h-visa-actions">
-        <OpenQuizButton />
-        <Link className="btn btn-quiet" href="/lisbon?example=1">
-          Try this Passport
+        <Link className="btn btn-primary" href="/lisbon?example=1">
+          See Lisbon through this Passport <ActionIcon name="right" />
         </Link>
+        <OpenQuizButton className="btn btn-quiet" />
       </div>
     </aside>
   );

@@ -21,6 +21,8 @@ export function PlacePhoto({
   const photos = usePlacePhotos();
   const [failed, setFailed] = useState<string[]>([]);
   const [loaded, setLoaded] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const ref = useRef<HTMLImageElement>(null);
   const previous = placeId ? photos?.read(placeId,city) : null;
   const actual = image && !failed.includes(image) ? image : previous && !failed.includes(previous) ? previous : null;
@@ -33,9 +35,9 @@ export function PlacePhoto({
   // A cached failure can complete before React attaches onError at hydration.
   useEffect(() => {
     if (ref.current?.complete && ref.current.naturalWidth === 0) fail();
-    else if (ref.current?.complete && actual) {
-      setLoaded(actual);
-      if (placeId) photos?.loaded(placeId,city,actual);
+    else if (ref.current?.complete) {
+      setLoaded(src);
+      if (actual && placeId) photos?.loaded(placeId,city,actual);
     }
   }, [src, photos, placeId, city, actual]);
   return src ? (
@@ -44,6 +46,7 @@ export function PlacePhoto({
       <img
         ref={ref}
         data-place-image={actual ? "" : undefined}
+        data-pending={(mounted && loaded !== src) || undefined}
         key={src}
         src={src}
         alt={actual ? "" : `${city} city photo`}

@@ -44,7 +44,7 @@ export default function Home() {
       <HomeSwapDemo />
 
       <section className="h-how" aria-labelledby="h-how">
-        <h2 id="h-how">A city guide shaped by what you love.</h2>
+        <h2 id="h-how">Three ways in.</h2>
         <ol className="h-steps">
           {STEPS.map(([title, text]) => (
             <li key={title}>

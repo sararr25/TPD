@@ -63,4 +63,4 @@ export function PlaceComparisonProvider({children}:{children:ReactNode}){
    </div>
   </dialog></Context.Provider>;
 }
-export function ComparePlace({place,token,city,category,why}:Compared){const context=useContext(Context);if(!context||category==='neighbourhood')return null;const selected=context.items.some(i=>i.place.id===place.id);return <button className="btn btn-quiet" aria-pressed={selected} aria-label={`${selected?'Remove':'Compare'} ${place.name}${selected?' from comparison':''}`} onClick={()=>context.toggle({place,token,city,category,why})}>{selected?'In comparison':'Compare'}</button>;}
+export function ComparePlace({place,token,city,category,why}:Compared){const context=useContext(Context);if(!context||category==='neighbourhood')return null;const selected=context.items.some(i=>i.place.id===place.id);return <button className="btn btn-icon" aria-pressed={selected} aria-label={`${selected?'Remove':'Compare'} ${place.name}${selected?' from comparison':''}`} title={selected?'In comparison':'Compare'} onClick={()=>context.toggle({place,token,city,category,why})}><ActionIcon name={selected?'check':'compare'} /></button>;}

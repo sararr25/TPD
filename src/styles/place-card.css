@@ -209,3 +209,9 @@
 .place-location{font-size:var(--text-sm);line-height:1.4;margin:4px 0;color:var(--ink-2);overflow-wrap:anywhere}
 .place-listed-traits{font-size:var(--text-sm)}
 .place-listed-traits summary{min-height:44px;display:flex;align-items:center;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+
+/* #100: until a photo arrives, the frame is Passport paper with faint
+   security lines, not a grey box; the photo then develops in. */
+.place-photo { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--pass) 7%, transparent) 0 1px, transparent 1px 9px), var(--sun-soft); }
+.place-photo img { transition: opacity var(--dur-slow) var(--ease-out), filter var(--dur-slow) var(--ease-out); }
+.place-photo img[data-pending] { opacity: 0; filter: saturate(0.2) blur(6px); }

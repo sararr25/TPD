@@ -13,6 +13,7 @@ const paths = {
   plus: <path d="M12 5v14M5 12h14"/>,
   minus: <path d="M5 12h14"/>,
   check: <path d="m5 12 4 4L19 6"/>,
+  compare: <><rect x="3.5" y="5" width="7" height="14" rx="1.5"/><rect x="13.5" y="5" width="7" height="14" rx="1.5"/></>,
   share: <><path d="M12 15V3m-4 4 4-4 4 4M5 11v9h14v-9"/></>,
   settings: <><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></>,
 } satisfies Record<string, ReactNode>;

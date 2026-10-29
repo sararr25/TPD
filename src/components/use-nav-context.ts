@@ -16,7 +16,7 @@ export function useNavContext() {
   const known = city || stored;
   return {
     current: city
-      ? search.get("tab") === "swap"
+      ? ["swap", "twin"].includes(search.get("tab") ?? "")
         ? "/swap"
         : "/explore"
       : path.startsWith("/passport")

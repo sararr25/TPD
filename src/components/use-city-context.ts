@@ -37,7 +37,7 @@ export function useCityContext() {
     areas,
     facets: Object.fromEntries(categories.map((c) => [c, search.get(`trait-${c}`) || ""])),
     view: search.get("view") === "map" ? ("map" as const) : ("list" as const),
-    tab: search.get("tab") === "swap" ? ("swap" as const) : ("foryou" as const),
+    tab: ["swap", "twin"].includes(search.get("tab") ?? "") ? ("swap" as const) : ("foryou" as const),
     update,
     query: search.toString(),
   };

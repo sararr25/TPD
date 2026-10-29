@@ -432,7 +432,7 @@ function OwnedPassportBuilder() {
           </p>
         </section>
   );
-  return <PassportFolio key={passportState.owner} answers={profile} favourites={selected.map(s => s.entity.name)} editor={editor} onStartQuiz={openQuiz}/>;
+  return <PassportFolio key={passportState.owner} answers={profile} favourites={selected.map(s => ({ name: s.entity.name, type: s.entity.type }))} editor={editor} onStartQuiz={openQuiz}/>;
 }
 
 export function PassportBuilder(){const {data:session,isPending}=authClient.useSession();return isPending?<p role="status">Opening your Passport…</p>:<OwnedPassportBuilder key={session?.user?.id||'guest'}/>;}

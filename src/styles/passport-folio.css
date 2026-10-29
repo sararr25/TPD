@@ -56,3 +56,45 @@
 .pf-city-stamp,.pf-empty-stamp{width:88px;height:88px}
 .pf-stamps{gap:var(--space-3)}
 @media(max-width:850px){.pf-portrait{padding-right:0}.pf-city-stamp{width:80px;height:80px}}
+/* docs/84 §6: the left page is the purple cover holding off-white ink stamps;
+   the right page stays paper. Book capped narrower, type one step smaller. */
+.pf-book{max-width:760px;--stamp-chalk:#efe8dc}
+.pf-left{background:var(--pass);color:var(--on-pass)}
+.pf-left .pf-cover{margin:0;border-radius:0;padding:var(--space-4) var(--space-5) 0}
+.pf-left .pf-cover .h-security{opacity:.08}
+.pf-left .pf-cover h1{font-size:24px}
+.pf-left .pf-heading h2{font-size:var(--text-lg);color:inherit}
+.pf-left .pf-travels>p,.pf-left .pf-storage-note{color:var(--on-brand-2);font-size:var(--text-xs)}
+.pf-left .pf-stamp-status{color:var(--stamp-chalk)}
+.pf-city-stamp{--ink:var(--stamp-chalk);color:var(--ink);opacity:.9;border-width:2.5px;outline-offset:-6px;gap:1px}
+.pf-city-stamp strong{font:700 18px/1 var(--font-mono);letter-spacing:1px}
+.pf-city-stamp svg{width:30px;height:24px;margin:2px 0}
+.pf-city-stamp small{font-size:8px;letter-spacing:.8px;text-transform:uppercase;max-width:76px;overflow-wrap:anywhere}
+/* Three stamp shapes, like a real passport collects over time. */
+.pf-city-stamp:nth-child(3n+2){width:118px;border-radius:10px;transform:rotate(6deg)}
+.pf-city-stamp:nth-child(3n){border-radius:30% 30% 46% 46%/22% 22% 50% 50%;transform:rotate(-4deg)}
+.pf-empty-stamp{border-color:color-mix(in srgb,var(--stamp-chalk) 55%,transparent);color:var(--on-brand-2)}
+.pf-portrait h2{font-size:clamp(24px,2.2vw,28px)}
+.pf-illustration{width:96px}
+.pf-portrait{padding-right:100px;min-height:120px}
+.pf-insights h3{font-size:var(--text-md)}
+/* Favourite chips by category, three shades each. */
+.pf-fav-chips{display:flex;flex-wrap:wrap;gap:6px;margin:var(--space-2) 0 var(--space-3);padding:0;list-style:none}
+.pf-fav-chips li{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:var(--text-xs);line-height:1.4}
+.pf-fav-chips li>span{font-size:10px;opacity:.75}
+.pf-fav-chips [data-kind=music]{--c:var(--brand-strong);background:#f3e6f6}
+.pf-fav-chips [data-kind=music][data-shade="1"]{background:#ead2f0}
+.pf-fav-chips [data-kind=music][data-shade="2"]{background:#e0c4ea}
+.pf-fav-chips [data-kind=film]{--c:#1d4a50;background:var(--act-compare-soft)}
+.pf-fav-chips [data-kind=film][data-shade="1"]{background:#d6eaec}
+.pf-fav-chips [data-kind=film][data-shade="2"]{background:#c6e0e3}
+.pf-fav-chips [data-kind=book]{--c:#5c3b06;background:#fbecc4}
+.pf-fav-chips [data-kind=book][data-shade="1"]{background:#f8e2a8}
+.pf-fav-chips [data-kind=book][data-shade="2"]{background:#f4d88f}
+.pf-fav-chips [data-kind=place]{--c:#6b2614;background:#fbe3da}
+.pf-fav-chips [data-kind=place][data-shade="1"]{background:#f8d4c8}
+.pf-fav-chips [data-kind=place][data-shade="2"]{background:#f4c4b4}
+.pf-fav-chips [data-kind=other]{--c:var(--ink-2);background:var(--bg)}
+.pf-fav-chips li{color:var(--c)}
+@media(max-width:850px){.pf-portrait{padding-right:0}}
+@media(max-width:850px){.pf-city-stamp{width:96px;height:96px}.pf-city-stamp:nth-child(3n+2){width:120px}.pf-city-stamp strong{font-size:15px}.pf-city-stamp small{font-size:7px;max-width:70px}}

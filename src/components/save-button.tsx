@@ -207,16 +207,17 @@ function OwnedSaveButton({
         ref={trigger}
         disabled={busy || isPending || (signedIn && !saveOwner)}
         aria-haspopup="dialog"
-        className={iconOnly ? "btn btn-icon" : "btn btn-secondary"}
+        className={iconOnly ? "btn btn-act" : "btn btn-secondary"}
+        data-act="save"
         aria-expanded={open}
         aria-controls={id}
         data-on={saved.length > 0 || undefined}
         onClick={onTap}
         aria-label={iconOnly ? `${saved.length ? "Saved" : "Save"} ${place.name}` : undefined}
-        title={iconOnly ? (saved.length ? "Saved" : "Save") : undefined}
+        title={saved.length ? "Saved. Tap to change lists" : "Save to your trip"}
       >
         <ActionIcon name="bookmark" filled={saved.length > 0} />
-        {!iconOnly && (saved.length ? " Saved" : " Save")}
+        <span aria-hidden={iconOnly || undefined}>{saved.length ? "Saved" : "Save"}</span>
       </button>
       {imprint?.placeId === place.id && saved.length > 0 && <span key={imprint.serial} className="save-imprint" data-travel-stamp aria-hidden="true">SAVED<br />BEESYDE</span>}
       {error && !open && <p className="save-error" role="alert">{error}</p>}

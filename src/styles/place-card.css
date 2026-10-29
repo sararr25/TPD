@@ -4,8 +4,8 @@
  */
 .place-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
 }
 
 .place-card {
@@ -43,7 +43,7 @@
   position: relative;
   display: grid;
   place-items: center;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   border-radius: var(--radius-card) var(--radius-card) 0 0;
   background: var(--bg);
   color: var(--ink-2);
@@ -84,13 +84,13 @@
   flex: 1;
   display: grid;
   align-content: start;
-  gap: var(--space-2);
-  padding: var(--space-4) var(--space-4) var(--space-2);
+  gap: 6px;
+  padding: var(--space-3) var(--space-3) var(--space-1);
 }
 
 .place-body h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 18px;
   line-height: var(--leading-snug);
   text-wrap: pretty;
 }
@@ -124,13 +124,18 @@
   list-style: none;
 }
 
+/* Small tags, tinted so a card is not all black and white. The last chip is
+   usually the price, which reads in lemon. */
 .place-chips li {
-  padding: var(--space-1) var(--space-2);
+  padding: 2px var(--space-2);
   border-radius: var(--radius-pill);
-  background: var(--bg);
-  color: var(--ink-2);
-  font-size: var(--text-sm);
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: var(--text-xs);
 }
+.place-chips li:nth-child(3n + 2) { background: var(--act-compare-soft); color: var(--act-compare); }
+.place-chips li:nth-child(3n) { background: var(--act-hide-soft); color: var(--stamp-ink); }
+.place-chips li[aria-label] { background: var(--sun-soft); color: var(--ink); }
 
 /* Swap: the venue check under a twin */
 .place-check {
@@ -158,18 +163,13 @@
 .place-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4) var(--space-4);
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-3) var(--space-3);
 }
 
 .place-actions .grow {
   flex: 1;
-}
-
-@media (max-width: 1180px) {
-  .place-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 850px) {
@@ -203,7 +203,7 @@
 /* The taste connection is the first supporting line on city picks (#27). */
 .city .place-why {
   color: var(--brand);
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
 }
 .place-location{font-size:var(--text-sm);line-height:1.4;margin:4px 0;color:var(--ink-2);overflow-wrap:anywhere}

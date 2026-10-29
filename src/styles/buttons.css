@@ -7,7 +7,7 @@
  *   .btn.btn-icon       square icon-only action; aria-pressed / data-on = on
  *   .btn-chip           modifier: pill shape (removable chips, inline links)
  *
- * Works on <button> and <a>. Every size keeps a 44px touch target.
+ * Works on <button> and <a>. Buttons are 36px tall (above the 24px WCAG 2.2 target).
  * Inside an `.on-dark` surface, secondary / quiet / icon read in white.
  */
 .btn {
@@ -15,13 +15,13 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: var(--target);
-  padding: 0 var(--space-5);
+  min-height: var(--control);
+  padding: 0 var(--space-4);
   border: 1.5px solid transparent;
   border-radius: var(--radius-control);
   background: transparent;
   color: var(--ink);
-  font: var(--weight-semibold) var(--text-md) / 1.2 var(--font-body);
+  font: var(--weight-semibold) var(--text-sm) / 1.2 var(--font-body);
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
@@ -85,7 +85,7 @@
 
 /* Icon */
 .btn-icon {
-  width: var(--target);
+  width: var(--control);
   padding: 0;
   background: var(--paper);
   border-color: var(--line);
@@ -103,6 +103,28 @@
   background: var(--brand-soft);
   color: var(--brand);
 }
+
+/* Action pill: small, coloured, icon + short label (Save / Not for me / Compare).
+   Off = tinted outline; on (aria-pressed / data-on) = filled. */
+.btn-act {
+  --act: var(--ink-2);
+  --act-soft: var(--bg);
+  --icon-size: 15px;
+  min-height: 30px;
+  padding: 0 var(--space-3);
+  gap: 6px;
+  border-color: color-mix(in srgb, var(--act) 35%, transparent);
+  border-radius: var(--radius-pill);
+  background: var(--act-soft);
+  color: var(--act);
+  font-size: var(--text-xs);
+}
+.btn-act[data-act="save"] { --act: var(--brand); --act-soft: var(--brand-soft); }
+.btn-act[data-act="hide"] { --act: var(--stamp-ink); --act-soft: var(--act-hide-soft); }
+.btn-act[data-act="compare"] { --act: var(--act-compare); --act-soft: var(--act-compare-soft); }
+.btn-act:hover:not(:disabled) { border-color: var(--act); }
+.btn-act[aria-pressed="true"],
+.btn-act[data-on] { background: var(--act); border-color: var(--act); color: var(--on-brand); }
 
 /* Chip shape */
 .btn-chip {

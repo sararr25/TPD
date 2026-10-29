@@ -4,8 +4,9 @@ import type { CityAffinity } from '../home-cities.ts';
 import { CITY_DESTINATIONS } from './city-destinations.ts';
 import { verifySelection } from './discovery-service.ts';
 import { qloo, DiscoveryError } from './qloo.ts';
+import { MIN_ENTITIES, MAX_ENTITIES } from '../quiz.ts';
 export async function cityAffinities(tokens: unknown): Promise<{ cities: CityAffinity[]; checkedAt: string }> {
-  if (!Array.isArray(tokens) || tokens.length < 3 || tokens.length > 5) throw new DiscoveryError('invalid_passport', 400);
+  if (!Array.isArray(tokens) || tokens.length < MIN_ENTITIES || tokens.length > MAX_ENTITIES) throw new DiscoveryError('invalid_passport', 400);
   const favourites = tokens.map(verifySelection);
   if (new Set(favourites.map(f => f.id)).size !== favourites.length) throw new DiscoveryError('invalid_passport', 400);
   const { data, checkedAt } = await qloo('/v2/insights', {

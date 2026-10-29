@@ -7,7 +7,7 @@ import { ActionIcon } from "@/components/action-icon";
 export const metadata = { title: "How it works · Beesyde" };
 
 const STEPS = [
-  ["01", "Your taste", "The quiz and 3–5 favourite artists, films or books become your Taste Passport. Nothing about places is asked."],
+  ["01", "Your taste", "The quiz and 3–10 favourite artists, films or books become your Taste Passport. Nothing about places is asked."],
   ["02", "Taste → places", "Qloo's Taste AI links those favourites to places across domains: someone who loves Khruangbin and Before Sunrise tends to love certain bars, cafés and museums."],
   ["03", "A reason for each pick", "In the example Passport each pick is credited to the favourite that ranks it highest. If no single favourite returns a place, we show no reason rather than invent one."],
   ["04", "Find its twin", "Start from a place you wanted. Keep, delete or ignore its traits, and Qloo returns places that keep what you loved."],

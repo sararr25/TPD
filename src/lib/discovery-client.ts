@@ -20,7 +20,7 @@ export const MESSAGES: Record<string, string> = {
   invalid_city: "Choose one of the listed cities.",
   invalid_feedback: "Your feedback could not be saved. Please try again.",
   invalid_budget: "Choose a supported price level for restaurants, bars or cafés.",
-  invalid_passport: "Choose 3–5 different favourites in your Passport first.",
+  invalid_passport: "Choose 3–10 different favourites in your Passport first.",
   location_unconfirmed:
     "We couldn’t confirm the city, so we didn’t widen your search.",
   signed_out: "Your session has ended. Sign in again to use your account.",

@@ -3,7 +3,7 @@ import {parseSearch,searchKey,type SearchDraft} from "@/lib/search-draft";
 import { ActionIcon } from "./action-icon";
 import { JourneyRoute } from "./travel-art";
 import { usePassportState, PassportPrompt } from "./passport-state";
-import { useEffect, useLayoutEffect, useId, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useId, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
   CITIES,
@@ -71,6 +71,28 @@ const CHECK_PLAIN: Record<CheckStatus, string> = {
 };
 // `fixedCity` + `embedded`: inside a city page the page's city is used and the
 // page title and city selector are hidden. Standalone /swap passes neither.
+// DNA double helix between the starting place and its twin. Each lit rung is
+// one Keep trait the two places share; the rest stay faint.
+const HELIX_RUNGS = 7;
+function TwinHelix({ shared }: { shared: number }) {
+  const strand = (phase: number) =>
+    Array.from({ length: 41 }, (_, i) => {
+      const x = i * 3;
+      return `${i ? "L" : "M"}${x} ${20 + 13 * Math.sin((x / 120) * Math.PI * 3 + phase)}`;
+    }).join("");
+  return (
+    <svg className="twin-thread-route twin-helix" viewBox="0 0 120 40" fill="none" aria-hidden="true">
+      {Array.from({ length: HELIX_RUNGS }, (_, i) => {
+        const x = 8 + i * (104 / (HELIX_RUNGS - 1));
+        const dy = 13 * Math.sin((x / 120) * Math.PI * 3);
+        return <line key={i} className="twin-helix-rung" data-on={i < shared || undefined} x1={x} x2={x} y1={20 + dy} y2={20 - dy} style={{ "--rung": i } as CSSProperties} />;
+      })}
+      <path className="twin-helix-strand" d={strand(0)} />
+      <path className="twin-helix-strand" d={strand(Math.PI)} />
+    </svg>
+  );
+}
+
 export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: string; embedded?: boolean } = {}) {
   const [category, setCategory] = useState<PlaceCategory>("restaurant"),
     [rememberedCity, setCity, rememberedKnown] = useCity(),
@@ -557,7 +579,7 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
           <button className="btn btn-quiet" onClick={editSearch}>Edit search</button></div>
         <div className="twin-thread" data-state={busy ? "searching" : swapError ? "error" : closest ? "success" : "empty"}>
           <div className="twin-thread-origin"><span className="meta">Starting place · {city}</span><strong>{reference?.entity.name}</strong></div>
-          <div className="twin-thread-route" aria-hidden="true"><span /><i>→</i><span /></div>
+          <TwinHelix shared={closest && !busy ? keptChanged(closest).kept.length : 0} />
           <div className="twin-thread-traits">
             {busy ? <><span className="meta">Looking for</span><p>{traitNames("keep").join(" · ") || "A place with shared traits"}</p></> : closest ? <>
               <strong>{closest.place.name}</strong>

@@ -3,6 +3,7 @@ import { neon } from "@neondatabase/serverless";
 import { UUID, type Entity } from "../discovery.ts";
 import { selection, verifySelection, type Selection } from "./discovery-service.ts";
 import { DiscoveryError } from "./qloo.ts";
+import { MAX_ENTITIES } from "../quiz.ts";
 
 // E06: the signed-in user's Passport in Neon (table user_passport). Only
 // entities the server itself signed are accepted; reads re-sign them so a
@@ -29,7 +30,7 @@ export async function readUserPassport(
 }
 
 export async function saveUserPassport(userId: string, tokens: unknown) {
-  if (!Array.isArray(tokens) || tokens.length > 5)
+  if (!Array.isArray(tokens) || tokens.length > MAX_ENTITIES)
     throw new DiscoveryError("invalid_passport", 400);
   const entities = tokens.map(verifySelection);
   if (new Set(entities.map((e) => e.id)).size !== entities.length)

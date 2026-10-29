@@ -222,7 +222,7 @@ export const QUESTIONS: Question[] = [
 
 export const SLIDER_STOPS = 5;
 export const MIN_ENTITIES = 3;
-export const MAX_ENTITIES = 5;
+export const MAX_ENTITIES = 10;
 
 // Every card that stands for a Qloo entity, by card id.
 export const ENTITY_CARDS: Record<string, Card & { entity: EntityRef }> =

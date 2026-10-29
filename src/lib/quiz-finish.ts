@@ -1,4 +1,4 @@
-import { QUIZ_KEY, cleanAnswers, type Answers } from "./quiz";
+import { QUIZ_KEY, MAX_ENTITIES, cleanAnswers, type Answers } from "./quiz";
 import { LIVE_PASSPORT_KEY } from "./discovery";
 import { discovery, readSelections, type Selection } from "./discovery-client";
 import { saveAccountPassport, saveAccountQuiz } from "./account";
@@ -20,8 +20,8 @@ function changed() {
 export function pendingPassport(owner: string): Pending | null {
   try {
     const p = JSON.parse(localStorage.getItem(pendingKey(owner)) || "null");
-    if (!p || !Array.isArray(p.choices) || p.choices.length > 5 ||
-      !Array.isArray(p.cards) || p.cards.length > 5 || !p.cards.every((c: unknown) => typeof c === "string" && c.length <= 120) ||
+    if (!p || !Array.isArray(p.choices) || p.choices.length > MAX_ENTITIES ||
+      !Array.isArray(p.cards) || p.cards.length > MAX_ENTITIES || !p.cards.every((c: unknown) => typeof c === "string" && c.length <= 120) ||
       !p.answers || typeof p.answers !== "object" || Array.isArray(p.answers) || typeof p.passportSaved !== "boolean") return null;
     const choices = readSelections(JSON.stringify(p.choices));
     if (choices.length !== p.choices.length) return null;

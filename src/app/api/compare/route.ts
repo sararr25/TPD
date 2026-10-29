@@ -2,6 +2,7 @@ import { DiscoveryError } from "@/lib/server/qloo";
 import { askLlm } from "@/lib/server/llm";
 import { checkBudget } from "@/lib/server/budget";
 import { CITIES } from "@/lib/discovery";
+import { MAX_ENTITIES } from "@/lib/quiz";
 export const runtime = "nodejs";
 const headers = {
   "Cache-Control": "private, no-store",
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     if (
       !Array.isArray(favourites) ||
       favourites.length < 1 ||
-      favourites.length > 5 ||
+      favourites.length > MAX_ENTITIES ||
       !favourites.every((f) => typeof f === "string" && f.length > 0 && f.length <= 120) ||
       typeof city !== "string" ||
       !Object.hasOwn(CITIES, city) ||

@@ -14,7 +14,7 @@ import {
   stagePassport,
   retryPassportSave,
 } from "@/lib/quiz-finish";
-import { type Answers } from "@/lib/quiz";
+import { MAX_ENTITIES, MIN_ENTITIES, type Answers } from "@/lib/quiz";
 import { type Feedback } from "@/lib/feedback";
 import { LIVE_PASSPORT_KEY } from "@/lib/discovery";
 import { discovery, type Selection } from "@/lib/discovery-client";
@@ -158,8 +158,8 @@ function OwnedPassportBuilder() {
       setStatus("Already in your Passport.");
       return;
     }
-    if (selected.length >= 5) {
-      setStatus("Choose up to 5. Remove one to add another.");
+    if (selected.length >= MAX_ENTITIES) {
+      setStatus(`Choose up to ${MAX_ENTITIES}. Remove one to add another.`);
       return;
     }
     save([...selected, s]);
@@ -188,8 +188,8 @@ function OwnedPassportBuilder() {
             <PassportSecurityLines />
             <h1 tabIndex={-1}>What you love</h1>
             <p className="lead">
-              What you love, so we can pick places for you. Add 3–5 favourite
-              artists, films, books or places.
+              What you love, so we can pick places for you. Add {MIN_ENTITIES}–{MAX_ENTITIES} favourite
+              artists, films, books or places. More favourites, sharper picks.
             </p>
           </div>
           {showGuest && (
@@ -378,7 +378,7 @@ function OwnedPassportBuilder() {
                   disabled={
                     busy ||
                     selected.some((x) => x.entity.id === s.entity.id) ||
-                    selected.length >= 5
+                    selected.length >= MAX_ENTITIES
                   }
                   onClick={() => add(s)}
                 >
@@ -402,7 +402,7 @@ function OwnedPassportBuilder() {
               </button>
             ))}
           </div>
-          <p className="meta">{selected.length} of 5 chosen</p>
+          <p className="meta">{selected.length} of {MAX_ENTITIES} chosen</p>
           <div className="actions">
             {ready && passportState.state === "ready" ? (
               <Link className="btn btn-primary" href="/explore">

@@ -3,7 +3,7 @@ import { recommendationCopy } from "@/lib/recommendation-copy";
 import { CityInkMap } from "./city-ink-map";
 import { useCityContext, useCityPosition } from "./use-city-context";
 import { usePassportState, PassportPrompt } from "./passport-state";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { motion as Motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import {
@@ -39,7 +39,7 @@ import { feedbackSignal } from "@/lib/feedback";
 import { EmptyState } from "./empty-state";
 import { COVERS, cityCover } from "@/lib/city-covers";
 import { PassportSecurityLines } from "./passport-art";
-import { GuideFolio, JourneyRoute } from "./travel-art";
+import { GuideFolio } from "./travel-art";
 
 type Payload = {
   // `near`: for neighbourhoods, the Passport's places close to its centre.
@@ -66,6 +66,23 @@ const CATEGORY_NOUN: Record<ExploreCategory, string> = {
 };
 // The City page (docs/24, wireframe W2): picks for this city, with or without
 // a Passport, as a card grid beside a map. A Passport only re-ranks them.
+// Faint street grid with three pins dropping in: "places in this city".
+function CityPins() {
+  return (
+    <svg className="city-pins" viewBox="0 0 240 48" fill="none" aria-hidden="true">
+      <path className="city-pins-streets" d="M0 30h240M0 12c50 4 90 14 130 10s80-14 110-8M40 0v48M150 0l-12 48M205 0v48" />
+      {[[40, 30], [138, 24], [205, 14]].map(([x, y], i) => (
+        <g key={i} transform={`translate(${x} ${y})`}>
+          <g className="city-pin" style={{ "--pin-delay": `${200 + i * 160}ms` } as CSSProperties}>
+            <path d="M0 0c-5-6-7-9-7-12a7 7 0 0 1 14 0c0 3-2 6-7 12z" />
+            <circle cy="-12" r="2.5" />
+          </g>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 export function CityView({ city }: { city: string }) {
   const toast = useToast();
   const context = useCityContext();
@@ -360,11 +377,10 @@ export function CityView({ city }: { city: string }) {
               ))}
             </ul>
           </details>
-          <JourneyRoute className="city-journey-route" branching={tab === "swap"} />
+          <CityPins />
         </div>
         <div className="city-cover-photo" aria-hidden>
           {cover && <img src={cover} alt="" onError={() => setBrokenCover(city)} />}
-          <span className="city-stamp" data-travel-stamp>{COVERS[city]?.code ?? city.slice(0, 3).toUpperCase()}</span>
         </div>
       </section>
       <div className="city-toolbar">

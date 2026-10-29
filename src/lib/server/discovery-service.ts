@@ -36,7 +36,7 @@ import {
 import { checkVenues } from "./osm.ts";
 import { withUsablePhotos } from "./photo-check.ts";
 import { cleanSignal, feedbackParams, nudge } from "../feedback.ts";
-import { ENTITY_CARDS, MAX_ENTITIES, cleanAnswers, buildProfile, qlooParams } from "../quiz.ts";
+import { ENTITY_CARDS, MAX_ENTITIES, MIN_ENTITIES, cleanAnswers, buildProfile, qlooParams } from "../quiz.ts";
 export type Selection = { entity: Entity; token: string };
 export { chipTags };
 function sign(body: string) {
@@ -217,8 +217,8 @@ export async function swap(
   // An empty Passport swaps on the starting place alone (as explore does).
   if (
     !Array.isArray(passportTokens) ||
-    (passportTokens.length > 0 && passportTokens.length < 3) ||
-    passportTokens.length > 5
+    (passportTokens.length > 0 && passportTokens.length < MIN_ENTITIES) ||
+    passportTokens.length > MAX_ENTITIES
   )
     throw new DiscoveryError("invalid_passport", 400);
   const passport = passportTokens.map(verifySelection);
@@ -365,8 +365,8 @@ export async function explore(
   // An empty Passport gets Qloo's popular picks (docs/24: no profile gate).
   if (
     !Array.isArray(passportTokens) ||
-    (passportTokens.length > 0 && passportTokens.length < 3) ||
-    passportTokens.length > 5
+    (passportTokens.length > 0 && passportTokens.length < MIN_ENTITIES) ||
+    passportTokens.length > MAX_ENTITIES
   )
     throw new DiscoveryError("invalid_passport", 400);
   const passport = passportTokens.map(verifySelection);
@@ -420,14 +420,14 @@ export async function explore(
   };
 }
 // #94: Qloo reports every favourite as evidence for every place, so this asks
-// once per favourite (same 3–5 Passport rule as explore) and returns each
+// once per favourite (same 3–10 Passport rule as explore) and returns each
 // favourite's own ranking, letting the client credit a place honestly.
 export async function attribute(passportTokens: unknown, cityValue: unknown, categoryValue: unknown) {
   const city = swapCity(cityValue);
   if (!city) throw new DiscoveryError("invalid_city", 400);
   const category = exploreCategory(categoryValue);
   if (!category || category === "neighbourhood") throw new DiscoveryError("invalid_category", 400);
-  if (!Array.isArray(passportTokens) || passportTokens.length < 3 || passportTokens.length > 5)
+  if (!Array.isArray(passportTokens) || passportTokens.length < MIN_ENTITIES || passportTokens.length > MAX_ENTITIES)
     throw new DiscoveryError("invalid_passport", 400);
   const passport = passportTokens.map(verifySelection);
   if (new Set(passport.map((e) => e.id)).size !== passport.length)

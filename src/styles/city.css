@@ -31,7 +31,7 @@
 .city-cover-copy {
   flex: 1;
   min-width: 0;
-  padding: clamp(var(--space-4), 3vw, var(--space-8));
+  padding: clamp(var(--space-3), 2vw, var(--space-6));
 }
 
 .city-cover .meta {
@@ -39,9 +39,9 @@
 }
 
 .city-intro {
-  margin: var(--space-5) 0 var(--space-3);
+  margin: var(--space-3) 0 var(--space-2);
   color: var(--on-brand-2);
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
   line-height: var(--leading-body);
 }
 
@@ -53,8 +53,8 @@
 
 .city-cover-photo {
   position: relative;
-  flex: 0 0 40%;
-  min-height: 280px;
+  flex: 0 0 34%;
+  min-height: 180px;
   border-radius: var(--radius-card);
   background: var(--pass);
   overflow: hidden;
@@ -74,23 +74,22 @@
   font-size: var(--text-lg);
 }
 
-.city-stamp {
-  position: absolute;
-  bottom: var(--space-4);
-  right: var(--space-4);
-  display: grid;
-  place-items: center;
-  width: 88px;
-  height: 88px;
-  border: 2px solid var(--city-mark);
-  border-radius: 50%;
-  outline: 1px solid var(--city-mark);
-  outline-offset: -6px;
-  background: var(--paper);
-  color: var(--city-mark);
-  font: var(--text-sm) var(--font-mono);
-  letter-spacing: 0.08em;
-  transform: rotate(-12deg);
+.city-pins {
+  display: block;
+  width: min(100%, 240px);
+  height: auto;
+  margin-top: var(--space-4);
+  color: var(--sun);
+}
+.city-pins-streets { stroke: var(--on-brand-line); stroke-width: 1; stroke-dasharray: 2 4; }
+.city-pin path { fill: currentColor; }
+.city-pin circle { fill: var(--city-accent); }
+@media (prefers-reduced-motion: no-preference) {
+  .city-pin { animation: city-pin-drop var(--dur-slow) var(--ease-stamp) both; animation-delay: var(--pin-delay); }
+}
+@keyframes city-pin-drop {
+  from { opacity: 0; translate: 0 -10px; }
+  to { opacity: 1; translate: 0 0; }
 }
 
 /* City switcher (a <details> on the cover) */
@@ -316,11 +315,6 @@
     height: 160px;
   }
 
-  .city-stamp {
-    width: 64px;
-    height: 64px;
-    font-size: var(--text-xs);
-  }
 
   .city-cover-copy {
     padding: var(--space-5) var(--space-3) var(--space-3);
@@ -389,7 +383,6 @@
   .city-cover:not([data-ink-cover]) .city-switch summary { padding-inline:8px; font-size:12px; }
   .city-cover:not([data-ink-cover]) .city-cover-photo { width:80px; height:100px; min-height:100px; padding:4px; }
   .travel-world .city-cover:not([data-ink-cover]) .city-cover-photo img { inset:4px; width:calc(100% - 8px); height:calc(100% - 8px); }
-  .city-cover:not([data-ink-cover]) .city-stamp { width:40px; height:40px; font-size:10px; }
   .city-toolbar > .toggle-group[aria-label="Category"] > button { padding-inline:12px; font-size:14px; }
   .travel-world .city-toolbar { padding:8px 0 4px; }
   .city-banner { padding:8px; }
@@ -412,6 +405,7 @@
 /* #96: on a phone the first place must show in the first screen. The guide
    cover becomes a slim label; categories scroll in one row. */
 @media (max-width: 600px) {
+  .city-cover .city-pins,
   .city-cover:not([data-ink-cover]) .city-journey-route,
   .city-cover:not([data-ink-cover]) .guide-folio { display: none; }
   .city-cover:not([data-ink-cover]) { grid-template-columns: minmax(0,1fr) 56px; padding: 8px; }

@@ -50,6 +50,11 @@
   /* City ink is limited to small marks on paper; large areas stay berry. */
   --city-mark: var(--brand);
 
+  /* Action pills (Save / Not for me / Compare): each action owns a hue. Teal 6.2 on paper. */
+  --act-compare: #2f6670;
+  --act-compare-soft: #e2eff0;
+  --act-hide-soft: #fbe7e3;
+
   --scrim: rgb(30 22 48 / 0.45);
 
   /* Type: families come from next/font (src/app/layout.tsx). */
@@ -70,9 +75,9 @@
 
   /* Display sizes (Instrument Serif, thickened). Never below ~22px. */
   --display-sm: 24px;
-  --display-md: clamp(28px, 3.2vw, 40px);
-  --display-lg: clamp(32px, 4vw, 52px);
-  --display-xl: clamp(44px, 5.4vw, 80px);
+  --display-md: clamp(24px, 2.6vw, 32px);
+  --display-lg: clamp(28px, 3.2vw, 42px);
+  --display-xl: clamp(36px, 4.2vw, 60px);
   --display-stroke: 0.025em;
 
   --leading-tight: 1.05;
@@ -101,6 +106,7 @@
 
   /* Sizes */
   --target: 44px; /* minimum touch target */
+  --control: 36px; /* visual height of buttons; WCAG 2.2 target min is 24px */
   --page-max: 1280px;
   --page-gutter: 32px;
 

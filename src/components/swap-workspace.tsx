@@ -3,7 +3,7 @@ import {parseSearch,searchKey,type SearchDraft} from "@/lib/search-draft";
 import { ActionIcon } from "./action-icon";
 import { JourneyRoute } from "./travel-art";
 import { usePassportState, PassportPrompt } from "./passport-state";
-import { useEffect, useLayoutEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import {
   CITIES,
@@ -29,6 +29,7 @@ import {
 } from "@/lib/account";
 import { useSavedLists } from "./save-button";
 import { PlaceCard } from "./place-card";
+import { TwinHelix } from "./twin-helix";
 import { CityMap } from "./city-map";
 import { useToast } from "./toast";
 import { useCity } from "./use-city";
@@ -69,30 +70,16 @@ const CHECK_PLAIN: Record<CheckStatus, string> = {
   not_found: "OpenStreetMap, a free public map, does not list it nearby. The map is incomplete, so this does not mean it is closed.",
   unavailable: "We could not check the map right now.",
 };
-// `fixedCity` + `embedded`: inside a city page the page's city is used and the
-// page title and city selector are hidden. Standalone /swap passes neither.
-// DNA double helix between the starting place and its twin. Each lit rung is
-// one Keep trait the two places share; the rest stay faint.
-const HELIX_RUNGS = 7;
-function TwinHelix({ shared }: { shared: number }) {
-  const strand = (phase: number) =>
-    Array.from({ length: 41 }, (_, i) => {
-      const x = i * 3;
-      return `${i ? "L" : "M"}${x} ${20 + 13 * Math.sin((x / 120) * Math.PI * 3 + phase)}`;
-    }).join("");
-  return (
-    <svg className="twin-thread-route twin-helix" viewBox="0 0 120 40" fill="none" aria-hidden="true">
-      {Array.from({ length: HELIX_RUNGS }, (_, i) => {
-        const x = 8 + i * (104 / (HELIX_RUNGS - 1));
-        const dy = 13 * Math.sin((x / 120) * Math.PI * 3);
-        return <line key={i} className="twin-helix-rung" data-on={i < shared || undefined} x1={x} x2={x} y1={20 + dy} y2={20 - dy} style={{ "--rung": i } as CSSProperties} />;
-      })}
-      <path className="twin-helix-strand" d={strand(0)} />
-      <path className="twin-helix-strand" d={strand(Math.PI)} />
-    </svg>
-  );
+// Plain-language reason for the match, under the helix (docs/84 §4).
+function sharedSentence({ kept, changed }: { kept: string[]; changed: string[] }) {
+  const total = kept.length + changed.length;
+  if (!kept.length) return "None of your Keep traits are listed for both places.";
+  const list = joinList(kept);
+  return total > kept.length ? `They share ${kept.length} of ${total} traits: ${list}.` : `They share ${kept.length === 1 ? "one trait" : `${kept.length} traits`}: ${list}.`;
 }
 
+// `fixedCity` + `embedded`: inside a city page the page's city is used and the
+// page title and city selector are hidden. Standalone /swap passes neither.
 export function SwapWorkspace({ fixedCity, embedded = false }: { fixedCity?: string; embedded?: boolean } = {}) {
   const [category, setCategory] = useState<PlaceCategory>("restaurant"),
     [rememberedCity, setCity, rememberedKnown] = useCity(),
@@ -578,15 +565,11 @@ function CategoryWorkspace({ city, category, onTransfer, prefill, prefillRef }: 
           <h2 ref={outcomeHeading} tabIndex={-1} aria-live="polite">{busy ? "Matching your place’s DNA…" : swapError ? "Search needs attention" : `${visibleResults.length} ${visibleResults.length === 1 ? "match" : "matches"} found`}</h2></div>
           <button className="btn btn-quiet" onClick={editSearch}>Edit search</button></div>
         <div className="twin-thread" data-state={busy ? "searching" : swapError ? "error" : closest ? "success" : "empty"}>
-          <div className="twin-thread-origin"><span className="meta">Starting place · {city}</span><strong>{reference?.entity.name}</strong></div>
-          <TwinHelix shared={closest && !busy ? keptChanged(closest).kept.length : 0} />
-          <div className="twin-thread-traits">
-            {busy ? <><span className="meta">Looking for</span><p>{traitNames("keep").join(" · ") || "A place with shared traits"}</p></> : closest ? <>
-              <strong>{closest.place.name}</strong>
-              <span className="meta">Listed in both places</span>
-              <p>{keptChanged(closest).kept.join(" · ") || "No selected Keep traits listed in both"}</p>
-            </> : <><span className="meta">Your choices are kept</span><p>{swapError ? "Try again when you’re ready." : "Adjust the search to explore another direction."}</p></>}
-          </div>
+          <div className="twin-thread-origin"><span className="meta">Your place</span><strong>{reference?.entity.name}</strong></div>
+          <div className="twin-thread-target">{busy ? <span className="meta">Looking for its twin…</span> : closest ? <><span className="meta">Its twin</span><strong>{closest.place.name}</strong></> : <span className="meta">No twin yet</span>}</div>
+          <TwinHelix kept={closest && !busy ? keptChanged(closest).kept : []} changed={closest && !busy ? keptChanged(closest).changed : []}
+            state={busy ? "searching" : swapError ? "error" : closest ? "success" : "empty"} />
+          <p className="twin-thread-summary">{busy ? `Looking for ${traitNames("keep").join(", ") || "shared traits"}.` : closest ? sharedSentence(keptChanged(closest)) : swapError ? "Try again when you’re ready." : "Adjust the search to explore another direction."}</p>
           {traitNames("change", busy ? choices : usedChoices).length > 0 && <p className="twin-thread-exclusions"><strong>Excluded from this search:</strong> {traitNames("change", busy ? choices : usedChoices).join(" · ")}</p>}
         </div>
         {busy && <div className="twin-match-loading" role="status"><span className="twin-loading-photo" aria-hidden="true" /><p>Comparing places with your choices…<br /><span className="meta">You can edit your search at any time.</span></p></div>}

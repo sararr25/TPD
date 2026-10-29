@@ -181,15 +181,27 @@ select + .toggle-group {
 .twin-spotlight .place-actions { grid-column: 2; padding: 8px 20px 16px; }
 .twin-details { font-size: var(--text-sm); }
 .twin-details summary { font-size: 13px; }
-.twin-other-link { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 40px; margin-top: 12px; border: 1px solid var(--line); border-radius: var(--radius-control); background: transparent; color: var(--brand); cursor: pointer; font: inherit; font-weight: 500; }
-.twin-other-link:hover { border-color: var(--brand); }
+/* A quiet text link, not a banner (docs/84 §4). */
+.twin-other-link { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; margin-top: 8px; padding: 0; border: 0; background: transparent; color: var(--brand); cursor: pointer; font: inherit; font-size: var(--text-sm); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; --icon-size: 16px; }
+.twin-other-link:hover { color: var(--brand-strong); }
 .twin-other-link:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
 .twin-other-link span[aria-hidden] { font-size: 16px; }
 .twin-results { margin-top: 32px; }
 .twin-result-filters { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 24px; }
 .twin-result-filters label { min-width: 190px; flex: 1; }
 .twin-result-filters p { flex-basis: 100%; font-size: var(--text-sm); margin: 0; }
-.twin-other-heading { scroll-margin-top: 100px; }
+.twin-other-heading { scroll-margin-top: 100px; font-size: var(--text-lg); }
+/* Other matches as compact rows (docs/84 §4): thumbnail left, name, shared
+   traits and the small action pills; the spotlight stays the focal card. */
+.twin-results .swap-results-list .place-card { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: start; }
+.twin-results .swap-results-list .place-photo { grid-row: 1 / span 2; aspect-ratio: 1; margin: 10px 0 10px 10px; border-radius: 8px; }
+.twin-results .swap-results-list .place-body { padding: 10px 12px 4px; }
+.twin-results .swap-results-list .place-body h3 { margin: 2px 0; font-size: var(--text-md); }
+.twin-results .swap-results-list .place-why, .twin-results .swap-results-list .place-body > p { margin: 2px 0; font-size: 12px; }
+.twin-results .swap-results-list .place-label, .twin-results .swap-results-list .twin-details,
+.twin-results .swap-results-list .photo-caption { display: none; }
+.twin-results .swap-results-list .place-pin { top: 4px; left: 4px; width: 20px; height: 20px; font-size: 11px; }
+.twin-results .swap-results-list .place-actions { grid-column: 2; padding: 4px 12px 10px; border-top: 0; }
 .twin-map { margin: 24px 0; }
 .twin-map .city-map { height: 340px; }
 @media (max-width: 600px) {
@@ -206,39 +218,48 @@ select + .toggle-group {
 @media (max-width: 350px) { .twin-trait-row { flex-wrap: wrap; gap: 0 8px; } .twin-trait-actions { margin-left: auto; } }
 @media (prefers-reduced-motion: reduce) { .twin-workspace * { scroll-behavior: auto; } }
 
-.twin-thread { display: grid; grid-template-columns: minmax(0, 1fr) 128px minmax(0, 1fr); align-items: center; padding: 12px 16px; margin-bottom: 12px; border-block: 1px solid var(--line); background: var(--paper); }
-.twin-thread-origin, .twin-thread-traits { min-width: 0; display: grid; gap: 3px; }
-.twin-thread-origin strong, .twin-thread p { margin: 0; font-size: var(--text-sm); overflow-wrap: anywhere; }
-.twin-thread-route { display: flex; align-items: center; padding-inline: 8px; color: var(--brand); }
-.twin-helix { width: 100%; height: 40px; padding: 0 4px; }
-.twin-helix-strand { stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
-.twin-helix-rung { stroke: var(--line-strong); stroke-width: 1.5; stroke-linecap: round; }
-.twin-helix-rung[data-on] { stroke: var(--stamp); stroke-width: 2.5; }
-.twin-thread[data-state="searching"] .twin-thread-route { opacity: .45; }
-.twin-thread[data-state="success"] .twin-thread-route { color: var(--brand); }
+/* Twin DNA header (docs/84 §4): names on the strand ends, helix full width,
+   one plain sentence under it. Strand colours: your place = brand, twin = compare teal. */
+.twin-thread { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 2px 16px; padding: 12px 16px; margin-bottom: 12px; border-block: 1px solid var(--line); background: var(--paper); }
+.twin-thread-origin, .twin-thread-target { min-width: 0; display: grid; gap: 2px; }
+.twin-thread-target { text-align: right; }
+.twin-thread-origin .meta { color: var(--brand); }
+.twin-thread-target .meta { color: var(--act-compare); }
+.twin-thread-origin strong, .twin-thread-target strong { font-size: var(--text-sm); overflow-wrap: anywhere; }
+.twin-thread p { margin: 0; font-size: var(--text-sm); overflow-wrap: anywhere; }
+.twin-thread-summary { grid-column: 1 / -1; color: var(--ink-2); }
+.twin-helix { position: relative; grid-column: 1 / -1; height: 88px; margin: 4px 0; }
+.twin-helix svg { display: block; width: 100%; height: 100%; }
+.twin-helix-seg[data-strand="0"], .twin-helix-end[data-strand="0"] { stroke: var(--brand); fill: var(--brand); }
+.twin-helix-seg[data-strand="1"], .twin-helix-end[data-strand="1"] { stroke: var(--act-compare); fill: var(--act-compare); }
+.twin-helix-end { stroke: none; }
+.twin-helix-rung { stroke: var(--line-strong); stroke-width: 1.2; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
+.twin-helix-rung[data-on] { stroke: var(--brand); stroke-width: 1.6; stroke-dasharray: none; }
+.twin-helix-label { position: absolute; top: 50%; translate: -50% -50%; padding: 2px 8px; border-radius: 999px; background: var(--paper); border: 1px dashed var(--line-strong); color: var(--ink-2); font-size: 11px; line-height: 1.4; white-space: nowrap; }
+.twin-helix-label[data-on] { background: var(--brand-soft); border: 1px solid var(--brand); color: var(--brand-strong); }
+.twin-helix[data-state="searching"] { opacity: .45; }
 .twin-difference { font-size: var(--text-sm); margin: 12px 0; }
 .twin-difference > span { font-weight: 600; color: var(--brand); }
 .twin-spotlight .place-card { border-color: var(--brand); box-shadow: 3px 3px 0 var(--line); }
 .twin-match-loading { display: flex; align-items: center; gap: 20px; min-height: 230px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-card); }
 .twin-loading-photo { width: 88px; height: 140px; flex: none; background: var(--line); border-radius: 8px; }
 @media (max-width: 600px) {
-  .twin-thread { padding: 10px; grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr); }
+  .twin-thread { padding: 10px; }
   .twin-thread .meta { font-size: 10px; }
+  /* Labels would collide on a phone; the sentence below lists the traits. */
+  .twin-helix { height: 56px; }
+  .twin-helix-label { display: none; }
   .twin-spotlight .place-body h3 { font-size: 21px; }
   .twin-spotlight .place-chips { gap: 4px; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .twin-thread[data-state="success"] .twin-thread-route { animation: twin-connect var(--dur-slower) var(--ease-out) both; }
-  .twin-thread[data-state="searching"] .twin-helix { animation: twin-twist 1.4s var(--ease-in-out) infinite alternate; }
-  .twin-thread[data-state="success"] .twin-helix-rung[data-on] { animation: twin-arrive var(--dur-slow) var(--ease-stamp) both; animation-delay: calc(300ms + var(--rung) * 90ms); }
+  .twin-helix[data-state="searching"] svg { animation: twin-twist 1.4s var(--ease-in-out) infinite alternate; }
   .twin-difference { animation: twin-arrive var(--dur-slow) var(--ease-out) both; }
 }
 @keyframes twin-twist { from { transform: scaleY(1); } to { transform: scaleY(-1); } }
-@keyframes twin-connect { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
 @keyframes twin-arrive { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 .twin-thread-exclusions { grid-column: 1 / -1; margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--ink-2); }
-.twin-thread-traits > strong { font-size: var(--text-sm); overflow-wrap: anywhere; }
 /* The editor/outcome replacement owns its explicit scroll destination. */
 .twin-workspace { overflow-anchor: none; }
 @media (orientation: landscape) and (max-height: 500px) {

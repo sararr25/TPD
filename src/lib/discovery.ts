@@ -1,5 +1,6 @@
 import { priceSymbols } from "./price.ts";
 import type { VenueCheck } from "./venue-check.ts";
+import { MAX_ENTITIES } from "./quiz.ts";
 export type PlaceCategory = "restaurant" | "bar" | "cafe" | "museum" | "hotel";
 export function placeCategory(value: unknown = "restaurant"): PlaceCategory | null {
   return typeof value === "string" && TWIN_CATEGORIES.includes(value as PlaceCategory) ? value as PlaceCategory : null;
@@ -279,7 +280,7 @@ export function parseLivePassport(raw: string | null): Entity[] {
         });
       }
     }
-    return [...unique.values()].slice(0, 5);
+    return [...unique.values()].slice(0, MAX_ENTITIES);
   } catch {
     return [];
   }

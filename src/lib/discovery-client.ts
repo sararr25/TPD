@@ -59,6 +59,10 @@ export async function discovery<T>(
     );
   return data as T;
 }
+// Mirrors MAX_ENTITIES in quiz.ts; this file stays import-free so
+// scripts/check-quiz-finish.cjs can load it alone (it asserts the two match).
+export const MAX_SELECTIONS = 10;
+
 export function readSelections(raw: string | null): Selection[] {
   try {
     const a = JSON.parse(raw || "null");
@@ -77,7 +81,7 @@ export function readSelections(raw: string | null): Selection[] {
           !seen.has(s.entity.id) &&
           !!seen.add(s.entity.id),
       )
-      .slice(0, 5);
+      .slice(0, MAX_SELECTIONS);
   } catch {
     return [];
   }

@@ -9,6 +9,7 @@ function pureModule(path) {
 }
 const client = pureModule("src/lib/discovery-client.ts");
 const quiz = pureModule("src/lib/quiz.ts");
+assert.equal(client.MAX_SELECTIONS, quiz.MAX_ENTITIES, "readSelections must keep as many favourites as the quiz allows");
 const storage = new Map();
 const events = [],
   writes = [];

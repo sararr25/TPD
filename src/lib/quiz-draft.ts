@@ -1,4 +1,4 @@
-import { QUESTIONS, ENTITY_CARDS, cleanAnswers, type Answers } from "./quiz";
+import { QUESTIONS, ENTITY_CARDS, MAX_ENTITIES, cleanAnswers, type Answers } from "./quiz";
 
 export const QUIZ_ORDER = [QUESTIONS.find(q => q.id === "places")!, QUESTIONS.find(q => q.id === "music")!, ...QUESTIONS.filter(q => q.id !== "places" && q.id !== "music")];
 const draftKey = (owner: string) => `beesyde-quiz-draft-v1:${owner}`;
@@ -25,7 +25,7 @@ export function readQuizDraft(owner: string): QuizDraft | null {
       if (entries.length) answers[q.id] = q.cards.filter((_, i) => entries[i]).map(c => c.id);
       else delete answers[q.id];
     }
-    const extra = [...new Set(value.extra.filter((id: unknown): id is string => typeof id === "string" && Object.hasOwn(ENTITY_CARDS, id)))].slice(0, 5) as string[];
+    const extra = [...new Set(value.extra.filter((id: unknown): id is string => typeof id === "string" && Object.hasOwn(ENTITY_CARDS, id)))].slice(0, MAX_ENTITIES) as string[];
     return { step: value.step, answers, history, extra };
   } catch { return null; }
 }

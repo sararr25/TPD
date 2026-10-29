@@ -283,3 +283,8 @@ select + .toggle-group {
 .twin-steps li[aria-current=step]{font-weight:var(--weight-semibold);color:var(--brand)}
 .twin-steps span{display:inline-grid;place-items:center;width:22px;height:22px;border:1px solid currentColor;border-radius:50%;font-size:var(--text-xs)}
 .twin-reference form[hidden]{display:none}
+/* Feedback 30 Oct: the Twin result card was too wide on desktop. Height stays the
+   same; capping the other-matches grid made those cards taller, so it is left alone. */
+@media (min-width: 851px) {
+  .twin-outcome { max-width: 680px; }
+}

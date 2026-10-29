@@ -1,5 +1,9 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Desktop length and Passport cover — 30 October 2026
+
+Read [docs/85](85-handover-desktop-length.md), then docs/84. Passport book restored to full width and shortened, title enlarged, Home/Cities/city pages tightened on desktop via `src/styles/desktop-compact.css`. Open items (untouched pages, button consistency, real-data checks) are listed in docs/85.
+
 ## Post-release owner feedback — 28 October 2026
 
 Read [docs/81](81-post-release-live-verification.md) for authorised publication and the real-provider failure/fix/retest receipt, then [docs/80](80-post-release-ticket-plan.md): approved tickets #89–92, native dependency #91 blocked by #90, and local implementation/verification. Source feedback is docs/79. The owner subsequently authorised live publication. Preserve the published theatre C and existing physical/account gates.

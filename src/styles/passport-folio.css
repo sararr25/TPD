@@ -58,7 +58,7 @@
 @media(max-width:850px){.pf-portrait{padding-right:0}.pf-city-stamp{width:80px;height:80px}}
 /* docs/84 §6: the left page is the purple cover holding off-white ink stamps;
    the right page stays paper. Book capped narrower, type one step smaller. */
-.pf-book{max-width:760px;--stamp-chalk:#efe8dc}
+.pf-book{--stamp-chalk:#efe8dc}
 .pf-left{background:var(--pass);color:var(--on-pass)}
 .pf-left .pf-cover{margin:0;border-radius:0;padding:var(--space-4) var(--space-5) 0}
 .pf-left .pf-cover .h-security{opacity:.08}
@@ -103,3 +103,6 @@
 .pf-city-stamp{padding:14px;box-sizing:border-box}
 .pf-city-stamp small{white-space:nowrap;max-width:none;font-size:8px}
 @media(max-width:850px){.pf-city-stamp small{font-size:7px}}
+/* Feedback 29 Oct: keep the book full width but shorter. The illustration sits
+   beside the heading instead of reserving a 170px strip under the text. */
+@media(min-width:851px){.pf-portrait{padding-bottom:0;min-height:0}.pf-illustration{top:var(--space-2);bottom:auto;width:96px;height:72px}}

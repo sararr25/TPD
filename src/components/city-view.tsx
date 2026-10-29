@@ -200,6 +200,32 @@ export function CityView({ city }: { city: string }) {
     };
     // Hidden places are sent with the next search, not re-run on every hide.
   }, [ready, passport, city, category, hiddenOwner, userId]);
+  // #94: Qloo returns every favourite as evidence for every place, so the
+  // example asks once per favourite and credits each place to the favourite
+  // that ranks it highest. Places no single favourite returns get no reason.
+  const [credit, setCredit] = useState<Record<string, string>>({});
+  useEffect(() => {
+    setCredit({});
+    if (!usingExample || !data?.results.length) return;
+    const controller = new AbortController();
+    if (category === "neighbourhood") return;
+    discovery<{ favourites: { name: string; places: string[] }[] }>({ action: "attribute", city, category, passport: example!.map((s) => s.token) }, controller.signal)
+      .then(({ favourites }) => {
+        const lists = favourites.map((f) => ({ name: f.name, ids: f.places }));
+        const next: Record<string, string> = {};
+        for (const { place } of data.results) {
+          let best: { name: string; rank: number } | null = null;
+          for (const list of lists) {
+            const rank = list.ids.indexOf(place.id);
+            if (rank >= 0 && (!best || rank < best.rank)) best = { name: list.name, rank };
+          }
+          if (best) next[place.id] = best.name;
+        }
+        setCredit(next);
+      })
+      .catch((e) => { if ((e as Error).name !== "AbortError") showError((e as Error).message); });
+    return () => controller.abort();
+  }, [data, usingExample]);
   // Saving a place is also "more like this" (docs/24: ♡ replaces 👍).
   function saved(place: Entity) {
     if (category === "neighbourhood" || voted(place.id) === 1) return;
@@ -469,7 +495,7 @@ export function CityView({ city }: { city: string }) {
           <Link className="btn btn-primary" href="/explore">Choose another city</Link>
         }><p>Try a wider price range, another neighbourhood or another category. Your saved places are still here.</p></EmptyState>
       )}
-      {!busy && !status && reasons.summary && <p className="city-recommendation-reason">{reasons.summary}</p>}
+      {!busy && !status && !usingExample && reasons.summary && <p className="city-recommendation-reason">{reasons.summary}</p>}
       {personal && !busy && !status && data && shown.length > 0 && (
         <p className="muted city-notice">
           {data.notice}
@@ -491,7 +517,7 @@ export function CityView({ city }: { city: string }) {
                   token={token}
                   city={city}
                   category={category}
-                  why={reasons.why(place)}
+                  why={usingExample ? (credit[place.id] ? `Because they love ${credit[place.id]}` : null) : reasons.why(place)}
                   near={near}
                   lists={lists}
                   signedIn={signedIn}

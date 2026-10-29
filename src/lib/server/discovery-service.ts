@@ -419,6 +419,29 @@ export async function explore(
       : "Popular picks, not yet shaped by your taste.",
   };
 }
+// #94: Qloo reports every favourite as evidence for every place, so this asks
+// once per favourite (same 3–5 Passport rule as explore) and returns each
+// favourite's own ranking, letting the client credit a place honestly.
+export async function attribute(passportTokens: unknown, cityValue: unknown, categoryValue: unknown) {
+  const city = swapCity(cityValue);
+  if (!city) throw new DiscoveryError("invalid_city", 400);
+  const category = exploreCategory(categoryValue);
+  if (!category || category === "neighbourhood") throw new DiscoveryError("invalid_category", 400);
+  if (!Array.isArray(passportTokens) || passportTokens.length < 3 || passportTokens.length > 5)
+    throw new DiscoveryError("invalid_passport", 400);
+  const passport = passportTokens.map(verifySelection);
+  if (new Set(passport.map((e) => e.id)).size !== passport.length)
+    throw new DiscoveryError("invalid_passport", 400);
+  const none = cleanSignal({});
+  const lists = await Promise.all(passport.map((entity) => explorePlaces([entity], city, category, null, new Set(), none)));
+  return {
+    favourites: passport.map((entity, i) => ({
+      name: entity.name,
+      places: lists[i].places.slice(0, EXPLORE_RESULTS * 2).map((p) => p.id),
+    })),
+  };
+}
+
 async function explorePlaces(
   passport: Entity[],
   city: string,

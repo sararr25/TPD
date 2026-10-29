@@ -100,7 +100,7 @@ export function HomeExample() {
       )}
       <div className="h-visa-actions">
         <OpenQuizButton />
-        <Link className="btn btn-quiet" href="/passport?guest=1">
+        <Link className="btn btn-quiet" href="/lisbon?example=1">
           Try this Passport
         </Link>
       </div>

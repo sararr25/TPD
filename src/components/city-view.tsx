@@ -4,6 +4,7 @@ import { CityInkMap } from "./city-ink-map";
 import { useCityContext, useCityPosition } from "./use-city-context";
 import { usePassportState, PassportPrompt } from "./passport-state";
 import { useEffect, useRef, useState } from "react";
+import { motion as Motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import {
   CITIES,
@@ -102,7 +103,22 @@ export function CityView({ city }: { city: string }) {
   const showError = (m: string) => toast(m, { error: true });
   const { current: feedback, vote, unvote, voted } = useFeedback(!isPending, userId, showError);
   const { lists, reload, signedIn } = useSavedLists(!isPending, userId);
-  const personal = passportState.state === "ready";
+  // ?example=1 (#95): a visitor without a Passport borrows Home's example
+  // profile, so the picks and their reasons show what taste does. The
+  // example is never stored; a real Passport always wins.
+  const exampleRequested = new URLSearchParams(context.query).get("example") === "1" && passportState.loaded && passportState.state !== "ready";
+  const [example, setExample] = useState<Selection[] | null>(null);
+  useEffect(() => {
+    if (!exampleRequested || example) return;
+    const controller = new AbortController();
+    discovery<{ choices: Selection[] }>({ action: "guest", profile: 0 }, controller.signal)
+      .then(({ choices }) => setExample(choices))
+      .catch((e) => { if ((e as Error).name !== "AbortError") setStatus((e as Error).message); });
+    return () => controller.abort();
+  }, [exampleRequested, example]);
+  const usingExample = exampleRequested && !!example?.length;
+  const calm = useReducedMotion();
+  const personal = passportState.state === "ready" || usingExample;
   useEffect(() => {
     const controller = new AbortController();
     setNeighbourhoods([]);
@@ -130,9 +146,14 @@ export function CityView({ city }: { city: string }) {
   useEffect(() => rememberCity(city), [city]);
   useEffect(() => { setData(null); setStatus(""); }, [userId]);
   useEffect(() => {
+    if (exampleRequested) {
+      setPassport(example ?? []);
+      setReady(!!example);
+      return;
+    }
     setPassport(passportState.selections);
     setReady(passportState.loaded && !passportState.error && !["saving", "partial", "expired"].includes(passportState.state));
-  }, [passportState.selections, passportState.loaded, passportState.error, passportState.state]);
+  }, [passportState.selections, passportState.loaded, passportState.error, passportState.state, exampleRequested, example]);
   useEffect(() => {
     if (isPending) return;
     let active = true;
@@ -154,7 +175,7 @@ export function CityView({ city }: { city: string }) {
         category,
         // Without a Passport (fewer than 3 picks) Qloo's popular picks show.
         passport: personal ? passport.map((s) => s.token) : [],
-        quiz: passportState.quiz,
+        quiz: usingExample ? {} : passportState.quiz,
         exclude: hidden.map((h) => h.id),
         feedback: feedbackSignal(feedback.current),
       },
@@ -395,6 +416,24 @@ export function CityView({ city }: { city: string }) {
           {areasError && <p role="status">Neighbourhoods couldn’t load. <button className="btn btn-quiet" onClick={() => setAreasAttempt((n) => n + 1)}>Try again</button></p>}
           {!areasError && !areasBusy && !neighbourhoods.length && <p className="muted">No neighbourhood centres are listed for this city yet.</p>}
         </div>
+        </div>
+      )}
+      {usingExample && (
+        <div className="city-banner city-banner-example" data-travel-reveal>
+          <div>
+            <Motion.span className="city-example-label" initial={calm ? false : { opacity: 0, scale: 1.35, rotate: -9 }} animate={{ opacity: 1, scale: 1, rotate: -2 }} transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}>Example Passport · not yours</Motion.span>
+            <h2>{city} for someone who loves {example!.map((s, i, all) => (
+              <span key={s.entity.id}>
+                <Motion.mark className="city-example-name" initial={calm ? false : { backgroundSize: "0% 42%" }} animate={{ backgroundSize: "100% 42%" }} transition={{ duration: 0.45, delay: 0.35 + i * 0.18, ease: [0.22, 1, 0.36, 1] }}>{s.entity.name}</Motion.mark>
+                {i < all.length - 2 ? ", " : i === all.length - 2 ? " and " : ""}
+              </span>
+            ))}.</h2>
+            <p>These three favourites shape every pick below. Make your own in about 3 minutes.</p>
+          </div>
+          <div className="city-example-actions">
+            <OpenQuizButton />
+            <button className="btn btn-quiet" onClick={() => context.update({ example: "" })}>Popular picks</button>
+          </div>
         </div>
       )}
       {!personal && (

@@ -42,3 +42,4 @@
 .pf-editor-dialog .passport-editor{border:0;padding:var(--space-4);margin:0;max-width:none}
 @media(max-width:850px){.pf-tools{align-items:stretch;flex-direction:column}.pf-tools,.pf-activity-panel{padding:var(--space-5)}.pf-editor-dialog{padding:var(--space-3)}.pf-editor-dialog .passport-editor{padding:var(--space-2)}}
 .pf-storage-note{font-size:var(--text-sm);color:var(--ink-2);max-width:50ch}
+.pf-start-actions{display:flex;flex-wrap:wrap;gap:var(--space-2)}

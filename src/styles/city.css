@@ -402,3 +402,38 @@
  .map-preview-heading{display:flex;align-items:flex-start;gap:8px;justify-content:space-between}.map-preview-heading h3{margin:0;min-width:0;font-size:24px;overflow-wrap:anywhere}.map-preview-heading .btn{flex:none}
  .map-place-preview p{font-size:var(--text-sm);margin:8px 0}.map-preview-actions{display:flex;flex-wrap:wrap;gap:8px}.map-preview-actions .btn{padding-inline:12px}
 }
+
+/* Example Passport (#95): a lemon page clipped to the guide, marked as borrowed. */
+.city-banner-example { background: var(--sun-soft); border-left: 6px solid var(--pass); }
+.city-banner-example h2 { font-family: var(--font-display, inherit); }
+.city-example-label { display: inline-block; margin-bottom: var(--space-2); font-family: var(--font-mono, monospace); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pass); }
+.city-example-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* #96: on a phone the first place must show in the first screen. The guide
+   cover becomes a slim label; categories scroll in one row. */
+@media (max-width: 600px) {
+  .city-cover:not([data-ink-cover]) .city-journey-route,
+  .city-cover:not([data-ink-cover]) .guide-folio { display: none; }
+  .city-cover:not([data-ink-cover]) { grid-template-columns: minmax(0,1fr) 56px; padding: 8px; }
+  .city-cover:not([data-ink-cover]) .city-cover-photo { width: 56px; height: 64px; min-height: 64px; }
+  .city-toolbar { gap: var(--space-2); }
+  .city-toolbar > .toggle-group[aria-label="Category"] {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    margin-inline: -16px; padding: 2px 16px 4px;
+    scroll-snap-type: x proximity;
+    mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent);
+  }
+  .city-toolbar > .toggle-group[aria-label="Category"]::-webkit-scrollbar { display: none; }
+  .city-toolbar > .toggle-group[aria-label="Category"] > button { scroll-snap-align: start; }
+  .city-banner-example { padding: 12px 14px; }
+  .city-banner-example h2 { font-size: 1.25rem; }
+  .city-banner-example p { display: none; }
+}
+.city-example-label { padding: 2px 8px; border: 1.5px solid var(--pass); border-radius: 4px; transform: rotate(-2deg); transform-origin: left center; }
+.city-example-name { color: inherit; background: linear-gradient(var(--sun), var(--sun)) no-repeat 0 88% / 100% 42%; padding-inline: 2px; }
+.city-banner-example > div:first-child { min-width: 0; flex: 1 1 auto; }
+@media (max-width: 850px) {
+  .city-banner-example { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+  .city-example-actions { justify-content: flex-start; }
+}
+@media (max-width: 850px) { .city-banner.city-banner-example { display: flex; grid-template-columns: none; } }

@@ -69,7 +69,7 @@ const CATEGORY_NOUN: Record<ExploreCategory, string> = {
 // Faint street grid with three pins dropping in: "places in this city".
 function CityPins() {
   return (
-    <svg className="city-pins" viewBox="0 0 240 48" fill="none" aria-hidden="true">
+    <svg className="city-pins" viewBox="0 -10 240 58" fill="none" aria-hidden="true">
       <path className="city-pins-streets" d="M0 30h240M0 12c50 4 90 14 130 10s80-14 110-8M40 0v48M150 0l-12 48M205 0v48" />
       {[[40, 30], [138, 24], [205, 14]].map(([x, y], i) => (
         <g key={i} transform={`translate(${x} ${y})`}>
@@ -377,7 +377,7 @@ export function CityView({ city }: { city: string }) {
               ))}
             </ul>
           </details>
-          <CityPins />
+          {tab !== "swap" && <CityPins />}
         </div>
         <div className="city-cover-photo" aria-hidden>
           {cover && <img src={cover} alt="" onError={() => setBrokenCover(city)} />}

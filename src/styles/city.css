@@ -12,7 +12,7 @@
 
 .city h1 {
   margin: var(--space-1) 0 0;
-  font-size: clamp(44px, 5vw, 64px);
+  font-size: clamp(36px, 4vw, 48px);
 }
 
 /* Cover */
@@ -31,22 +31,25 @@
 .city-cover-copy {
   flex: 1;
   min-width: 0;
-  padding: clamp(var(--space-3), 2vw, var(--space-6));
+  padding: var(--space-4);
 }
+
+.city-cover-copy > .guide-folio { margin-bottom: var(--space-2); }
+.city-cover-copy > .city-switch { margin-top: var(--space-2); }
 
 .city-cover .meta {
   color: var(--on-brand-2);
 }
 
 .city-intro {
-  margin: var(--space-3) 0 var(--space-2);
+  margin: var(--space-2) 0 var(--space-1);
   color: var(--on-brand-2);
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   line-height: var(--leading-body);
 }
 
 .city-count {
-  margin: var(--space-3) 0 var(--space-5);
+  margin: var(--space-1) 0 var(--space-3);
   color: var(--on-brand-2);
   font-size: var(--text-sm);
 }
@@ -69,16 +72,20 @@
 }
 
 .city-local {
-  margin: var(--space-1) 0 0;
+  margin: 0;
   color: var(--on-brand-2);
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
 }
 
+/* Pins sit in the cover's bottom-right corner, out of the text flow, so both
+   tabs share one hero height (docs/84 §3). */
 .city-pins {
+  position: absolute;
+  right: var(--space-5);
+  bottom: var(--space-4);
   display: block;
-  width: min(100%, 240px);
+  width: min(40%, 240px);
   height: auto;
-  margin-top: var(--space-4);
   color: var(--sun);
 }
 .city-pins-streets { stroke: var(--on-brand-line); stroke-width: 1; stroke-dasharray: 2 4; }

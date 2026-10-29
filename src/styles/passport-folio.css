@@ -98,3 +98,8 @@
 .pf-fav-chips li{color:var(--c)}
 @media(max-width:850px){.pf-portrait{padding-right:0}}
 @media(max-width:850px){.pf-city-stamp{width:96px;height:96px}.pf-city-stamp:nth-child(3n+2){width:120px}.pf-city-stamp strong{font-size:15px}.pf-city-stamp small{font-size:7px;max-width:70px}}
+/* Stamp text stays well inside the ring: code + VISITED only, city name for
+   screen readers and as a tooltip (long names like Ho Chi Minh City overflowed). */
+.pf-city-stamp{padding:14px;box-sizing:border-box}
+.pf-city-stamp small{white-space:nowrap;max-width:none;font-size:8px}
+@media(max-width:850px){.pf-city-stamp small{font-size:7px}}

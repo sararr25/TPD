@@ -1,0 +1,21 @@
+/* Feedback 30 Oct: on desktop the pages read too long. These rules only trim
+   vertical space (margins, paddings, min-heights) at widths above the phone
+   layout; widths, type sizes and phone/tablet layouts are untouched. */
+@media (min-width: 851px) {
+  .h-cover { min-height: 540px; padding: 26px 36px 26px 42px; }
+  .h-how { margin-top: var(--space-8); padding: var(--space-8) 0; }
+  .home-swap-demo { margin-top: var(--space-8); padding: var(--space-6); gap: var(--space-4); }
+  .h-band { margin: var(--space-10) 0 var(--space-6); padding: var(--space-8); gap: var(--space-8); }
+  .city-cover-photo { min-height: 140px; }
+  .city-cover-copy { padding: var(--space-3) var(--space-4); }
+  .city-filters { gap: var(--space-3); margin-bottom: var(--space-2); }
+  .city-filters p { max-width: 90ch; }
+  .empty-state { padding: var(--space-6); }
+  .h-city-photo { min-height: 110px; }
+  .h-cover-heading { margin-top: var(--space-5); }
+  .h-cover .h-emblem-depth { max-height: 70px; overflow: hidden; }
+}
+/* Five city cards per row: three rows instead of four and a half. */
+@media (min-width: 1100px) {
+  .h-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}

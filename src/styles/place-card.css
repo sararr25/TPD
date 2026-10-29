@@ -215,3 +215,12 @@
 .place-photo { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--pass) 7%, transparent) 0 1px, transparent 1px 9px), var(--sun-soft); }
 .place-photo img { transition: opacity var(--dur-slow) var(--ease-out), filter var(--dur-slow) var(--ease-out); }
 .place-photo img[data-pending] { opacity: 0; filter: saturate(0.2) blur(6px); }
+
+/* #106: the photo carries over from card to place page (React ViewTransition). */
+.place-photo-frame { position: absolute; inset: 0; }
+::view-transition-group(.place-morph) { animation-duration: 420ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+::view-transition-old(.place-morph), ::view-transition-new(.place-morph) { height: 100%; object-fit: cover; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 0s !important; animation-delay: 0s !important; }
+}
+.place-hero > .place-photo-frame { inset: var(--space-2); }

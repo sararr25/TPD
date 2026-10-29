@@ -70,7 +70,12 @@ export function TravelMotion({ children }: { children: ReactNode }) {
         } else if (element.matches("[data-travel-reveal]")) {
           if (element.closest(".h-grid")) return;
           gsap.fromTo(element, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: m.duration.reveal, ease: m.ease.ink, clearProps: "clipPath" });
-        } else if (element.matches(".h-how h2, .h-steps li, .h-cities-head, .h-grid > li, .home-swap-intro, .h-swap-sheet, .h-band, .h-picks li, .place-grid > .place-card, [data-travel-enter]")) {
+        } else if (element.matches(".place-grid > .place-card")) {
+          // #106: each pick turns in like a Passport page, hinged on its left
+          // edge, in reading order; transform/opacity only.
+          const index = element.parentElement ? Array.from(element.parentElement.children).indexOf(element) : 0;
+          gsap.from(element, { rotationY: -14, y: m.distance.reveal, opacity: .4, transformPerspective: 900, transformOrigin: "left center", duration: m.duration.hero, delay: Math.min(index * m.stagger, m.duration.control), ease: m.ease.enter, clearProps: "transform,opacity,transformOrigin" });
+        } else if (element.matches(".h-how h2, .h-steps li, .h-cities-head, .h-grid > li, .home-swap-intro, .h-swap-sheet, .h-band, .h-picks li, [data-travel-enter]")) {
           const index = element.parentElement ? Array.from(element.parentElement.children).indexOf(element) : 0;
           gsap.from(element, { y: m.distance.reveal, opacity: .5, duration: m.duration.reveal, delay: Math.min(index * m.stagger, m.duration.control), ease: m.ease.enter, clearProps: "transform,opacity" });
         } else if (!element.querySelector(".city-map") && !element.matches(".trip")) {

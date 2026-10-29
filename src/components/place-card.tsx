@@ -1,4 +1,5 @@
 "use client";
+import { ViewTransition } from "react";
 import { displayTags } from "@/lib/display-tags";
 import { ActionIcon } from "./action-icon";
 import { useSearchParams, usePathname } from "next/navigation";
@@ -102,7 +103,9 @@ export function PlaceCard({
             {pin}
           </span>
         )}
-        <PlacePhoto placeId={place.id} image={place.image} city={city} label={FALLBACK[category]} lazy />
+        <ViewTransition name={`place-photo-${place.id.toLowerCase()}`} share="place-morph" default="none">
+          <div className="place-photo-frame"><PlacePhoto placeId={place.id} image={place.image} city={city} label={FALLBACK[category]} lazy /></div>
+        </ViewTransition>
       </div>
       <div className="place-body">
         {eyebrow && <span className="place-role">{eyebrow}</span>}

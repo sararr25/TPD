@@ -1,4 +1,5 @@
 "use client";
+import { ViewTransition } from "react";
 import { displayTags } from "@/lib/display-tags";
 import {PlaceVisitControl} from "./trip-organisation";
 import { ActionIcon } from "./action-icon";
@@ -51,7 +52,9 @@ export function PlaceView({
         <ActionIcon name="left" /> {city}
       </Link>
       <div className="place-hero" data-travel-reveal>
-        <PlacePhoto placeId={place.id} image={place.image} city={city} size="1200x" label={FALLBACK[category]} />
+        <ViewTransition name={`place-photo-${place.id.toLowerCase()}`} share="place-morph" default="none">
+          <div className="place-photo-frame"><PlacePhoto placeId={place.id} image={place.image} city={city} size="1200x" label={FALLBACK[category]} /></div>
+        </ViewTransition>
       </div>
       <div className="place-main">
         <GuideFolio city={city} code={COVERS[city]?.code ?? "PLACE"} />

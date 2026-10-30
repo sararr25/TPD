@@ -611,12 +611,15 @@
   .h-opening-line { margin-top: 0; min-height: 96px; align-items: center; font-size: var(--text-xs); }
   .h-opening-line > span { max-width: 23ch; }
   .h-opening-line a { font-size: 11px; }
-  .h-hero { grid-template-columns: 1fr; }
-  .h-hero::after { display: none; }
+  .h-opening-line { min-height: 0; padding: var(--space-5) 0; }
+  /* One Passport on phones: cover and example page share a single card, joined by a perforated fold instead of a stacked second layer. */
+  .h-hero { grid-template-columns: 1fr; border-radius: 20px; overflow: hidden; }
+  .h-hero::before, .h-hero::after { display: none; }
   .h-cover {
     min-height: 0;
     padding: var(--space-5) var(--space-6) var(--space-5) var(--space-8);
-    border-radius: 12px 28px 0 0;
+    border-radius: 20px 20px 0 0;
+    box-shadow: none;
   }
   .h-cover::after { inset: 12px 12px 12px 18px; border-radius: 2px 12px 0 0; }
   .h-cover-top { font-size: 8px; gap: var(--space-2); }
@@ -628,7 +631,7 @@
   .h-cover .h-emblem { width: 56px; height: 56px; margin: var(--space-3) auto; }
   .h-cover .h-cover-bottom { margin-top: var(--space-3); }
   .h-cover .h-entrance { margin-top: var(--space-2); }
-  .h-visa { padding: var(--space-8) var(--space-6); border-radius: 0 0 28px 12px; }
+  .h-visa { padding: var(--space-8) var(--space-6); border-radius: 0 0 20px 20px; border-top: 2px dashed color-mix(in srgb, var(--pass) 35%, transparent); }
   .h-page-top { font-size: 9px; }
   .h-destination h2 { font-size: 56px; }
   .h-destination h2 em { font-size: 30px; }

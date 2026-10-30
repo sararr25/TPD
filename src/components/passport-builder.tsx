@@ -369,12 +369,14 @@ function OwnedPassportBuilder() {
               <li key={s.entity.id}>
                 <div>
                   <strong>{s.entity.name}</strong>
-                  <p className="muted">
-                    {s.entity.address || s.entity.context || s.entity.type}
-                  </p>
+                  {/* Qloo's disambiguation often repeats the name; only show it when it tells the entries apart. */}
+                  {(s.entity.address || (s.entity.context && s.entity.context !== s.entity.name)) && (
+                    <p className="muted">{s.entity.address || s.entity.context}</p>
+                  )}
                 </div>
                 <button
                   className="btn btn-quiet"
+                  aria-label={`Add ${s.entity.name}`}
                   disabled={
                     busy ||
                     selected.some((x) => x.entity.id === s.entity.id) ||

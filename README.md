@@ -125,7 +125,7 @@ The existing `beesyde` project is linked to `sararr25/TPD` and deploys from `cla
 
 Implementation follows the [Next.js installation guide](https://nextjs.org/docs/app/getting-started/installation). Qloo usage follows the [hackathon developer guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide) and [parameter reference](https://github.com/qloo/docs-public/blob/main/reference/insights-api-deep-dive.md).
 
-A project license has not yet been chosen; open-source submission readiness remains open.
+Released under the [MIT License](LICENSE).
 
 ## Private benchmark
 

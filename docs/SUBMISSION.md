@@ -83,7 +83,7 @@ Open http://localhost:3000. Without `DATABASE_URL` the app uses an in-memory cac
 - No live opening hours, availability, prices or booking. Price tiers are indicative. "Full" is the user's situation; the app cannot know it.
 - Events are a Paris-only pilot using the city's open data. Other cities show unsupported coverage explicitly.
 - Coverage varies by city and category; a search can legitimately return few or no places.
-- There is no autonomous agent loop and no use of `qloo explore` or `qloo mcp`. The "Qloo vs LLM" comparison uses a free third-party chat endpoint with no uptime guarantee and is illustrative only.
+- There is no autonomous agent loop and no use of `qloo explore` or `qloo mcp`; this was a deliberate product decision, not an omission. The "Qloo vs LLM" comparison uses a free third-party chat endpoint with no uptime guarantee and is illustrative only.
 - A 16-case benchmark exists in the repo ([docs/11](11-qloo-benchmark.md)); its human votes are not collected, so no win-rate or quality-uplift claim is made.
 - Not yet run: physical-device, assistive-technology and cross-device account acceptance (issue #59).
 - The site depends on the event Qloo quota. If it is exhausted, pages show an explicit error rather than substitute data.

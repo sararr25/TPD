@@ -227,3 +227,10 @@ Dettaglio in `docs/superpowers/specs/2026-10-19-product-structure-design.md`. Pr
 - **One button system:** `.ticket` = primary (stamp fill), `.stamp` = secondary (1px ink border), `.text` = text link. No uppercase labels, no ↗ arrows. Headings use an upright stamp-coloured `<em>`, never italic.
 - **Bad Qloo photos are replaced by the city cover.** Checked on the server (Qloo images have no CORS, so the browser cannot inspect them): failed, non-image or under 4 KB = unusable. OpenStreetMap was considered and rejected because it has no photos.
 - **Mockups are never committed.** They are shown in the chat or as private artifacts (user rule, 22 Oct).
+
+## Hackathon submission (30 October 2026)
+
+- **Licence: MIT**, file `LICENSE` at the repo root (required by the hackathon; shown in the repo's About).
+- **No agent.** The owner decided an agent is not needed. The submission presents Beesyde as a taste-driven recommendation app, route "CLI / backend" of the Qloo kit (direct API calls from the server, not the `@qloo/qloo-harness` package), and says so in its limitations.
+- **Visitor request budget raised** to 200 requests and 50 Twin searches per 10 minutes (was 60 and 15) after the owner's own testing exhausted the old limit and every city showed "These picks couldn't load". Trade-off: more possible Qloo quota use.
+- Submission text lives in `docs/SUBMISSION.md`; the round is recorded in `docs/86-handover-hackathon-submission.md`.

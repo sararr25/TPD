@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { cityCover } from "@/lib/city-covers";
+import { cityFallback } from "@/lib/city-covers";
 import { usePlacePhotos } from "./place-photo-context";
 // The same photo/fallback decision for cards, details and saved places.
 export function PlacePhoto({
@@ -26,7 +26,7 @@ export function PlacePhoto({
   const ref = useRef<HTMLImageElement>(null);
   const previous = placeId ? photos?.read(placeId,city) : null;
   const actual = image && !failed.includes(image) ? image : previous && !failed.includes(previous) ? previous : null;
-  const cover = cityCover(city, size);
+  const cover = cityFallback(city, size, placeId);
   const src = actual || (cover && !failed.includes(cover) ? cover : null);
   function fail() {
     if (actual && placeId) photos?.failed(placeId,city,actual);

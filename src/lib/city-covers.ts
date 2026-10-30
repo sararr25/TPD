@@ -1,4 +1,4 @@
-import { CITY_PHOTOS } from "./city-photos.ts";
+import { CITY_PHOTOS, CITY_PHOTO_EXTRAS } from "./city-photos.ts";
 
 // City identity marks are independent from the approved photographic sources.
 export const COVERS: Record<string, { code: string; country: string }> = {
@@ -19,4 +19,13 @@ export const COVERS: Record<string, { code: string; country: string }> = {
 export function cityCover(city: string, size: "420x" | "1200x"): string | null {
   const photo = CITY_PHOTOS[city];
   return photo ? photo[size === "1200x" ? "large" : "small"] : null;
+}
+
+// Place-photo fallback: the same place always gets the same city photo, different places vary.
+export function cityFallback(city: string, size: "420x" | "1200x", seed?: string): string | null {
+  const pool = [CITY_PHOTOS[city], ...(CITY_PHOTO_EXTRAS[city] ?? [])].filter(Boolean);
+  if (!pool.length) return null;
+  let hash = 0;
+  for (const char of seed ?? "") hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return pool[hash % pool.length][size === "1200x" ? "large" : "small"];
 }

@@ -6,7 +6,7 @@ import { store } from "./store.ts";
 // Per-visitor request budget, shared across server instances.
 // Each Swap costs one Qloo call plus up to three OpenStreetMap lookups.
 export const WINDOW_MS = 10 * 60 * 1000;
-export const LIMITS = { all: 60, swap: 15 };
+export const LIMITS = { all: 200, swap: 50 };
 
 // The IP is hashed with a server secret before storage; the raw IP is never kept.
 export function visitor(request: Request) {

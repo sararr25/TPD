@@ -6,7 +6,7 @@ Ticket #104 (programme #93). Draft for the owner to rehearse on the live site; n
 
 - Use a fresh browser profile (no Passport), on the production alias.
 - Open Lisbon once beforehand so photos are cached.
-- The per-visitor budget is 15 place searches per 10 minutes. Example mode spends 2 per category view: open at most Restaurants and one other category, and don't reload repeatedly.
+- The per-visitor budget is 50 place searches per 10 minutes. Example mode spends 2 per category view: open at most Restaurants and one other category, and don't reload repeatedly.
 - Fallback if the provider is slow or rate-limited: show the screenshots of the example page and the Pastéis de Belém Twin.
 
 ## Script

@@ -27,6 +27,8 @@ Latest implementation continuation: [post-release owner feedback and tickets #89
 
 Latest desktop continuation: [Passport cover and desktop length](docs/85-handover-desktop-length.md) (Passport back to full width and shorter, Home/Cities tightened).
 
+Hackathon submission write-up (kit format): [docs/SUBMISSION.md](docs/SUBMISSION.md).
+
 Latest demo preparation: [90-second demo script](docs/82-demo-script.md) and `/how-it-works` (programme [#93](https://github.com/sararr25/TPD/issues/93)).
 
 ## Local development

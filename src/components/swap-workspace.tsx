@@ -73,6 +73,7 @@ const CHECK_PLAIN: Record<CheckStatus, string> = {
 // Plain-language reason for the match, under the helix (docs/84 §4).
 function sharedSentence({ kept, changed }: { kept: string[]; changed: string[] }) {
   const total = kept.length + changed.length;
+  if (!total) return "You did not mark any trait as Keep, so this match follows the place's overall profile.";
   if (!kept.length) return "None of your Keep traits are listed for both places.";
   const list = joinList(kept);
   return total > kept.length ? `They share ${kept.length} of ${total} traits: ${list}.` : `They share ${kept.length === 1 ? "one trait" : `${kept.length} traits`}: ${list}.`;

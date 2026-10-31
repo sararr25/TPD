@@ -1,5 +1,9 @@
 # Handover — 24 October 2026: approved implementation next steps
 
+## Mobile polish before submission — 31 October 2026
+
+Read [docs/87](87-handover-mobile-polish.md), then docs/86. Mobile Passport unified into one card, map offset, chip alignment, `/saved` and `/twin` redirects, cleaner favourite search, Twin no-Keep message; all live. Known open items and the local `.next` cache fix are listed there.
+
 ## Desktop length and Passport cover — 30 October 2026
 
 Read [docs/85](85-handover-desktop-length.md), then docs/84. Passport book restored to full width and shortened, title enlarged, Home/Cities/city pages tightened on desktop via `src/styles/desktop-compact.css`. Open items (untouched pages, button consistency, real-data checks) are listed in docs/85.

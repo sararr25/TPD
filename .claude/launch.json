@@ -4,8 +4,26 @@
     {
       "name": "beesyde-prod",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start", "--", "-p", "3218"],
+      "runtimeArgs": [
+        "run",
+        "start",
+        "--",
+        "-p",
+        "3218"
+      ],
       "port": 3218
+    },
+    {
+      "name": "beesyde-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "-p",
+        "3219"
+      ],
+      "port": 3219
     }
   ]
 }
